@@ -16,8 +16,8 @@ Update it at the end of every phase.
 | 0 | Plan | ✅ done | This document (modules, schema, tokens, nav map, workflow YAML) |
 | 1 | Foundation and look | ✅ done | Skeleton, design system, 5 themes + dynamic, onboarding, PIN + biometric lock, SQLCipher DB, CI, demo seed, Timeline/People/Detail, 14 screenshots |
 | 2 | Capture | ✅ done | Event-first, photo-first grouping, text-only + Polish, quick capture, backdating, past wizard, limits, people/groups |
-| 3 | Relive | ⏳ next | Filters, search, Together, relationships map, on-this-day, shake, yearly summaries |
-| 4 | Recap video | ⬜ | Themes, music, Transformer pipeline, preview, share |
+| 3 | Relive | ✅ done | Filters, search, Together, relationships map, on-this-day, shake, yearly summaries |
+| 4 | Recap video | ⏳ next | Themes, music, Transformer pipeline, preview, share |
 | 5 | Trust and polish | ⬜ | Backup/restore, face suggestions, Easy mode, a11y, perf, baseline profiles, privacy, release workflow, listing assets |
 
 Phase STOP reports are appended at the bottom of this file under "Phase reports". The owner asked
@@ -388,3 +388,25 @@ checked in unit tests; emulator run not possible here) · text-only/backdated/fu
 wrapper/workflow ✔ (CI run 1 failed on `setup-android` default packages; fixed by pinning packages) · docs ✔.
 
 **Next**: Phase 3 — Relive.
+
+### Phase 3 — Relive (STOP report)
+
+**Built**
+- **Filters**: bottom sheet with people (optionally "all together"), groups, places (from the library), kind (photos / stories /
+  quick notes), from/to dates; active-filter chips row; FTS search field already in place. Two-pane sidebar filters on tablets.
+- **Together**: pick two or more people → only memories where all of them appear (`requireAllPeople` SQL).
+- **Relationships map**: bubble/force graph (deterministic Fruchterman–Reingold layout, bubbles sized by memory count, line
+  weight = shared memories, tap → person).
+- **On this day**: `OnThisDayWorker` (Hilt worker; one-time job re-armed daily at the chosen minute, VISIBILITY_SECRET
+  notification that deep-links to the memory once unlocked); Settings → Relive reminders asks POST_NOTIFICATIONS, time picker.
+- **Shake for a random memory**: `ShakeLogic` (3 spikes ≥ 2.6 g within 600 ms, 2 s cooldown) + accelerometer listener active
+  while unlocked; toggle in settings.
+- **Yearly summaries**: "Your 2024 with Rahul" / "Your 2024" — counts, places, most-time-with people, first/last memory, all
+  memories, entry point to the recap video; reachable from Person story chips, Relive year chips and Home.
+- **Security settings** (user-adjustable lock timeout immediately / 30 s / 1 m / 5 m, biometrics, FLAG_SECURE toggle,
+  wipe-after-10, change PIN).
+
+**Tested**: `ShakeLogicTest`, `RelationshipsLayoutTest` (bounds, determinism, connected pairs closer), all earlier suites;
+6 new screenshots (Relive, Together, Relationships map, Yearly summary, Notification + Security settings).
+
+**Next**: Phase 4 — Recap video.

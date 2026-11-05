@@ -21,7 +21,7 @@ sealed interface Route {
     @Serializable data object TextOnly : Route
     @Serializable data object QuickCapture : Route
     @Serializable data object PastWizard : Route
-    @Serializable data class RecapSetup(val personId: Long = 0L, val memoryId: Long = 0L) : Route
+    @Serializable data class RecapSetup(val personId: Long = 0L, val memoryId: Long = 0L, val year: Int = 0) : Route
     @Serializable data class Settings(val page: String) : Route
 }
 

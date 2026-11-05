@@ -26,4 +26,5 @@
     <string name="yearly_first">साल की पहली याद</string>
     <string name="yearly_last">साल की आखिरी याद</string>
     <string name="yearly_empty">%1$d की अभी कोई याद नहीं।</string>
+    <plurals name="notification_years_ago"><item quantity="one">आज से %1$d साल पहले</item><item quantity="other">आज से %1$d साल पहले</item></plurals>
 </resources>

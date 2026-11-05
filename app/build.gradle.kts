@@ -94,6 +94,7 @@ dependencies {
     implementation(project(":feature:relive"))
     implementation(project(":feature:recap"))
     implementation(project(":feature:settings"))
+    implementation(libs.androidx.hilt.work)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

@@ -8,7 +8,9 @@ import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.model.MemoryCard
+import com.yaadein.domain.model.Group
 import com.yaadein.domain.model.Person
+import com.yaadein.domain.repository.GroupRepository
 import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.PersonRepository
 import com.yaadein.domain.repository.TimelineFilter
@@ -48,24 +50,39 @@ sealed interface TimelineItem {
 data class TimelineUiState(
     val filter: TimelineFilter = TimelineFilter(),
     val people: List<Person> = emptyList(),
+    val groups: List<Group> = emptyList(),
+    val places: List<String> = emptyList(),
     val totalMemories: Int = -1,
     val searchActive: Boolean = false,
+    val filterSheetOpen: Boolean = false,
 )
 
 @HiltViewModel
 class TimelineViewModel @Inject constructor(
     private val memoryRepository: MemoryRepository,
     personRepository: PersonRepository,
+    groupRepository: GroupRepository,
 ) : ViewModel() {
 
     private val filter = MutableStateFlow(TimelineFilter())
     private val searchActive = MutableStateFlow(false)
     private val totalMemories = MutableStateFlow(-1)
+    private val filterSheetOpen = MutableStateFlow(false)
+    private val places = MutableStateFlow<List<String>>(emptyList())
 
     val uiState: StateFlow<TimelineUiState> = combine(
-        filter, personRepository.observeAll(), totalMemories, searchActive,
-    ) { f, people, total, search ->
-        TimelineUiState(filter = f, people = people, totalMemories = total, searchActive = search)
+        filter, personRepository.observeAll(), groupRepository.observeAll(), totalMemories, searchActive, filterSheetOpen, places,
+    ) { values ->
+        @Suppress("UNCHECKED_CAST")
+        TimelineUiState(
+            filter = values[0] as TimelineFilter,
+            people = values[1] as List<Person>,
+            groups = values[2] as List<Group>,
+            totalMemories = values[3] as Int,
+            searchActive = values[4] as Boolean,
+            filterSheetOpen = values[5] as Boolean,
+            places = values[6] as List<String>,
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TimelineUiState())
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -79,9 +96,15 @@ class TimelineViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            memoryRepository.observeCards(TimelineFilter()).map { it.size }.collect { totalMemories.value = it }
+            memoryRepository.observeCards(TimelineFilter()).map { it.size }.collect {
+                totalMemories.value = it
+                places.value = memoryRepository.distinctPlaces()
+            }
         }
     }
+
+    fun openFilters() { filterSheetOpen.value = true }
+    fun closeFilters() { filterSheetOpen.value = false }
 
     fun setFilter(newFilter: TimelineFilter) = filter.update { newFilter }
     fun clearFilter() = filter.update { TimelineFilter() }

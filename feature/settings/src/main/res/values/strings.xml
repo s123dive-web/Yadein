@@ -53,4 +53,25 @@
     <string name="storage_erase">Erase everything</string>
     <string name="storage_erase_confirm">This permanently deletes all your memories on this phone. Are you sure?</string>
     <string name="storage_erase_yes">Erase everything</string>
+    <string name="notif_on_this_day">“On this day” reminder</string>
+    <string name="notif_on_this_day_help">A daily nudge when something happened on this date in an earlier year.</string>
+    <string name="notif_time">Reminder time</string>
+    <string name="notif_shake">Shake for a memory</string>
+    <string name="notif_shake_help">Shake the phone anywhere in the app to open a random memory.</string>
+    <string name="notif_privacy">Reminders are scheduled on this phone and hidden on the lock screen. Nothing is sent anywhere.</string>
+    <string name="security_change_pin">Change PIN</string>
+    <string name="security_change_pin_help">6 digits. There is no reset if you forget it.</string>
+    <string name="security_biometric">Fingerprint or face</string>
+    <string name="security_biometric_help">Unlock without the PIN. The PIN always works as a backup.</string>
+    <string name="security_biometric_unavailable">No fingerprint or face unlock is set up on this phone.</string>
+    <string name="security_timeout">Lock again after</string>
+    <string name="security_timeout_help">How long Yaadein may stay in the background before it asks you to unlock again.</string>
+    <string name="timeout_immediately">Immediately</string>
+    <string name="timeout_30s">30 seconds</string>
+    <string name="timeout_1m">1 minute</string>
+    <string name="timeout_5m">5 minutes</string>
+    <string name="security_secure_screen">Block screenshots</string>
+    <string name="security_secure_screen_help">Also hides the app preview in Recents.</string>
+    <string name="security_wipe">Erase after 10 wrong PINs</string>
+    <string name="security_wipe_help">Everything on this phone is deleted after ten wrong attempts in a row.</string>
 </resources>

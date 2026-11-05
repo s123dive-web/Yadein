@@ -45,6 +45,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":feature:lock"))
+    implementation(project(":feature:relive"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

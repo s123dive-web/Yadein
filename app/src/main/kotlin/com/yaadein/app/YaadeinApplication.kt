@@ -17,11 +17,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.yaadein.data.media.MediaStore
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @HiltAndroidApp
-class YaadeinApplication : Application(), SingletonImageLoader.Factory {
+class YaadeinApplication : Application(), SingletonImageLoader.Factory, Configuration.Provider {
+
+    @Inject lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 
     @Inject lateinit var database: AppDatabase
     @Inject lateinit var mediaStore: MediaStore

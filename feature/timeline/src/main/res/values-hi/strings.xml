@@ -15,4 +15,14 @@
     <string name="sidebar_photos">फ़ोटो वाली</string>
     <string name="sidebar_stories">कहानियाँ</string>
     <string name="sidebar_people">लोग</string>
+    <string name="filter_people">लोग</string>
+    <string name="filter_all_together">सिर्फ़ वे यादें जिनमें ये सब हों</string>
+    <string name="filter_groups">समूह</string>
+    <string name="filter_places">जगहें</string>
+    <string name="filter_type">प्रकार</string>
+    <string name="filter_quick">छोटे नोट</string>
+    <string name="filter_dates">तारीख़ें</string>
+    <string name="filter_from">से</string>
+    <string name="filter_to">तक</string>
+    <string name="filter_apply">यादें दिखाएँ</string>
 </resources>

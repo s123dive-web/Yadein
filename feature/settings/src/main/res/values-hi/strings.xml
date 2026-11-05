@@ -53,4 +53,25 @@
     <string name="storage_erase">सब कुछ मिटाएँ</string>
     <string name="storage_erase_confirm">यह इस फ़ोन की सारी यादें हमेशा के लिए हटा देगा। पक्का?</string>
     <string name="storage_erase_yes">सब मिटाएँ</string>
+    <string name="notif_on_this_day">“आज के दिन” याद दिलाना</string>
+    <string name="notif_on_this_day_help">जब किसी पिछले साल इसी तारीख़ को कुछ हुआ हो, रोज़ एक हल्का सा इशारा।</string>
+    <string name="notif_time">याद दिलाने का समय</string>
+    <string name="notif_shake">हिलाकर याद</string>
+    <string name="notif_shake_help">ऐप में कहीं भी फ़ोन हिलाएँ और एक बेतरतीब याद खुले।</string>
+    <string name="notif_privacy">रिमाइंडर इसी फ़ोन पर तय होते हैं और लॉक स्क्रीन पर छिपे रहते हैं। कुछ भी कहीं नहीं भेजा जाता।</string>
+    <string name="security_change_pin">पिन बदलें</string>
+    <string name="security_change_pin_help">6 अंक। भूल जाने पर रीसेट नहीं हो सकता।</string>
+    <string name="security_biometric">फ़िंगरप्रिंट या चेहरा</string>
+    <string name="security_biometric_help">बिना पिन के खोलें। पिन हमेशा बैकअप रहेगा।</string>
+    <string name="security_biometric_unavailable">इस फ़ोन में फ़िंगरप्रिंट या फ़ेस अनलॉक सेट नहीं है।</string>
+    <string name="security_timeout">इतने समय बाद फिर लॉक</string>
+    <string name="security_timeout_help">Yaadein बैकग्राउंड में कितनी देर रहे, उसके बाद फिर अनलॉक माँगे।</string>
+    <string name="timeout_immediately">तुरंत</string>
+    <string name="timeout_30s">30 सेकंड</string>
+    <string name="timeout_1m">1 मिनट</string>
+    <string name="timeout_5m">5 मिनट</string>
+    <string name="security_secure_screen">स्क्रीनशॉट रोकें</string>
+    <string name="security_secure_screen_help">हाल के ऐप्स में झलक भी छिपाता है।</string>
+    <string name="security_wipe">10 गलत पिन के बाद मिटाएँ</string>
+    <string name="security_wipe_help">लगातार दस गलत कोशिशों के बाद इस फ़ोन का सब कुछ हट जाता है।</string>
 </resources>

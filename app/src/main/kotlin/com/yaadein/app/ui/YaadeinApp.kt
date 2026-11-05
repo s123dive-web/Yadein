@@ -15,6 +15,10 @@ import com.yaadein.app.navigation.Route
 import com.yaadein.core.ui.theme.YaadeinTheme
 import com.yaadein.feature.lock.BiometricLauncher
 import com.yaadein.feature.lock.LockRoute
+import com.yaadein.feature.relive.ShakeListener
+import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.yaadein.app.ui.RandomMemoryViewModel
 import com.yaadein.domain.settings.UserSettings
 
 @Composable
@@ -23,6 +27,8 @@ fun YaadeinApp(
     locked: Boolean,
     biometricLauncher: BiometricLauncher?,
     biometricAvailable: Boolean,
+    pendingMemoryId: Long? = null,
+    onPendingConsumed: () -> Unit = {},
 ) {
     YaadeinTheme(theme = settings.theme, darkMode = settings.darkMode, easyMode = settings.easyMode) {
         val navController = rememberNavController()
@@ -33,6 +39,19 @@ fun YaadeinApp(
                 !settings.pinConfigured -> Route.LockSetup
                 else -> Route.Home
             }
+        }
+        val unlocked = !locked || !settings.pinConfigured
+        // Open the memory a notification pointed at, once the vault is unlocked.
+        LaunchedEffect(pendingMemoryId, unlocked, start) {
+            if (pendingMemoryId != null && unlocked && start == Route.Home) {
+                navController.navigate(Route.MemoryDetail(pendingMemoryId))
+                onPendingConsumed()
+            }
+        }
+        // Shake for a random memory (only while unlocked and on the home graph).
+        val randomViewModel: RandomMemoryViewModel = hiltViewModel()
+        ShakeListener(enabled = settings.shakeForMemory && unlocked && start == Route.Home) {
+            randomViewModel.pick { id -> navController.navigate(Route.MemoryDetail(id)) }
         }
         Surface(modifier = Modifier.fillMaxSize()) {
             Box(Modifier.fillMaxSize()) {

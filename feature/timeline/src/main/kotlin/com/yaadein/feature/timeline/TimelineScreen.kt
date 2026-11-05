@@ -90,6 +90,8 @@ fun TimelineRoute(
                 onSearchActive = viewModel::setSearchActive,
                 onFilterChange = viewModel::setFilter,
                 onClearFilter = viewModel::clearFilter,
+                onOpenFilters = viewModel::openFilters,
+                onCloseFilters = viewModel::closeFilters,
                 contentPadding = contentPadding,
                 modifier = Modifier.weight(1f),
             )
@@ -105,6 +107,8 @@ fun TimelineRoute(
         onSearchActive = viewModel::setSearchActive,
         onFilterChange = viewModel::setFilter,
         onClearFilter = viewModel::clearFilter,
+        onOpenFilters = viewModel::openFilters,
+        onCloseFilters = viewModel::closeFilters,
         contentPadding = contentPadding,
         modifier = modifier,
     )
@@ -124,6 +128,8 @@ fun TimelineScreen(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
+    onOpenFilters: () -> Unit = {},
+    onCloseFilters: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val scope = rememberCoroutineScope()
@@ -143,7 +149,7 @@ fun TimelineScreen(
                         contentDescription = stringResource(if (state.searchActive) CoreR.string.action_close else R.string.timeline_search),
                     )
                 }
-                FilterButton(active = !state.filter.isEmpty, onClick = { onFilterChange(state.filter) })
+                FilterButton(active = !state.filter.isEmpty, onClick = onOpenFilters)
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
         )
@@ -186,6 +192,9 @@ fun TimelineScreen(
             )
             else -> TimelineList(items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding, listState = listState)
         }
+    }
+    if (state.filterSheetOpen) {
+        FilterSheet(filter = state.filter, people = state.people, groups = state.groups, places = state.places, onApply = onFilterChange, onDismiss = onCloseFilters)
     }
 }
 

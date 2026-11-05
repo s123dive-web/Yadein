@@ -53,4 +53,25 @@
     <string name="storage_erase">सगळं पुसा</string>
     <string name="storage_erase_confirm">हे या फोनवरील सर्व आठवणी कायमच्या हटवेल. नक्की?</string>
     <string name="storage_erase_yes">सगळं पुसा</string>
+    <string name="notif_on_this_day">“आजच्या दिवशी” आठवण</string>
+    <string name="notif_on_this_day_help">एखाद्या मागच्या वर्षी याच तारखेला काही घडलं असेल तर रोज एक हलकी आठवण.</string>
+    <string name="notif_time">आठवणीची वेळ</string>
+    <string name="notif_shake">हलवून आठवण</string>
+    <string name="notif_shake_help">अ‍ॅपमध्ये कुठेही फोन हलवा आणि एक यादृच्छिक आठवण उघडेल.</string>
+    <string name="notif_privacy">आठवणी याच फोनवर ठरतात आणि लॉक स्क्रीनवर लपलेल्या असतात. काहीही कुठेही पाठवलं जात नाही.</string>
+    <string name="security_change_pin">पिन बदला</string>
+    <string name="security_change_pin_help">6 अंक. विसरल्यास रीसेट होत नाही.</string>
+    <string name="security_biometric">फिंगरप्रिंट किंवा चेहरा</string>
+    <string name="security_biometric_help">पिनशिवाय उघडा. पिन नेहमी बॅकअप म्हणून चालतो.</string>
+    <string name="security_biometric_unavailable">या फोनवर फिंगरप्रिंट किंवा फेस अनलॉक सेट नाही.</string>
+    <string name="security_timeout">इतक्या वेळानंतर पुन्हा लॉक</string>
+    <string name="security_timeout_help">Yaadein बॅकग्राउंडमध्ये किती वेळ राहू शकतं, त्यानंतर पुन्हा अनलॉक विचारतं.</string>
+    <string name="timeout_immediately">लगेच</string>
+    <string name="timeout_30s">30 सेकंद</string>
+    <string name="timeout_1m">1 मिनिट</string>
+    <string name="timeout_5m">5 मिनिटे</string>
+    <string name="security_secure_screen">स्क्रीनशॉट थांबवा</string>
+    <string name="security_secure_screen_help">अलीकडच्या अ‍ॅप्समधील झलकही लपवतो.</string>
+    <string name="security_wipe">10 चुकीच्या पिननंतर पुसा</string>
+    <string name="security_wipe_help">सलग दहा चुकीच्या प्रयत्नांनंतर या फोनवरील सगळं हटवलं जातं.</string>
 </resources>

@@ -1,6 +1,9 @@
 package com.yaadein.app
 
+import android.content.Intent
 import android.os.Bundle
+import com.yaadein.feature.relive.notify.OnThisDayWorker
+import kotlinx.coroutines.flow.MutableStateFlow
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,6 +36,8 @@ class MainActivity : FragmentActivity() {
 
     private lateinit var settings: StateFlow<UserSettings?>
     @Volatile private var lockTimeout: LockTimeout = LockTimeout.THIRTY_SECONDS
+    /** Memory to open once unlocked (from an "On this day" notification). */
+    private val pendingMemory = MutableStateFlow<Long?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -52,19 +57,29 @@ class MainActivity : FragmentActivity() {
             }
         }
 
+        pendingMemory.value = intent?.getLongExtra(OnThisDayWorker.EXTRA_MEMORY_ID, -1L)?.takeIf { it > 0 }
         val biometricLauncher = BiometricHelper.launcher(this)
         setContent {
             val current by settings.collectAsStateWithLifecycle()
             val locked by lockState.locked.collectAsStateWithLifecycle()
             current?.let { s ->
+                val pending by pendingMemory.collectAsStateWithLifecycle()
                 YaadeinApp(
                     settings = s,
                     locked = locked,
                     biometricLauncher = biometricLauncher,
                     biometricAvailable = biometricLauncher != null,
+                    pendingMemoryId = pending,
+                    onPendingConsumed = { pendingMemory.value = null },
                 )
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pendingMemory.value = intent.getLongExtra(OnThisDayWorker.EXTRA_MEMORY_ID, -1L).takeIf { it > 0 }
     }
 
     override fun onStart() {

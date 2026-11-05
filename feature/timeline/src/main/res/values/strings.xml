@@ -15,4 +15,14 @@
     <string name="sidebar_photos">With photos</string>
     <string name="sidebar_stories">Stories</string>
     <string name="sidebar_people">People</string>
+    <string name="filter_people">People</string>
+    <string name="filter_all_together">Only memories with all of them</string>
+    <string name="filter_groups">Groups</string>
+    <string name="filter_places">Places</string>
+    <string name="filter_type">Kind</string>
+    <string name="filter_quick">Quick notes</string>
+    <string name="filter_dates">Dates</string>
+    <string name="filter_from">From</string>
+    <string name="filter_to">To</string>
+    <string name="filter_apply">Show memories</string>
 </resources>

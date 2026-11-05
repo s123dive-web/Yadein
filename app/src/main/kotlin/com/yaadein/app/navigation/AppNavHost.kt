@@ -29,6 +29,11 @@ import com.yaadein.feature.capture.QuickCaptureRoute
 import com.yaadein.feature.capture.TextOnlyRoute
 import com.yaadein.feature.memory.MediaViewerRoute
 import com.yaadein.feature.people.GroupEditRoute
+import com.yaadein.feature.people.RelationshipsRoute
+import com.yaadein.feature.people.TogetherRoute
+import com.yaadein.feature.relive.YearlySummaryRoute
+import com.yaadein.feature.settings.NotificationsRoute
+import com.yaadein.feature.settings.SecurityRoute
 import com.yaadein.feature.settings.SettingsPage
 
 @Composable
@@ -53,7 +58,10 @@ fun AppNavHost(
         composable<Route.LockSetup> {
             LockSetupRoute(
                 biometricAvailable = biometricAvailable,
-                onDone = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
+                onDone = {
+                    if (settings.pinConfigured && navController.previousBackStackEntry != null) navController.popBackStack()
+                    else navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } }
+                },
             )
         }
         composable<Route.Home> {
@@ -132,10 +140,26 @@ fun AppNavHost(
         composable<Route.PastWizard> {
             PastWizardRoute(onBack = { navController.popBackStack() }, onAddPerson = { navController.navigate(Route.PersonEdit()) })
         }
+        composable<Route.Together> {
+            TogetherRoute(onBack = { navController.popBackStack() }, onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) })
+        }
+        composable<Route.RelationshipsMap> {
+            RelationshipsRoute(onBack = { navController.popBackStack() }, onOpenPerson = { navController.navigate(Route.PersonDetail(it)) })
+        }
+        composable<Route.YearlySummary> {
+            YearlySummaryRoute(
+                onBack = { navController.popBackStack() },
+                onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
+                onOpenPerson = { navController.navigate(Route.PersonDetail(it)) },
+                onRecap = { personId, year -> navController.navigate(Route.RecapSetup(personId = personId, year = year)) },
+            )
+        }
         composable<Route.Settings> { entry ->
             val page = SettingsPage.valueOf(entry.toRoute<Route.Settings>().page)
             when (page) {
                 SettingsPage.STORAGE -> StorageRoute(onBack = { navController.popBackStack() })
+                SettingsPage.NOTIFICATIONS -> NotificationsRoute(onBack = { navController.popBackStack() })
+                SettingsPage.SECURITY -> SecurityRoute(biometricAvailable = biometricAvailable, onBack = { navController.popBackStack() }, onChangePin = { navController.navigate(Route.LockSetup) })
                 SettingsPage.ABOUT -> AboutRoute(onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = BuildConfig.DEBUG)
                 else -> AppearanceRoute(onBack = { navController.popBackStack() })
             }
