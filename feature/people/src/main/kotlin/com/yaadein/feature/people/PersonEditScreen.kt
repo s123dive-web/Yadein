@@ -52,6 +52,12 @@ import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.model.Relation
 import com.yaadein.domain.repository.PersonRepository
+import com.yaadein.domain.repository.MediaRepository
+import com.yaadein.data.media.ImportOutcome
+import com.yaadein.data.media.MediaImporter
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -77,6 +83,8 @@ data class PersonEditUiState(
 class PersonEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val personRepository: PersonRepository,
+    private val mediaRepository: MediaRepository,
+    private val importer: MediaImporter,
 ) : ViewModel() {
     private val personId: Long = savedStateHandle["personId"] ?: 0L
     private val _state = MutableStateFlow(PersonEditUiState())
@@ -95,6 +103,29 @@ class PersonEditViewModel @Inject constructor(
     }
 
     fun update(transform: (Person) -> Person) = _state.update { it.copy(person = transform(it.person), nameError = false) }
+
+    /** Imports a profile photo (encrypted like everything else) and points the person at it. */
+    fun onPhotoPicked(uri: android.net.Uri?) {
+        uri ?: return
+        viewModelScope.launch {
+            val picked = importer.inspect(uri) ?: return@launch
+            if (picked.isVideo || importer.checkLimit(picked) != null) return@launch
+            when (val outcome = importer.import(picked, memoryId = null, optimize = true, position = 0)) {
+                is ImportOutcome.Success -> {
+                    val old = _state.value.person.profileMediaId
+                    _state.update { it.copy(person = it.person.copy(profileMediaId = outcome.mediaId)) }
+                    if (old != null) mediaRepository.delete(old)
+                }
+                is ImportOutcome.Failed -> Unit
+            }
+        }
+    }
+
+    fun removePhoto() {
+        val old = _state.value.person.profileMediaId ?: return
+        _state.update { it.copy(person = it.person.copy(profileMediaId = null)) }
+        viewModelScope.launch { mediaRepository.delete(old) }
+    }
 
     fun save(onSaved: (Long) -> Unit) {
         val person = _state.value.person
@@ -126,10 +157,13 @@ fun PersonEditRoute(
     viewModel: PersonEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { viewModel.onPhotoPicked(it) }
     PersonEditScreen(
         state = state,
         onBack = onBack,
         onChange = viewModel::update,
+        onPickPhoto = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+        onRemovePhoto = viewModel::removePhoto,
         onSave = { viewModel.save(onSaved) },
         onDelete = { viewModel.delete(onBack) },
         modifier = modifier,
@@ -145,6 +179,8 @@ fun PersonEditScreen(
     onSave: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
+    onPickPhoto: () -> Unit = {},
+    onRemovePhoto: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val person = state.person
@@ -170,8 +206,12 @@ fun PersonEditScreen(
                 .widthIn(max = 560.dp),
             verticalArrangement = Arrangement.spacedBy(spacing.lg),
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 PersonAvatar(person = person.copy(name = person.name.ifBlank { "?" }), size = Yaadein.sizes.avatarXl)
+                Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                    TextButton(onClick = onPickPhoto) { Text(stringResource(R.string.person_photo_pick)) }
+                    if (person.profileMediaId != null) TextButton(onClick = onRemovePhoto) { Text(stringResource(R.string.person_photo_remove)) }
+                }
             }
             OutlinedTextField(
                 value = person.name,

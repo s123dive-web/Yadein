@@ -15,8 +15,8 @@ Update it at the end of every phase.
 |-------|------|--------|-------|
 | 0 | Plan | ✅ done | This document (modules, schema, tokens, nav map, workflow YAML) |
 | 1 | Foundation and look | ✅ done | Skeleton, design system, 5 themes + dynamic, onboarding, PIN + biometric lock, SQLCipher DB, CI, demo seed, Timeline/People/Detail, 14 screenshots |
-| 2 | Capture | ⏳ next | Event-first, photo-first grouping, text-only + Polish, quick capture, backdating, past wizard, limits, people/groups |
-| 3 | Relive | ⬜ | Filters, search, Together, relationships map, on-this-day, shake, yearly summaries |
+| 2 | Capture | ✅ done | Event-first, photo-first grouping, text-only + Polish, quick capture, backdating, past wizard, limits, people/groups |
+| 3 | Relive | ⏳ next | Filters, search, Together, relationships map, on-this-day, shake, yearly summaries |
 | 4 | Recap video | ⬜ | Themes, music, Transformer pipeline, preview, share |
 | 5 | Trust and polish | ⬜ | Backup/restore, face suggestions, Easy mode, a11y, perf, baseline profiles, privacy, release workflow, listing assets |
 
@@ -352,3 +352,39 @@ Together, RelationshipsMap, YearlySummary, RecapSetup, MediaViewer and the remai
 navigation but implemented in Phases 2–5.
 
 **Next**: Phase 2 — Capture.
+
+### Phase 2 — Capture (STOP report)
+
+**Built**
+- **Import pipeline** (`MediaImporter`, `ImportCoordinator`): inspect (mime, size, EXIF/video date) → limits (20 MB photo /
+  200 MB video, rejected before any copy with a clear message) → copy to temp → optimise (photos ≤ 2560 px re-encoded upright,
+  videos ≤ 1080p via Media3 Transformer; "Keep original" per memory) → thumbnail → AES-CTR encrypt → SHA-256 verify →
+  one Room transaction (media row, first photo becomes cover, text-only card upgrades itself to an event, search reindex) →
+  temp deleted. `import_jobs` stages make it resumable: `recoverPending()` at startup finishes verified files, discards
+  partial ones and prunes orphans. Imports run in an app-scoped coroutine so they survive navigation.
+- **Event-first**: date first (chips: Today / Yesterday / Pick date / Month only / Year only / "Roughly…" labels with
+  Summer/Monsoon/Winter/Around Diwali presets), title, place, people, description, mood, media (Photo Picker, multi-select),
+  cover style for text-only; also used for editing and "Add photos" from the detail screen.
+- **Photo-first**: multi-pick → `PhotoGrouper` groups by same day / consecutive days (face splitting hook ready) → draft cards
+  with suggested titles and date ranges → rename, change date, tag people, merge with previous, split, remove → save all.
+- **Text-only + Polish**: rule-based `PolishEngine` (category keywords incl. Hinglish, numeric/month/year/season date parsing,
+  known Indian places, title templates such as "Goa Getaway, December 2024", warm two-line descriptions, cover + mood) with a live
+  card preview, dictation via the system recogniser (offline preferred), optional "Smart polish" toggle wired to a
+  `SmartPolishProvider` (on-device model adapter; `NoSmartPolish` default so the feature is hidden when unsupported).
+- **Quick capture ("Today")**: one line, optional photo, people chips, Done-key saves.
+- **Fill in the past wizard**: year by year ("Anything memorable in 2019?"), text or voice, save-and-stay / save-and-next, progress.
+- **People & groups**: profile photo import (encrypted), group editor with emoji presets and members; `MediaViewer`
+  (pager, pinch-zoom photos, ExoPlayer video through the decrypting `EncryptedDataSource`, captions, tag people, remove).
+- **Storage settings**: usage breakdown, optimised-copies default, "Erase everything".
+
+**Tested** (`./gradlew test :app:validateDebugScreenshotTest`: 100 checks green)
+- `PolishEngineTest` (11 cases incl. Hinglish, seasons, numeric dates, month without year), `PhotoGrouperTest`,
+  `MediaImporterTest` (Robolectric: encrypt/verify/row/cover upgrade, limits before copy, unreadable source cleanup, downscale,
+  video date parsing, recovery/pruning), plus all Phase 1 suites; 8 new screenshots (hub, event, text+polish, quick, photo-first,
+  past wizard, group editor, storage).
+
+**Self-check**: INTERNET absent ✔ · tests ✔ · lint (Phase 5) · lock flows ✔ · Photo Picker limits enforced ✔ (20 MB/200 MB
+checked in unit tests; emulator run not possible here) · text-only/backdated/fuzzy ✔ · phone/tablet ✔ · themes/Easy ✔ ·
+wrapper/workflow ✔ (CI run 1 failed on `setup-android` default packages; fixed by pinning packages) · docs ✔.
+
+**Next**: Phase 3 — Relive.

@@ -14,10 +14,15 @@ import com.yaadein.data.crypto.SecretStore
 import com.yaadein.data.crypto.VaultKeys
 import com.yaadein.data.db.AppDatabase
 import com.yaadein.data.db.DatabaseFactory
+import com.yaadein.data.media.MediaImporter
 import com.yaadein.data.media.MediaStore
+import com.yaadein.data.media.TransformerVideoOptimizer
+import com.yaadein.data.media.VideoOptimizer
+import com.yaadein.data.polish.NoSmartPolish
+import com.yaadein.data.polish.SmartPolishProvider
+import com.yaadein.data.repository.MemoryRepositoryImpl
 import com.yaadein.data.repository.GroupRepositoryImpl
 import com.yaadein.data.repository.MediaRepositoryImpl
-import com.yaadein.data.repository.MemoryRepositoryImpl
 import com.yaadein.data.repository.PersonRepositoryImpl
 import com.yaadein.data.settings.DataStoreSettingsRepository
 import com.yaadein.data.settings.EncryptedSettingsSerializer
@@ -76,6 +81,25 @@ object DataModule {
     @Provides
     @Singleton
     fun mediaStore(@ApplicationContext context: Context, crypto: MediaCrypto): MediaStore = MediaStore(context, crypto)
+
+    @Provides
+    @Singleton
+    fun videoOptimizer(@ApplicationContext context: Context): VideoOptimizer = TransformerVideoOptimizer(context)
+
+    @Provides
+    @Singleton
+    fun mediaImporter(
+        @ApplicationContext context: Context,
+        db: AppDatabase,
+        mediaStore: MediaStore,
+        memoryRepository: MemoryRepositoryImpl,
+        optimizer: VideoOptimizer,
+        clock: () -> Long,
+    ): MediaImporter = MediaImporter(context, db, mediaStore, memoryRepository, optimizer, clock)
+
+    @Provides
+    @Singleton
+    fun smartPolish(): SmartPolishProvider = NoSmartPolish
 
     @Provides
     @Singleton

@@ -21,6 +21,14 @@ import com.yaadein.feature.people.PersonEditRoute
 import com.yaadein.app.BuildConfig
 import com.yaadein.feature.settings.AboutRoute
 import com.yaadein.feature.settings.AppearanceRoute
+import com.yaadein.feature.settings.StorageRoute
+import com.yaadein.feature.capture.EventCaptureRoute
+import com.yaadein.feature.capture.PastWizardRoute
+import com.yaadein.feature.capture.PhotoFirstRoute
+import com.yaadein.feature.capture.QuickCaptureRoute
+import com.yaadein.feature.capture.TextOnlyRoute
+import com.yaadein.feature.memory.MediaViewerRoute
+import com.yaadein.feature.people.GroupEditRoute
 import com.yaadein.feature.settings.SettingsPage
 
 @Composable
@@ -84,9 +92,50 @@ fun AppNavHost(
                 },
             )
         }
+        composable<Route.MediaViewer> {
+            MediaViewerRoute(onBack = { navController.popBackStack() })
+        }
+        composable<Route.GroupEdit> {
+            GroupEditRoute(onBack = { navController.popBackStack() })
+        }
+        composable<Route.EventCapture> { entry ->
+            val editing = entry.toRoute<Route.EventCapture>().memoryId != 0L
+            EventCaptureRoute(
+                onBack = { navController.popBackStack() },
+                onSaved = { id ->
+                    if (editing) navController.popBackStack() else navController.navigate(Route.MemoryDetail(id)) { popUpTo<Route.Home>() }
+                },
+                onAddPerson = { navController.navigate(Route.PersonEdit()) },
+            )
+        }
+        composable<Route.TextOnly> {
+            TextOnlyRoute(
+                onBack = { navController.popBackStack() },
+                onSaved = { id -> navController.navigate(Route.MemoryDetail(id)) { popUpTo<Route.Home>() } },
+                onAddPerson = { navController.navigate(Route.PersonEdit()) },
+            )
+        }
+        composable<Route.QuickCapture> {
+            QuickCaptureRoute(
+                onBack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() },
+                onAddPerson = { navController.navigate(Route.PersonEdit()) },
+            )
+        }
+        composable<Route.PhotoFirst> {
+            PhotoFirstRoute(
+                onBack = { navController.popBackStack() },
+                onDone = { first -> if (first != null) navController.navigate(Route.MemoryDetail(first)) { popUpTo<Route.Home>() } else navController.popBackStack() },
+                onAddPerson = { navController.navigate(Route.PersonEdit()) },
+            )
+        }
+        composable<Route.PastWizard> {
+            PastWizardRoute(onBack = { navController.popBackStack() }, onAddPerson = { navController.navigate(Route.PersonEdit()) })
+        }
         composable<Route.Settings> { entry ->
             val page = SettingsPage.valueOf(entry.toRoute<Route.Settings>().page)
             when (page) {
+                SettingsPage.STORAGE -> StorageRoute(onBack = { navController.popBackStack() })
                 SettingsPage.ABOUT -> AboutRoute(onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = BuildConfig.DEBUG)
                 else -> AppearanceRoute(onBack = { navController.popBackStack() })
             }

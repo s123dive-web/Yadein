@@ -41,4 +41,16 @@
     <string name="about_demo_load">नमूना परिवार लोड करें</string>
     <string name="about_demo_already">आपकी लाइब्रेरी में पहले से यादें हैं</string>
     <string name="about_demo_large">2,000 परीक्षण यादें जोड़ें (डीबग)</string>
+    <string name="storage_used">Yaadein ने %1$s इस्तेमाल किया</string>
+    <string name="storage_free">फ़ोन पर %1$s खाली</string>
+    <plurals name="storage_photos"><item quantity="one">%1$d फ़ोटो</item><item quantity="other">%1$d फ़ोटो</item></plurals>
+    <plurals name="storage_videos"><item quantity="one">%1$d वीडियो</item><item quantity="other">%1$d वीडियो</item></plurals>
+    <string name="storage_database">यादें, लोग और सूची</string>
+    <string name="storage_optimize">अनुकूलित कॉपी रखें</string>
+    <string name="storage_optimize_help">डिफ़ॉल्ट रूप से फ़ोटो 2560 px और वीडियो 1080p तक। हर याद में मूल फ़ाइल रख सकते हैं।</string>
+    <string name="storage_danger">नए सिरे से शुरू</string>
+    <string name="storage_erase_help">इस फ़ोन से हर याद, फ़ोटो, व्यक्ति और आपका पिन मिटा देता है। वापस नहीं हो सकता — पहले बैकअप निर्यात करें।</string>
+    <string name="storage_erase">सब कुछ मिटाएँ</string>
+    <string name="storage_erase_confirm">यह इस फ़ोन की सारी यादें हमेशा के लिए हटा देगा। पक्का?</string>
+    <string name="storage_erase_yes">सब मिटाएँ</string>
 </resources>

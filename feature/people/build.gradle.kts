@@ -43,6 +43,7 @@ tasks.withType<Test>().configureEach {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
+    implementation(project(":core:data"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

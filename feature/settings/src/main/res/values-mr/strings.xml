@@ -41,4 +41,16 @@
     <string name="about_demo_load">नमुना कुटुंब लोड करा</string>
     <string name="about_demo_already">तुमच्या लायब्ररीत आधीच आठवणी आहेत</string>
     <string name="about_demo_large">2,000 चाचणी आठवणी जोडा (डीबग)</string>
+    <string name="storage_used">Yaadein ने %1$s वापरले</string>
+    <string name="storage_free">फोनवर %1$s मोकळे</string>
+    <plurals name="storage_photos"><item quantity="one">%1$d फोटो</item><item quantity="other">%1$d फोटो</item></plurals>
+    <plurals name="storage_videos"><item quantity="one">%1$d व्हिडिओ</item><item quantity="other">%1$d व्हिडिओ</item></plurals>
+    <string name="storage_database">आठवणी, माणसे आणि सूची</string>
+    <string name="storage_optimize">ऑप्टिमाइझ्ड प्रती ठेवा</string>
+    <string name="storage_optimize_help">डीफॉल्ट फोटो 2560 px आणि व्हिडिओ 1080p पर्यंत. प्रत्येक आठवणीत मूळ फाइल ठेवता येते.</string>
+    <string name="storage_danger">नव्याने सुरुवात</string>
+    <string name="storage_erase_help">या फोनवरील प्रत्येक आठवण, फोटो, व्यक्ती आणि तुमचा पिन पुसतो. परत आणता येत नाही — आधी बॅकअप निर्यात करा.</string>
+    <string name="storage_erase">सगळं पुसा</string>
+    <string name="storage_erase_confirm">हे या फोनवरील सर्व आठवणी कायमच्या हटवेल. नक्की?</string>
+    <string name="storage_erase_yes">सगळं पुसा</string>
 </resources>

@@ -11,6 +11,11 @@ import coil3.request.crossfade
 import com.yaadein.app.media.EncryptedImageFetcher
 import com.yaadein.app.media.EncryptedImageKeyer
 import com.yaadein.data.db.AppDatabase
+import com.yaadein.data.media.MediaImporter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import com.yaadein.data.media.MediaStore
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -20,6 +25,15 @@ class YaadeinApplication : Application(), SingletonImageLoader.Factory {
 
     @Inject lateinit var database: AppDatabase
     @Inject lateinit var mediaStore: MediaStore
+    @Inject lateinit var importer: MediaImporter
+
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    override fun onCreate() {
+        super.onCreate()
+        // Finish or discard imports interrupted by process death; prune orphan files.
+        appScope.launch { runCatching { importer.recoverPending() } }
+    }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
