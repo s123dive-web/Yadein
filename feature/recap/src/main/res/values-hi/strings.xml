@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recap_title">रीकैप वीडियो</string>
+    <string name="recap_outro">Yaadein से बनाया</string>
+    <string name="recap_title_person">%1$s के साथ पल</string>
+    <string name="recap_title_all">हमारी यादें</string>
+    <string name="recap_title_year">हमारा %1$d</string>
+    <string name="recap_title_year_person">%2$s के साथ %1$d</string>
+    <string name="recap_summary">%1$d फ़ोटो और क्लिप · लगभग %2$s</string>
+    <string name="recap_empty_title">अभी दिखाने को कुछ नहीं</string>
+    <string name="recap_empty_message">कोई व्यक्ति, समूह या साल चुनें जिसमें फ़ोटो या शब्दों वाली यादें हों।</string>
+    <string name="recap_rendering">बन रहा है… %1$d%%</string>
+    <string name="recap_rendering_help">ऐप बंद कर सकते हैं; नोटिफ़िकेशन में प्रगति दिखेगी और तैयार होने पर बताएँगे।</string>
+    <string name="recap_done_title">आपका रीकैप तैयार है</string>
+    <string name="recap_done_text">Movies / Yaadein में सहेजा गया।</string>
+    <string name="recap_make_another">एक और बनाएँ</string>
+    <string name="recap_failed_title">वीडियो पूरा नहीं हो सका</string>
+    <string name="recap_failed_text">%1$s। छोटा रीकैप आज़माएँ या वीडियो हटाएँ।</string>
+    <string name="recap_render">1080p वीडियो बनाएँ</string>
+    <string name="recap_scope">कौन या क्या</string>
+    <string name="scope_all">सब कुछ</string>
+    <string name="recap_year">साल</string>
+    <string name="scope_any_year">कोई भी साल</string>
+    <string name="recap_video_title">पहले कार्ड पर शीर्षक</string>
+    <string name="recap_theme">थीम</string>
+    <string name="theme_warm">वार्म</string>
+    <string name="theme_minimal">मिनिमल</string>
+    <string name="theme_festive">उत्सव</string>
+    <string name="theme_classic">क्लासिक फ़िल्म</string>
+    <string name="recap_music">संगीत</string>
+    <string name="music_own">अपना ऑडियो…</string>
+    <string name="music_none">बिना संगीत</string>
+    <string name="music_licence">साथ दिए ट्रैक मौलिक हैं और आपके वीडियो में मुफ़्त इस्तेमाल हो सकते हैं।</string>
+    <string name="recap_length">लंबाई</string>
+    <string name="recap_length_seconds">~%1$d से</string>
+    <string name="recap_include_videos">वीडियो क्लिप शामिल करें</string>
+    <string name="recap_paused">रुका है — चलाने के लिए टैप करें</string>
+    <string name="render_channel">रीकैप वीडियो बनना</string>
+    <string name="render_notification_title">“%1$s” बन रहा है</string>
+    <string name="render_notification_text">%1$d%% पूरा</string>
+    <string name="render_done_title">“%1$s” तैयार है</string>
+    <string name="render_done_text">Movies / Yaadein में सहेजा गया। देखने के लिए टैप करें।</string>
+</resources>

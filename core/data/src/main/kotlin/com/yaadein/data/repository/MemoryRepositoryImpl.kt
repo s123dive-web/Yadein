@@ -94,6 +94,13 @@ class MemoryRepositoryImpl @Inject constructor(
         return memoryDao.getByIds(ids).map { it.toCard() }.sortedBy { order[it.memory.id] ?: Int.MAX_VALUE }
     }
 
+    override suspend fun details(ids: List<Long>): List<MemoryDetail> {
+        if (ids.isEmpty()) return emptyList()
+        return ids.chunked(500).flatMap { chunk -> memoryDao.getByIds(chunk).map { it.toDetail() } }
+    }
+
+    override suspend fun idsFor(filter: TimelineFilter): List<Long> = memoryDao.raw(buildQuery(filter)).map { it.memory.id }
+
     /** Rebuilds the FTS row for a memory from title, description, place, captions and tagged names. */
     suspend fun reindex(memoryId: Long) {
         val row = memoryDao.getWithRelations(memoryId) ?: return

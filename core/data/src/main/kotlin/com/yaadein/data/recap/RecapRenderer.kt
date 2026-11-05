@@ -1,0 +1,216 @@
+package com.yaadein.data.recap
+
+import android.content.Context
+import android.graphics.Matrix
+import android.net.Uri
+import androidx.media3.common.Effect
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.util.Clock
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSourceBitmapLoader
+import androidx.media3.effect.BitmapOverlay
+import androidx.media3.effect.Contrast
+import androidx.media3.effect.HslAdjustment
+import androidx.media3.effect.MatrixTransformation
+import androidx.media3.effect.OverlayEffect
+import androidx.media3.effect.Presentation
+import androidx.media3.effect.RgbAdjustment
+import androidx.media3.effect.RgbFilter
+import androidx.media3.effect.StaticOverlaySettings
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.transformer.Composition
+import androidx.media3.transformer.DefaultAssetLoaderFactory
+import androidx.media3.transformer.DefaultDecoderFactory
+import androidx.media3.transformer.EditedMediaItem
+import androidx.media3.transformer.EditedMediaItemSequence
+import androidx.media3.transformer.Effects
+import androidx.media3.transformer.ExportException
+import androidx.media3.transformer.ExportResult
+import androidx.media3.transformer.ProgressHolder
+import androidx.media3.transformer.Transformer
+import com.google.common.util.concurrent.MoreExecutors
+import com.yaadein.data.db.AppDatabase
+import com.yaadein.data.media.EncryptedDataSource
+import com.yaadein.data.media.MediaStore
+import com.yaadein.domain.recap.Framing
+import com.yaadein.domain.recap.RecapPlan
+import com.yaadein.domain.recap.RecapSegment
+import com.yaadein.domain.recap.RecapTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.util.concurrent.Executors
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.coroutineContext
+
+/** Where the music comes from. */
+sealed interface MusicSource {
+    data class Bundled(val rawResId: Int) : MusicSource
+    data class UserFile(val uri: String) : MusicSource
+    data object None : MusicSource
+}
+
+/**
+ * Turns a [RecapPlan] into a 1080p H.264/AAC MP4 with Media3 Transformer.
+ * Encrypted photos and videos are read through [VaultDataSourceFactory]; nothing is decrypted to disk.
+ */
+@UnstableApi
+class RecapRenderer(
+    private val context: Context,
+    private val db: AppDatabase,
+    private val mediaStore: MediaStore,
+) {
+    class RenderException(message: String, cause: Throwable? = null) : Exception(message, cause)
+
+    suspend fun render(plan: RecapPlan, music: MusicSource, style: RenderStyle, output: File, onProgress: (Int) -> Unit) {
+        val painter = CardPainter(style)
+        val cardDir = File(mediaStore.renderDir, "cards-${System.nanoTime()}").apply { mkdirs() }
+        try {
+            val video = buildVideoSequence(plan, painter, cardDir)
+            val sequences = ArrayList<EditedMediaItemSequence>()
+            sequences += video
+            musicSequence(music)?.let { sequences += it }
+            val composition = Composition.Builder(sequences)
+                .setEffects(Effects(emptyList(), listOf(Presentation.createForWidthAndHeight(plan.width, plan.height, Presentation.LAYOUT_SCALE_TO_FIT_WITH_CROP)) + themeEffects(plan.theme)))
+                .build()
+            withContext(Dispatchers.Main) { export(composition, output, onProgress) }
+        } finally {
+            cardDir.deleteRecursively()
+        }
+    }
+
+    private suspend fun export(composition: Composition, output: File, onProgress: (Int) -> Unit) {
+        val dataSourceFactory = VaultDataSourceFactory(context, db, mediaStore)
+        val bitmapLoader = DataSourceBitmapLoader(MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()), dataSourceFactory)
+        val assetLoaderFactory = DefaultAssetLoaderFactory(
+            context,
+            DefaultDecoderFactory.Builder(context).build(),
+            Clock.DEFAULT,
+            DefaultMediaSourceFactory(dataSourceFactory),
+            bitmapLoader,
+        )
+        suspendCancellableCoroutine { cont ->
+            val transformer = Transformer.Builder(context)
+                .setVideoMimeType(MimeTypes.VIDEO_H264)
+                .setAudioMimeType(MimeTypes.AUDIO_AAC)
+                .setAssetLoaderFactory(assetLoaderFactory)
+                .addListener(object : Transformer.Listener {
+                    override fun onCompleted(composition: Composition, exportResult: ExportResult) { if (cont.isActive) cont.resume(Unit) }
+                    override fun onError(composition: Composition, exportResult: ExportResult, exportException: ExportException) {
+                        if (cont.isActive) cont.resumeWithException(RenderException(exportException.message ?: "export failed", exportException))
+                    }
+                })
+                .build()
+            output.delete()
+            transformer.start(composition, output.path)
+            val holder = ProgressHolder()
+            val poller = kotlinx.coroutines.CoroutineScope(Dispatchers.Main).launch {
+                while (isActive && cont.isActive) {
+                    val state = transformer.getProgress(holder)
+                    if (state == Transformer.PROGRESS_STATE_AVAILABLE) onProgress(holder.progress)
+                    delay(500)
+                }
+            }
+            cont.invokeOnCancellation { poller.cancel(); transformer.cancel(); output.delete() }
+            kotlinx.coroutines.CoroutineScope(Dispatchers.Main).launch {
+                // Stop polling once the continuation completes.
+                while (cont.isActive) delay(250)
+                poller.cancel()
+            }
+        }
+    }
+
+    private fun buildVideoSequence(plan: RecapPlan, painter: CardPainter, cardDir: File): EditedMediaItemSequence {
+        val items = ArrayList<EditedMediaItem>()
+        plan.segments.forEachIndexed { index, seg ->
+            when (seg) {
+                is RecapSegment.TitleCard -> {
+                    val bmp = painter.titleCard(plan.theme, seg.title, seg.subtitle, plan.width, plan.height, seg.isOutro)
+                    val file = File(cardDir, "card$index.png")
+                    FileOutputStream(file).use { bmp.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+                    bmp.recycle()
+                    items += imageItem(Uri.fromFile(file), seg.durationMs, MimeTypes.IMAGE_PNG, emptyList())
+                }
+                is RecapSegment.Photo -> {
+                    val effects = ArrayList<Effect>()
+                    effects += kenBurns(seg)
+                    captionOverlay(painter, plan, seg.caption, seg.dateLabel)?.let { effects += it }
+                    items += imageItem(EncryptedDataSource.uriFor(seg.mediaId), seg.durationMs, MimeTypes.IMAGE_JPEG, effects)
+                }
+                is RecapSegment.Clip -> {
+                    val effects = ArrayList<Effect>()
+                    captionOverlay(painter, plan, seg.caption, seg.dateLabel)?.let { effects += it }
+                    val mediaItem = MediaItem.Builder()
+                        .setUri(EncryptedDataSource.uriFor(seg.mediaId))
+                        .setMimeType(MimeTypes.VIDEO_MP4)
+                        .setClippingConfiguration(MediaItem.ClippingConfiguration.Builder().setStartPositionMs(seg.startMs).setEndPositionMs(seg.endMs).build())
+                        .build()
+                    items += EditedMediaItem.Builder(mediaItem).setEffects(Effects(emptyList(), effects)).build()
+                }
+            }
+        }
+        return EditedMediaItemSequence.Builder(items).build()
+    }
+
+    private fun imageItem(uri: Uri, durationMs: Long, mime: String, effects: List<Effect>): EditedMediaItem =
+        EditedMediaItem.Builder(MediaItem.Builder().setUri(uri).setMimeType(mime).build())
+            .setDurationUs(durationMs * 1_000)
+            .setFrameRate(FRAME_RATE)
+            .setEffects(Effects(emptyList(), effects))
+            .build()
+
+    private fun musicSequence(music: MusicSource): EditedMediaItemSequence? {
+        val uri = when (music) {
+            is MusicSource.Bundled -> androidx.media3.datasource.RawResourceDataSource.buildRawResourceUri(music.rawResId)
+            is MusicSource.UserFile -> Uri.parse(music.uri)
+            MusicSource.None -> return null
+        }
+        val item = EditedMediaItem.Builder(MediaItem.fromUri(uri)).setRemoveVideo(true).build()
+        return EditedMediaItemSequence.Builder(item).setIsLooping(true).build()
+    }
+
+    /** Smooth zoom/pan between two framings over the photo's duration. */
+    private fun kenBurns(seg: RecapSegment.Photo): MatrixTransformation {
+        val durationUs = seg.durationMs * 1_000f
+        return MatrixTransformation { presentationTimeUs ->
+            val t = (presentationTimeUs / durationUs).coerceIn(0f, 1f)
+            val e = t * t * (3 - 2 * t) // smoothstep
+            val f = lerp(seg.start, seg.end, e)
+            Matrix().apply {
+                // NDC space: translate so (cx, cy) moves to centre, then zoom.
+                postTranslate(-(f.cx - 0.5f) * 2f, (f.cy - 0.5f) * 2f)
+                postScale(f.zoom, f.zoom)
+            }
+        }
+    }
+
+    private fun lerp(a: Framing, b: Framing, t: Float) = Framing(a.cx + (b.cx - a.cx) * t, a.cy + (b.cy - a.cy) * t, a.zoom + (b.zoom - a.zoom) * t)
+
+    private fun captionOverlay(painter: CardPainter, plan: RecapPlan, title: String?, date: String?): Effect? {
+        if (title.isNullOrBlank()) return null
+        val bmp = painter.caption(plan.theme, title, date, plan.width, plan.height)
+        val settings = StaticOverlaySettings.Builder()
+            .setBackgroundFrameAnchor(0f, -1f)
+            .setOverlayFrameAnchor(0f, -1f)
+            .build()
+        return OverlayEffect(listOf(BitmapOverlay.createStaticBitmapOverlay(bmp, settings)))
+    }
+
+    private fun themeEffects(theme: RecapTheme): List<Effect> = when (theme) {
+        RecapTheme.WARM -> listOf(RgbAdjustment.Builder().setRedScale(1.06f).setGreenScale(1.0f).setBlueScale(0.92f).build(), HslAdjustment.Builder().adjustSaturation(8f).build())
+        RecapTheme.MINIMAL -> listOf(HslAdjustment.Builder().adjustSaturation(-25f).build(), Contrast(0.05f))
+        RecapTheme.FESTIVE -> listOf(HslAdjustment.Builder().adjustSaturation(28f).build(), Contrast(0.12f))
+        RecapTheme.CLASSIC_FILM -> listOf(RgbFilter.createGrayscaleFilter(), RgbAdjustment.Builder().setRedScale(1.12f).setGreenScale(1.0f).setBlueScale(0.82f).build(), Contrast(0.1f))
+    }
+
+    companion object {
+        const val FRAME_RATE = 30
+    }
+}

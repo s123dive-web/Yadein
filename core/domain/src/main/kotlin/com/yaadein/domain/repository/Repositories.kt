@@ -72,6 +72,8 @@ interface MemoryRepository {
     suspend fun distinctPlaces(): List<String>
     suspend fun setCover(memoryId: Long, mediaId: Long?)
     suspend fun search(query: String, limit: Int = 50): List<MemoryCard>
+    suspend fun details(ids: List<Long>): List<MemoryDetail>
+    suspend fun idsFor(filter: TimelineFilter): List<Long>
 }
 
 interface MediaRepository {

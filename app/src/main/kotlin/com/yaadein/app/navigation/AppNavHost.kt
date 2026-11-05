@@ -32,6 +32,7 @@ import com.yaadein.feature.people.GroupEditRoute
 import com.yaadein.feature.people.RelationshipsRoute
 import com.yaadein.feature.people.TogetherRoute
 import com.yaadein.feature.relive.YearlySummaryRoute
+import com.yaadein.feature.recap.RecapRoute
 import com.yaadein.feature.settings.NotificationsRoute
 import com.yaadein.feature.settings.SecurityRoute
 import com.yaadein.feature.settings.SettingsPage
@@ -153,6 +154,9 @@ fun AppNavHost(
                 onOpenPerson = { navController.navigate(Route.PersonDetail(it)) },
                 onRecap = { personId, year -> navController.navigate(Route.RecapSetup(personId = personId, year = year)) },
             )
+        }
+        composable<Route.RecapSetup> {
+            RecapRoute(onBack = { navController.popBackStack() })
         }
         composable<Route.Settings> { entry ->
             val page = SettingsPage.valueOf(entry.toRoute<Route.Settings>().page)

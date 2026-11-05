@@ -17,8 +17,8 @@ Update it at the end of every phase.
 | 1 | Foundation and look | ✅ done | Skeleton, design system, 5 themes + dynamic, onboarding, PIN + biometric lock, SQLCipher DB, CI, demo seed, Timeline/People/Detail, 14 screenshots |
 | 2 | Capture | ✅ done | Event-first, photo-first grouping, text-only + Polish, quick capture, backdating, past wizard, limits, people/groups |
 | 3 | Relive | ✅ done | Filters, search, Together, relationships map, on-this-day, shake, yearly summaries |
-| 4 | Recap video | ⏳ next | Themes, music, Transformer pipeline, preview, share |
-| 5 | Trust and polish | ⬜ | Backup/restore, face suggestions, Easy mode, a11y, perf, baseline profiles, privacy, release workflow, listing assets |
+| 4 | Recap video | ✅ done | Themes, music, Transformer pipeline, preview, share |
+| 5 | Trust and polish | ⏳ next | Backup/restore, face suggestions, Easy mode, a11y, perf, baseline profiles, privacy, release workflow, listing assets |
 
 Phase STOP reports are appended at the bottom of this file under "Phase reports". The owner asked
 for the build to proceed autonomously while they are offline, so each STOP report is recorded here
@@ -410,3 +410,29 @@ wrapper/workflow ✔ (CI run 1 failed on `setup-android` default packages; fixed
 6 new screenshots (Relive, Together, Relationships map, Yearly summary, Notification + Security settings).
 
 **Next**: Phase 4 — Recap video.
+
+### Phase 4 — Recap video (STOP report)
+
+**Built**
+- **Planner** (`RecapPlanner`, pure Kotlin): scope → chronological storyboard; intro/outro cards; per-memory caption on the first
+  item; Ken Burns start/end framings (deterministic pseudo-random); video clips trimmed to 2–6 s; large albums capped to 8 evenly
+  spaced items; text-only memories become cards; Short/Medium/Long presets bound photo durations.
+- **Renderer** (`RecapRenderer`, Media3 1.11 Transformer): `Composition` with a video sequence (PNG cards, encrypted JPEGs via
+  `yaadein://media/{id}` through `VaultDataSourceFactory` → `DataSourceBitmapLoader`, clipped encrypted videos via the same
+  factory) and a looping audio sequence (bundled raw track or the user's own audio with a persisted document grant).
+  Effects: `Presentation` 1920×1080 scale-to-fit-with-crop, `MatrixTransformation` Ken Burns (smoothstep), `BitmapOverlay`
+  caption strips drawn with the bundled fonts, per-theme grading (Warm: RGB warm + saturation; Minimal: desaturate + contrast;
+  Festive: saturation + contrast; Classic Film: grayscale + sepia tint + contrast). Output H.264/AAC MP4.
+- **Music**: four original 60 s loops synthesised for the project (Warm, Minimal, Festive, Classic) bundled as AAC in `res/raw`.
+- **Background job**: `RecapRenderWorker` (Hilt worker, foreground service with progress notification + cancel action,
+  `mediaProcessing` type on API 35+, `dataSync` on 29–34), progress polled from `Transformer.getProgress`, saved to
+  `Movies/Yaadein` via MediaStore (API 29+) or app Movies dir + FileProvider (API 26–28), share sheet from the result card.
+- **UI**: `RecapRoute` — inline preview (Compose plays the storyboard with the same framings; tap to pause), storyboard strip
+  with durations, scope chips (everything / person / group / memory / year), title, theme swatches, music chips, length,
+  include-videos; render/running/done/failed states observed through WorkManager.
+
+**Tested**: `RecapPlannerTest` (ordering/captions, clips vs Ken Burns, length bounds, album cap + text cards, determinism,
+video exclusion); build passes with the zero-network guard; 1 new screenshot. The Transformer pipeline itself cannot run on the JVM
+(needs MediaCodec/GL) — verified by API review against the 1.11 jars; first on-device run is a Phase 5 checklist item.
+
+**Next**: Phase 5 — Trust and polish.

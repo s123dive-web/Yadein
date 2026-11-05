@@ -43,6 +43,11 @@ tasks.withType<Test>().configureEach {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
+    implementation(project(":core:data"))
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+    implementation(libs.work.runtime)
+    implementation(libs.media3.common)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
