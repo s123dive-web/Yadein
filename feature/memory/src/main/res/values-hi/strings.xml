@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_who_was_there">कौन-कौन था</string>
+    <string name="memory_photos">फ़ोटो और वीडियो</string>
+    <string name="memory_add_photos">जोड़ें</string>
+    <string name="memory_no_photos_hint">अभी कोई फ़ोटो नहीं। फ़ोटो या वीडियो जोड़ने के लिए टैप करें — यह कहानी खुद निखर जाएगी।</string>
+    <string name="memory_cover_cd">%1$s की कवर फ़ोटो</string>
+    <string name="memory_cover_badge">कवर</string>
+    <string name="memory_set_cover">कवर बनाएँ</string>
+    <string name="memory_make_recap">रीकैप वीडियो बनाएँ</string>
+    <string name="memory_play_video">वीडियो चलाएँ</string>
+    <string name="memory_delete_title">यह याद हटाएँ?</string>
+    <string name="memory_delete_message">यह याद और इसकी फ़ोटो इस फ़ोन से हट जाएँगी। इसे वापस नहीं लाया जा सकता।</string>
+    <string name="viewer_caption_hint">कैप्शन जोड़ें</string>
+    <string name="viewer_of">%2$d में से %1$d</string>
+    <string name="viewer_remove">याद से हटाएँ</string>
+    <string name="viewer_tag_people">लोगों को टैग करें</string>
+</resources>

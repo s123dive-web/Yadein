@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="settings_easy_mode">आसान मोड</string>
+    <string name="settings_easy_mode_subtitle">बड़ा टेक्स्ट, ज़्यादा कंट्रास्ट, सरल होम</string>
+    <string name="settings_appearance">रूप-रंग</string>
+    <string name="settings_appearance_subtitle">थीम, डार्क मोड</string>
+    <string name="settings_security">सुरक्षा</string>
+    <string name="settings_security_subtitle">पिन, फ़िंगरप्रिंट, ऑटो-लॉक, स्क्रीनशॉट</string>
+    <string name="settings_notifications">याद दिलाने वाले</string>
+    <string name="settings_notifications_subtitle">“आज के दिन”, हिलाकर याद</string>
+    <string name="settings_faces">चेहरा सुझाव</string>
+    <string name="settings_faces_subtitle">वैकल्पिक, फ़ोन पर ही, शुरू में बंद</string>
+    <string name="settings_storage">स्टोरेज</string>
+    <string name="settings_storage_subtitle">उपयोग की गई जगह, अनुकूलित कॉपी</string>
+    <string name="settings_backup">बैकअप और रिस्टोर</string>
+    <string name="settings_backup_subtitle">पासवर्ड से सुरक्षित .yaadein फ़ाइल</string>
+    <string name="settings_privacy">गोपनीयता</string>
+    <string name="settings_privacy_subtitle">कोई डेटा संग्रह नहीं। नीति पढ़ें।</string>
+    <string name="settings_crash_log">समस्या लॉग</string>
+    <string name="settings_crash_log_subtitle">कुछ गड़बड़ हो तो स्थानीय लॉग निर्यात करें</string>
+    <string name="settings_about">Yaadein के बारे में</string>
+    <string name="settings_about_subtitle">संस्करण, लाइसेंस</string>
+    <string name="appearance_dark_mode">डार्क मोड</string>
+    <string name="appearance_theme">थीम</string>
+    <string name="dark_mode_system">सिस्टम</string>
+    <string name="dark_mode_light">हल्का</string>
+    <string name="dark_mode_dark">गहरा</string>
+    <string name="theme_warm_album">वार्म एल्बम</string>
+    <string name="theme_midnight">मिडनाइट</string>
+    <string name="theme_monsoon">मानसून</string>
+    <string name="theme_festive">उत्सव</string>
+    <string name="theme_minimal_mono">मिनिमल मोनो</string>
+    <string name="theme_dynamic">Material You</string>
+    <string name="about_tagline">अपनों की यादें, आपके फ़ोन पर सुरक्षित।</string>
+    <string name="about_version">संस्करण %1$s</string>
+    <string name="about_offline">Yaadein के पास इंटरनेट की अनुमति नहीं है। आप जो भी जोड़ते हैं वह इस डिवाइस से बाहर नहीं जाता, जब तक आप खुद निर्यात न करें।</string>
+    <string name="about_fonts">फ़ॉन्ट: Fraunces और Manrope (SIL Open Font License)। आइकन: Material Symbols।</string>
+    <string name="about_demo_title">नमूना परिवार</string>
+    <string name="about_demo_help">देखना चाहते हैं कि भरा हुआ Yaadein कैसा लगता है? 2006 से आज तक की यादों वाला एक नमूना भारतीय परिवार लोड करें। यह सिर्फ़ खाली लाइब्रेरी में संभव है।</string>
+    <string name="about_demo_load">नमूना परिवार लोड करें</string>
+    <string name="about_demo_already">आपकी लाइब्रेरी में पहले से यादें हैं</string>
+    <string name="about_demo_large">2,000 परीक्षण यादें जोड़ें (डीबग)</string>
+</resources>

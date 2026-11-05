@@ -1,0 +1,100 @@
+package com.yaadein.data.di
+
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.dataStoreFile
+import com.yaadein.data.crypto.Argon2PinHasher
+import com.yaadein.data.crypto.EncryptedPrefsSecretStore
+import com.yaadein.data.crypto.KeyWrapper
+import com.yaadein.data.crypto.KeystoreKeyWrapper
+import com.yaadein.data.crypto.MediaCrypto
+import com.yaadein.data.crypto.PinManager
+import com.yaadein.data.crypto.SecretStore
+import com.yaadein.data.crypto.VaultKeys
+import com.yaadein.data.db.AppDatabase
+import com.yaadein.data.db.DatabaseFactory
+import com.yaadein.data.media.MediaStore
+import com.yaadein.data.repository.GroupRepositoryImpl
+import com.yaadein.data.repository.MediaRepositoryImpl
+import com.yaadein.data.repository.MemoryRepositoryImpl
+import com.yaadein.data.repository.PersonRepositoryImpl
+import com.yaadein.data.settings.DataStoreSettingsRepository
+import com.yaadein.data.settings.EncryptedSettingsSerializer
+import com.yaadein.domain.repository.GroupRepository
+import com.yaadein.domain.repository.MediaRepository
+import com.yaadein.domain.repository.MemoryRepository
+import com.yaadein.domain.repository.PersonRepository
+import com.yaadein.domain.repository.SettingsRepository
+import com.yaadein.domain.settings.UserSettings
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
+import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class Clock
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DataModule {
+
+    @Provides
+    @Singleton
+    fun clock(): () -> Long = { System.currentTimeMillis() }
+
+    @Provides
+    @Singleton
+    fun keyWrapper(): KeyWrapper = KeystoreKeyWrapper()
+
+    @Provides
+    @Singleton
+    fun secretStore(@ApplicationContext context: Context): SecretStore = EncryptedPrefsSecretStore(context)
+
+    @Provides
+    @Singleton
+    fun vaultKeys(wrapper: KeyWrapper, store: SecretStore): VaultKeys = VaultKeys(wrapper, store)
+
+    @Provides
+    @Singleton
+    fun pinManager(store: SecretStore): PinManager = PinManager(store, Argon2PinHasher())
+
+    @Provides
+    @Singleton
+    fun database(@ApplicationContext context: Context, keys: VaultKeys): AppDatabase =
+        DatabaseFactory.encrypted(context, keys.databaseKey())
+
+    @Provides
+    @Singleton
+    fun mediaCrypto(keys: VaultKeys): MediaCrypto = MediaCrypto(keys.mediaKey())
+
+    @Provides
+    @Singleton
+    fun mediaStore(@ApplicationContext context: Context, crypto: MediaCrypto): MediaStore = MediaStore(context, crypto)
+
+    @Provides
+    @Singleton
+    fun settingsDataStore(@ApplicationContext context: Context, wrapper: KeyWrapper): DataStore<UserSettings> =
+        DataStoreFactory.create(
+            serializer = EncryptedSettingsSerializer(wrapper),
+            produceFile = { context.dataStoreFile("settings.enc") },
+        )
+
+    @Provides
+    @Singleton
+    fun settingsRepository(store: DataStore<UserSettings>): SettingsRepository = DataStoreSettingsRepository(store)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds abstract fun memoryRepository(impl: MemoryRepositoryImpl): MemoryRepository
+    @Binds abstract fun personRepository(impl: PersonRepositoryImpl): PersonRepository
+    @Binds abstract fun groupRepository(impl: GroupRepositoryImpl): GroupRepository
+    @Binds abstract fun mediaRepository(impl: MediaRepositoryImpl): MediaRepository
+}

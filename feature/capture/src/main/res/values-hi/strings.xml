@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hub_title">याद जोड़ें</string>
+    <string name="hub_subtitle">जो अभी सबसे आसान लगे वह चुनें।</string>
+    <string name="hub_quick">आज, एक पंक्ति में</string>
+    <string name="hub_quick_sub">एक पंक्ति लिखें, चाहें तो फ़ोटो जोड़ें। पाँच सेकंड।</string>
+    <string name="hub_photos">फ़ोटो से शुरू करें</string>
+    <string name="hub_photos_sub">फ़ोटो या वीडियो चुनें; हम तारीख़ के हिसाब से यादें बना देंगे।</string>
+    <string name="hub_event">किसी मौक़े से शुरू करें</string>
+    <string name="hub_event_sub">पहले शीर्षक, तारीख़, जगह और लोग। फ़ोटो बाद में।</string>
+    <string name="hub_text">सिर्फ़ शब्द</string>
+    <string name="hub_text_sub">“Goa trip 2024” एक सुंदर कार्ड बन जाता है। हिंग्लिश चलती है।</string>
+    <string name="hub_past">बीता समय भरें</string>
+    <string name="hub_past_sub">साल दर साल चलें और जो याद हो लिखें।</string>
+</resources>

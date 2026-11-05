@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lock_title">पुन्हा स्वागत आहे</string>
+    <string name="lock_subtitle">तुमचा 6 अंकी पिन टाका किंवा फिंगरप्रिंट वापरा</string>
+    <string name="lock_wrong_pin">हा पिन बरोबर नाही. पुन्हा प्रयत्न करा.</string>
+    <plurals name="lock_wrong_pin_wipe">
+        <item quantity="one">चुकीचा पिन. सगळं पुसलं जाण्याआधी %1$d प्रयत्न शिल्लक.</item>
+        <item quantity="other">चुकीचा पिन. सगळं पुसलं जाण्याआधी %1$d प्रयत्न शिल्लक.</item>
+    </plurals>
+    <string name="lock_wait_seconds">खूप प्रयत्न झाले. %1$d सेकंद थांबा.</string>
+    <string name="lock_wait_minutes">खूप प्रयत्न झाले. %1$d मिनिटे थांबा.</string>
+    <string name="lock_wiped">खूप वेळा चुकीचा पिन टाकल्यामुळे सर्व आठवणी पुसल्या गेल्या.</string>
+    <string name="lock_use_biometric">फिंगरप्रिंट किंवा चेहरा वापरा</string>
+    <string name="lock_backspace">शेवटचा अंक काढा</string>
+    <string name="lock_pin_entered">%2$d पैकी %1$d अंक टाकले</string>
+    <string name="lock_biometric_title">Yaadein उघडा</string>
+    <string name="lock_biometric_subtitle">तुमच्या आठवणी फक्त तुमच्या आहेत</string>
+    <string name="lock_biometric_negative">पिन वापरा</string>
+    <string name="setup_choose_title">6 अंकी पिन निवडा</string>
+    <string name="setup_confirm_title">पुन्हा एकदा टाका</string>
+    <string name="setup_pin_help">तुमचा पिन Yaadein उघडतो. काहीही कुठेही पाठवलं जात नाही, त्यामुळे तो रीसेट करता येत नाही — सुरक्षित ठेवा.</string>
+    <string name="setup_mismatch">पिन जुळले नाहीत. पुन्हा सुरुवात करू.</string>
+    <string name="setup_biometric_title">अजून जलद उघडा</string>
+    <string name="setup_biometric_help">अ‍ॅप उघडण्यासाठी फिंगरप्रिंट किंवा चेहरा वापरा. पिन नेहमी बॅकअप म्हणून चालेल.</string>
+    <string name="setup_biometric_unavailable">या फोनवर फिंगरप्रिंट किंवा फेस अनलॉक सेट नाही. नंतर सेटिंग्जमध्ये सुरू करता येईल.</string>
+    <string name="setup_biometric_switch">फिंगरप्रिंट किंवा चेहरा वापरा</string>
+    <string name="setup_finish">आठवणी जपायला सुरुवात करा</string>
+</resources>

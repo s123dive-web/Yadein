@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_easy_mode">Easy mode</string>
+    <string name="settings_easy_mode_subtitle">Bigger text, higher contrast, simpler home</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance_subtitle">Theme, dark mode</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_security_subtitle">PIN, fingerprint, auto-lock, screenshots</string>
+    <string name="settings_notifications">Relive reminders</string>
+    <string name="settings_notifications_subtitle">“On this day”, shake for a memory</string>
+    <string name="settings_faces">Face suggestions</string>
+    <string name="settings_faces_subtitle">Optional, on-device, off by default</string>
+    <string name="settings_storage">Storage</string>
+    <string name="settings_storage_subtitle">Space used, optimized copies</string>
+    <string name="settings_backup">Backup and restore</string>
+    <string name="settings_backup_subtitle">Password-protected .yaadein file</string>
+    <string name="settings_privacy">Privacy</string>
+    <string name="settings_privacy_subtitle">Zero data collection. Read the policy.</string>
+    <string name="settings_crash_log">Problem log</string>
+    <string name="settings_crash_log_subtitle">Export a local log if something went wrong</string>
+    <string name="settings_about">About Yaadein</string>
+    <string name="settings_about_subtitle">Version, licences</string>
+    <string name="appearance_dark_mode">Dark mode</string>
+    <string name="appearance_theme">Theme</string>
+    <string name="dark_mode_system">System</string>
+    <string name="dark_mode_light">Light</string>
+    <string name="dark_mode_dark">Dark</string>
+    <string name="theme_warm_album">Warm Album</string>
+    <string name="theme_midnight">Midnight</string>
+    <string name="theme_monsoon">Monsoon</string>
+    <string name="theme_festive">Festive</string>
+    <string name="theme_minimal_mono">Minimal Mono</string>
+    <string name="theme_dynamic">Material You</string>
+    <string name="about_tagline">Memories of the people you love, kept safe on your phone.</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_offline">Yaadein has no internet permission. Nothing you add ever leaves this device unless you export it yourself.</string>
+    <string name="about_fonts">Fonts: Fraunces and Manrope (SIL Open Font License). Icons: Material Symbols.</string>
+    <string name="about_demo_title">Sample family</string>
+    <string name="about_demo_help">Want to see how Yaadein feels when it\'s full? Load a sample Indian family with memories from 2006 to today. Only possible while your library is empty.</string>
+    <string name="about_demo_load">Load the sample family</string>
+    <string name="about_demo_already">Your library already has memories</string>
+    <string name="about_demo_large">Add 2,000 test memories (debug)</string>
+</resources>

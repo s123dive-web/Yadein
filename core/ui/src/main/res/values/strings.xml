@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shared copy used across features. Plain language, all ages. -->
+    <string name="cd_avatar_of">Photo of %1$s</string>
+    <string name="cd_people_in_memory">People in this memory: %1$s</string>
+    <string name="cd_memory_card">Memory: %1$s, %2$s</string>
+    <string name="date_sometime_in">Sometime in %1$s</string>
+    <string name="badge_story">Story</string>
+    <plurals name="media_count">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
+    <plurals name="memory_count">
+        <item quantity="one">%1$d memory</item>
+        <item quantity="other">%1$d memories</item>
+    </plurals>
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_done">Done</string>
+    <string name="action_next">Next</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_retry">Try again</string>
+    <string name="action_share">Share</string>
+    <string name="action_more">More options</string>
+    <string name="action_add">Add</string>
+    <string name="relation_family">Family</string>
+    <string name="relation_friend">Friend</string>
+    <string name="relation_colleague">Colleague</string>
+    <string name="relation_other">Other</string>
+    <string name="mood_joyful">Joyful</string>
+    <string name="mood_calm">Calm</string>
+    <string name="mood_nostalgic">Nostalgic</string>
+    <string name="mood_proud">Proud</string>
+    <string name="mood_funny">Funny</string>
+    <string name="mood_sad">Sad</string>
+    <string name="mood_celebration">Celebration</string>
+    <string name="loading">Loading…</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+</resources>

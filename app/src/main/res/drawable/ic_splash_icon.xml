@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- A soft polaroid with a small heart: the Yaadein mark -->
+    <path
+        android:fillColor="#5B2A86"
+        android:pathData="M30,26 h48 a6,6 0 0 1 6,6 v52 a6,6 0 0 1 -6,6 h-48 a6,6 0 0 1 -6,-6 v-52 a6,6 0 0 1 6,-6 z" />
+    <path
+        android:fillColor="#FBF5EC"
+        android:pathData="M32,32 h44 v36 h-44 z" />
+    <path
+        android:fillColor="#E8A33D"
+        android:pathData="M54,62 c-1.2,-1.1 -9,-6.9 -9,-12.1 a5,5 0 0 1 9,-2.7 a5,5 0 0 1 9,2.7 c0,5.2 -7.8,11 -9,12.1 z" />
+</vector>

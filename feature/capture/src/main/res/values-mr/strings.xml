@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hub_title">आठवण जोडा</string>
+    <string name="hub_subtitle">आत्ता जे सोपं वाटेल ते निवडा.</string>
+    <string name="hub_quick">आज, एका ओळीत</string>
+    <string name="hub_quick_sub">एक ओळ लिहा, हवं तर फोटो जोडा. पाच सेकंद.</string>
+    <string name="hub_photos">फोटोंपासून सुरू करा</string>
+    <string name="hub_photos_sub">फोटो किंवा व्हिडिओ निवडा; आम्ही तारखेनुसार आठवणी बनवू.</string>
+    <string name="hub_event">प्रसंगापासून सुरू करा</string>
+    <string name="hub_event_sub">आधी शीर्षक, तारीख, ठिकाण आणि माणसे. फोटो नंतर.</string>
+    <string name="hub_text">फक्त शब्द</string>
+    <string name="hub_text_sub">“Goa trip 2024” चं छान कार्ड बनतं. हिंग्लिश चालतं.</string>
+    <string name="hub_past">भूतकाळ भरा</string>
+    <string name="hub_past_sub">वर्षानुवर्ष चला आणि जे आठवतं ते लिहा.</string>
+</resources>

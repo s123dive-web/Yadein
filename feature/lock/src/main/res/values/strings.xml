@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lock_title">Welcome back</string>
+    <string name="lock_subtitle">Enter your 6-digit PIN or use your fingerprint</string>
+    <string name="lock_wrong_pin">That PIN isn\'t right. Try again.</string>
+    <plurals name="lock_wrong_pin_wipe">
+        <item quantity="one">Wrong PIN. %1$d attempt left before everything is erased.</item>
+        <item quantity="other">Wrong PIN. %1$d attempts left before everything is erased.</item>
+    </plurals>
+    <string name="lock_wait_seconds">Too many tries. Wait %1$d seconds.</string>
+    <string name="lock_wait_minutes">Too many tries. Wait %1$d minutes.</string>
+    <string name="lock_wiped">All memories were erased after too many wrong PINs.</string>
+    <string name="lock_use_biometric">Use fingerprint or face</string>
+    <string name="lock_backspace">Delete last digit</string>
+    <string name="lock_pin_entered">%1$d of %2$d digits entered</string>
+    <string name="lock_biometric_title">Unlock Yaadein</string>
+    <string name="lock_biometric_subtitle">Your memories are private to you</string>
+    <string name="lock_biometric_negative">Use PIN</string>
+    <string name="setup_choose_title">Choose a 6-digit PIN</string>
+    <string name="setup_confirm_title">Enter it once more</string>
+    <string name="setup_pin_help">Your PIN unlocks Yaadein. Nothing is sent anywhere, so there is no way to reset it — keep it somewhere safe.</string>
+    <string name="setup_mismatch">The PINs didn\'t match. Let\'s start again.</string>
+    <string name="setup_biometric_title">Unlock faster</string>
+    <string name="setup_biometric_help">Use your fingerprint or face to open the app. Your PIN always works as a backup.</string>
+    <string name="setup_biometric_unavailable">This phone has no fingerprint or face unlock set up. You can turn it on later in Settings.</string>
+    <string name="setup_biometric_switch">Use fingerprint or face</string>
+    <string name="setup_finish">Start remembering</string>
+</resources>

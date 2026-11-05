@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hub_title">Add a memory</string>
+    <string name="hub_subtitle">Pick whichever is easiest right now.</string>
+    <string name="hub_quick">Today, in one line</string>
+    <string name="hub_quick_sub">Type a line, add a photo if you like. Five seconds.</string>
+    <string name="hub_photos">Start from photos</string>
+    <string name="hub_photos_sub">Pick photos or videos; we group them into memories by date.</string>
+    <string name="hub_event">Start from an event</string>
+    <string name="hub_event_sub">Title, date, place and people first. Photos later.</string>
+    <string name="hub_text">Just words</string>
+    <string name="hub_text_sub">“Goa trip 2024” becomes a proper card. Hinglish works.</string>
+    <string name="hub_past">Fill in the past</string>
+    <string name="hub_past_sub">Walk year by year and jot down what you remember.</string>
+</resources>

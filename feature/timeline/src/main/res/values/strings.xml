@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timeline_title">Timeline</string>
+    <string name="timeline_search">Search memories</string>
+    <string name="timeline_search_hint">Search people, places, words…</string>
+    <string name="timeline_filters">Filters</string>
+    <string name="timeline_clear_filters">Clear filters</string>
+    <string name="timeline_empty_title">Your story starts here</string>
+    <string name="timeline_empty_message">Add a photo, a video or just a line about a day you want to keep. Everything stays on this phone.</string>
+    <string name="timeline_empty_action">Add your first memory</string>
+    <string name="timeline_no_results_title">Nothing matches yet</string>
+    <string name="timeline_no_results_message">Try a different word, person or place.</string>
+    <string name="sidebar_show">Show</string>
+    <string name="sidebar_all">All</string>
+    <string name="sidebar_photos">With photos</string>
+    <string name="sidebar_stories">Stories</string>
+    <string name="sidebar_people">People</string>
+</resources>

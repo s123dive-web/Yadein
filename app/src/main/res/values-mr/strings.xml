@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_timeline">काळरेषा</string>
+    <string name="nav_people">माणसे</string>
+    <string name="nav_create">तयार करा</string>
+    <string name="nav_relive">पुन्हा जगा</string>
+    <string name="nav_settings">सेटिंग्ज</string>
+</resources>

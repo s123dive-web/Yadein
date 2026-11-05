@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lock_title">फिर से स्वागत है</string>
+    <string name="lock_subtitle">अपना 6 अंकों का पिन डालें या फ़िंगरप्रिंट इस्तेमाल करें</string>
+    <string name="lock_wrong_pin">यह पिन सही नहीं है। फिर कोशिश करें।</string>
+    <plurals name="lock_wrong_pin_wipe">
+        <item quantity="one">गलत पिन। सब कुछ मिटने से पहले %1$d कोशिश बची है।</item>
+        <item quantity="other">गलत पिन। सब कुछ मिटने से पहले %1$d कोशिशें बची हैं।</item>
+    </plurals>
+    <string name="lock_wait_seconds">बहुत कोशिशें हो गईं। %1$d सेकंड रुकें।</string>
+    <string name="lock_wait_minutes">बहुत कोशिशें हो गईं। %1$d मिनट रुकें।</string>
+    <string name="lock_wiped">बहुत बार गलत पिन डालने पर सारी यादें मिटा दी गईं।</string>
+    <string name="lock_use_biometric">फ़िंगरप्रिंट या चेहरा इस्तेमाल करें</string>
+    <string name="lock_backspace">आखिरी अंक हटाएँ</string>
+    <string name="lock_pin_entered">%2$d में से %1$d अंक डाले गए</string>
+    <string name="lock_biometric_title">Yaadein खोलें</string>
+    <string name="lock_biometric_subtitle">आपकी यादें सिर्फ़ आपकी हैं</string>
+    <string name="lock_biometric_negative">पिन इस्तेमाल करें</string>
+    <string name="setup_choose_title">6 अंकों का पिन चुनें</string>
+    <string name="setup_confirm_title">एक बार फिर डालें</string>
+    <string name="setup_pin_help">आपका पिन Yaadein खोलता है। कुछ भी कहीं नहीं भेजा जाता, इसलिए इसे रीसेट नहीं किया जा सकता — इसे सुरक्षित रखें।</string>
+    <string name="setup_mismatch">पिन मेल नहीं खाए। फिर से शुरू करें।</string>
+    <string name="setup_biometric_title">और तेज़ी से खोलें</string>
+    <string name="setup_biometric_help">ऐप खोलने के लिए फ़िंगरप्रिंट या चेहरा इस्तेमाल करें। पिन हमेशा बैकअप की तरह काम करेगा।</string>
+    <string name="setup_biometric_unavailable">इस फ़ोन में फ़िंगरप्रिंट या फ़ेस अनलॉक सेट नहीं है। इसे बाद में सेटिंग्स में चालू कर सकते हैं।</string>
+    <string name="setup_biometric_switch">फ़िंगरप्रिंट या चेहरा इस्तेमाल करें</string>
+    <string name="setup_finish">यादें सँजोना शुरू करें</string>
+</resources>

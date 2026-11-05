@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_avatar_of">%1$s की फ़ोटो</string>
+    <string name="cd_people_in_memory">इस याद में लोग: %1$s</string>
+    <string name="cd_memory_card">याद: %1$s, %2$s</string>
+    <string name="date_sometime_in">%1$s में कभी</string>
+    <string name="badge_story">कहानी</string>
+    <plurals name="media_count">
+        <item quantity="one">%1$d फ़ोटो</item>
+        <item quantity="other">%1$d फ़ोटो</item>
+    </plurals>
+    <plurals name="memory_count">
+        <item quantity="one">%1$d याद</item>
+        <item quantity="other">%1$d यादें</item>
+    </plurals>
+    <string name="action_back">वापस</string>
+    <string name="action_close">बंद करें</string>
+    <string name="action_save">सहेजें</string>
+    <string name="action_cancel">रद्द करें</string>
+    <string name="action_delete">हटाएँ</string>
+    <string name="action_edit">बदलें</string>
+    <string name="action_done">हो गया</string>
+    <string name="action_next">आगे</string>
+    <string name="action_skip">छोड़ें</string>
+    <string name="action_retry">फिर कोशिश करें</string>
+    <string name="action_share">साझा करें</string>
+    <string name="action_more">और विकल्प</string>
+    <string name="action_add">जोड़ें</string>
+    <string name="relation_family">परिवार</string>
+    <string name="relation_friend">दोस्त</string>
+    <string name="relation_colleague">सहकर्मी</string>
+    <string name="relation_other">अन्य</string>
+    <string name="mood_joyful">खुशी</string>
+    <string name="mood_calm">शांति</string>
+    <string name="mood_nostalgic">पुरानी यादें</string>
+    <string name="mood_proud">गर्व</string>
+    <string name="mood_funny">मज़ेदार</string>
+    <string name="mood_sad">उदासी</string>
+    <string name="mood_celebration">जश्न</string>
+    <string name="loading">लोड हो रहा है…</string>
+    <string name="error_generic">कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें।</string>
+    <string name="today">आज</string>
+    <string name="yesterday">कल</string>
+</resources>

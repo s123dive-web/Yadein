@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timeline_title">समयरेखा</string>
+    <string name="timeline_search">यादें खोजें</string>
+    <string name="timeline_search_hint">लोग, जगह, शब्द खोजें…</string>
+    <string name="timeline_filters">फ़िल्टर</string>
+    <string name="timeline_clear_filters">फ़िल्टर हटाएँ</string>
+    <string name="timeline_empty_title">आपकी कहानी यहाँ से शुरू होती है</string>
+    <string name="timeline_empty_message">कोई फ़ोटो, वीडियो या बस एक पंक्ति जोड़ें जिस दिन को आप सँजोना चाहते हैं। सब कुछ इसी फ़ोन पर रहता है।</string>
+    <string name="timeline_empty_action">पहली याद जोड़ें</string>
+    <string name="timeline_no_results_title">अभी कुछ नहीं मिला</string>
+    <string name="timeline_no_results_message">कोई और शब्द, व्यक्ति या जगह आज़माएँ।</string>
+    <string name="sidebar_show">दिखाएँ</string>
+    <string name="sidebar_all">सब</string>
+    <string name="sidebar_photos">फ़ोटो वाली</string>
+    <string name="sidebar_stories">कहानियाँ</string>
+    <string name="sidebar_people">लोग</string>
+</resources>

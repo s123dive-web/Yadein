@@ -14,8 +14,8 @@ Update it at the end of every phase.
 | Phase | Name | Status | Notes |
 |-------|------|--------|-------|
 | 0 | Plan | ✅ done | This document (modules, schema, tokens, nav map, workflow YAML) |
-| 1 | Foundation and look | ⏳ next | Skeleton, design system, themes, onboarding, lock, encrypted DB, CI, seed data, Timeline/People/Detail, screenshots |
-| 2 | Capture | ⬜ | Event-first, photo-first grouping, text-only + Polish, quick capture, backdating, past wizard, limits, people/groups |
+| 1 | Foundation and look | ✅ done | Skeleton, design system, 5 themes + dynamic, onboarding, PIN + biometric lock, SQLCipher DB, CI, demo seed, Timeline/People/Detail, 14 screenshots |
+| 2 | Capture | ⏳ next | Event-first, photo-first grouping, text-only + Polish, quick capture, backdating, past wizard, limits, people/groups |
 | 3 | Relive | ⬜ | Filters, search, Together, relationships map, on-this-day, shake, yearly summaries |
 | 4 | Recap video | ⬜ | Themes, music, Transformer pipeline, preview, share |
 | 5 | Trust and polish | ⬜ | Backup/restore, face suggestions, Easy mode, a11y, perf, baseline profiles, privacy, release workflow, listing assets |
@@ -270,6 +270,8 @@ jobs:
           files: app/build/outputs/apk/debug/app-debug.apk
 ```
 
+Note: the workflow also triggers on `ccr-*` branches so the autonomous build branch gets CI runs before merge.
+
 `.github/workflows/release.yml` (manual) decodes `KEYSTORE_BASE64` into `release.jks`, reads
 `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` and runs `:app:bundleRelease`, uploading the AAB.
 
@@ -299,3 +301,54 @@ the current stable versions.
 - Screenshots come from Compose Preview Screenshot Testing (JVM, layoutlib) because no emulator is available in CI or the cloud container.
 
 **Next**: Phase 1 — Foundation and look.
+
+### Phase 1 — Foundation and look (STOP report)
+
+**Built**
+- Gradle 9.8.2 / AGP 9.5.1 (built-in Kotlin 2.4.21) multi-module project: `app`, `core:{domain,data,ui,testing}`,
+  `feature:{onboarding,lock,timeline,people,memory,capture,relive,recap,settings}`; builds with no local.properties or secrets.
+- Design system: `Tokens.kt` (spacing, radius, elevation, motion, sizes, Easy-mode sizes), five hand-tuned palettes with
+  light/dark variants plus Material You, Fraunces + Manrope bundled, procedural `CoverArt` for text-only cards, eight
+  procedural kid-friendly illustrations, `MemoryCardView`, `PersonAvatar`/`FaceStack`, `EmptyState`.
+- Security: Keystore-wrapped vault keys, SQLCipher database (WAL), AES-CTR media encryption with SHA-256 integrity,
+  Argon2id PIN with escalating lockout and optional wipe, encrypted DataStore settings, `FLAG_SECURE` toggle, lock on
+  launch and after the configured background timeout, class-3 BiometricPrompt with PIN fallback.
+- Screens: 3-page onboarding → add first person → PIN setup (+ biometrics) → Home. Timeline (paged, year/month headers,
+  fuzzy dates, filters row, search field, designed empty states, two-pane with people/filter sidebar on expanded widths),
+  People grid + groups row, Person story (stats, birthday, groups, Together/recap entry points, per-year chips),
+  Memory detail (hero, people, media grid, cover selection, delete), Relive (On this day, surprise me, birthdays, years),
+  Settings (Easy mode, Appearance with theme swatches + dark mode, About with demo loader), capture hub sheet.
+- Demo seed: 10-person Indian family, 3 groups, 32 memories 2006–2026 with on-device generated encrypted photos;
+  `seedLarge(2000)` for performance checks (debug-only button).
+- CI: `build.yml` (tests → zero-network guard → debug APK artifact + GitHub Release `build-N`), `release.yml` (manual, signed AAB).
+- Docs: README (architecture, encryption, pipeline, Data Safety answers), PRIVACY.md.
+
+**Tested** (all green locally: `./gradlew test :app:validateDebugScreenshotTest`, 94 checks)
+- JUnit 5: `DatesTest`, `LockoutPolicyTest`, `PolishEngineTest`, `PhotoGrouperTest`, `MediaCryptoTest`, `PinManagerTest`,
+  `VaultKeysTest`, `EncryptedSettingsSerializerTest`, `AppLockStateTest`, `TimelineSeparatorTest`.
+- Robolectric: `MemoryRepositoryTest` (create/update/delete/search/filters/together/on-this-day/story), `MigrationTest`
+  (schema v1 validates; every version has a migration), `LockScreenTest` (Compose UI), `ThemeSwitchTest`, `ManifestPermissionsTest`.
+- Build guard: `verifyNoNetworkPermissionDebug` wired into `assembleDebug`.
+- Screenshots: 14 references under `app/src/screenshotTestDebug/reference/...` — Timeline (phone light/dark, tablet two-pane,
+  Midnight, Festive, Easy mode, empty), Memory detail (phone, tablet), People (phone, tablet), Person story, Lock, Onboarding.
+
+**Self-check checklist (section 12)**
+- [x] INTERNET permission absent from merged manifest (Gradle task + unit test)
+- [x] All unit, migration and UI tests pass (94)
+- [ ] Lint zero errors — lint not yet run in CI (added in Phase 5 polish); strings/colours are all resourced/tokenised by construction
+- [x] App lock, PIN and biometric flows verified — unit + Compose UI tests (no emulator available in this environment)
+- [ ] Photo Picker import — Phase 2
+- [x] Text-only, backdated and fuzzy-date memories render on the timeline (screenshots + repository ordering test)
+- [x] Timeline, People tested on phone and tablet window sizes (screenshots); Together/Recap — Phases 3/4
+- [x] Theme switching and Easy mode verified (test + screenshots)
+- [x] Gradle wrapper committed, gradlew executable, workflow file valid
+- [x] CLAUDE.md and README updated
+
+**Design approval gate**: screenshots are committed for review. Per the owner's instruction to continue while offline,
+Phase 2 proceeds on the same design language; any look changes requested later apply across all phases.
+
+**Known gaps carried forward**: capture routes (EventCapture, PhotoFirst, TextOnly, QuickCapture, PastWizard), GroupEdit,
+Together, RelationshipsMap, YearlySummary, RecapSetup, MediaViewer and the remaining Settings pages are referenced by
+navigation but implemented in Phases 2–5.
+
+**Next**: Phase 2 — Capture.

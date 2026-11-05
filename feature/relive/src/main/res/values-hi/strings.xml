@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relive_title">फिर जिएँ</string>
+    <string name="relive_surprise">चौंकाओ मुझे</string>
+    <string name="relive_make_recap">रीकैप वीडियो</string>
+    <string name="relive_birthdays">आने वाले</string>
+    <string name="relive_birthday_today">आज %1$s का जन्मदिन है</string>
+    <string name="relive_birthday_in">%1$s · %2$d दिन</string>
+    <string name="relive_on_this_day">आज के दिन</string>
+    <string name="relive_on_this_day_empty">पिछले सालों में इस दिन की कोई याद नहीं। आज का पल जोड़ें, अगले साल यह यहाँ दिखेगा।</string>
+    <string name="relive_years">आपके साल</string>
+    <string name="relive_random_title">एक याद, बेतरतीब चुनी हुई</string>
+    <string name="relive_another">एक और</string>
+    <string name="relive_empty_title">अभी फिर जीने को कुछ नहीं</string>
+    <string name="relive_empty_message">कुछ यादें जुड़ने के बाद यहाँ “आज के दिन”, सरप्राइज़ और सालाना कहानियाँ मिलेंगी।</string>
+    <string name="notification_channel_on_this_day">आज के दिन</string>
+    <string name="notification_on_this_day_title">आज के दिन: %1$s</string>
+    <string name="notification_on_this_day_text">%1$s · %2$s</string>
+    <string name="shake_hint">किसी भी स्क्रीन पर फ़ोन हिलाएँ और एक याद पाएँ।</string>
+    <string name="yearly_title">%2$s के साथ %1$d</string>
+    <string name="yearly_all_title">आपका %1$d</string>
+    <string name="yearly_memories">%1$d यादें</string>
+    <string name="yearly_photos">%1$d फ़ोटो</string>
+    <string name="yearly_places">%1$d जगहें</string>
+    <string name="yearly_top_people">सबसे ज़्यादा समय</string>
+    <string name="yearly_first">साल की पहली याद</string>
+    <string name="yearly_last">साल की आखिरी याद</string>
+    <string name="yearly_empty">%1$d की अभी कोई याद नहीं।</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only used before Compose takes over (splash + launcher icon). Mirrors Tokens.kt Warm Album. -->
+    <color name="splash_background">#FBF5EC</color>
+    <color name="ic_launcher_background">#5B2A86</color>
+</resources>
