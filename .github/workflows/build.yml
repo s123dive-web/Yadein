@@ -32,6 +32,8 @@ jobs:
         run: ./gradlew test --no-daemon --stacktrace
       - name: Zero-network guard
         run: ./gradlew :app:verifyNoNetworkPermissionDebug --no-daemon --stacktrace
+      - name: Lint
+        run: ./gradlew :app:lintDebug --no-daemon --stacktrace
       - name: Assemble debug APK
         run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
       - name: Upload APK artifact

@@ -38,6 +38,7 @@ class YaadeinApplication : Application(), SingletonImageLoader.Factory, Configur
 
     override fun onCreate() {
         super.onCreate()
+        com.yaadein.data.crash.CrashLog.install(this, BuildConfig.VERSION_NAME)
         // Finish or discard imports interrupted by process death; prune orphan files.
         appScope.launch { runCatching { importer.recoverPending() } }
     }

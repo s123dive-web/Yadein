@@ -52,6 +52,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.yaadein.core.ui.util.PagedItems
 import com.yaadein.core.ui.util.asPagedItems
 import com.yaadein.core.ui.util.keyAt
+import com.yaadein.core.ui.util.currentLocale
 import com.yaadein.core.ui.components.EmptyState
 import com.yaadein.core.ui.components.MemoryCardView
 import com.yaadein.core.ui.illustrations.IllustrationKind
@@ -59,7 +60,6 @@ import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.repository.TimelineFilter
 import kotlinx.coroutines.launch
-import java.util.Locale
 import com.yaadein.core.ui.R as CoreR
 
 @Composable
@@ -312,7 +312,7 @@ private fun TimelineRail(color: androidx.compose.ui.graphics.Color) {
 @Composable
 private fun YearHeader(item: TimelineItem.YearHeader) {
     val spacing = Yaadein.spacing
-    val locale = Locale.getDefault()
+    val locale = currentLocale()
     Column(modifier = Modifier.padding(top = spacing.lg, bottom = spacing.xs)) {
         Text(
             text = item.year.toString(),
@@ -332,7 +332,7 @@ private fun YearHeader(item: TimelineItem.YearHeader) {
 private fun MonthHeader(item: TimelineItem.MonthHeader) {
     val spacing = Yaadein.spacing
     Text(
-        text = Dates.monthName(item.month, Locale.getDefault()),
+        text = Dates.monthName(item.month, currentLocale()),
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier

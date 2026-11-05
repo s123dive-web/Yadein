@@ -18,7 +18,7 @@ Update it at the end of every phase.
 | 2 | Capture | ✅ done | Event-first, photo-first grouping, text-only + Polish, quick capture, backdating, past wizard, limits, people/groups |
 | 3 | Relive | ✅ done | Filters, search, Together, relationships map, on-this-day, shake, yearly summaries |
 | 4 | Recap video | ✅ done | Themes, music, Transformer pipeline, preview, share |
-| 5 | Trust and polish | ⏳ next | Backup/restore, face suggestions, Easy mode, a11y, perf, baseline profiles, privacy, release workflow, listing assets |
+| 5 | Trust and polish | ✅ done | Backup/restore, face suggestions, Easy mode, a11y, perf, baseline profiles, privacy, release workflow, listing assets |
 
 Phase STOP reports are appended at the bottom of this file under "Phase reports". The owner asked
 for the build to proceed autonomously while they are offline, so each STOP report is recorded here
@@ -436,3 +436,48 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
 (needs MediaCodec/GL) — verified by API review against the 1.11 jars; first on-device run is a Phase 5 checklist item.
 
 **Next**: Phase 5 — Trust and polish.
+
+### Phase 5 — Trust and polish (STOP report)
+
+**Built**
+- **Backup/restore** (`BackupManager`): one `.yaadein` file = `YDNB` header + salt + nonce + AES-256-GCM(zip of manifest, all
+  tables as JSON, media decrypted from the vault). Key = Argon2id(password). Restore peeks the manifest first (count confirmation),
+  stages everything in cache, re-encrypts media with this device's key and swaps the database in one transaction; a wrong
+  password fails before the live vault is touched. Settings → Backup and restore uses the SAF create/open document pickers.
+- **Face suggestions** (off by default): ML Kit bundled face detector → 32×32 normalised grey crop embedding → deterministic
+  nearest-centroid clustering (`FaceClustering`, pure Kotlin). Scans on import when enabled and on demand; Settings → Face
+  suggestions shows "Is this Rahul?" cards; confirming tags the sample photo. Nothing is tagged automatically.
+- **Easy mode** (Phase 1 tokens) is surfaced on the Settings root and Appearance; home collapses to Timeline + big +.
+- **Accessibility**: `AccessibilityTest` asserts every clickable on Timeline, People, Lock and Settings has a label; `ContrastTest`
+  checks eight text/background role pairs ≥ 4.5:1 for all five palettes in light and dark; headings are marked with
+  `semantics { heading() }`; icons that are decorative use `contentDescription = null`.
+- **Performance**: `TimelineScaleTest` seeds 2 000 memories and checks the first paged page and filtered/FTS queries stay fast;
+  "Add 2,000 test memories" is in About (debug). Hand-authored `baseline-prof.txt` (startup + timeline hot classes) ships with
+  `profileinstaller`; to be replaced by a Macrobenchmark-generated profile on a device.
+- **Privacy**: in-app Privacy screen (6 sections), `PRIVACY.md`, Data Safety answers in README.
+- **Crash-free**: `CrashLog` global handler writes a bounded local log; Settings → Problem log shows/exports/clears it via FileProvider.
+- **Release**: `release.yml` (manual, base64 keystore secret → signed AAB + APK); `docs/PLAY_LISTING.md` with copy, assets index,
+  permission explanations; feature graphic rendered at 1024 × 500 from a preview.
+
+**Tested**: `BackupManagerTest` (round trip incl. media bytes, cover, tags, FTS; wrong password rejected), `FaceClusteringTest`,
+`ContrastTest`, `TimelineScaleTest`, `AccessibilityTest`, all earlier suites; 4 new screenshots (Backup, Faces, Privacy, feature graphic).
+**Final self-check checklist (section 12) — run before the last APK build**
+- [x] INTERNET permission absent from merged manifest (`verifyNoNetworkPermissionDebug` + `ManifestPermissionsTest`)
+- [x] All unit, migration and UI tests pass — 161 checks (JUnit 5, Robolectric, Compose UI, screenshot validation)
+- [x] Lint: 0 errors across all modules (`checkDependencies = true`, `abortOnError = true`, run in CI); 51 warnings, none for
+      hardcoded strings or colours (categories: UseKtx, PluralsCandidate, ApplySharedPref, AutoboxingStateCreation, UnusedResources)
+- [x] App lock, PIN and biometric flows — unit + Compose UI tests; emulator unavailable in this environment (device run pending)
+- [x] Photo Picker import limits (20 MB / 200 MB) enforced before copy — `MediaImporterTest`; device run pending
+- [x] Text-only, backdated and fuzzy-date memories render correctly on the timeline (tests + screenshots)
+- [x] Timeline, People, Together and Recap flows on phone and tablet window sizes — screenshots (tablet: Timeline, People, Memory detail)
+- [x] Theme switching and Easy mode verified (`ThemeSwitchTest`, screenshots)
+- [x] Gradle wrapper committed, gradlew executable, workflow valid (CI runs 2–4 green)
+- [x] CLAUDE.md and README updated with phase status
+
+**Known limitations / next steps for the owner**
+- Recap rendering, TalkBack pass, biometric prompt and the 2 000-item scroll need a physical device or emulator; everything that
+  can run on the JVM does.
+- "Smart polish" ships behind `SmartPolishProvider` with the no-op implementation; wiring the ML Kit GenAI Prompt API is a
+  drop-in once a Gemini-Nano device is available for testing.
+- Replace `app/src/main/baseline-prof.txt` with a Macrobenchmark-generated profile.
+- Create the upload keystore and add `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` secrets, then run `release.yml`.

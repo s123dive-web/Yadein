@@ -78,6 +78,16 @@ are never written to storage. `FLAG_SECURE` (on by default) blocks screenshots a
    Media3 Transformer. Encrypted sources are read through a custom decrypting `DataSource`.
 4. The 1080p MP4 is saved to `Movies/Yaadein` via MediaStore and the share sheet opens.
 
+## Status
+
+All five build phases from the master prompt are implemented and documented in [CLAUDE.md](CLAUDE.md)
+(phase table and STOP reports). Screenshots for every main screen live in [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md);
+Play Store copy and asset index in [docs/PLAY_LISTING.md](docs/PLAY_LISTING.md).
+
+What still needs a real device before publishing: a first on-device run of the recap renderer (Media3 Transformer
+needs MediaCodec), a TalkBack walkthrough, and a Macrobenchmark-generated baseline profile to replace the
+hand-authored one.
+
 ## Building
 
 CI does everything (`.github/workflows/build.yml`). To build locally you need JDK 17+ and an Android

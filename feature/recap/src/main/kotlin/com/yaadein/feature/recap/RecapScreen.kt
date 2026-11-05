@@ -87,6 +87,7 @@ import com.yaadein.core.ui.R as CoreR
 fun RecapRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: RecapViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val shareTitle = stringResource(CoreR.string.action_share)
     val audioPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
             runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
@@ -101,7 +102,7 @@ fun RecapRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: Rec
         onRender = viewModel::startRender, onCancel = viewModel::cancelRender, onReset = viewModel::resetRender,
         onShare = { uri ->
             val share = Intent(Intent.ACTION_SEND).setType("video/mp4").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            context.startActivity(Intent.createChooser(share, context.getString(CoreR.string.action_share)))
+            context.startActivity(Intent.createChooser(share, shareTitle))
         },
         years = viewModel.yearsAvailable(),
         modifier = modifier,

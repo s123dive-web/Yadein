@@ -68,6 +68,14 @@ android {
     }
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+    lint {
+        checkDependencies = true
+        abortOnError = true
+        warningsAsErrors = false
+        xmlReport = true
+        htmlReport = true
+    }
 }
 
 kotlin {
@@ -107,7 +115,7 @@ dependencies {
     implementation(libs.compose.material3.adaptive)
     implementation(libs.androidx.window)
     implementation(libs.coil.compose)
-    implementation("androidx.fragment:fragment-ktx:1.8.9")
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

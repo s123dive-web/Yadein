@@ -32,6 +32,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.core.ui.util.memoryDateText
+import com.yaadein.core.ui.util.currentLocale
 import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.model.DateKind
 import com.yaadein.domain.model.MemoryDate
@@ -41,7 +42,6 @@ import java.time.Month
 import java.time.YearMonth
 import java.time.ZoneOffset
 import java.time.format.TextStyle
-import java.util.Locale
 import com.yaadein.core.ui.R as CoreR
 
 /**
@@ -132,7 +132,7 @@ private fun MonthYearDialog(initial: YearMonth, onDismiss: () -> Unit, onPick: (
                 YearStepper(year = year, onYear = { year = it }, today = today)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Yaadein.spacing.xs), verticalArrangement = Arrangement.spacedBy(Yaadein.spacing.xs)) {
                     Month.entries.forEach { m ->
-                        FilterChip(selected = m == month, onClick = { month = m }, label = { Text(m.getDisplayName(TextStyle.SHORT, Locale.getDefault())) })
+                        FilterChip(selected = m == month, onClick = { month = m }, label = { Text(m.getDisplayName(TextStyle.SHORT, currentLocale())) })
                     }
                 }
             }

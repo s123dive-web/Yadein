@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import com.yaadein.data.backup.BackupManager
 import com.yaadein.data.crypto.Argon2PinHasher
 import com.yaadein.data.crypto.EncryptedPrefsSecretStore
 import com.yaadein.data.crypto.KeyWrapper
@@ -100,6 +101,11 @@ object DataModule {
     @Provides
     @Singleton
     fun smartPolish(): SmartPolishProvider = NoSmartPolish
+
+    @Provides
+    @Singleton
+    fun backupManager(@ApplicationContext context: Context, db: AppDatabase, mediaStore: MediaStore, memoryRepository: MemoryRepositoryImpl): BackupManager =
+        BackupManager(context, db, mediaStore, memoryRepository)
 
     @Provides
     @Singleton

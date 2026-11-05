@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.media3.effect)
     implementation(libs.media3.muxer)
     implementation(libs.mlkit.face)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)

@@ -10,10 +10,14 @@ import com.yaadein.domain.model.MemoryDate
 import java.text.NumberFormat
 import java.util.Locale
 
+/** The user's current locale, read in a configuration-aware way. */
+@Composable
+fun currentLocale(): Locale = LocalConfiguration.current.locales[0]
+
 /** Localised, fuzzy-aware date text: "12 Mar 2024", "December 2024", "Sometime in 2015", "Summer 2015". */
 @Composable
 fun memoryDateText(date: MemoryDate): String {
-    val locale = LocalConfiguration.current.locales[0] ?: Locale.getDefault()
+    val locale = currentLocale()
     return when (val label = Dates.label(date, locale)) {
         is DateLabel.Exact -> label.text
         is DateLabel.Month -> label.text

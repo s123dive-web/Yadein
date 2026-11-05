@@ -19,7 +19,7 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.serialization.json)
     api(libs.paging.common)
-    implementation("javax.inject:javax.inject:1")
+    implementation(libs.javax.inject)
 
     testImplementation(platform(libs.junit5.bom))
     testImplementation(libs.junit5.jupiter)

@@ -27,7 +27,11 @@ data class ImportProgress(
  * Imports are serialised to keep memory use bounded (one decoded photo or transcoding video at a time).
  */
 @Singleton
-class ImportCoordinator @Inject constructor(private val importer: MediaImporter) {
+class ImportCoordinator @Inject constructor(
+    private val importer: MediaImporter,
+    private val settings: com.yaadein.domain.repository.SettingsRepository,
+    private val faces: com.yaadein.data.faces.FaceSuggester,
+) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val mutex = Mutex()
     private val _progress = MutableStateFlow(ImportProgress())
@@ -42,7 +46,10 @@ class ImportCoordinator @Inject constructor(private val importer: MediaImporter)
             mutex.withLock {
                 items.forEachIndexed { index, picked ->
                     when (val outcome = importer.import(picked, memoryId, optimize, startPosition + index)) {
-                        is ImportOutcome.Success -> ids += outcome.mediaId
+                        is ImportOutcome.Success -> {
+                            ids += outcome.mediaId
+                            if (settings.current().faceSuggestions) runCatching { faces.scan(outcome.mediaId) }
+                        }
                         is ImportOutcome.Failed -> _progress.update { it.copy(failures = it.failures + outcome.failure) }
                     }
                     _progress.update { it.copy(done = it.done + 1) }

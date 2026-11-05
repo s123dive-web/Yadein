@@ -21,6 +21,13 @@
 
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
+    <!-- Package visibility (Android 11+): detect an on-device speech recogniser for dictation. -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
+        </intent>
+    </queries>
+
     <application
         android:name=".YaadeinApplication"
         android:allowBackup="false"
