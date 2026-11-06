@@ -616,3 +616,16 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   cache dir, so tests that use it clear `FileProvider.sCache` in `@Before`.
 - **Memory**: the emulator (4 GB guest) plus Gradle test JVMs can exceed the container's memory and the OOM killer takes the
   emulator. Don't run Gradle builds while the emulator is rendering; use `--max-workers=2` if both must run.
+
+### Update app, second pass (owner: "goes all over the place, loops, slow")
+
+- Flow is now: Allow updates (once; `ACTION_MANAGE_UNKNOWN_APP_SOURCES` launched for result, no NEW_TASK) → Choose APK file →
+  checked → installs immediately → Android's confirmation opens **over Yaadein** (the status receiver hands
+  `EXTRA_INTENT` to the Update screen via `UpdateEvents.ConfirmNeeded`; it used to `startActivity(NEW_TASK)` from the receiver,
+  which jumped to another task) → app closes, updates, and `UpdatedReceiver` (`MY_PACKAGE_REPLACED`) reopens it plus posts a
+  tap-to-open notification in case Android blocks the background start.
+- Android 12+: sessions use `USER_ACTION_NOT_REQUIRED` and the debug manifest declares `UPDATE_PACKAGES_WITHOUT_USER_ACTION`,
+  so after the first in-app update (Yaadein becomes installer of record) later updates have no confirmation at all.
+  Android 14+: `setRequestUpdateOwnership(true)`.
+- `AppLockState.allowExternalScreen()` gives a 5-minute grace for returning from system screens the app opened, so the PIN
+  doesn't interrupt the flow. A checked APK survives process death (`resumeCandidate()`), cleared once installed.
