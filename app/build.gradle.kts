@@ -152,6 +152,10 @@ dependencies {
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.compiler)
+    testImplementation(libs.datastore.core)
+    testImplementation(libs.datastore.preferences)
     debugImplementation(libs.compose.ui.test.manifest)
 }
 

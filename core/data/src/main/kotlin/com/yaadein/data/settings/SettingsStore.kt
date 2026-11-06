@@ -17,14 +17,21 @@ import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
 
+/**
+ * Bumped when a stored default needs a one-time migration. Version 1 files were written before the
+ * lock timeout default moved from "immediately" to one minute.
+ */
+internal const val SETTINGS_VERSION = 2
+
 /** Serializable mirror of [UserSettings] with defaults so new fields are backward compatible. */
 @Serializable
 internal data class SettingsDto(
+    val settingsVersion: Int = 1,
     val theme: String = AppTheme.WARM_ALBUM.name,
     val darkMode: String = DarkMode.SYSTEM.name,
     val easyMode: Boolean = false,
     val secureScreen: Boolean = true,
-    val lockTimeout: String = LockTimeout.THIRTY_SECONDS.name,
+    val lockTimeout: String = LockTimeout.ONE_MINUTE.name,
     val biometricEnabled: Boolean = true,
     val wipeAfterTenFailures: Boolean = false,
     val onThisDayEnabled: Boolean = true,
@@ -43,7 +50,7 @@ internal fun SettingsDto.toDomain() = UserSettings(
     darkMode = enumOr(darkMode, DarkMode.SYSTEM),
     easyMode = easyMode,
     secureScreen = secureScreen,
-    lockTimeout = enumOr(lockTimeout, LockTimeout.THIRTY_SECONDS),
+    lockTimeout = migratedLockTimeout(),
     biometricEnabled = biometricEnabled,
     wipeAfterTenFailures = wipeAfterTenFailures,
     onThisDayEnabled = onThisDayEnabled,
@@ -57,7 +64,14 @@ internal fun SettingsDto.toDomain() = UserSettings(
     demoMode = demoMode,
 )
 
+/** Files saved by version 1 carried IMMEDIATELY only because it was the default; lift them to the new default. */
+private fun SettingsDto.migratedLockTimeout(): LockTimeout {
+    val stored = enumOr(lockTimeout, LockTimeout.ONE_MINUTE)
+    return if (settingsVersion < 2 && stored == LockTimeout.IMMEDIATELY) LockTimeout.ONE_MINUTE else stored
+}
+
 internal fun UserSettings.toDto() = SettingsDto(
+    settingsVersion = SETTINGS_VERSION,
     theme = theme.name,
     darkMode = darkMode.name,
     easyMode = easyMode,

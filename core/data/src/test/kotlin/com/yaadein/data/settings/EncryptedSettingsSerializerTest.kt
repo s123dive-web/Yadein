@@ -35,4 +35,14 @@ class EncryptedSettingsSerializerTest {
         val domain = dto.toDomain()
         assertEquals(AppTheme.WARM_ALBUM, domain.theme)
     }
+
+    @Test
+    fun `version 1 files with the old immediate lock default move to one minute`() {
+        val old = SettingsDto(settingsVersion = 1, lockTimeout = LockTimeout.IMMEDIATELY.name)
+        assertEquals(LockTimeout.ONE_MINUTE, old.toDomain().lockTimeout)
+        // A deliberate choice made on the current version is kept.
+        val chosen = SettingsDto(settingsVersion = SETTINGS_VERSION, lockTimeout = LockTimeout.IMMEDIATELY.name)
+        assertEquals(LockTimeout.IMMEDIATELY, chosen.toDomain().lockTimeout)
+        assertEquals(SETTINGS_VERSION, UserSettings().toDto().settingsVersion)
+    }
 }

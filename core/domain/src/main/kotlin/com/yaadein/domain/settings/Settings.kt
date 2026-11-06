@@ -17,7 +17,7 @@ data class UserSettings(
     val darkMode: DarkMode = DarkMode.SYSTEM,
     val easyMode: Boolean = false,
     val secureScreen: Boolean = true,
-    val lockTimeout: LockTimeout = LockTimeout.THIRTY_SECONDS,
+    val lockTimeout: LockTimeout = LockTimeout.ONE_MINUTE,
     val biometricEnabled: Boolean = true,
     val wipeAfterTenFailures: Boolean = false,
     val onThisDayEnabled: Boolean = true,

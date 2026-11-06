@@ -35,7 +35,7 @@ class MainActivity : FragmentActivity() {
     @Inject lateinit var settingsRepository: SettingsRepository
 
     private lateinit var settings: StateFlow<UserSettings?>
-    @Volatile private var lockTimeout: LockTimeout = LockTimeout.THIRTY_SECONDS
+    @Volatile private var lockTimeout: LockTimeout = LockTimeout.ONE_MINUTE
     /** Memory to open once unlocked (from an "On this day" notification). */
     private val pendingMemory = MutableStateFlow<Long?>(null)
 
