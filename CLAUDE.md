@@ -570,3 +570,9 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
 - `CardPainter` sizes text from the short side (`min(width, height)`), and captions sit above the bottom 18 % that reel apps
   cover with their own UI.
 - The in-app preview is 9:16 at 62 % of the content width. `RecapRenderDeviceTest` asserts the output is 1080×1920.
+- **Verified on an emulator** (API 34 x86_64, software rendering, no KVM; test APK pre-compiled with
+  `cmd package compile -m speed -f com.yaadein.feature.recap.test`): all four `RecapRenderDeviceTest` cases pass — photos +
+  clips with bundled music, photos + clips without music (clip sound kept), photos only with music, photos only without
+  music. Each output is 1080×1920 H.264 with the planned duration (and AAC audio where expected). One reel takes 15–27 min
+  on the unaccelerated emulator; the export watchdog (`setMaxDelayBetweenMuxerSamplesMs`, 60 s in the app) is disabled in the
+  test for that reason.
