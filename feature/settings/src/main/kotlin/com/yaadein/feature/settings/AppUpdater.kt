@@ -201,7 +201,8 @@ class UpdatedReceiver : BroadcastReceiver() {
         if (intent.action != Intent.ACTION_MY_PACKAGE_REPLACED) return
         File(context.cacheDir, "update").deleteRecursively()
         val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ?: return
-        runCatching { context.startActivity(launch) }
+        // Notification first: on a slow phone the (usually blocked) activity start below can take long enough for the
+        // broadcast to be cut off, and the notification is the reliable way back.
         runCatching {
             val nm = context.getSystemService(android.app.NotificationManager::class.java)
             // High importance: shown as a heads-up banner, the quickest way back into the updated app.
@@ -217,6 +218,8 @@ class UpdatedReceiver : BroadcastReceiver() {
                 .build()
             nm.notify(NOTIFICATION_ID, n)
         }
+        // Works on Android 9 and older (and some phones); Android 10+ blocks it from the background.
+        runCatching { context.startActivity(launch) }
     }
 
     private companion object {
