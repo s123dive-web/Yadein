@@ -64,10 +64,25 @@ class AppUpdater(private val context: Context) {
     suspend fun inspect(uri: Uri): UpdateDecision = withContext(Dispatchers.IO) {
         val file = candidateFile.apply { parentFile?.mkdirs(); delete() }
         val copied = runCatching {
-            context.contentResolver.openInputStream(uri)!!.use { input -> file.outputStream().use { input.copyTo(it) } }
+            context.contentResolver.openInputStream(uri)!!.use { input -> file.outputStream().use { input.copyTo(it, COPY_BUFFER) } }
         }.isSuccess
+        decideOn(file, copied)
+    }
+
+    /**
+     * A file checked earlier and not yet installed (for example Android closed the app while the user was on the
+     * permission screen). Re-judged against the installed version, so an already-installed update is cleared.
+     */
+    suspend fun resumeCandidate(): UpdateDecision? = withContext(Dispatchers.IO) {
+        val file = candidateFile
+        if (!file.exists()) null else decideOn(file, copied = true).takeIf { it is UpdateDecision.Install }
+    }
+
+    fun clearCandidate() { candidateFile.parentFile?.deleteRecursively() }
+
+    private fun decideOn(file: File, copied: Boolean): UpdateDecision {
         val candidate = if (copied) versionOf(pm.archiveInfo(file.path)) else null
-        UpdateDecision.decide(installed(), candidate).also { if (it !is UpdateDecision.Install) file.delete() }
+        return UpdateDecision.decide(installed(), candidate).also { if (it !is UpdateDecision.Install) file.delete() }
     }
 
     /** Android asks once whether this app may install apps ("Install unknown apps"). */
@@ -84,12 +99,17 @@ class AppUpdater(private val context: Context) {
         val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
             setAppPackageName(context.packageName)
             setSize(file.length())
+            // Android 12+: once Yaadein has installed itself (it becomes the installer of record), later updates need
+            // no "Update this app?" confirmation at all. The first one still asks, which Android requires.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED)
+            // Android 14+: keep Yaadein as the update owner so another installer does not take over silently.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) setRequestUpdateOwnership(true)
         }
         val sessionId = installer.createSession(params)
         installer.openSession(sessionId).use { session ->
             file.inputStream().use { input ->
                 session.openWrite("base.apk", 0, file.length()).use { out ->
-                    input.copyTo(out)
+                    input.copyTo(out, COPY_BUFFER)
                     session.fsync(out)
                 }
             }
@@ -133,7 +153,12 @@ class AppUpdater(private val context: Context) {
 
 /** Install progress reported by the system, observed by the Update screen. */
 object UpdateEvents {
-    sealed interface Event { data object Idle : Event; data class Failed(val message: String) : Event }
+    sealed interface Event {
+        data object Idle : Event
+        data class Failed(val message: String) : Event
+        /** Android's "Update this app?" screen, to be started from the Update screen so it opens over Yaadein. */
+        data class ConfirmNeeded(val intent: Intent) : Event
+    }
     private val _events = MutableStateFlow<Event>(Event.Idle)
     val events: StateFlow<Event> = _events.asStateFlow()
     fun post(event: Event) { _events.value = event }
@@ -149,7 +174,9 @@ class UpdateStatusReceiver : BroadcastReceiver() {
             PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                 @Suppress("DEPRECATION")
                 val confirm = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT) ?: return
-                context.startActivity(confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                // Handed to the Update screen, which starts it from the activity so it stays in Yaadein's task
+                // (starting it from here needs NEW_TASK, which jumped out of the app).
+                UpdateEvents.post(UpdateEvents.Event.ConfirmNeeded(confirm))
             }
             PackageInstaller.STATUS_SUCCESS -> UpdateEvents.post(UpdateEvents.Event.Idle)
             else -> {
@@ -163,3 +190,37 @@ class UpdateStatusReceiver : BroadcastReceiver() {
         const val ACTION = "com.yaadein.app.UPDATE_STATUS"
     }
 }
+
+/**
+ * Runs in the new version right after an update (ACTION_MY_PACKAGE_REPLACED): clears the installed APK copy, reopens
+ * Yaadein, and posts a "tap to open" notification in case Android does not allow the app to reopen by itself.
+ */
+class UpdatedReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != Intent.ACTION_MY_PACKAGE_REPLACED) return
+        File(context.cacheDir, "update").deleteRecursively()
+        val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ?: return
+        runCatching { context.startActivity(launch) }
+        runCatching {
+            val nm = context.getSystemService(android.app.NotificationManager::class.java)
+            nm.createNotificationChannel(android.app.NotificationChannel(CHANNEL, context.getString(R.string.update_channel), android.app.NotificationManager.IMPORTANCE_DEFAULT))
+            val version = runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull() ?: ""
+            val tap = PendingIntent.getActivity(context, 0, launch, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            val n = androidx.core.app.NotificationCompat.Builder(context, CHANNEL)
+                .setSmallIcon(com.yaadein.core.ui.R.drawable.ic_notification)
+                .setContentTitle(context.getString(R.string.update_done_title, version))
+                .setContentText(context.getString(R.string.update_done_text))
+                .setContentIntent(tap)
+                .setAutoCancel(true)
+                .build()
+            nm.notify(NOTIFICATION_ID, n)
+        }
+    }
+
+    private companion object {
+        const val CHANNEL = "app_update"
+        const val NOTIFICATION_ID = 4301
+    }
+}
+
+private const val COPY_BUFFER = 1 shl 20

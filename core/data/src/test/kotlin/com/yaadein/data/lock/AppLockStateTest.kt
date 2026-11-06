@@ -42,4 +42,17 @@ class AppLockStateTest {
         s.onForeground(now = 999_999, timeout = LockTimeout.IMMEDIATELY)
         assertFalse(s.locked.value)
     }
+
+    @Test
+    fun `returning from a system screen the app opened does not lock, once`() {
+        val s = AppLockState()
+        s.unlock()
+        s.allowExternalScreen(now = 0)
+        s.onBackground(now = 1_000)
+        s.onForeground(now = 120_000, timeout = LockTimeout.IMMEDIATELY)
+        assertFalse(s.locked.value)
+        s.onBackground(now = 130_000)
+        s.onForeground(now = 131_000, timeout = LockTimeout.IMMEDIATELY)
+        assertTrue(s.locked.value, "grace is used up")
+    }
 }

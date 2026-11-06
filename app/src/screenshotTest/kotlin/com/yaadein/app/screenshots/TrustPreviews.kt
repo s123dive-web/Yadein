@@ -86,4 +86,4 @@ fun AboutThisApp() = ScreenshotTheme { Surface { Column { Box(Modifier.weight(1f
 @PreviewTest
 @Preview(name = "Update app", device = PHONE, showBackground = true)
 @Composable
-fun UpdateApp() = ScreenshotTheme { Surface { UpdateScreen(state = UpdateUiState.UpToDate("0.1.27", "0.1.25", fileIsOlder = true), installedVersion = "0.1.27", onBack = {}, onChoose = {}, onInstall = {}, onReset = {}) } }
+fun UpdateApp() = ScreenshotTheme { Surface { UpdateScreen(state = UpdateUiState.UpToDate("0.1.27", "0.1.25", fileIsOlder = true), installedVersion = "0.1.27", onBack = {}, onChoose = {}, onAllow = {}, onReset = {}) } }

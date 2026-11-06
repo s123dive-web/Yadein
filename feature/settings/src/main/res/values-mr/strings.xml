@@ -133,12 +133,7 @@
     <string name="update_intro">तुम्ही डाउनलोड केलेली सर्वात नवीन Yaadein APK फाइल निवडा. ती याहून नवीन असेल, तर सध्याच्या अ‍ॅपवर इन्स्टॉल होईल.</string>
     <string name="update_choose">APK फाइल निवडा</string>
     <string name="update_checking">फाइल तपासत आहोत…</string>
-    <string name="update_installing">अपडेट सुरू होत आहे…</string>
-    <string name="update_ready_title">आवृत्ती %1$s इन्स्टॉलसाठी तयार आहे</string>
-    <string name="update_ready_text">Android खात्री विचारेल. अपडेट होताना Yaadein बंद होईल; नंतर पुन्हा उघडा. तुमच्या आठवणी, माणसं, फोटो आणि सेटिंग्ज जशाच्या तशा राहतील.</string>
-    <string name="update_install">अपडेट इन्स्टॉल करा</string>
     <string name="update_permission_title">Yaadein ला अपडेट इन्स्टॉल करू द्या</string>
-    <string name="update_permission_text">Android ला एकदा तुमची परवानगी हवी. “या स्रोतातून परवानगी द्या” चालू करा, परत या, आणि अपडेट पुढे सुरू होईल.</string>
     <string name="update_up_to_date_title">Yaadein आधीच अद्ययावत आहे</string>
     <string name="update_file_same">ही फाइल आवृत्ती %1$s आहे, इन्स्टॉल आवृत्ती %2$s सारखीच.</string>
     <string name="update_file_older">ही फाइल आवृत्ती %1$s आहे, इन्स्टॉल आवृत्ती %2$s पेक्षा जुनी. अपडेट करण्यासारखं काही नाही.</string>
@@ -165,4 +160,11 @@
     <string name="app_info_backup_body">एक पासवर्ड-संरक्षित बॅकअप फाइल बनवा आणि पुढच्या फोनवर रिस्टोर करा, प्रत्येक फोटो आणि गोष्टीसह.</string>
     <string name="app_info_share_title">थेट तुमच्या गॅलरीतून</string>
     <string name="app_info_share_body">Google Photos किंवा कोणत्याही गॅलरीत फोटो निवडा, शेअर दाबा, Yaadein निवडा, आणि ते फोटो जोडलेली नवी आठवण उघडेल.</string>
+    <string name="update_allow">अपडेटना परवानगी द्या</string>
+    <string name="update_permission_text">फाइलमधून अपडेट इन्स्टॉल करण्याआधी Android ला एकदा परवानगी हवी. अपडेटना परवानगी द्या दाबा, “या स्रोतातून परवानगी द्या” चालू करा, आणि मागे या. अपडेट आपोआप पुढे सुरू होईल.</string>
+    <string name="update_installing_version">आवृत्ती %1$s इन्स्टॉल होत आहे…</string>
+    <string name="update_installing_help">Android ने विचारलं तर अपडेट दाबा. Yaadein क्षणभर बंद होऊन आपोआप पुन्हा उघडेल; तुमच्या आठवणी राहतील.</string>
+    <string name="update_channel">अ‍ॅप अपडेट</string>
+    <string name="update_done_title">Yaadein %1$s वर अपडेट झाले</string>
+    <string name="update_done_text">उघडण्यासाठी टॅप करा. तुमच्या सगळ्या आठवणी इथेच आहेत.</string>
 </resources>

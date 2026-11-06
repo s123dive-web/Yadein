@@ -133,12 +133,7 @@
     <string name="update_intro">आपने जो सबसे नई Yaadein APK फ़ाइल डाउनलोड की है, उसे चुनें। अगर वह इससे नई है, तो मौजूदा ऐप के ऊपर इंस्टॉल हो जाएगी।</string>
     <string name="update_choose">APK फ़ाइल चुनें</string>
     <string name="update_checking">फ़ाइल जाँच रहे हैं…</string>
-    <string name="update_installing">अपडेट शुरू हो रहा है…</string>
-    <string name="update_ready_title">संस्करण %1$s इंस्टॉल के लिए तैयार है</string>
-    <string name="update_ready_text">Android पुष्टि माँगेगा। अपडेट के दौरान Yaadein बंद होगा; बाद में फिर खोलें। आपकी यादें, लोग, फ़ोटो और सेटिंग्स जैसी हैं वैसी रहेंगी।</string>
-    <string name="update_install">अपडेट इंस्टॉल करें</string>
     <string name="update_permission_title">Yaadein को अपडेट इंस्टॉल करने दें</string>
-    <string name="update_permission_text">Android को एक बार आपकी अनुमति चाहिए। “इस स्रोत से अनुमति दें” चालू करें, वापस आएँ, और अपडेट आगे बढ़ेगा।</string>
     <string name="update_up_to_date_title">Yaadein पहले से अप टू डेट है</string>
     <string name="update_file_same">यह फ़ाइल संस्करण %1$s है, इंस्टॉल संस्करण %2$s के समान।</string>
     <string name="update_file_older">यह फ़ाइल संस्करण %1$s है, इंस्टॉल संस्करण %2$s से पुरानी। अपडेट करने को कुछ नहीं है।</string>
@@ -165,4 +160,11 @@
     <string name="app_info_backup_body">एक पासवर्ड-सुरक्षित बैकअप फ़ाइल बनाएँ और अगले फ़ोन पर रिस्टोर करें, हर फ़ोटो और कहानी के साथ।</string>
     <string name="app_info_share_title">सीधे अपनी गैलरी से</string>
     <string name="app_info_share_body">Google Photos या किसी भी गैलरी में फ़ोटो चुनें, शेयर पर टैप करें, Yaadein चुनें, और नई याद उन फ़ोटो के साथ खुल जाएगी।</string>
+    <string name="update_allow">अपडेट की अनुमति दें</string>
+    <string name="update_permission_text">फ़ाइल से अपडेट इंस्टॉल करने से पहले Android को एक बार अनुमति चाहिए। अपडेट की अनुमति दें पर टैप करें, “इस स्रोत से अनुमति दें” चालू करें, और वापस आएँ। अपडेट अपने आप आगे बढ़ेगा।</string>
+    <string name="update_installing_version">संस्करण %1$s इंस्टॉल हो रहा है…</string>
+    <string name="update_installing_help">अगर Android पूछे तो अपडेट पर टैप करें। Yaadein एक पल के लिए बंद होकर अपने आप फिर खुलेगा; आपकी यादें बनी रहेंगी।</string>
+    <string name="update_channel">ऐप अपडेट</string>
+    <string name="update_done_title">Yaadein %1$s पर अपडेट हुआ</string>
+    <string name="update_done_text">खोलने के लिए टैप करें। आपकी सारी यादें यहीं हैं।</string>
 </resources>

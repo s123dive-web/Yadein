@@ -18,6 +18,7 @@ class AppLockState @Inject constructor() {
     val locked: StateFlow<Boolean> = _locked.asStateFlow()
 
     @Volatile private var backgroundedAt: Long? = null
+    @Volatile private var externalScreenUntil: Long = 0L
 
     fun unlock() {
         _locked.value = false
@@ -35,6 +36,20 @@ class AppLockState @Inject constructor() {
     fun onForeground(now: Long, timeout: LockTimeout) {
         val since = backgroundedAt ?: return
         backgroundedAt = null
+        // Coming back from a system screen the app itself opened (file picker, install permission, installer).
+        if (now <= externalScreenUntil) { externalScreenUntil = 0L; return }
         if (now - since >= timeout.millis) lock()
+    }
+
+    /**
+     * The app is about to open a system screen as part of a flow (e.g. Update app). Returning within [graceMillis]
+     * does not ask for the PIN again, so the flow is not interrupted. Only callable while unlocked.
+     */
+    fun allowExternalScreen(now: Long, graceMillis: Long = EXTERNAL_SCREEN_GRACE_MS) {
+        if (!_locked.value) externalScreenUntil = now + graceMillis
+    }
+
+    companion object {
+        const val EXTERNAL_SCREEN_GRACE_MS = 5 * 60_000L
     }
 }
