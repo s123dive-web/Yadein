@@ -91,7 +91,9 @@ class RecapRenderDeviceTest {
 
     private fun render(plan: RecapPlan, music: MusicSource): File {
         val out = File(context.cacheDir, "recap-test-${System.nanoTime()}.mp4")
-        runBlocking { RecapRenderer(context, db, store).render(plan, music, style, out) {} }
+        // Software emulators can be far slower than any phone, so the stall watchdog is off here; the
+        // test still fails on a real stall through the instrumentation timeout.
+        runBlocking { RecapRenderer(context, db, store, maxDelayBetweenMuxerSamplesMs = androidx.media3.common.C.TIME_UNSET).render(plan, music, style, out) {} }
         return out
     }
 

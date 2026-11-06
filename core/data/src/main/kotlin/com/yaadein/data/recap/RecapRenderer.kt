@@ -66,6 +66,11 @@ class RecapRenderer(
     private val context: Context,
     private val db: AppDatabase,
     private val mediaStore: MediaStore,
+    /**
+     * Media3 aborts an export when nothing reaches the muxer for this long. Its default (10 s on devices)
+     * is tight for a slow phone decoding a large HEVC clip; tests on emulators pass C.TIME_UNSET to disable it.
+     */
+    private val maxDelayBetweenMuxerSamplesMs: Long = MAX_DELAY_BETWEEN_MUXER_SAMPLES_MS,
 ) {
     class RenderException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
@@ -120,6 +125,7 @@ class RecapRenderer(
                 .setVideoMimeType(MimeTypes.VIDEO_H264)
                 .setAudioMimeType(MimeTypes.AUDIO_AAC)
                 .setAssetLoaderFactory(assetLoaderFactory)
+                .setMaxDelayBetweenMuxerSamplesMs(maxDelayBetweenMuxerSamplesMs)
                 .addListener(object : Transformer.Listener {
                     override fun onCompleted(composition: Composition, exportResult: ExportResult) { if (cont.isActive) cont.resume(Unit) }
                     override fun onError(composition: Composition, exportResult: ExportResult, exportException: ExportException) {
@@ -262,6 +268,7 @@ class RecapRenderer(
 
     companion object {
         const val FRAME_RATE = 30
+        const val MAX_DELAY_BETWEEN_MUXER_SAMPLES_MS = 60_000L
 
         /** Photos are decoded no larger than this on their long edge; keeps 50 MP originals within GPU texture limits and memory. */
         const val MAX_BITMAP_EDGE = 2560
