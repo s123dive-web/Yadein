@@ -25,7 +25,30 @@ object SharedMediaInbox {
     /** Copied, ready-to-import URIs waiting for the Create memory screen. */
     val pending: StateFlow<List<Uri>> = _pending.asStateFlow()
 
-    fun take(): List<Uri> = _pending.value.also { _pending.value = emptyList() }
+    @Volatile private var pendingDir: File? = null
+
+    /** Hands the files to the Create memory screen once; marks the share as used so a restart does not repeat it. */
+    fun take(): List<Uri> {
+        val uris = _pending.value
+        _pending.value = emptyList()
+        pendingDir?.let { runCatching { File(it, TAKEN_MARKER).createNewFile() } }
+        pendingDir = null
+        return uris
+    }
+
+    /**
+     * After a process restart (Android may close Yaadein while it waits on the PIN screen), picks up the latest share that
+     * was copied but never opened, so the photos are not silently lost.
+     */
+    suspend fun restore(context: Context) = withContext(Dispatchers.IO) {
+        if (_pending.value.isNotEmpty()) return@withContext
+        val latest = File(context.cacheDir, DIR).listFiles()?.filter { it.isDirectory }?.maxByOrNull { it.lastModified() } ?: return@withContext
+        if (File(latest, TAKEN_MARKER).exists() || System.currentTimeMillis() - latest.lastModified() > RESTORE_WINDOW_MS) return@withContext
+        val files = latest.listFiles()?.filter { it.isFile && it.name != TAKEN_MARKER }?.sortedBy { it.name }.orEmpty()
+        if (files.isEmpty()) return@withContext
+        pendingDir = latest
+        _pending.value = files.map { FileProvider.getUriForFile(context, context.packageName + ".files", it) }
+    }
 
     fun isShare(intent: Intent?): Boolean =
         intent != null && (intent.action == Intent.ACTION_SEND || intent.action == Intent.ACTION_SEND_MULTIPLE) && streams(intent).isNotEmpty()
@@ -44,7 +67,7 @@ object SharedMediaInbox {
                 FileProvider.getUriForFile(context, context.packageName + ".files", target)
             }.getOrNull()
         }
-        if (copied.isNotEmpty()) _pending.value = copied
+        if (copied.isNotEmpty()) { pendingDir = dir; _pending.value = copied }
         copied.size
     }
 
@@ -66,6 +89,9 @@ object SharedMediaInbox {
     }
 
     private const val DIR = "shared"
+    private const val TAKEN_MARKER = ".taken"
+    /** A share left unopened for longer than this is not brought back. */
+    private const val RESTORE_WINDOW_MS = 24 * 60 * 60 * 1000L
     /** Same cap as the in-app picker. */
     const val MAX_ITEMS = 50
 }

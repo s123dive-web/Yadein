@@ -102,8 +102,6 @@ class AppUpdater(private val context: Context) {
             // Android 12+: once Yaadein has installed itself (it becomes the installer of record), later updates need
             // no "Update this app?" confirmation at all. The first one still asks, which Android requires.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED)
-            // Android 14+: keep Yaadein as the update owner so another installer does not take over silently.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) setRequestUpdateOwnership(true)
         }
         val sessionId = installer.createSession(params)
         installer.openSession(sessionId).use { session ->

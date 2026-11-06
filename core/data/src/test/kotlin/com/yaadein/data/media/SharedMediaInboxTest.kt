@@ -54,4 +54,20 @@ class SharedMediaInboxTest {
         assertTrue(SharedMediaInbox.take().isEmpty())
         assertFalse(SharedMediaInbox.isShare(Intent(Intent.ACTION_VIEW)))
     }
+
+    @Test
+    fun `an unopened share is restored after a restart, but only once`() = runTest {
+        val a = galleryFile("c.jpg", byteArrayOf(7, 8))
+        SharedMediaInbox.receive(context, Intent(Intent.ACTION_SEND).setType("image/jpeg").putExtra(Intent.EXTRA_STREAM, a))
+        // Simulate the process dying: the in-memory list is gone, the copied files are not.
+        val lost = SharedMediaInbox.take()
+        File(context.cacheDir, "shared").listFiles()!!.forEach { File(it, ".taken").delete() }
+        assertEquals(1, lost.size)
+        SharedMediaInbox.restore(context)
+        val restored = SharedMediaInbox.take()
+        assertEquals(1, restored.size)
+        assertArrayEquals(byteArrayOf(7, 8), context.contentResolver.openInputStream(restored[0])!!.readBytes())
+        SharedMediaInbox.restore(context)
+        assertTrue("already used", SharedMediaInbox.take().isEmpty())
+    }
 }

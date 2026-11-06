@@ -626,7 +626,8 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   tap-to-open notification in case Android blocks the background start.
 - Android 12+: sessions use `USER_ACTION_NOT_REQUIRED` and the debug manifest declares `UPDATE_PACKAGES_WITHOUT_USER_ACTION`,
   so after the first in-app update (Yaadein becomes installer of record) later updates have no confirmation at all.
-  Android 14+: `setRequestUpdateOwnership(true)`.
+  (No update-ownership request: it needs ENFORCE_UPDATE_OWNERSHIP and would make Android warn when the user installs a
+  newer APK from a file manager instead.)
 - `AppLockState.allowExternalScreen()` gives a 5-minute grace for returning from system screens the app opened, so the PIN
   doesn't interrupt the flow. A checked APK survives process death (`resumeCandidate()`), cleared once installed.
 - **Verified on the API 34 emulator** (0.1.28 → 0.1.29): permission page opened inside Yaadein's task and the flow continued
@@ -637,3 +638,11 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   permission before picking a file (Android 13+), the channel is high importance (heads-up), and the copy tells the user to tap
   the "Yaadein updated" notification to come back.
 
+- **Share → Yaadein verified on the emulator**: Files app → select 2 photos → Share → "Save to Yaadein" (listed in the share
+  sheet) while Yaadein sat on the PIN screen; both copied to `cache/shared/`; after the PIN, New memory opened with both attached;
+  saved memory had 2 photos, cover set, person tagged. `SharedMediaInbox.restore()` (called from `MainActivity.onCreate`) brings
+  back a share that was copied but never opened if Android closed the app before unlock; `take()` writes a `.taken` marker so a
+  share is used once. Test: "an unopened share is restored after a restart, but only once".
+- Emulator notes: `adb shell am start ... --grant-read-uri-permission` cannot grant MediaStore URIs (shell lacks access), so share
+  tests go through the Files app. After an in-app (session) update the app runs interpreted on the unaccelerated emulator and can
+  hit input ANRs; `cmd package compile -m speed -f <pkg>` fixes it. Keep `hide_error_dialogs=0` (with 1, every ANR kills the app).

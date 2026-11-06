@@ -61,6 +61,8 @@ class MainActivity : FragmentActivity() {
         pendingMemory.value = intent?.getLongExtra(OnThisDayWorker.EXTRA_MEMORY_ID, -1L)?.takeIf { it > 0 }
         // A share from a gallery app; skip it when the activity is only being recreated (rotation, process restore).
         if (savedInstanceState == null) receiveShare(intent)
+        // A share copied before Android closed the app (e.g. while it sat on the PIN screen) is picked up again.
+        if (!SharedMediaInbox.isShare(intent)) lifecycleScope.launch { SharedMediaInbox.restore(applicationContext) }
         val biometricLauncher = BiometricHelper.launcher(this)
         setContent {
             val current by settings.collectAsStateWithLifecycle()
