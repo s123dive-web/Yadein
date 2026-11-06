@@ -14,7 +14,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +41,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -83,7 +89,7 @@ class BackupViewModel @Inject constructor(private val backup: BackupManager) : V
             _status.value = BackupStatus.Working(0, 0, true)
             runCatching { backup.peek(uri, password.toCharArray()) }
                 .onSuccess { _status.value = BackupStatus.Peeked(uri, it, password) }
-                .onFailure { _status.value = BackupStatus.Error(it is BackupManager.WrongPasswordException || it is javax.crypto.AEADBadTagException || it.cause is javax.crypto.AEADBadTagException, it.message) }
+                .onFailure { _status.value = BackupStatus.Error(isWrongPassword(it), it.message) }
         }
     }
 
@@ -92,11 +98,14 @@ class BackupViewModel @Inject constructor(private val backup: BackupManager) : V
             _status.value = BackupStatus.Working(0, 0, true)
             runCatching { backup.restore(uri, password.toCharArray()) { p -> if (p is BackupManager.Progress.Working) _status.value = BackupStatus.Working(p.done, p.total, true) } }
                 .onSuccess { _status.value = BackupStatus.Restored }
-                .onFailure { _status.value = BackupStatus.Error(it is BackupManager.WrongPasswordException, it.message) }
+                .onFailure { _status.value = BackupStatus.Error(isWrongPassword(it), it.message) }
         }
     }
 
     fun reset() = _status.update { BackupStatus.Idle }
+
+    private fun isWrongPassword(t: Throwable): Boolean =
+        t is BackupManager.WrongPasswordException || t is javax.crypto.AEADBadTagException || t.cause is javax.crypto.AEADBadTagException
 }
 
 @Composable
@@ -126,15 +135,45 @@ fun BackupRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: Ba
 private fun PasswordDialog(title: String, confirmLabel: String, requireConfirm: Boolean, onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     var pw by remember { mutableStateOf("") }
     var pw2 by remember { mutableStateOf("") }
-    val ok = pw.length >= 6 && (!requireConfirm || pw == pw2)
+    var visible by remember { mutableStateOf(false) }
+    val tooShort = pw.length < BackupManager.MIN_PASSWORD_LENGTH
+    val mismatch = requireConfirm && pw2.isNotEmpty() && pw2 != pw
+    val ok = !tooShort && (!requireConfirm || pw == pw2)
+    // A plain text field lets the keyboard auto-capitalise, autocorrect or add a trailing space, so the
+    // password saved with the backup was not what the person thought they typed.
+    val keyboard = KeyboardOptions(
+        keyboardType = KeyboardType.Password,
+        capitalization = KeyboardCapitalization.None,
+        autoCorrectEnabled = false,
+    )
+    val transformation = if (visible) VisualTransformation.None else PasswordVisualTransformation()
+    val toggle: @Composable () -> Unit = {
+        IconButton(onClick = { visible = !visible }) {
+            Icon(
+                if (visible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
+                contentDescription = stringResource(if (visible) R.string.backup_password_hide else R.string.backup_password_show),
+            )
+        }
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(Yaadein.spacing.sm)) {
                 Text(stringResource(R.string.backup_password_help), style = MaterialTheme.typography.bodyMedium)
-                OutlinedTextField(value = pw, onValueChange = { pw = it }, label = { Text(stringResource(R.string.backup_password)) }, visualTransformation = PasswordVisualTransformation(), singleLine = true)
-                if (requireConfirm) OutlinedTextField(value = pw2, onValueChange = { pw2 = it }, label = { Text(stringResource(R.string.backup_password_again)) }, visualTransformation = PasswordVisualTransformation(), singleLine = true, isError = pw2.isNotEmpty() && pw2 != pw)
+                OutlinedTextField(
+                    value = pw, onValueChange = { pw = it }, label = { Text(stringResource(R.string.backup_password)) },
+                    visualTransformation = transformation, keyboardOptions = keyboard, singleLine = true, trailingIcon = toggle,
+                    isError = pw.isNotEmpty() && tooShort,
+                    supportingText = if (pw.isNotEmpty() && tooShort) { { Text(stringResource(R.string.backup_password_short, BackupManager.MIN_PASSWORD_LENGTH)) } } else null,
+                )
+                if (requireConfirm) {
+                    OutlinedTextField(
+                        value = pw2, onValueChange = { pw2 = it }, label = { Text(stringResource(R.string.backup_password_again)) },
+                        visualTransformation = transformation, keyboardOptions = keyboard, singleLine = true, isError = mismatch,
+                        supportingText = if (mismatch) { { Text(stringResource(R.string.backup_password_mismatch)) } } else null,
+                    )
+                }
             }
         },
         confirmButton = { TextButton(enabled = ok, onClick = { onConfirm(pw) }) { Text(confirmLabel) } },

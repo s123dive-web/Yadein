@@ -82,6 +82,10 @@
     <string name="backup_password_help">At least 6 characters. Without this password the file cannot be opened — not even by us.</string>
     <string name="backup_password">Password</string>
     <string name="backup_password_again">Password again</string>
+    <string name="backup_password_short">Use at least %1$d characters</string>
+    <string name="backup_password_mismatch">The two passwords don\'t match</string>
+    <string name="backup_password_show">Show password</string>
+    <string name="backup_password_hide">Hide password</string>
     <string name="backup_exporting">Encrypting your memories…</string>
     <string name="backup_restoring">Restoring…</string>
     <string name="backup_exported_title">Backup saved</string>

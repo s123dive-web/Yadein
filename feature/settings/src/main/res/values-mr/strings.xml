@@ -82,6 +82,10 @@
     <string name="backup_password_help">किमान 6 अक्षरे. या पासवर्डशिवाय फाइल उघडता येणार नाही — आम्हालाही नाही.</string>
     <string name="backup_password">पासवर्ड</string>
     <string name="backup_password_again">पासवर्ड पुन्हा</string>
+    <string name="backup_password_short">किमान %1$d अक्षरे वापरा</string>
+    <string name="backup_password_mismatch">दोन्ही पासवर्ड जुळत नाहीत</string>
+    <string name="backup_password_show">पासवर्ड दाखवा</string>
+    <string name="backup_password_hide">पासवर्ड लपवा</string>
     <string name="backup_exporting">आठवणी एन्क्रिप्ट होत आहेत…</string>
     <string name="backup_restoring">रिस्टोअर होत आहे…</string>
     <string name="backup_exported_title">बॅकअप जतन केला</string>

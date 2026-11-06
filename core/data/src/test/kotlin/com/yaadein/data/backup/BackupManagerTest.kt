@@ -103,4 +103,38 @@ class BackupManagerTest {
         try { manager.restore(inUri, "wrong".toCharArray()); fail("expected failure") } catch (_: Exception) { }
         assertEquals(listOf("Keep me"), people.observeAll().first().map { it.name })
     }
+
+    @Test
+    fun `peek with a wrong password reports a wrong password`() = runTest {
+        val outUri = Uri.fromFile(File(context.cacheDir, "d.yaadein"))
+        val bytes = ByteArrayOutputStream()
+        Shadows.shadowOf(context.contentResolver).registerOutputStream(outUri, bytes)
+        manager.export(outUri, "right-one".toCharArray())
+        assertEquals(BackupManager.FORMAT, bytes.toByteArray()[4].toInt())
+        val inUri = Uri.parse("content://test/backup3")
+        Shadows.shadowOf(context.contentResolver).registerInputStream(inUri, bytes.toByteArray().inputStream())
+        try {
+            manager.peek(inUri, "wrong-one".toCharArray()); fail("expected failure")
+        } catch (_: BackupManager.WrongPasswordException) { }
+    }
+
+    @Test
+    fun `backups written in the old single-pass format still open`() = runTest {
+        // Format 1: magic, version 1, salt, 12-byte nonce, then one AES-GCM pass over the zip.
+        val salt = ByteArray(16) { 3 }
+        val nonce = ByteArray(12) { 4 }
+        val key = SecretKeySpec(fastKdf.derive("oldpass".toCharArray(), salt), "AES")
+        val cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding").apply { init(javax.crypto.Cipher.ENCRYPT_MODE, key, javax.crypto.spec.GCMParameterSpec(128, nonce)) }
+        val out = ByteArrayOutputStream()
+        out.write(BackupManager.MAGIC); out.write(1); out.write(salt); out.write(nonce)
+        java.util.zip.ZipOutputStream(javax.crypto.CipherOutputStream(out, cipher)).use { zip ->
+            zip.putNextEntry(java.util.zip.ZipEntry("manifest.json"))
+            zip.write("""{"app":"yaadein","format":1,"createdAt":1,"persons":2,"memories":3,"media":0}""".toByteArray())
+            zip.closeEntry()
+        }
+        val inUri = Uri.parse("content://test/backup-v1")
+        Shadows.shadowOf(context.contentResolver).registerInputStream(inUri, out.toByteArray().inputStream())
+        val manifest = manager.peek(inUri, "oldpass".toCharArray())
+        assertEquals(2, manifest.persons); assertEquals(3, manifest.memories)
+    }
 }

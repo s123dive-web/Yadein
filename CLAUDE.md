@@ -529,3 +529,19 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
 - **Media viewer had no next/previous**: the photo zoom handler (`detectTransformGestures`) consumed every drag, so the pager
   could not swipe. It now only consumes while pinching or when zoomed in, and the viewer shows previous/next buttons
   (also usable over videos, whose player view takes touches).
+
+### Backup password "never works" (backup format 2)
+
+- **Cause**: format 1 sealed the whole zip with one AES-GCM operation through `CipherOutputStream`/`CipherInputStream`.
+  Android's Conscrypt provider cannot stream GCM: it buffers the entire input until `doFinal`. With real photos and videos
+  the export ran out of memory and left a file holding only the 33-byte header, so every later restore reported
+  "That password didn't open the file". JVM tests passed because they used tiny libraries.
+- **Fix**: format 2 (`ChunkedAead.kt`) seals the zip in 64 KiB chunks, each its own AES-256-GCM operation (STREAM
+  construction: nonce = 7-byte random prefix ‖ chunk counter ‖ last-chunk flag, header bytes as AAD). Memory stays bounded,
+  a wrong password fails on the first chunk with `WrongPasswordException`, and truncation, reordering or tampering is detected.
+  Format 1 files are still readable. Rule: never run a single GCM operation over unbounded data on Android.
+- **Password dialog**: fields now use `KeyboardType.Password` with autocorrect and auto-capitalisation off (the keyboard could
+  silently change the typed password), a show/hide toggle, and inline "too short" / "don't match" messages so a disabled
+  button is explained.
+- Tests: `ChunkedAeadTest` (chunk-boundary round trips, bounded output, wrong key, truncation, tampering), `BackupManagerTest`
+  (wrong password on peek, format 1 still opens).

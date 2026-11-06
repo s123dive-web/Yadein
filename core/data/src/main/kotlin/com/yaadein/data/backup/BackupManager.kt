@@ -31,15 +31,16 @@ import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import javax.crypto.Cipher
 import javax.crypto.CipherInputStream
-import javax.crypto.CipherOutputStream
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 /**
  * Single-file, password-protected backup (`.yaadein`).
  *
- * Layout: [magic "YDNB"][version 1][16-byte salt][12-byte nonce][AES-256-GCM(zip)] where the key is
- * Argon2id(password, salt). The zip holds `manifest.json`, `data.json` (all tables) and every media file
+ * Layout (format 2): [magic "YDNB"][version 2][16-byte salt][7-byte nonce prefix][chunked AES-256-GCM(zip)]
+ * where the key is Argon2id(password, salt) and the zip is sealed in 64 KiB chunks ([ChunkedAead]).
+ * Format 1 (one GCM pass over the whole zip) is still readable, but it could not be written for real
+ * libraries on Android because the platform buffers a whole GCM operation in memory. The zip holds `manifest.json`, `data.json` (all tables) and every media file
  * as plaintext (they are re-encrypted with the device key on restore). Restore verifies the manifest
  * and decrypts fully into a staging area before anything in the live vault is touched.
  */
@@ -80,13 +81,13 @@ class BackupManager(
         val dump = dump()
         val manifest = Manifest(createdAt = System.currentTimeMillis(), persons = dump.persons.size, memories = dump.memories.size, media = dump.media.size)
         val salt = ByteArray(16).also { SecureRandom().nextBytes(it) }
-        val nonce = ByteArray(12).also { SecureRandom().nextBytes(it) }
+        val prefix = ByteArray(ChunkedAead.PREFIX_BYTES).also { SecureRandom().nextBytes(it) }
         val key = SecretKeySpec(keyDeriver.derive(password, salt), "AES")
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(128, nonce)) }
+        val header = MAGIC + byteArrayOf(FORMAT.toByte()) + salt + prefix
         val raw = context.contentResolver.openOutputStream(target, "wt") ?: error("cannot open target")
         BufferedOutputStream(raw).use { out ->
-            out.write(MAGIC); out.write(FORMAT); out.write(salt); out.write(nonce)
-            ZipOutputStream(CipherOutputStream(out, cipher)).use { zip ->
+            out.write(header)
+            ZipOutputStream(ChunkedAeadOutputStream(out, key, prefix, header)).use { zip ->
                 zip.putNextEntry(ZipEntry("manifest.json")); zip.write(json.encodeToString(Manifest.serializer(), manifest).toByteArray()); zip.closeEntry()
                 zip.putNextEntry(ZipEntry("data.json")); zip.write(json.encodeToString(Dump.serializer(), dump).toByteArray()); zip.closeEntry()
                 val media = db.mediaDao().all()
@@ -208,10 +209,25 @@ class BackupManager(
         val format = input.read()
         if (format > FORMAT) error("backup from a newer Yaadein")
         val salt = ByteArray(16); readFully(input, salt)
-        val nonce = ByteArray(12); readFully(input, nonce)
-        val key = SecretKeySpec(keyDeriver.derive(password, salt), "AES")
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, nonce)) }
-        return ZipInputStream(CipherInputStream(input, cipher))
+        return try {
+            when (format) {
+                FORMAT_SINGLE_GCM -> {
+                    val nonce = ByteArray(12); readFully(input, nonce)
+                    val key = SecretKeySpec(keyDeriver.derive(password, salt), "AES")
+                    val cipher = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, nonce)) }
+                    ZipInputStream(CipherInputStream(input, cipher))
+                }
+                else -> {
+                    val prefix = ByteArray(ChunkedAead.PREFIX_BYTES); readFully(input, prefix)
+                    val key = SecretKeySpec(keyDeriver.derive(password, salt), "AES")
+                    val header = MAGIC + byteArrayOf(format.toByte()) + salt + prefix
+                    ZipInputStream(ChunkedAeadInputStream(input, key, prefix, header))
+                }
+            }
+        } catch (e: Exception) {
+            input.close()
+            throw e
+        }
     }
 
     private fun readFully(input: InputStream, buf: ByteArray) {
@@ -239,7 +255,9 @@ class BackupManager(
 
     companion object {
         val MAGIC = byteArrayOf('Y'.code.toByte(), 'D'.code.toByte(), 'N'.code.toByte(), 'B'.code.toByte())
-        const val FORMAT = 1
+        const val FORMAT = 2
+        const val MIN_PASSWORD_LENGTH = 6
+        private const val FORMAT_SINGLE_GCM = 1
         const val EXTENSION = "yaadein"
         const val MIME = "application/octet-stream"
     }
