@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="recap_title">रीकॅप व्हिडिओ</string>
+    <string name="recap_title">रील बनवा</string>
     <string name="recap_outro">Yaadein ने बनवले</string>
     <string name="recap_title_person">%1$s सोबतचे क्षण</string>
     <string name="recap_title_all">आमच्या आठवणी</string>
@@ -11,12 +11,12 @@
     <string name="recap_empty_message">फोटो किंवा शब्द असलेल्या आठवणी असणारी व्यक्ती, गट किंवा वर्ष निवडा.</string>
     <string name="recap_rendering">तयार होत आहे… %1$d%%</string>
     <string name="recap_rendering_help">अ‍ॅप बंद करू शकता; नोटिफिकेशनमध्ये प्रगती दिसेल आणि तयार झाल्यावर सांगू.</string>
-    <string name="recap_done_title">तुमचा रीकॅप तयार आहे</string>
+    <string name="recap_done_title">तुमची रील तयार आहे</string>
     <string name="recap_done_text">Movies / Yaadein मध्ये जतन केला.</string>
     <string name="recap_make_another">अजून एक बनवा</string>
-    <string name="recap_failed_title">व्हिडिओ पूर्ण होऊ शकला नाही</string>
-    <string name="recap_failed_text">%1$s. छोटा रीकॅप करून पाहा किंवा व्हिडिओ वगळा.</string>
-    <string name="recap_render">1080p व्हिडिओ बनवा</string>
+    <string name="recap_failed_title">रील पूर्ण होऊ शकली नाही</string>
+    <string name="recap_failed_text">%1$s. पुन्हा प्रयत्न करा किंवा व्हिडिओ क्लिप वगळा.</string>
+    <string name="recap_render">रील बनवा</string>
     <string name="recap_scope">कोण किंवा काय</string>
     <string name="scope_all">सगळं</string>
     <string name="recap_year">वर्ष</string>
@@ -30,12 +30,12 @@
     <string name="recap_music">संगीत</string>
     <string name="music_own">तुमचा ऑडिओ…</string>
     <string name="music_none">संगीत नाही</string>
-    <string name="music_licence">सोबत दिलेले ट्रॅक मूळ आहेत आणि तुमच्या व्हिडिओत मोफत वापरता येतात.</string>
+    <string name="music_licence">सोबत दिलेले ट्रॅक मूळ आहेत आणि तुमच्या रीलमध्ये मोफत वापरता येतात.</string>
     <string name="recap_length">लांबी</string>
     <string name="recap_length_seconds">~%1$d से</string>
     <string name="recap_include_videos">व्हिडिओ क्लिप समाविष्ट करा</string>
     <string name="recap_paused">थांबलं — चालवण्यासाठी टॅप करा</string>
-    <string name="render_channel">रीकॅप व्हिडिओ तयार होणे</string>
+    <string name="render_channel">रील तयार होणे</string>
     <string name="render_notification_title">“%1$s” तयार होत आहे</string>
     <string name="render_notification_text">%1$d%% पूर्ण</string>
     <string name="render_done_title">“%1$s” तयार आहे</string>

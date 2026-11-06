@@ -101,6 +101,13 @@ class RecapRenderDeviceTest {
         val durationMs = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toLong()
         assertEquals("yes", mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO))
         assertTrue("duration $durationMs vs plan ${plan.totalDurationMs}", abs(durationMs - plan.totalDurationMs) < 1_500)
+        // Vertical reel: 1080 wide, 1920 tall (allowing for a rotation tag instead of swapped dimensions).
+        val w = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt()
+        val h = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)!!.toInt()
+        val rotation = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
+        val (shownW, shownH) = if (rotation % 180 == 0) w to h else h to w
+        assertEquals("reel width", plan.width, shownW)
+        assertEquals("reel height", plan.height, shownH)
         mmr.release()
         val ex = MediaExtractor().apply { setDataSource(out.path) }
         val mimes = (0 until ex.trackCount).map { ex.getTrackFormat(it).getString(MediaFormat.KEY_MIME) }

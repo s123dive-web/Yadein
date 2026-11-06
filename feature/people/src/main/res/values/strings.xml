@@ -13,7 +13,7 @@
     <string name="person_birthday_tomorrow">Birthday is tomorrow</string>
     <string name="person_birthday_in_days">Birthday in %1$d days</string>
     <string name="person_together">Together with…</string>
-    <string name="person_recap">Make a recap</string>
+    <string name="person_recap">Make a reel</string>
     <string name="person_year_with">%1$d with %2$s</string>
     <string name="person_empty_title">No memories with %1$s yet</string>
     <string name="person_empty_message">Tag them in a memory and it will show up here.</string>

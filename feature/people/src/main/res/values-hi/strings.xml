@@ -13,7 +13,7 @@
     <string name="person_birthday_tomorrow">कल जन्मदिन है</string>
     <string name="person_birthday_in_days">%1$d दिन में जन्मदिन</string>
     <string name="person_together">साथ में…</string>
-    <string name="person_recap">रीकैप बनाएँ</string>
+    <string name="person_recap">रील बनाएँ</string>
     <string name="person_year_with">%2$s के साथ %1$d</string>
     <string name="person_empty_title">%1$s के साथ अभी कोई याद नहीं</string>
     <string name="person_empty_message">किसी याद में उन्हें टैग करें और वह यहाँ दिखेगी।</string>

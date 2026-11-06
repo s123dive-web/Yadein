@@ -11,6 +11,9 @@ enum class RecapTheme { WARM, MINIMAL, FESTIVE, CLASSIC_FILM }
 /** Target length presets; the planner trims or pads segment durations to land near the target. */
 enum class RecapLength(val targetSeconds: Int) { SHORT(30), MEDIUM(60), LONG(120) }
 
+const val REEL_WIDTH = 1080
+const val REEL_HEIGHT = 1920
+
 /** Normalised rectangle (0..1) of the source photo shown at a point in time. */
 @Serializable
 data class Framing(val cx: Float, val cy: Float, val zoom: Float)
@@ -33,8 +36,9 @@ sealed interface RecapSegment {
 data class RecapPlan(
     val theme: RecapTheme,
     val segments: List<RecapSegment>,
-    val width: Int = 1920,
-    val height: Int = 1080,
+    // Vertical 9:16 reel (Instagram Reels / YouTube Shorts / WhatsApp status size).
+    val width: Int = REEL_WIDTH,
+    val height: Int = REEL_HEIGHT,
 ) {
     val totalDurationMs: Long get() = segments.sumOf { it.durationMs }
     val mediaCount: Int get() = segments.count { it is RecapSegment.Photo || it is RecapSegment.Clip }

@@ -2,7 +2,7 @@
 <resources>
     <string name="relive_title">Relive</string>
     <string name="relive_surprise">Surprise me</string>
-    <string name="relive_make_recap">Recap video</string>
+    <string name="relive_make_recap">Create a reel</string>
     <string name="relive_birthdays">Coming up</string>
     <string name="relive_birthday_today">%1$s\'s birthday is today</string>
     <string name="relive_birthday_in">%1$s · %2$d days</string>

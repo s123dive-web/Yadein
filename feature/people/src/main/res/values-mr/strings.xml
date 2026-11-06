@@ -13,7 +13,7 @@
     <string name="person_birthday_tomorrow">उद्या वाढदिवस आहे</string>
     <string name="person_birthday_in_days">%1$d दिवसांत वाढदिवस</string>
     <string name="person_together">सोबत…</string>
-    <string name="person_recap">रीकॅप बनवा</string>
+    <string name="person_recap">रील बनवा</string>
     <string name="person_year_with">%2$s सोबत %1$d</string>
     <string name="person_empty_title">%1$s सोबत अजून आठवण नाही</string>
     <string name="person_empty_message">एखाद्या आठवणीत त्यांना टॅग करा म्हणजे ती इथे दिसेल.</string>

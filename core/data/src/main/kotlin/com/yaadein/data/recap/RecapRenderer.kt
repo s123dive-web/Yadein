@@ -58,7 +58,7 @@ sealed interface MusicSource {
 }
 
 /**
- * Turns a [RecapPlan] into a 1080p H.264/AAC MP4 with Media3 Transformer.
+ * Turns a [RecapPlan] into a vertical 1080×1920 (9:16 reel) H.264/AAC MP4 with Media3 Transformer.
  * Encrypted photos and videos are read through [VaultDataSourceFactory]; nothing is decrypted to disk.
  */
 @UnstableApi
@@ -165,13 +165,16 @@ class RecapRenderer(
                     items += imageItem(Uri.fromFile(file), seg.durationMs, MimeTypes.IMAGE_PNG, emptyList())
                 }
                 is RecapSegment.Photo -> {
+                    // Crop to the reel frame first, so the pan/zoom and the caption work in output pixels.
                     val effects = ArrayList<Effect>()
+                    effects += fitToFrame(plan)
                     effects += kenBurns(seg)
                     captionOverlay(painter, plan, seg.caption, seg.dateLabel)?.let { effects += it }
                     items += imageItem(EncryptedDataSource.uriFor(seg.mediaId), seg.durationMs, MimeTypes.IMAGE_JPEG, effects)
                 }
                 is RecapSegment.Clip -> {
                     val effects = ArrayList<Effect>()
+                    effects += fitToFrame(plan)
                     captionOverlay(painter, plan, seg.caption, seg.dateLabel)?.let { effects += it }
                     val mediaItem = MediaItem.Builder()
                         .setUri(EncryptedDataSource.uriFor(seg.mediaId))
@@ -215,17 +218,25 @@ class RecapRenderer(
         return EditedMediaItemSequence.Builder(item).setIsLooping(true).build()
     }
 
-    /** Smooth zoom/pan between two framings over the photo's duration. */
+    private fun fitToFrame(plan: RecapPlan): Presentation =
+        Presentation.createForWidthAndHeight(plan.width, plan.height, Presentation.LAYOUT_SCALE_TO_FIT_WITH_CROP)
+
+    /**
+     * Smooth zoom/pan between two framings over the photo's duration, applied after [fitToFrame].
+     * The pan is limited to the margin the zoom creates, so the frame edge never shows as a black bar.
+     */
     private fun kenBurns(seg: RecapSegment.Photo): MatrixTransformation {
         val durationUs = seg.durationMs * 1_000f
         return MatrixTransformation { presentationTimeUs ->
             val t = (presentationTimeUs / durationUs).coerceIn(0f, 1f)
             val e = t * t * (3 - 2 * t) // smoothstep
             val f = lerp(seg.start, seg.end, e)
+            val zoom = f.zoom.coerceAtLeast(1f)
+            val maxShift = (zoom - 1f) / zoom
             Matrix().apply {
-                // NDC space: translate so (cx, cy) moves to centre, then zoom.
-                postTranslate(-(f.cx - 0.5f) * 2f, (f.cy - 0.5f) * 2f)
-                postScale(f.zoom, f.zoom)
+                // NDC space: translate so (cx, cy) moves towards the centre, then zoom.
+                postTranslate((-(f.cx - 0.5f) * 2f).coerceIn(-maxShift, maxShift), ((f.cy - 0.5f) * 2f).coerceIn(-maxShift, maxShift))
+                postScale(zoom, zoom)
             }
         }
     }

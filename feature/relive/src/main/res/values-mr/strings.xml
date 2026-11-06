@@ -2,7 +2,7 @@
 <resources>
     <string name="relive_title">पुन्हा जगा</string>
     <string name="relive_surprise">सरप्राइज द्या</string>
-    <string name="relive_make_recap">रीकॅप व्हिडिओ</string>
+    <string name="relive_make_recap">रील बनवा</string>
     <string name="relive_birthdays">येणारे</string>
     <string name="relive_birthday_today">आज %1$s चा वाढदिवस</string>
     <string name="relive_birthday_in">%1$s · %2$d दिवस</string>

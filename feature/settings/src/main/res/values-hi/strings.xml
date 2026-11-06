@@ -118,7 +118,7 @@
     <string name="privacy_s3_title">वैकल्पिक फ़ोन-पर सुविधाएँ</string>
     <string name="privacy_s3_body">चेहरा सुझाव और स्मार्ट पॉलिश साथ दिए मॉडल से फ़ोन पर चलते हैं और शुरू में बंद हैं। रिमाइंडर फ़ोन पर तय होते हैं और लॉक स्क्रीन पर छिपे रहते हैं।</string>
     <string name="privacy_s4_title">डेटा फ़ोन से कब बाहर जाता है</string>
-    <string name="privacy_s4_body">सिर्फ़ आपके चुनने पर: रीकैप वीडियो साझा करते समय, या शेयर शीट से पासवर्ड-सुरक्षित बैकअप निर्यात करते समय।</string>
+    <string name="privacy_s4_body">सिर्फ़ आपके चुनने पर: रील साझा करते समय, या शेयर शीट से पासवर्ड-सुरक्षित बैकअप निर्यात करते समय।</string>
     <string name="privacy_s5_title">डेटा हटाना</string>
     <string name="privacy_s5_body">ऐप अनइंस्टॉल करें, या सेटिंग्स → स्टोरेज → सब कुछ मिटाएँ। और कुछ हटाने को नहीं है।</string>
     <string name="privacy_s6_title">बच्चे और परिवार</string>

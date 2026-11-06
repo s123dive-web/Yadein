@@ -559,3 +559,14 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   music. Run with `./gradlew :feature:recap:connectedDebugAndroidTest` on a device or emulator. In the cloud container the
   emulator runs without KVM: `emulator -avd t34 -no-window -gpu swiftshader_indirect -accel off` (system image
   `system-images;android-34;google_apis;x86_64`), then `adb shell am instrument -w com.yaadein.feature.recap.test/androidx.test.runner.AndroidJUnitRunner`.
+
+### Reels instead of 1080p landscape video
+
+- Recaps are now vertical reels: `RecapPlan` defaults to `REEL_WIDTH`×`REEL_HEIGHT` = 1080×1920 (9:16, for Instagram Reels,
+  YouTube Shorts, WhatsApp status). User-facing copy says "reel" everywhere (EN/HI/MR); code names stay `recap*`.
+- Each photo and clip gets its own `Presentation` crop to the reel frame *before* Ken Burns and the caption overlay, so the
+  pan/zoom and caption work in output pixels (previously the caption was drawn on the source frame and the crop happened
+  afterwards). Ken Burns pan is clamped to `(zoom-1)/zoom` in NDC so no black edge shows.
+- `CardPainter` sizes text from the short side (`min(width, height)`), and captions sit above the bottom 18 % that reel apps
+  cover with their own UI.
+- The in-app preview is 9:16 at 62 % of the content width. `RecapRenderDeviceTest` asserts the output is 1080×1920.

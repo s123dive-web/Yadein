@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="recap_title">Recap video</string>
+    <string name="recap_title">Create a reel</string>
     <string name="recap_outro">Made with Yaadein</string>
     <string name="recap_title_person">Moments with %1$s</string>
     <string name="recap_title_all">Our memories</string>
@@ -11,12 +11,12 @@
     <string name="recap_empty_message">Pick a person, a group or a year that has memories with photos or words.</string>
     <string name="recap_rendering">Rendering… %1$d%%</string>
     <string name="recap_rendering_help">You can close the app; a notification shows progress and we\'ll tell you when it\'s ready.</string>
-    <string name="recap_done_title">Your recap is ready</string>
+    <string name="recap_done_title">Your reel is ready</string>
     <string name="recap_done_text">Saved to Movies / Yaadein.</string>
     <string name="recap_make_another">Make another</string>
-    <string name="recap_failed_title">Couldn\'t finish the video</string>
-    <string name="recap_failed_text">%1$s. Try a shorter recap or leave out videos.</string>
-    <string name="recap_render">Create 1080p video</string>
+    <string name="recap_failed_title">Couldn\'t finish the reel</string>
+    <string name="recap_failed_text">%1$s. Try again, or leave out video clips.</string>
+    <string name="recap_render">Create reel</string>
     <string name="recap_scope">Who or what</string>
     <string name="scope_all">Everything</string>
     <string name="recap_year">Year</string>
@@ -30,12 +30,12 @@
     <string name="recap_music">Music</string>
     <string name="music_own">Your own audio…</string>
     <string name="music_none">No music</string>
-    <string name="music_licence">Bundled tracks are original and free to use in your videos.</string>
+    <string name="music_licence">Bundled tracks are original and free to use in your reels.</string>
     <string name="recap_length">Length</string>
     <string name="recap_length_seconds">~%1$d s</string>
     <string name="recap_include_videos">Include video clips</string>
     <string name="recap_paused">Paused — tap to play</string>
-    <string name="render_channel">Recap video rendering</string>
+    <string name="render_channel">Reel creation</string>
     <string name="render_notification_title">Rendering “%1$s”</string>
     <string name="render_notification_text">%1$d%% done</string>
     <string name="render_done_title">“%1$s” is ready</string>

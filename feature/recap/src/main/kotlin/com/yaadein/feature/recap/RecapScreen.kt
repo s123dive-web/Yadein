@@ -151,7 +151,12 @@ fun RecapScreen(
             // ---- preview ----
             val plan = state.plan
             if (plan != null) {
-                InlinePreview(plan = plan, modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(Yaadein.radius.lg)))
+                // Same shape as the exported reel (9:16), narrower than the screen so the settings stay in view.
+                InlinePreview(
+                    plan = plan,
+                    modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth(PREVIEW_WIDTH_FRACTION)
+                        .aspectRatio(plan.width.toFloat() / plan.height).clip(RoundedCornerShape(Yaadein.radius.lg)),
+                )
                 Storyboard(plan = plan)
                 Text(
                     text = stringResource(R.string.recap_summary, plan.mediaCount, formatDuration(plan.totalDurationMs)),
@@ -367,3 +372,6 @@ private fun formatDuration(ms: Long): String {
     val s = ms / 1000
     return "%d:%02d".format(s / 60, s % 60)
 }
+
+/** Share of the content width the 9:16 reel preview takes. */
+private const val PREVIEW_WIDTH_FRACTION = 0.62f
