@@ -576,3 +576,19 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   music. Each output is 1080×1920 H.264 with the planned duration (and AAC audio where expected). One reel takes 15–27 min
   on the unaccelerated emulator; the export watchdog (`setMaxDelayBetweenMuxerSamplesMs`, 60 s in the app) is disabled in the
   test for that reason.
+
+### Settings → Update app (sideloaded debug builds only)
+
+- `AppUpdater` (feature/settings): the user picks an APK with the document picker; it is copied to `cache/update/`, read with
+  `getPackageArchiveInfo` (signing certificates included) and judged by the pure `UpdateDecision.decide`:
+  other package → "not a Yaadein update"; different signing key → refused (Android would require an uninstall, which deletes
+  data); same or lower `versionCode` → "Yaadein is already up to date" (says whether the file is older); newer → installed with a
+  `PackageInstaller` session. Same package + same key = Android keeps all data (database, encrypted media, Keystore keys).
+  If the file's signers can't be read, the system installer's own key check decides (a mismatch fails without touching data).
+- First use sends the user to "Install unknown apps" for Yaadein; on return the install continues (`LifecycleResumeEffect`).
+  `UpdateStatusReceiver` starts Android's confirmation screen (`STATUS_PENDING_USER_ACTION`) and reports failures.
+- **Debug only**: `REQUEST_INSTALL_PACKAGES` and the receiver are declared in `app/src/debug/AndroidManifest.xml`; the Settings row
+  shows only when `BuildConfig.DEBUG`. Play policy forbids self-updating apps, and the release permission list is unchanged.
+  `ManifestPermissionsTest` asserts the permission is present exactly when `BuildConfig.DEBUG`.
+- **Versioning**: `versionCode` = git commit count, `versionName` = `0.1.<count>` (APK `Yaadein-v0.1.<count>-debug.apk`).
+  CI checks out with `fetch-depth: 0`. Every commit is therefore a newer build that installs over the previous one.
