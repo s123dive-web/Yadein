@@ -545,3 +545,17 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   button is explained.
 - Tests: `ChunkedAeadTest` (chunk-boundary round trips, bounded output, wrong key, truncation, tampering), `BackupManagerTest`
   (wrong password on peek, format 1 still opens).
+
+### Recap export: the real "Asset loader error" cause
+
+- The owner's device finally showed the inner cause: `Could not retrieve required duration for EditedMediaItem 0`.
+  Media3 1.11 `DefaultAssetLoaderFactory.createAssetLoader` routes an item to `ImageAssetLoader` only when
+  `MediaItem.LocalConfiguration.imageDurationMs` is set. `RecapRenderer` set the duration with
+  `EditedMediaItem.Builder.setDurationUs` only, so every title card and photo went to `ExoPlayerAssetLoader`, which has no
+  duration for a still image, and `SequenceAssetLoader.onDurationUs` rejected item 0. Every recap failed, with or without clips.
+  Fix: `MediaItem.Builder.setImageDurationMs(durationMs)` on image items.
+- On-device test: `feature/recap/src/androidTest/.../RecapRenderDeviceTest.kt` runs the real Transformer pipeline with
+  test assets (rotated H.264 clip with sound, HEVC clip, silent clip, 4000×3000 photo, portrait photo), with and without
+  music. Run with `./gradlew :feature:recap:connectedDebugAndroidTest` on a device or emulator. In the cloud container the
+  emulator runs without KVM: `emulator -avd t34 -no-window -gpu swiftshader_indirect -accel off` (system image
+  `system-images;android-34;google_apis;x86_64`), then `adb shell am instrument -w com.yaadein.feature.recap.test/androidx.test.runner.AndroidJUnitRunner`.

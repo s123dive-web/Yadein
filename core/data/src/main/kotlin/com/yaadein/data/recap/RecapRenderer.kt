@@ -191,8 +191,15 @@ class RecapRenderer(
             .build()
     }
 
+    /**
+     * A still image for [durationMs]. The duration must be set on the MediaItem with
+     * `setImageDurationMs`: Media3's DefaultAssetLoaderFactory only routes an item to the image loader
+     * when `imageDurationMs` is set. Without it the item went to the ExoPlayer loader, which reports no
+     * duration for a still picture, and every export failed with "Asset loader error (Could not
+     * retrieve required duration for EditedMediaItem 0)".
+     */
     private fun imageItem(uri: Uri, durationMs: Long, mime: String, effects: List<Effect>): EditedMediaItem =
-        EditedMediaItem.Builder(MediaItem.Builder().setUri(uri).setMimeType(mime).build())
+        EditedMediaItem.Builder(MediaItem.Builder().setUri(uri).setMimeType(mime).setImageDurationMs(durationMs).build())
             .setDurationUs(durationMs * 1_000)
             .setFrameRate(FRAME_RATE)
             .setEffects(Effects(emptyList(), effects))
