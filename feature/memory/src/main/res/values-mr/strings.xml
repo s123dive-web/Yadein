@@ -15,4 +15,5 @@
     <string name="viewer_of">%2$d पैकी %1$d</string>
     <string name="viewer_remove">आठवणीतून काढा</string>
     <string name="viewer_tag_people">माणसांना टॅग करा</string>
+    <string name="viewer_previous">मागील</string>
 </resources>

@@ -188,9 +188,17 @@ interface MemoryDao {
     @Query("SELECT CAST(strftime('%Y', start_epoch_day * 86400, 'unixepoch') AS INTEGER) AS year, COUNT(*) AS n FROM memories GROUP BY year ORDER BY year DESC")
     suspend fun countsByYear(): List<YearCount>
 
+    /**
+     * Picks the id first and loads relations in a second, deterministic query. Room's generated code
+     * for a relation query steps the statement twice (once to collect keys, once to build rows), so
+     * `ORDER BY RANDOM()` in a relation query can return a different row the second time and crash
+     * with "Required value was null".
+     */
+    @Query("SELECT id FROM memories ORDER BY RANDOM() LIMIT 1")
+    suspend fun randomId(): Long?
+
     @Transaction
-    @Query("SELECT * FROM memories ORDER BY RANDOM() LIMIT 1")
-    suspend fun random(): MemoryWithRelations?
+    suspend fun random(): MemoryWithRelations? = randomId()?.let { getWithRelations(it) }
 
     @Transaction
     @Query(

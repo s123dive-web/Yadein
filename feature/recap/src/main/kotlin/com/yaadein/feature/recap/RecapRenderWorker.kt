@@ -18,6 +18,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.yaadein.data.crash.CrashLog
 import com.yaadein.data.db.AppDatabase
 import com.yaadein.data.media.MediaStore
 import com.yaadein.data.recap.MusicSource
@@ -75,7 +76,8 @@ class RecapRenderWorker @AssistedInject constructor(
             throw e
         } catch (e: Exception) {
             output.delete()
-            Result.failure(workDataOf(KEY_ERROR to (e.message ?: e.javaClass.simpleName)))
+            CrashLog.recordNonFatal(context, "recap export", e)
+            Result.failure(workDataOf(KEY_ERROR to RecapRenderer.describe(e)))
         }
     }
 

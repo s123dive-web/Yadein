@@ -1,6 +1,5 @@
 package com.yaadein.feature.settings
 
-import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
-import androidx.core.content.FileProvider
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.data.crash.CrashLog
 import com.yaadein.core.ui.R as CoreR
@@ -80,10 +78,7 @@ fun CrashLogScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 Text(stringResource(R.string.crash_empty), style = MaterialTheme.typography.titleMedium)
             } else {
                 Button(onClick = {
-                    val file = CrashLog.file(context)
-                    val uri = FileProvider.getUriForFile(context, context.packageName + ".files", file)
-                    val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    context.startActivity(Intent.createChooser(send, shareTitle))
+                    runCatching { CrashLog.shareIntent(context, shareTitle)?.let(context::startActivity) }
                 }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.crash_export)) }
                 OutlinedButton(onClick = { CrashLog.clear(context); text = "" }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.crash_clear)) }
                 Text(text, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace))

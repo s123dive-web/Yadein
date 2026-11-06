@@ -142,4 +142,25 @@ class MemoryRepositoryTest {
         assertEquals("rahul*", MemoryRepositoryImpl.ftsQuery("  rahul's "))
         assertNull(MemoryRepositoryImpl.ftsQuery("   "))
     }
+
+    @Test
+    fun `random memory loads with its people every time`() = runTest {
+        // Regression: a relation query with ORDER BY RANDOM() is stepped twice by Room and could pick a
+        // different row the second time, crashing "Surprise me" with "Required value was null".
+        val ids = (1..12).map { i ->
+            val p = people.upsert(Person(name = "Person $i"))
+            memories.create(memory("Memory $i", LocalDate.of(2020, 1, i)), listOf(p))
+        }.toSet()
+        repeat(60) {
+            val card = memories.random()
+            assertNotNull(card)
+            assertTrue(card!!.memory.id in ids)
+            assertEquals(listOf("Person ${card.memory.title.removePrefix("Memory ")}"), card.people.map { it.name })
+        }
+    }
+
+    @Test
+    fun `random memory is null when the library is empty`() = runTest {
+        assertNull(memories.random())
+    }
 }

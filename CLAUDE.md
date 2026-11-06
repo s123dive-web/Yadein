@@ -507,3 +507,25 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   - The unaccelerated emulator needed `cmd package compile -m speed` before the app could finish starting within the system's
     process-start timeout; that is an emulator artefact, but it motivated the lazy startup change above.
   - The owner's reported "Settings exits" was not reproduced on either image; the home banner lets the device's own report be shared.
+
+### Device-reported fixes (Surprise me, recap export, problem log share, media viewer)
+
+- **Surprise me crashed** with `IllegalStateException: Required value was null` in `MemoryDao_Impl.random`. Room's generated
+  code for a `@Transaction` relation query steps the statement once to collect keys, resets it, then steps it again to build
+  rows; with `ORDER BY RANDOM()` the second pass returned a different memory whose relations had not been loaded.
+  `MemoryDao.random()` now picks an id with `randomId()` and loads it with the deterministic `getWithRelations(id)`.
+  Rule: never put `RANDOM()` (or anything non-deterministic) in a Room query that returns a type with `@Relation`s.
+  Regression test: `MemoryRepositoryTest` "random memory loads with its people every time".
+- **Recap export failed with "Asset loader error"**. Media3 `SequenceAssetLoader` rejects a sequence that starts with an
+  item without audio (the intro card / photos) and later reaches a clip with audio unless `experimentalSetForceAudioTrack(true)`
+  is set. `RecapRenderer` now mutes clips when a soundtrack is chosen (music is the only audio) and, with no soundtrack,
+  keeps clip sound and forces a silent track under images. It also tone-maps HDR phone clips to SDR
+  (`HDR_MODE_TONE_MAP_HDR_TO_SDR_USING_OPEN_GL`, output is 8-bit H.264), caps decoded photos at 2560 px on the long edge,
+  appends the innermost cause to the failure message, and records the failure in the problem log via
+  `CrashLog.recordNonFatal` (no crash banner).
+- **Sharing the problem log crashed**: `files/crash.log` is not under a FileProvider root (`vault_file_paths.xml` exposes only
+  `cache/exports/` and external `Movies/`). `CrashLog.shareIntent` copies the log to `cache/exports/` and also puts the text in
+  `EXTRA_TEXT`; both the Settings page and the home banner use it. Test: `CrashLogTest`.
+- **Media viewer had no next/previous**: the photo zoom handler (`detectTransformGestures`) consumed every drag, so the pager
+  could not swipe. It now only consumes while pinching or when zoomed in, and the viewer shows previous/next buttons
+  (also usable over videos, whose player view takes touches).

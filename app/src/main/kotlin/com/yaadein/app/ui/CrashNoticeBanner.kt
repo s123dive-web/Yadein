@@ -1,6 +1,5 @@
 package com.yaadein.app.ui
 
-import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.FileProvider
 import com.yaadein.app.R
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.data.crash.CrashLog
@@ -49,9 +47,7 @@ fun CrashNoticeBanner(modifier: Modifier = Modifier) {
                 TextButton(onClick = { CrashLog.markSeen(context); pending = false }) { Text(stringResource(R.string.crash_notice_dismiss)) }
                 Spacer(Modifier.width(spacing.sm))
                 Button(onClick = {
-                    val uri = FileProvider.getUriForFile(context, context.packageName + ".files", CrashLog.file(context))
-                    val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    context.startActivity(Intent.createChooser(send, shareTitle))
+                    runCatching { CrashLog.shareIntent(context, shareTitle)?.let(context::startActivity) }
                     CrashLog.markSeen(context); pending = false
                 }) { Text(shareTitle) }
             }

@@ -73,12 +73,18 @@ class RecapRenderer(
         val painter = CardPainter(style)
         val cardDir = File(mediaStore.renderDir, "cards-${System.nanoTime()}").apply { mkdirs() }
         try {
-            val video = buildVideoSequence(plan, painter, cardDir)
+            val musicSequence = musicSequence(music)
+            // With a soundtrack, clips are muted so the music is the only audio. Without one, clips keep
+            // their sound and images get a silent track (see buildVideoSequence).
+            val video = buildVideoSequence(plan, painter, cardDir, keepClipAudio = musicSequence == null)
             val sequences = ArrayList<EditedMediaItemSequence>()
             sequences += video
-            musicSequence(music)?.let { sequences += it }
+            musicSequence?.let { sequences += it }
             val composition = Composition.Builder(sequences)
                 .setEffects(Effects(emptyList(), listOf(Presentation.createForWidthAndHeight(plan.width, plan.height, Presentation.LAYOUT_SCALE_TO_FIT_WITH_CROP)) + themeEffects(plan.theme)))
+                // Phone videos are often HDR (HLG/HDR10) while photos and cards are SDR; the output is 8-bit
+                // H.264, so tone-map everything to SDR instead of failing on mixed colour spaces.
+                .setHdrMode(Composition.HDR_MODE_TONE_MAP_HDR_TO_SDR_USING_OPEN_GL)
                 .build()
             withContext(Dispatchers.Main) { export(composition, output, onProgress) }
         } finally {
@@ -88,7 +94,12 @@ class RecapRenderer(
 
     private suspend fun export(composition: Composition, output: File, onProgress: (Int) -> Unit) {
         val dataSourceFactory = VaultDataSourceFactory(context, db, mediaStore)
-        val bitmapLoader = DataSourceBitmapLoader(MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()), dataSourceFactory)
+        val bitmapExecutor = Executors.newSingleThreadExecutor()
+        val bitmapLoader = DataSourceBitmapLoader.Builder(context)
+            .setExecutorService(MoreExecutors.listeningDecorator(bitmapExecutor))
+            .setDataSourceFactory(dataSourceFactory)
+            .setMaximumOutputDimension(MAX_BITMAP_EDGE)
+            .build()
         val assetLoaderFactory = DefaultAssetLoaderFactory(
             context,
             DefaultDecoderFactory.Builder(context).build(),
@@ -96,6 +107,14 @@ class RecapRenderer(
             DefaultMediaSourceFactory(dataSourceFactory),
             bitmapLoader,
         )
+        try {
+            awaitExport(assetLoaderFactory, composition, output, onProgress)
+        } finally {
+            bitmapExecutor.shutdown()
+        }
+    }
+
+    private suspend fun awaitExport(assetLoaderFactory: DefaultAssetLoaderFactory, composition: Composition, output: File, onProgress: (Int) -> Unit) {
         suspendCancellableCoroutine { cont ->
             val transformer = Transformer.Builder(context)
                 .setVideoMimeType(MimeTypes.VIDEO_H264)
@@ -104,7 +123,7 @@ class RecapRenderer(
                 .addListener(object : Transformer.Listener {
                     override fun onCompleted(composition: Composition, exportResult: ExportResult) { if (cont.isActive) cont.resume(Unit) }
                     override fun onError(composition: Composition, exportResult: ExportResult, exportException: ExportException) {
-                        if (cont.isActive) cont.resumeWithException(RenderException(exportException.message ?: "export failed", exportException))
+                        if (cont.isActive) cont.resumeWithException(RenderException(describe(exportException), exportException))
                     }
                 })
                 .build()
@@ -127,8 +146,15 @@ class RecapRenderer(
         }
     }
 
-    private fun buildVideoSequence(plan: RecapPlan, painter: CardPainter, cardDir: File): EditedMediaItemSequence {
+    /**
+     * Builds the picture track. A Transformer sequence must have the same track types throughout: if
+     * it starts with an image (no audio) and later reaches a clip with audio, export fails with
+     * "Asset loader error". So clips are either muted ([keepClipAudio] false, music plays instead) or
+     * the sequence is told to add silence under the images.
+     */
+    private fun buildVideoSequence(plan: RecapPlan, painter: CardPainter, cardDir: File, keepClipAudio: Boolean): EditedMediaItemSequence {
         val items = ArrayList<EditedMediaItem>()
+        var hasClip = false
         plan.segments.forEachIndexed { index, seg ->
             when (seg) {
                 is RecapSegment.TitleCard -> {
@@ -152,11 +178,17 @@ class RecapRenderer(
                         .setMimeType(MimeTypes.VIDEO_MP4)
                         .setClippingConfiguration(MediaItem.ClippingConfiguration.Builder().setStartPositionMs(seg.startMs).setEndPositionMs(seg.endMs).build())
                         .build()
-                    items += EditedMediaItem.Builder(mediaItem).setEffects(Effects(emptyList(), effects)).build()
+                    items += EditedMediaItem.Builder(mediaItem)
+                        .setRemoveAudio(!keepClipAudio)
+                        .setEffects(Effects(emptyList(), effects))
+                        .build()
+                    hasClip = true
                 }
             }
         }
-        return EditedMediaItemSequence.Builder(items).build()
+        return EditedMediaItemSequence.Builder(items)
+            .experimentalSetForceAudioTrack(keepClipAudio && hasClip)
+            .build()
     }
 
     private fun imageItem(uri: Uri, durationMs: Long, mime: String, effects: List<Effect>): EditedMediaItem =
@@ -212,5 +244,18 @@ class RecapRenderer(
 
     companion object {
         const val FRAME_RATE = 30
+
+        /** Photos are decoded no larger than this on their long edge; keeps 50 MP originals within GPU texture limits and memory. */
+        const val MAX_BITMAP_EDGE = 2560
+
+        /** "Asset loader error" on its own says nothing; append the innermost cause so the message is actionable. */
+        fun describe(e: Throwable): String {
+            var root: Throwable = e
+            while (root.cause != null && root.cause !== root) root = root.cause!!
+            val head = e.message ?: e.javaClass.simpleName
+            if (root === e) return head
+            val detail = root.message?.takeIf { it.isNotBlank() } ?: root.javaClass.simpleName
+            return "$head (${detail.take(200)})"
+        }
     }
 }

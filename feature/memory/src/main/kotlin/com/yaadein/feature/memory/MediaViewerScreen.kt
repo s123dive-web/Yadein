@@ -1,8 +1,11 @@
 package com.yaadein.feature.memory
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,19 +15,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -36,12 +44,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -155,6 +165,7 @@ fun MediaViewerScreen(
     var tagging by remember { mutableStateOf(false) }
     var confirmRemove by remember { mutableStateOf(false) }
     val current = state.media[pager.currentPage.coerceIn(0, state.media.lastIndex)]
+    val scope = rememberCoroutineScope()
     LaunchedEffect(current.id) { onLoadTags(current.id) }
     Box(modifier = modifier.fillMaxSize().background(Color.Black)) {
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { state.media[it].id }) { page ->
@@ -173,6 +184,26 @@ fun MediaViewerScreen(
                 IconButton(onClick = { tagging = !tagging }) { Icon(Icons.Rounded.People, contentDescription = stringResource(R.string.viewer_tag_people), tint = Color.White) }
                 IconButton(onClick = { editingCaption = true }) { Icon(Icons.Rounded.Edit, contentDescription = stringResource(R.string.viewer_caption_hint), tint = Color.White) }
                 IconButton(onClick = { confirmRemove = true }) { Icon(Icons.Rounded.Delete, contentDescription = stringResource(R.string.viewer_remove), tint = Color.White) }
+            }
+            // Visible previous/next controls: swiping works too, but buttons are discoverable and also
+            // work over a video, whose player view takes the touch events.
+            val navColors = IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = Color.Black.copy(alpha = NAV_SCRIM_ALPHA),
+                contentColor = Color.White,
+            )
+            if (pager.currentPage > 0) {
+                FilledTonalIconButton(
+                    onClick = { scope.launch { pager.animateScrollToPage(pager.currentPage - 1) } },
+                    colors = navColors,
+                    modifier = Modifier.align(Alignment.CenterStart).padding(spacing.sm).size(Yaadein.sizes.touchTarget),
+                ) { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, contentDescription = stringResource(R.string.viewer_previous)) }
+            }
+            if (pager.currentPage < state.media.lastIndex) {
+                FilledTonalIconButton(
+                    onClick = { scope.launch { pager.animateScrollToPage(pager.currentPage + 1) } },
+                    colors = navColors,
+                    modifier = Modifier.align(Alignment.CenterEnd).padding(spacing.sm).size(Yaadein.sizes.touchTarget),
+                ) { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = stringResource(CoreR.string.action_next)) }
             }
             Column(modifier = Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(spacing.lg).fillMaxWidth()) {
                 if (current.caption.isNotBlank()) Text(current.caption, color = Color.White, style = MaterialTheme.typography.bodyLarge)
@@ -219,9 +250,24 @@ private fun ZoomableImage(media: Media, onTap: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(media.id) {
-                detectTransformGestures { _, pan, zoom, _ ->
-                    scale = (scale * zoom).coerceIn(1f, 5f)
-                    if (scale > 1f) { offsetX += pan.x; offsetY += pan.y } else { offsetX = 0f; offsetY = 0f }
+                // Only claim the gesture while pinching or when already zoomed in. A one-finger drag on an
+                // unzoomed photo is left unconsumed so the pager can swipe to the next/previous item.
+                awaitEachGesture {
+                    awaitFirstDown(requireUnconsumed = false)
+                    do {
+                        val event = awaitPointerEvent()
+                        val pinching = event.changes.count { it.pressed } > 1
+                        if (pinching || scale > 1f) {
+                            scale = (scale * event.calculateZoom()).coerceIn(1f, 5f)
+                            if (scale > 1f) {
+                                val pan = event.calculatePan()
+                                offsetX += pan.x; offsetY += pan.y
+                            } else {
+                                offsetX = 0f; offsetY = 0f
+                            }
+                            event.changes.forEach { if (it.positionChanged()) it.consume() }
+                        }
+                    } while (event.changes.any { it.pressed })
                 }
             }
             .pointerInput(media.id) { detectTapGestures(onTap = { onTap() }, onDoubleTap = { scale = if (scale > 1f) 1f else 2.5f; offsetX = 0f; offsetY = 0f }) }
@@ -253,3 +299,5 @@ private fun VideoPage(media: Media, dataSourceFactory: androidx.media3.datasourc
         modifier = Modifier.fillMaxSize(),
     )
 }
+
+private const val NAV_SCRIM_ALPHA = 0.45f
