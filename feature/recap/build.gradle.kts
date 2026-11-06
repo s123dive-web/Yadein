@@ -87,4 +87,9 @@ dependencies {
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.test.manifest)
+
+    // On-device recap rendering test (needs MediaCodec + OpenGL): ./gradlew :feature:recap:connectedDebugAndroidTest
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.core)
 }
