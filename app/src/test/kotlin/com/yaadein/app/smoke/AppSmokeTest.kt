@@ -102,7 +102,8 @@ class AppSmokeTest {
         tab("People")
         compose.onAllNodesWithText("Aai")[0].performClick()
         compose.waitForIdle()
-        compose.onNodeWithText("Sunita Deshmukh").assertIsDisplayed()
+        // The person story loads from the database; give the coroutine a moment under Robolectric.
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("Sunita Deshmukh").fetchSemanticsNodes().isNotEmpty() }
     }
 
     @Test
