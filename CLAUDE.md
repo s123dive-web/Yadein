@@ -492,8 +492,14 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
 - **App smoke test** (`app/src/test/.../smoke/AppSmokeTest.kt`): Hilt `@TestInstallIn` replaces `DataModule` with JVM
   fakes (`TestDataModule`), launches the real `MainActivity` under Robolectric (API 35) and walks the home tabs, every
   settings page, the capture hub, demo data, the lock overlay and the crash banner.
-- **Device check**: the debug APK was also exercised on a headless API 34 emulator (software-rendered, no KVM) in the
-  cloud container: onboarding → person → PIN → lock → Home → Settings (and the Settings pages) worked in English and
-  Hindi with the real Keystore/SQLCipher stack. The owner's reported "Settings exits" could not be reproduced there; the
-  home banner exists so the on-device report can be shared.
-
+- **Startup**: `YaadeinApplication` injects `AppDatabase`, `MediaStore` and `MediaImporter` as `dagger.Lazy`, so Keystore,
+  EncryptedSharedPreferences and SQLCipher setup run on the IO thread that recovers imports, not on the main thread at process start.
+- **Device check** (headless emulators in the cloud container, software rendering, no KVM):
+  - API 34: onboarding, first person, PIN setup, lock, Home and the Settings tab worked in English and Hindi with the real
+    Keystore/SQLCipher stack.
+  - API 36 with the CI `build-11` APK: first-run setup, then every Settings page (Appearance, Security, Relive reminders,
+    Face suggestions, Storage, Backup and restore, Privacy, Problem log, About) opened and closed in one process with no crash
+    or ANR. Lock timeout: back after 20 s → no PIN; back after 75 s → PIN screen.
+  - The unaccelerated emulator needed `cmd package compile -m speed` before the app could finish starting within the system's
+    process-start timeout; that is an emulator artefact, but it motivated the lazy startup change above.
+  - The owner's reported "Settings exits" was not reproduced on either image; the home banner lets the device's own report be shared.
