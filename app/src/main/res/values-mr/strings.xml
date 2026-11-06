@@ -9,4 +9,5 @@
     <string name="crash_notice_body">एक छोटी तांत्रिक नोंद फक्त या फोनवर साठवली आहे. ती डेव्हलपरला पाठवल्यास समस्या सोडवायला मदत होते; बाकी काहीही फोनबाहेर जात नाही.</string>
     <string name="crash_notice_share">अहवाल पाठवा</string>
     <string name="crash_notice_dismiss">काढून टाका</string>
+    <string name="share_target_label">Yaadein मध्ये जतन करा</string>
 </resources>

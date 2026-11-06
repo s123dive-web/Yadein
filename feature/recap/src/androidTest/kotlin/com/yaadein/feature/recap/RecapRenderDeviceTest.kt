@@ -99,6 +99,10 @@ class RecapRenderDeviceTest {
 
     private fun assertPlayableVideo(out: File, plan: RecapPlan, expectAudio: Boolean) {
         assertTrue("output written", out.exists() && out.length() > 10_000)
+        // `-e keep 1` keeps a copy for inspection: adb exec-out run-as com.yaadein.feature.recap.test cat cache/kept/<name>.mp4
+        if (InstrumentationRegistry.getArguments().getString("keep") == "1") {
+            out.copyTo(File(File(context.cacheDir, "kept").apply { mkdirs() }, "${plan.theme.name.lowercase()}-${out.name}"), overwrite = true)
+        }
         val mmr = MediaMetadataRetriever().apply { setDataSource(out.path) }
         val durationMs = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toLong()
         assertEquals("yes", mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO))

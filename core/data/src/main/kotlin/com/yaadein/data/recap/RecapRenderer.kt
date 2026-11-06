@@ -20,7 +20,9 @@ import androidx.media3.effect.RgbFilter
 import androidx.media3.effect.StaticOverlaySettings
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.transformer.Composition
+import androidx.media3.transformer.AudioEncoderSettings
 import androidx.media3.transformer.DefaultAssetLoaderFactory
+import androidx.media3.transformer.DefaultEncoderFactory
 import androidx.media3.transformer.DefaultDecoderFactory
 import androidx.media3.transformer.EditedMediaItem
 import androidx.media3.transformer.EditedMediaItemSequence
@@ -29,6 +31,7 @@ import androidx.media3.transformer.ExportException
 import androidx.media3.transformer.ExportResult
 import androidx.media3.transformer.ProgressHolder
 import androidx.media3.transformer.Transformer
+import androidx.media3.transformer.VideoEncoderSettings
 import com.google.common.util.concurrent.MoreExecutors
 import com.yaadein.data.db.AppDatabase
 import com.yaadein.data.media.EncryptedDataSource
@@ -91,7 +94,19 @@ class RecapRenderer(
                 // H.264, so tone-map everything to SDR instead of failing on mixed colour spaces.
                 .setHdrMode(Composition.HDR_MODE_TONE_MAP_HDR_TO_SDR_USING_OPEN_GL)
                 .build()
-            withContext(Dispatchers.Main) { export(composition, output, onProgress) }
+            // A codec can be taken away mid-export when the phone is short of resources (Android reclaims it and
+            // configure() fails on a released codec). That is transient, so try once more before giving up.
+            var attempt = 0
+            while (true) {
+                try {
+                    withContext(Dispatchers.Main) { export(composition, output, onProgress) }
+                    break
+                } catch (e: RenderException) {
+                    if (++attempt >= MAX_ATTEMPTS || !isTransientCodecFailure(e)) throw e
+                    output.delete()
+                    delay(RETRY_DELAY_MS)
+                }
+            }
         } finally {
             cardDir.deleteRecursively()
         }
@@ -124,6 +139,7 @@ class RecapRenderer(
             val transformer = Transformer.Builder(context)
                 .setVideoMimeType(MimeTypes.VIDEO_H264)
                 .setAudioMimeType(MimeTypes.AUDIO_AAC)
+                .setEncoderFactory(encoderFactory())
                 .setAssetLoaderFactory(assetLoaderFactory)
                 .setMaxDelayBetweenMuxerSamplesMs(maxDelayBetweenMuxerSamplesMs)
                 .addListener(object : Transformer.Listener {
@@ -158,7 +174,8 @@ class RecapRenderer(
      * "Asset loader error". So clips are either muted ([keepClipAudio] false, music plays instead) or
      * the sequence is told to add silence under the images.
      */
-    private fun buildVideoSequence(plan: RecapPlan, painter: CardPainter, cardDir: File, keepClipAudio: Boolean): EditedMediaItemSequence {
+    private suspend fun buildVideoSequence(plan: RecapPlan, painter: CardPainter, cardDir: File, keepClipAudio: Boolean): EditedMediaItemSequence {
+        val framer = PhotoFramer(plan.width, plan.height)
         val items = ArrayList<EditedMediaItem>()
         var hasClip = false
         plan.segments.forEachIndexed { index, seg ->
@@ -171,12 +188,16 @@ class RecapRenderer(
                     items += imageItem(Uri.fromFile(file), seg.durationMs, MimeTypes.IMAGE_PNG, emptyList())
                 }
                 is RecapSegment.Photo -> {
-                    // Crop to the reel frame first, so the pan/zoom and the caption work in output pixels.
+                    // Pre-framed at 1.25x the reel size (blurred backdrop for wide photos), then: pan/zoom on the
+                    // big frame, scale down to the reel size (always downsampling, so it stays sharp), caption last
+                    // so it is drawn in output pixels and does not zoom.
+                    val framed = File(cardDir, "photo$index.jpg")
+                    val source = if (framePhoto(framer, seg.mediaId, framed)) Uri.fromFile(framed) else EncryptedDataSource.uriFor(seg.mediaId)
                     val effects = ArrayList<Effect>()
-                    effects += fitToFrame(plan)
                     effects += kenBurns(seg)
+                    effects += fitToFrame(plan)
                     captionOverlay(painter, plan, seg.caption, seg.dateLabel)?.let { effects += it }
-                    items += imageItem(EncryptedDataSource.uriFor(seg.mediaId), seg.durationMs, MimeTypes.IMAGE_JPEG, effects)
+                    items += imageItem(source, seg.durationMs, MimeTypes.IMAGE_JPEG, effects)
                 }
                 is RecapSegment.Clip -> {
                     val effects = ArrayList<Effect>()
@@ -207,6 +228,13 @@ class RecapRenderer(
      * duration for a still picture, and every export failed with "Asset loader error (Could not
      * retrieve required duration for EditedMediaItem 0)".
      */
+    /** Decrypts one vault photo in memory and writes the framed JPEG; false if it cannot be read (renderer falls back). */
+    private suspend fun framePhoto(framer: PhotoFramer, mediaId: Long, out: File): Boolean = runCatching {
+        val media = db.mediaDao().get(mediaId) ?: return false
+        framer.frame(mediaStore.crypto.decryptToBytes(mediaStore.file(media.encryptedPath)), out)
+        true
+    }.getOrDefault(false)
+
     private fun imageItem(uri: Uri, durationMs: Long, mime: String, effects: List<Effect>): EditedMediaItem =
         EditedMediaItem.Builder(MediaItem.Builder().setUri(uri).setMimeType(mime).setImageDurationMs(durationMs).build())
             .setDurationUs(durationMs * 1_000)
@@ -223,6 +251,24 @@ class RecapRenderer(
         val item = EditedMediaItem.Builder(MediaItem.fromUri(uri)).setRemoveVideo(true).build()
         return EditedMediaItemSequence.Builder(item).setIsLooping(true).build()
     }
+
+    private fun isTransientCodecFailure(e: RenderException): Boolean {
+        val code = (e.cause as? ExportException)?.errorCode ?: return false
+        return code == ExportException.ERROR_CODE_DECODER_INIT_FAILED || code == ExportException.ERROR_CODE_DECODING_FAILED ||
+            code == ExportException.ERROR_CODE_ENCODER_INIT_FAILED || code == ExportException.ERROR_CODE_ENCODING_FAILED
+    }
+
+    /**
+     * Fixed high bitrate instead of the encoder's own pick, which is often low for a 1080x1920 frame on phone
+     * hardware encoders; reel apps re-encode on upload, so a clean source matters. Fallback stays on so a phone
+     * that cannot do this still gets the closest supported setting instead of a failure.
+     */
+    private fun encoderFactory(): DefaultEncoderFactory =
+        DefaultEncoderFactory.Builder(context)
+            .setRequestedVideoEncoderSettings(VideoEncoderSettings.Builder().setBitrate(VIDEO_BITRATE).build())
+            .setRequestedAudioEncoderSettings(AudioEncoderSettings.Builder().setBitrate(AUDIO_BITRATE).build())
+            .setEnableFallback(true)
+            .build()
 
     private fun fitToFrame(plan: RecapPlan): Presentation =
         Presentation.createForWidthAndHeight(plan.width, plan.height, Presentation.LAYOUT_SCALE_TO_FIT_WITH_CROP)
@@ -269,6 +315,11 @@ class RecapRenderer(
     companion object {
         const val FRAME_RATE = 30
         const val MAX_DELAY_BETWEEN_MUXER_SAMPLES_MS = 60_000L
+        /** 16 Mbit/s H.264 for 1080x1920 at 30 fps: visually clean, about 2 MB per second of reel. */
+        const val VIDEO_BITRATE = 16_000_000
+        const val AUDIO_BITRATE = 192_000
+        private const val MAX_ATTEMPTS = 2
+        private const val RETRY_DELAY_MS = 1_500L
 
         /** Photos are decoded no larger than this on their long edge; keeps 50 MP originals within GPU texture limits and memory. */
         const val MAX_BITMAP_EDGE = 2560

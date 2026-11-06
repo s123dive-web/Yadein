@@ -25,4 +25,5 @@
     <string name="filter_from">From</string>
     <string name="filter_to">To</string>
     <string name="filter_apply">Show memories</string>
+    <string name="timeline_about">About Yaadein</string>
 </resources>

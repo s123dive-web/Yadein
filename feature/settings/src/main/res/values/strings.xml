@@ -149,4 +149,20 @@
     <string name="update_failed_title">The update didn\'t install</string>
     <string name="update_unreadable">The file couldn\'t be read as an app. Download it again and try once more.</string>
     <string name="update_data_note">Updating keeps everything: Android only replaces the app itself when the new version has the same name and signing key. Making a backup first is still a good habit.</string>
+    <string name="app_info_title">About Yaadein</string>
+    <string name="app_info_open">What is Yaadein?</string>
+    <string name="app_info_headline">Your family’s memories, kept close and kept private</string>
+    <string name="app_info_intro">Yaadein is a private memory book for the people you love. Keep photos, videos or just a few words about a day, and come back to them as a timeline, as each person’s story, or as a reel to share.</string>
+    <string name="app_info_capture_title">Capture in seconds</string>
+    <string name="app_info_capture_body">Add photos and videos, or write a line like “Goa trip 2024” and Yaadein turns it into a memory. Old days are easy too: pick a month, a year or “around Diwali”.</string>
+    <string name="app_info_relive_title">Relive them together</string>
+    <string name="app_info_relive_body">Scroll your timeline, open anyone’s story, see what happened on this day in past years, or shake your phone for a surprise memory.</string>
+    <string name="app_info_reels_title">Make reels to share</string>
+    <string name="app_info_reels_body">Turn a person, a year or a single day into a vertical reel with music, ready for WhatsApp status, Instagram or a birthday wish.</string>
+    <string name="app_info_private_title">Private by design</string>
+    <string name="app_info_private_body">Everything stays on this phone, encrypted and behind your fingerprint or PIN. No account, no ads, no internet, no tracking.</string>
+    <string name="app_info_backup_title">Safe when you change phones</string>
+    <string name="app_info_backup_body">Make one password-protected backup file and restore it on your next phone, with every photo and story intact.</string>
+    <string name="app_info_share_title">Straight from your gallery</string>
+    <string name="app_info_share_body">Select photos in Google Photos or any gallery, tap Share, choose Yaadein, and a new memory opens with them already added.</string>
 </resources>

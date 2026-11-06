@@ -10,4 +10,5 @@
     <string name="crash_notice_body">A short technical note was saved on this phone only. Sharing it with the developer helps fix the problem; nothing else leaves your phone.</string>
     <string name="crash_notice_share">Share report</string>
     <string name="crash_notice_dismiss">Dismiss</string>
+    <string name="share_target_label">Save to Yaadein</string>
 </resources>

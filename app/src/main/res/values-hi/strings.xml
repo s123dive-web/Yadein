@@ -9,4 +9,5 @@
     <string name="crash_notice_body">एक छोटा तकनीकी नोट सिर्फ़ इसी फ़ोन पर सहेजा गया है। इसे डेवलपर के साथ साझा करने से समस्या सुधारने में मदद मिलती है; और कुछ भी फ़ोन से बाहर नहीं जाता।</string>
     <string name="crash_notice_share">रिपोर्ट साझा करें</string>
     <string name="crash_notice_dismiss">हटाएँ</string>
+    <string name="share_target_label">Yaadein में सहेजें</string>
 </resources>

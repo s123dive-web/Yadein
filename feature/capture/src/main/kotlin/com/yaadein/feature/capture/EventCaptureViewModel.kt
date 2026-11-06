@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yaadein.data.media.ImportCoordinator
+import com.yaadein.data.media.SharedMediaInbox
 import com.yaadein.data.media.ImportFailure
 import com.yaadein.data.media.MediaImporter
 import com.yaadein.data.media.PickedMedia
@@ -64,6 +65,11 @@ class EventCaptureViewModel @Inject constructor(
     val state: StateFlow<EventCaptureUiState> = _state.asStateFlow()
 
     init {
+        // Opened from "Share → Yaadein": attach the shared photos/videos straight away (once per screen).
+        if (savedStateHandle.get<Boolean>("fromShare") == true && savedStateHandle.get<Boolean>(SHARE_TAKEN) != true) {
+            savedStateHandle[SHARE_TAKEN] = true
+            SharedMediaInbox.take().takeIf { it.isNotEmpty() }?.let(::onPicked)
+        }
         viewModelScope.launch {
             personRepository.observeAll().collect { people -> _state.update { it.copy(people = people) } }
         }
@@ -141,5 +147,9 @@ class EventCaptureViewModel @Inject constructor(
             _state.update { it.copy(saving = false) }
             onSaved(id)
         }
+    }
+
+    private companion object {
+        const val SHARE_TAKEN = "shareTaken"
     }
 }

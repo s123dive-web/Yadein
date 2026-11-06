@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,6 +70,7 @@ fun TimelineRoute(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     twoPane: Boolean = false,
+    onAbout: () -> Unit = {},
     viewModel: TimelineViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -92,6 +94,7 @@ fun TimelineRoute(
                 onClearFilter = viewModel::clearFilter,
                 onOpenFilters = viewModel::openFilters,
                 onCloseFilters = viewModel::closeFilters,
+                onAbout = onAbout,
                 contentPadding = contentPadding,
                 modifier = Modifier.weight(1f),
             )
@@ -109,6 +112,7 @@ fun TimelineRoute(
         onClearFilter = viewModel::clearFilter,
         onOpenFilters = viewModel::openFilters,
         onCloseFilters = viewModel::closeFilters,
+        onAbout = onAbout,
         contentPadding = contentPadding,
         modifier = modifier,
     )
@@ -130,6 +134,7 @@ fun TimelineScreen(
     listState: LazyListState = rememberLazyListState(),
     onOpenFilters: () -> Unit = {},
     onCloseFilters: () -> Unit = {},
+    onAbout: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val scope = rememberCoroutineScope()
@@ -143,6 +148,9 @@ fun TimelineScreen(
                 )
             },
             actions = {
+                IconButton(onClick = onAbout) {
+                    Icon(imageVector = Icons.Rounded.Info, contentDescription = stringResource(R.string.timeline_about))
+                }
                 IconButton(onClick = { onSearchActive(!state.searchActive) }) {
                     Icon(
                         imageVector = if (state.searchActive) Icons.Rounded.Close else Icons.Rounded.Search,

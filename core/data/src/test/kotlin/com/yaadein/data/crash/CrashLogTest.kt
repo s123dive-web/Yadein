@@ -10,6 +10,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -17,6 +18,12 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class CrashLogTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
+
+    /** FileProvider caches its roots per authority, but Robolectric gives every test a new cache dir. */
+    @Before
+    fun resetFileProviderCache() {
+        androidx.core.content.FileProvider::class.java.getDeclaredField("sCache").apply { isAccessible = true }.let { (it.get(null) as MutableMap<*, *>).clear() }
+    }
 
     @After
     fun tearDown() = CrashLog.clear(context)

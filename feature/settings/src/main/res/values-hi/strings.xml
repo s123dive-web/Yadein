@@ -149,4 +149,20 @@
     <string name="update_failed_title">अपडेट इंस्टॉल नहीं हुआ</string>
     <string name="update_unreadable">फ़ाइल ऐप के रूप में पढ़ी नहीं जा सकी। फिर से डाउनलोड करके कोशिश करें।</string>
     <string name="update_data_note">अपडेट से सब कुछ बना रहता है: नए संस्करण का नाम और साइनिंग कुंजी वही हो तो Android सिर्फ़ ऐप बदलता है। फिर भी पहले बैकअप बनाना अच्छी आदत है।</string>
+    <string name="app_info_title">Yaadein के बारे में</string>
+    <string name="app_info_open">Yaadein क्या है?</string>
+    <string name="app_info_headline">आपके परिवार की यादें, पास भी और निजी भी</string>
+    <string name="app_info_intro">Yaadein अपने प्रियजनों के लिए एक निजी यादों की किताब है। किसी दिन की फ़ोटो, वीडियो या बस कुछ शब्द रखें, और उन्हें टाइमलाइन, हर व्यक्ति की कहानी या साझा करने लायक रील के रूप में फिर से देखें।</string>
+    <string name="app_info_capture_title">पल भर में सहेजें</string>
+    <string name="app_info_capture_body">फ़ोटो और वीडियो जोड़ें, या “गोवा ट्रिप 2024” जैसी एक लाइन लिखें, Yaadein उसे याद में बदल देगा। पुराने दिन भी आसान हैं: महीना, साल या “दिवाली के आसपास” चुनें।</string>
+    <string name="app_info_relive_title">साथ मिलकर फिर से जिएँ</string>
+    <string name="app_info_relive_body">अपनी टाइमलाइन देखें, किसी की भी कहानी खोलें, पिछले सालों में आज के दिन क्या हुआ देखें, या फ़ोन हिलाकर कोई सरप्राइज़ याद पाएँ।</string>
+    <string name="app_info_reels_title">साझा करने के लिए रील बनाएँ</string>
+    <string name="app_info_reels_body">किसी व्यक्ति, साल या एक दिन को संगीत के साथ वर्टिकल रील में बदलें, WhatsApp स्टेटस, Instagram या जन्मदिन की शुभकामना के लिए तैयार।</string>
+    <string name="app_info_private_title">शुरू से निजी</string>
+    <string name="app_info_private_body">सब कुछ इसी फ़ोन पर, एन्क्रिप्टेड और आपके फ़िंगरप्रिंट या पिन के पीछे रहता है। न खाता, न विज्ञापन, न इंटरनेट, न ट्रैकिंग।</string>
+    <string name="app_info_backup_title">फ़ोन बदलें तब भी सुरक्षित</string>
+    <string name="app_info_backup_body">एक पासवर्ड-सुरक्षित बैकअप फ़ाइल बनाएँ और अगले फ़ोन पर रिस्टोर करें, हर फ़ोटो और कहानी के साथ।</string>
+    <string name="app_info_share_title">सीधे अपनी गैलरी से</string>
+    <string name="app_info_share_body">Google Photos या किसी भी गैलरी में फ़ोटो चुनें, शेयर पर टैप करें, Yaadein चुनें, और नई याद उन फ़ोटो के साथ खुल जाएगी।</string>
 </resources>

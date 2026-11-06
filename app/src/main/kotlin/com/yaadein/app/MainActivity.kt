@@ -1,6 +1,7 @@
 package com.yaadein.app
 
 import android.content.Intent
+import com.yaadein.data.media.SharedMediaInbox
 import android.os.Bundle
 import com.yaadein.feature.relive.notify.OnThisDayWorker
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,13 +59,17 @@ class MainActivity : FragmentActivity() {
         }
 
         pendingMemory.value = intent?.getLongExtra(OnThisDayWorker.EXTRA_MEMORY_ID, -1L)?.takeIf { it > 0 }
+        // A share from a gallery app; skip it when the activity is only being recreated (rotation, process restore).
+        if (savedInstanceState == null) receiveShare(intent)
         val biometricLauncher = BiometricHelper.launcher(this)
         setContent {
             val current by settings.collectAsStateWithLifecycle()
             val locked by lockState.locked.collectAsStateWithLifecycle()
             current?.let { s ->
                 val pending by pendingMemory.collectAsStateWithLifecycle()
+                val shared by SharedMediaInbox.pending.collectAsStateWithLifecycle()
                 YaadeinApp(
+                    hasSharedMedia = shared.isNotEmpty(),
                     settings = s,
                     locked = locked,
                     biometricLauncher = biometricLauncher,
@@ -80,6 +85,13 @@ class MainActivity : FragmentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         pendingMemory.value = intent.getLongExtra(OnThisDayWorker.EXTRA_MEMORY_ID, -1L).takeIf { it > 0 }
+        receiveShare(intent)
+    }
+
+    /** Copies shared photos/videos into the app cache now, while the sender's read grant is valid. */
+    private fun receiveShare(intent: Intent?) {
+        if (!SharedMediaInbox.isShare(intent)) return
+        lifecycleScope.launch { SharedMediaInbox.receive(applicationContext, intent!!) }
     }
 
     override fun onStart() {

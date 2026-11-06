@@ -592,3 +592,27 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   `ManifestPermissionsTest` asserts the permission is present exactly when `BuildConfig.DEBUG`.
 - **Versioning**: `versionCode` = git commit count, `versionName` = `0.1.<count>` (APK `Yaadein-v0.1.<count>-debug.apk`).
   CI checks out with `fetch-depth: 0`. Every commit is therefore a newer build that installs over the previous one.
+
+### Reel quality, maker credit, About page, Share → Yaadein
+
+- **Reel quality** (`RecapRenderer`, `PhotoFramer`): each photo is pre-drawn into a 9:16 frame at 1.25× the reel size
+  (1350×2400): EXIF orientation applied, filtered scaling, photos within 12 % of 9:16 fill the frame, others are shown whole over
+  a blurred, dimmed copy of themselves (no cut-off heads). Effects order for photos: Ken Burns on the large frame → `Presentation`
+  down to 1080×1920 (always downsampling, so the zoom stays sharp) → caption overlay in output pixels. Encoder: 16 Mbit/s H.264,
+  192 kbit/s AAC via `DefaultEncoderFactory` with fallback. A codec reclaimed mid-export (`configure()` on a released codec, seen on
+  the overloaded emulator, possible on a phone under memory pressure) is retried once.
+- **Import fix**: `TransformerVideoOptimizer` used `Presentation.createForHeight(1080)`, which made portrait 4K clips 607×1080;
+  now `createForShortSide(1080)` (portrait → 1080×1920) at 12 Mbit/s.
+- **Maker credit**: `AppCredit` ("Crafted with AI by Suresh Dongardive", EN/HI/MR) is a one-line strip at the root of
+  `YaadeinApp`, below every screen including the lock screen. The content above it calls
+  `consumeWindowInsets(WindowInsets.navigationBars)` so Scaffold/NavigationBar/navigationBarsPadding don't pad twice. Also on About.
+- **About this app**: Timeline top bar has an info button ("About Yaadein") → `AppInfoScreen` (`SettingsPage.APP_INFO`), a plain
+  explanation of capture, relive, reels, privacy, backup and sharing; About links to it too.
+- **Share → Yaadein**: `MainActivity` (singleTask) has SEND / SEND_MULTIPLE filters for `image/*` and `video/*` (label "Save to
+  Yaadein"). `SharedMediaInbox` copies the files into `cache/shared/` right away (the sender's grant ends with our activity) and
+  exposes them through the FileProvider (`shared` root) so the importer sees real mime/size/name. Once unlocked and set up,
+  `YaadeinApp` navigates to `EventCapture(fromShare = true)`, whose ViewModel takes the inbox and attaches the files (date suggested
+  from EXIF). Tests: `SharedMediaInboxTest`. Robolectric note: FileProvider caches roots per authority while every test gets a new
+  cache dir, so tests that use it clear `FileProvider.sCache` in `@Before`.
+- **Memory**: the emulator (4 GB guest) plus Gradle test JVMs can exceed the container's memory and the OOM killer takes the
+  emulator. Don't run Gradle builds while the emulator is rendering; use `--max-workers=2` if both must run.

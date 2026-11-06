@@ -9,7 +9,9 @@ import androidx.media3.transformer.EditedMediaItem
 import androidx.media3.transformer.Effects
 import androidx.media3.transformer.ExportException
 import androidx.media3.transformer.ExportResult
+import androidx.media3.transformer.DefaultEncoderFactory
 import androidx.media3.transformer.Transformer
+import androidx.media3.transformer.VideoEncoderSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -24,6 +26,12 @@ class TransformerVideoOptimizer(private val context: Context) : VideoOptimizer {
             val transformer = Transformer.Builder(context)
                 .setVideoMimeType(MimeTypes.VIDEO_H264)
                 .setAudioMimeType(MimeTypes.AUDIO_AAC)
+                .setEncoderFactory(
+                    DefaultEncoderFactory.Builder(context)
+                        .setRequestedVideoEncoderSettings(VideoEncoderSettings.Builder().setBitrate(IMPORT_VIDEO_BITRATE).build())
+                        .setEnableFallback(true)
+                        .build(),
+                )
                 .addListener(object : Transformer.Listener {
                     override fun onCompleted(composition: Composition, exportResult: ExportResult) {
                         if (cont.isActive) cont.resume(output)
@@ -35,10 +43,14 @@ class TransformerVideoOptimizer(private val context: Context) : VideoOptimizer {
                 })
                 .build()
             val item = EditedMediaItem.Builder(MediaItem.fromUri(android.net.Uri.fromFile(input)))
-                .setEffects(Effects(emptyList(), listOf(Presentation.createForHeight(MediaImporter.MAX_VIDEO_EDGE_SHORT))))
+                // Short side to 1080 px: a portrait 4K clip becomes 1080x1920, not 607x1080 as "height 1080" gave.
+                .setEffects(Effects(emptyList(), listOf(Presentation.createForShortSide(MediaImporter.MAX_VIDEO_EDGE_SHORT))))
                 .build()
             transformer.start(item, output.path)
             cont.invokeOnCancellation { transformer.cancel(); output.delete() }
         }
     }
 }
+
+/** Kept copies of phone videos: 1080p at 12 Mbit/s looks the same as the original on a phone screen. */
+private const val IMPORT_VIDEO_BITRATE = 12_000_000

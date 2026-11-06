@@ -41,4 +41,5 @@
     <string name="error_generic">कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें।</string>
     <string name="today">आज</string>
     <string name="yesterday">कल</string>
+    <string name="app_credit">Suresh Dongardive द्वारा AI की मदद से रचा गया</string>
 </resources>

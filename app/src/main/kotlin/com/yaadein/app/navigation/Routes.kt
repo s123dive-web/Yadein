@@ -16,7 +16,8 @@ sealed interface Route {
     @Serializable data object RelationshipsMap : Route
     @Serializable data class YearlySummary(val personId: Long, val year: Int) : Route
     @Serializable data object CaptureHub : Route
-    @Serializable data class EventCapture(val memoryId: Long = 0L) : Route
+    /** [fromShare]: attach the photos/videos waiting in SharedMediaInbox (Share → Yaadein). */
+    @Serializable data class EventCapture(val memoryId: Long = 0L, val fromShare: Boolean = false) : Route
     @Serializable data object PhotoFirst : Route
     @Serializable data object TextOnly : Route
     @Serializable data object QuickCapture : Route

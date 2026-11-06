@@ -149,4 +149,20 @@
     <string name="update_failed_title">अपडेट इन्स्टॉल झाला नाही</string>
     <string name="update_unreadable">फाइल अ‍ॅप म्हणून वाचता आली नाही. पुन्हा डाउनलोड करून प्रयत्न करा.</string>
     <string name="update_data_note">अपडेट केल्याने सगळं राहतं: नवीन आवृत्तीचं नाव आणि साइनिंग की तीच असेल तर Android फक्त अ‍ॅप बदलतो. तरीही आधी बॅकअप घेणं चांगली सवय आहे.</string>
+    <string name="app_info_title">Yaadein बद्दल</string>
+    <string name="app_info_open">Yaadein काय आहे?</string>
+    <string name="app_info_headline">तुमच्या कुटुंबाच्या आठवणी, जवळ आणि खाजगी</string>
+    <string name="app_info_intro">Yaadein ही तुमच्या जवळच्या माणसांसाठी खाजगी आठवणींची वही आहे. एखाद्या दिवसाचे फोटो, व्हिडिओ किंवा फक्त काही शब्द ठेवा, आणि ते टाइमलाइन, प्रत्येकाची गोष्ट किंवा शेअर करण्याजोगी रील म्हणून पुन्हा पाहा.</string>
+    <string name="app_info_capture_title">क्षणात जपा</string>
+    <string name="app_info_capture_body">फोटो आणि व्हिडिओ जोडा, किंवा “गोवा ट्रिप 2024” अशी एक ओळ लिहा, Yaadein तिची आठवण बनवेल. जुने दिवसही सोपे: महिना, वर्ष किंवा “दिवाळीच्या आसपास” निवडा.</string>
+    <string name="app_info_relive_title">एकत्र पुन्हा अनुभवा</string>
+    <string name="app_info_relive_body">तुमची टाइमलाइन पाहा, कोणाचीही गोष्ट उघडा, मागच्या वर्षांत आजच्या दिवशी काय झालं ते पाहा, किंवा फोन हलवून एखादी सरप्राइज आठवण मिळवा.</string>
+    <string name="app_info_reels_title">शेअर करण्यासाठी रील बनवा</string>
+    <string name="app_info_reels_body">एखादी व्यक्ती, वर्ष किंवा एक दिवस संगीतासह उभ्या रीलमध्ये बदला, WhatsApp स्टेटस, Instagram किंवा वाढदिवसाच्या शुभेच्छांसाठी तयार.</string>
+    <string name="app_info_private_title">मुळातच खाजगी</string>
+    <string name="app_info_private_body">सगळं याच फोनवर, एन्क्रिप्ट केलेलं आणि तुमच्या फिंगरप्रिंट किंवा पिनमागे राहतं. खातं नाही, जाहिराती नाहीत, इंटरनेट नाही, ट्रॅकिंग नाही.</string>
+    <string name="app_info_backup_title">फोन बदलला तरी सुरक्षित</string>
+    <string name="app_info_backup_body">एक पासवर्ड-संरक्षित बॅकअप फाइल बनवा आणि पुढच्या फोनवर रिस्टोर करा, प्रत्येक फोटो आणि गोष्टीसह.</string>
+    <string name="app_info_share_title">थेट तुमच्या गॅलरीतून</string>
+    <string name="app_info_share_body">Google Photos किंवा कोणत्याही गॅलरीत फोटो निवडा, शेअर दाबा, Yaadein निवडा, आणि ते फोटो जोडलेली नवी आठवण उघडेल.</string>
 </resources>

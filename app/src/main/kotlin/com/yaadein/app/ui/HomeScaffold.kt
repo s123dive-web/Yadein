@@ -48,6 +48,7 @@ import com.yaadein.feature.capture.CaptureActions
 import com.yaadein.feature.capture.CaptureHubSheet
 import com.yaadein.feature.people.PeopleRoute
 import com.yaadein.feature.relive.ReliveRoute
+import com.yaadein.feature.settings.SettingsPage
 import com.yaadein.feature.settings.SettingsRoute
 import com.yaadein.feature.timeline.TimelineRoute
 
@@ -80,6 +81,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
             HomeTab.TIMELINE, HomeTab.CREATE -> TimelineRoute(
                 onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
                 onCreate = { hubOpen = true },
+                onAbout = { navController.navigate(Route.Settings(SettingsPage.APP_INFO.name)) },
                 contentPadding = padding,
                 twoPane = expanded && !easy,
             )

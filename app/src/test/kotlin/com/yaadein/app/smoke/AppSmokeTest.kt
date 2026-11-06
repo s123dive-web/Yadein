@@ -8,6 +8,10 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ActivityScenario
 import com.yaadein.app.MainActivity
 import com.yaadein.data.crypto.PinManager
@@ -76,12 +80,17 @@ class AppSmokeTest {
     @Test
     fun `every settings page opens and closes`() {
         tab("Settings")
-        listOf("Appearance", "Security", "Relive reminders", "Face suggestions", "Storage", "Backup and restore", "Privacy", "Problem log", "About Yaadein").forEach { page ->
-            compose.onNodeWithText(page).performClick()
-            compose.waitForIdle()
-            compose.onNodeWithContentDescription("Back").performClick()
-            compose.waitForIdle()
-            compose.onNodeWithText("Appearance").assertIsDisplayed()
+        listOf("Appearance", "Security", "Relive reminders", "Face suggestions", "Storage", "Backup and restore", "Privacy", "Problem log", "Update app", "About Yaadein").forEach { page ->
+            try {
+                // Click through semantics: on the small Robolectric screen the last rows can sit under the bottom bar.
+                compose.onNode(hasText(page) and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+                compose.waitForIdle()
+                compose.onNodeWithContentDescription("Back").performClick()
+                compose.waitForIdle()
+                compose.onNodeWithText("Appearance").performScrollTo().assertIsDisplayed()
+            } catch (e: AssertionError) {
+                throw AssertionError("Settings page \"$page\" did not open and close", e)
+            }
         }
     }
 

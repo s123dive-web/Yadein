@@ -50,7 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.settings.UserSettings
 
-enum class SettingsPage { APPEARANCE, SECURITY, STORAGE, BACKUP, NOTIFICATIONS, FACES, PRIVACY, ABOUT, CRASH_LOG, UPDATE }
+enum class SettingsPage { APPEARANCE, SECURITY, STORAGE, BACKUP, NOTIFICATIONS, FACES, PRIVACY, ABOUT, CRASH_LOG, UPDATE, APP_INFO }
 
 @Composable
 fun SettingsRoute(

@@ -27,7 +27,11 @@ import com.yaadein.core.ui.illustrations.Illustration
 import com.yaadein.core.ui.illustrations.IllustrationKind
 import com.yaadein.core.ui.theme.SansFamily
 import com.yaadein.core.ui.theme.SerifFamily
+import com.yaadein.feature.settings.AppInfoScreen
 import com.yaadein.feature.settings.BackupScreen
+import com.yaadein.feature.settings.UpdateScreen
+import com.yaadein.feature.settings.UpdateUiState
+import com.yaadein.core.ui.components.AppCredit
 import com.yaadein.feature.settings.BackupStatus
 import com.yaadein.feature.settings.FacesScreen
 import com.yaadein.feature.settings.FacesUiState
@@ -73,3 +77,13 @@ fun FeatureGraphic() = ScreenshotTheme {
         }
     }
 }
+
+@PreviewTest
+@Preview(name = "About this app", device = "spec:width=411dp,height=1800dp", showBackground = true)
+@Composable
+fun AboutThisApp() = ScreenshotTheme { Surface { Column { Box(Modifier.weight(1f)) { AppInfoScreen(versionName = "0.1.27", onBack = {}) }; AppCredit() } } }
+
+@PreviewTest
+@Preview(name = "Update app", device = PHONE, showBackground = true)
+@Composable
+fun UpdateApp() = ScreenshotTheme { Surface { UpdateScreen(state = UpdateUiState.UpToDate("0.1.27", "0.1.25", fileIsOlder = true), installedVersion = "0.1.27", onBack = {}, onChoose = {}, onInstall = {}, onReset = {}) } }

@@ -88,9 +88,9 @@ class AboutViewModel @Inject constructor(
 }
 
 @Composable
-fun AboutRoute(onBack: () -> Unit, versionName: String, debugBuild: Boolean, modifier: Modifier = Modifier, viewModel: AboutViewModel = hiltViewModel()) {
+fun AboutRoute(onBack: () -> Unit, versionName: String, debugBuild: Boolean, modifier: Modifier = Modifier, onOpenAppInfo: () -> Unit = {}, viewModel: AboutViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    AboutScreen(state = state, versionName = versionName, debugBuild = debugBuild, onBack = onBack, onLoadDemo = viewModel::loadDemo, onLoadLarge = viewModel::loadLarge, modifier = modifier)
+    AboutScreen(state = state, versionName = versionName, debugBuild = debugBuild, onBack = onBack, onLoadDemo = viewModel::loadDemo, onLoadLarge = viewModel::loadLarge, modifier = modifier, onOpenAppInfo = onOpenAppInfo)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,6 +103,7 @@ fun AboutScreen(
     onLoadDemo: () -> Unit,
     onLoadLarge: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenAppInfo: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
@@ -119,6 +120,8 @@ fun AboutScreen(
             Illustration(kind = IllustrationKind.PHOTO_STACK, modifier = Modifier.size(Yaadein.sizes.illustration * 0.8f))
             Text(stringResource(R.string.about_tagline), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
             Text(stringResource(R.string.about_version, versionName), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(CoreR.string.app_credit), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            OutlinedButton(onClick = onOpenAppInfo, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.app_info_open)) }
             Text(stringResource(R.string.about_offline), style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(stringResource(R.string.about_fonts), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
             HorizontalDivider()
