@@ -192,8 +192,9 @@ class UpdateStatusReceiver : BroadcastReceiver() {
 }
 
 /**
- * Runs in the new version right after an update (ACTION_MY_PACKAGE_REPLACED): clears the installed APK copy, reopens
- * Yaadein, and posts a "tap to open" notification in case Android does not allow the app to reopen by itself.
+ * Runs in the new version right after an update (ACTION_MY_PACKAGE_REPLACED): clears the installed APK copy and posts a
+ * heads-up "Yaadein updated, tap to open" notification. It also tries to reopen the app, but Android 10+ blocks activity
+ * starts from the background (verified on API 34: "Background activity launch blocked"), so the notification is the path.
  */
 class UpdatedReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -203,7 +204,8 @@ class UpdatedReceiver : BroadcastReceiver() {
         runCatching { context.startActivity(launch) }
         runCatching {
             val nm = context.getSystemService(android.app.NotificationManager::class.java)
-            nm.createNotificationChannel(android.app.NotificationChannel(CHANNEL, context.getString(R.string.update_channel), android.app.NotificationManager.IMPORTANCE_DEFAULT))
+            // High importance: shown as a heads-up banner, the quickest way back into the updated app.
+            nm.createNotificationChannel(android.app.NotificationChannel(CHANNEL, context.getString(R.string.update_channel), android.app.NotificationManager.IMPORTANCE_HIGH))
             val version = runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull() ?: ""
             val tap = PendingIntent.getActivity(context, 0, launch, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
             val n = androidx.core.app.NotificationCompat.Builder(context, CHANNEL)
@@ -218,7 +220,7 @@ class UpdatedReceiver : BroadcastReceiver() {
     }
 
     private companion object {
-        const val CHANNEL = "app_update"
+        const val CHANNEL = "app_update_ready"
         const val NOTIFICATION_ID = 4301
     }
 }

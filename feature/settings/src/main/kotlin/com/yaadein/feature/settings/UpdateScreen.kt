@@ -1,7 +1,12 @@
 package com.yaadein.feature.settings
 
 import android.content.Context
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -148,6 +153,16 @@ fun UpdateRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: Up
     val state by viewModel.state.collectAsStateWithLifecycle()
     val confirm by viewModel.confirm.collectAsStateWithLifecycle()
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(viewModel::onFilePicked) }
+    val context = LocalContext.current
+    val openPicker = { viewModel.leavingForSystemScreen(); pick.launch(arrayOf(APK_MIME, "*/*")) }
+    // Android does not let an app reopen itself after updating, so the way back is the "Yaadein updated" notification.
+    // On Android 13+ that needs the notification permission: ask for it (in-app dialog) before picking the file.
+    val notifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { openPicker() }
+    val choose = {
+        val needsNotificationPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        if (needsNotificationPermission) notifications.launch(Manifest.permission.POST_NOTIFICATIONS) else openPicker()
+    }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { viewModel.onResume() }
     // Started from this activity (not a receiver with NEW_TASK), so Android's dialog opens on top of Yaadein.
     val confirmLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
@@ -167,7 +182,7 @@ fun UpdateRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: Up
         installedVersion = viewModel.installedVersion,
         onBack = onBack,
         // "*/*" too: some file managers label APKs as plain binary files.
-        onChoose = { viewModel.leavingForSystemScreen(); pick.launch(arrayOf(APK_MIME, "*/*")) },
+        onChoose = choose,
         onAllow = {
             viewModel.leavingForSystemScreen()
             runCatching { permission.launch(viewModel.permissionIntent().apply { removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }) }

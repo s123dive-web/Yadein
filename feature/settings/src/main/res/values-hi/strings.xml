@@ -163,7 +163,7 @@
     <string name="update_allow">अपडेट की अनुमति दें</string>
     <string name="update_permission_text">फ़ाइल से अपडेट इंस्टॉल करने से पहले Android को एक बार अनुमति चाहिए। अपडेट की अनुमति दें पर टैप करें, “इस स्रोत से अनुमति दें” चालू करें, और वापस आएँ। अपडेट अपने आप आगे बढ़ेगा।</string>
     <string name="update_installing_version">संस्करण %1$s इंस्टॉल हो रहा है…</string>
-    <string name="update_installing_help">अगर Android पूछे तो अपडेट पर टैप करें। Yaadein एक पल के लिए बंद होकर अपने आप फिर खुलेगा; आपकी यादें बनी रहेंगी।</string>
+    <string name="update_installing_help">अपडेट के दौरान Yaadein एक पल के लिए बंद होगा। “Yaadein अपडेट हुआ” नोटिफ़िकेशन पर टैप करके सीधे वापस आएँ; आपकी यादें बनी रहेंगी।</string>
     <string name="update_channel">ऐप अपडेट</string>
     <string name="update_done_title">Yaadein %1$s पर अपडेट हुआ</string>
     <string name="update_done_text">खोलने के लिए टैप करें। आपकी सारी यादें यहीं हैं।</string>

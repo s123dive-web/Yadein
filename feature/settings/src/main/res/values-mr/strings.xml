@@ -163,7 +163,7 @@
     <string name="update_allow">अपडेटना परवानगी द्या</string>
     <string name="update_permission_text">फाइलमधून अपडेट इन्स्टॉल करण्याआधी Android ला एकदा परवानगी हवी. अपडेटना परवानगी द्या दाबा, “या स्रोतातून परवानगी द्या” चालू करा, आणि मागे या. अपडेट आपोआप पुढे सुरू होईल.</string>
     <string name="update_installing_version">आवृत्ती %1$s इन्स्टॉल होत आहे…</string>
-    <string name="update_installing_help">Android ने विचारलं तर अपडेट दाबा. Yaadein क्षणभर बंद होऊन आपोआप पुन्हा उघडेल; तुमच्या आठवणी राहतील.</string>
+    <string name="update_installing_help">अपडेट होताना Yaadein क्षणभर बंद होईल. “Yaadein अपडेट झाले” नोटिफिकेशनवर टॅप करून थेट परत या; तुमच्या आठवणी राहतील.</string>
     <string name="update_channel">अ‍ॅप अपडेट</string>
     <string name="update_done_title">Yaadein %1$s वर अपडेट झाले</string>
     <string name="update_done_text">उघडण्यासाठी टॅप करा. तुमच्या सगळ्या आठवणी इथेच आहेत.</string>

@@ -629,3 +629,11 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   Android 14+: `setRequestUpdateOwnership(true)`.
 - `AppLockState.allowExternalScreen()` gives a 5-minute grace for returning from system screens the app opened, so the PIN
   doesn't interrupt the flow. A checked APK survives process death (`resumeCandidate()`), cleared once installed.
+- **Verified on the API 34 emulator** (0.1.28 → 0.1.29): permission page opened inside Yaadein's task and the flow continued
+  on back with no PIN prompt; an older file (0.1.26) said "already up to date"; the newer file installed **silently** (a
+  self-update qualifies for `USER_ACTION_NOT_REQUIRED`; `installerPackageName` became Yaadein itself) in under 2 minutes on
+  the unaccelerated emulator. Android blocked the post-update self-relaunch ("Background activity launch blocked"), and the
+  notification was not shown because POST_NOTIFICATIONS was not granted. Fix: the Update screen asks for the notification
+  permission before picking a file (Android 13+), the channel is high importance (heads-up), and the copy tells the user to tap
+  the "Yaadein updated" notification to come back.
+

@@ -163,7 +163,7 @@
     <string name="update_allow">Allow updates</string>
     <string name="update_permission_text">Android needs a one-time permission before Yaadein can install an update from a file. Tap Allow updates, switch on “Allow from this source”, and press back. The update then continues by itself.</string>
     <string name="update_installing_version">Installing version %1$s…</string>
-    <string name="update_installing_help">If Android asks, tap Update. Yaadein closes for a moment and opens again by itself; your memories stay.</string>
+    <string name="update_installing_help">Yaadein closes for a moment while it updates. Tap the “Yaadein updated” notification to come straight back; your memories stay.</string>
     <string name="update_channel">App updates</string>
     <string name="update_done_title">Yaadein updated to %1$s</string>
     <string name="update_done_text">Tap to open. All your memories are here.</string>
