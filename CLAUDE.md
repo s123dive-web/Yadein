@@ -481,3 +481,19 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   drop-in once a Gemini-Nano device is available for testing.
 - Replace `app/src/main/baseline-prof.txt` with a Macrobenchmark-generated profile.
 - Create the upload keystore and add `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` secrets, then run `release.yml`.
+
+### Post-release fixes (0.1.0 follow-ups)
+
+- **Lock timeout**: default moved from "immediately" to one minute; `SettingsDto.settingsVersion` (now 2) migrates files
+  written by version 1 so existing installs pick up the new default unless the user chose "immediately" later.
+- **PIN setup**: the vault unlocks as soon as the PIN is confirmed, so the lock overlay no longer covers the biometric step.
+- **Crash visibility**: `CrashLog` leaves a `crash.pending` marker; Home shows `CrashNoticeBanner` with one-tap
+  "Share report" / "Dismiss", so the problem log is reachable even when Settings itself is what crashed.
+- **App smoke test** (`app/src/test/.../smoke/AppSmokeTest.kt`): Hilt `@TestInstallIn` replaces `DataModule` with JVM
+  fakes (`TestDataModule`), launches the real `MainActivity` under Robolectric (API 35) and walks the home tabs, every
+  settings page, the capture hub, demo data, the lock overlay and the crash banner.
+- **Device check**: the debug APK was also exercised on a headless API 34 emulator (software-rendered, no KVM) in the
+  cloud container: onboarding → person → PIN → lock → Home → Settings (and the Settings pages) worked in English and
+  Hindi with the real Keystore/SQLCipher stack. The owner's reported "Settings exits" could not be reproduced there; the
+  home banner exists so the on-device report can be shared.
+
