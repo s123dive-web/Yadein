@@ -260,14 +260,14 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Yaadein-debug-apk
+          path: app/build/outputs/apk/debug/Yaadein-*.apk
       - name: Attach APK to release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
           name: Build ${{ github.run_number }}
-          files: app/build/outputs/apk/debug/app-debug.apk
+          files: app/build/outputs/apk/debug/Yaadein-*.apk
 ```
 
 Note: the workflow also triggers on `ccr-*` branches so the autonomous build branch gets CI runs before merge.

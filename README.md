@@ -6,7 +6,7 @@ stories, and as recap videos with music. No account, no internet permission, no 
 
 [![Build debug APK](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 
-Every push to `main` builds a debug APK on GitHub Actions and attaches it to a release tagged
+Every push to `main` builds a debug APK (`Yaadein-v<version>-debug.apk`) on GitHub Actions and attaches it to a release tagged
 `build-<run number>` (see the Releases page). Nothing is built on a laptop; the build needs no
 `local.properties`, keystore or secrets.
 

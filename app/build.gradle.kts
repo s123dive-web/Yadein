@@ -190,6 +190,11 @@ abstract class VerifyNoNetworkPermissionTask : DefaultTask() {
 
 androidComponents {
     onVariants { variant ->
+        // Name the APK after the app: Yaadein-v<version>-<buildType>.apk
+        val versionName = android.defaultConfig.versionName ?: "0"
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("Yaadein-v$versionName-${variant.buildType}.apk")
+        }
         val capitalized = variant.name.replaceFirstChar { it.uppercase() }
         val verify = tasks.register<VerifyNoNetworkPermissionTask>("verifyNoNetworkPermission$capitalized") {
             group = "verification"

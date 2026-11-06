@@ -39,8 +39,8 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Yaadein-debug-apk
+          path: app/build/outputs/apk/debug/Yaadein-*.apk
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -53,4 +53,4 @@ jobs:
         with:
           tag_name: build-${{ github.run_number }}
           name: Build ${{ github.run_number }}
-          files: app/build/outputs/apk/debug/app-debug.apk
+          files: app/build/outputs/apk/debug/Yaadein-*.apk
