@@ -1,5 +1,6 @@
 package com.yaadein.app.smoke
 
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -115,5 +116,18 @@ class AppSmokeTest {
         "123456".forEach { compose.onNodeWithText(it.toString()).performClick() }
         compose.waitForIdle()
         compose.onAllNodesWithText("Timeline")[0].assertIsDisplayed()
+    }
+
+    @Test
+    fun `a crash from the previous run shows a banner on home that can be dismissed`() {
+        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        com.yaadein.data.crash.CrashLog.append(context, "test", Thread.currentThread(), IllegalStateException("boom"))
+        scenario.recreate()
+        compose.waitForIdle()
+        compose.onNodeWithText("Yaadein closed unexpectedly last time").assertIsDisplayed()
+        compose.onNodeWithText("Dismiss").performClick()
+        compose.waitForIdle()
+        compose.onAllNodesWithText("Yaadein closed unexpectedly last time").assertCountEquals(0)
+        org.junit.Assert.assertFalse(com.yaadein.data.crash.CrashLog.hasPendingReport(context))
     }
 }

@@ -5,4 +5,8 @@
     <string name="nav_create">बनाएँ</string>
     <string name="nav_relive">फिर जिएँ</string>
     <string name="nav_settings">सेटिंग्स</string>
+    <string name="crash_notice_title">पिछली बार Yaadein अचानक बंद हो गया था</string>
+    <string name="crash_notice_body">एक छोटा तकनीकी नोट सिर्फ़ इसी फ़ोन पर सहेजा गया है। इसे डेवलपर के साथ साझा करने से समस्या सुधारने में मदद मिलती है; और कुछ भी फ़ोन से बाहर नहीं जाता।</string>
+    <string name="crash_notice_share">रिपोर्ट साझा करें</string>
+    <string name="crash_notice_dismiss">हटाएँ</string>
 </resources>

@@ -74,7 +74,9 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
     )
 
     val content: @Composable (PaddingValues) -> Unit = { padding ->
-        when (tab) {
+        Column(Modifier.fillMaxSize()) {
+            if (tab == HomeTab.TIMELINE) CrashNoticeBanner()
+            when (tab) {
             HomeTab.TIMELINE, HomeTab.CREATE -> TimelineRoute(
                 onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
                 onCreate = { hubOpen = true },
@@ -100,6 +102,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                 onOpen = { page -> navController.navigate(Route.Settings(page.name)) },
                 contentPadding = padding,
             )
+            }
         }
     }
 

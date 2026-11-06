@@ -14,9 +14,15 @@ import java.time.Instant
  */
 object CrashLog {
     private const val FILE = "crash.log"
+    private const val PENDING = "crash.pending"
     private const val MAX_BYTES = 200 * 1024
 
     fun file(context: Context): File = File(context.filesDir, FILE)
+
+    /** True when a report was written since the user last dismissed or exported one (shown as a home banner). */
+    fun hasPendingReport(context: Context): Boolean = File(context.filesDir, PENDING).exists() && file(context).exists()
+
+    fun markSeen(context: Context) { File(context.filesDir, PENDING).delete() }
 
     fun install(context: Context, versionName: String) {
         val previous = Thread.getDefaultUncaughtExceptionHandler()
@@ -39,8 +45,9 @@ object CrashLog {
         val existing = if (f.exists()) f.readText() else ""
         val combined = (existing + entry).let { if (it.length > MAX_BYTES) it.takeLast(MAX_BYTES) else it }
         f.writeText(combined)
+        File(context.filesDir, PENDING).writeText("1")
     }
 
     fun read(context: Context): String = file(context).takeIf { it.exists() }?.readText().orEmpty()
-    fun clear(context: Context) { file(context).delete() }
+    fun clear(context: Context) { file(context).delete(); markSeen(context) }
 }

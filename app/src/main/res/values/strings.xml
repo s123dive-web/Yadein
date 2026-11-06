@@ -6,4 +6,8 @@
     <string name="nav_create">Create</string>
     <string name="nav_relive">Relive</string>
     <string name="nav_settings">Settings</string>
+    <string name="crash_notice_title">Yaadein closed unexpectedly last time</string>
+    <string name="crash_notice_body">A short technical note was saved on this phone only. Sharing it with the developer helps fix the problem; nothing else leaves your phone.</string>
+    <string name="crash_notice_share">Share report</string>
+    <string name="crash_notice_dismiss">Dismiss</string>
 </resources>
