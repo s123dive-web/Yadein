@@ -22,6 +22,15 @@ android {
     }
 
     signingConfigs {
+        // A fixed, public debug key (password "android") committed to the repo, so every CI debug APK
+        // carries the same signature and can be installed over the previous one without losing data.
+        // It is not a secret and must never be used for Play releases.
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         // Release signing is configured only when the CI secrets are present (see .github/workflows/release.yml).
         create("release") {
             val storeFilePath = System.getenv("YAADEIN_KEYSTORE_PATH")
@@ -36,6 +45,7 @@ android {
 
     buildTypes {
         debug {
+            signingConfig = signingConfigs.getByName("debug")
             applicationIdSuffix = ".debug"
             isDebuggable = true
         }

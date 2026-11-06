@@ -492,6 +492,10 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
 - **App smoke test** (`app/src/test/.../smoke/AppSmokeTest.kt`): Hilt `@TestInstallIn` replaces `DataModule` with JVM
   fakes (`TestDataModule`), launches the real `MainActivity` under Robolectric (API 35) and walks the home tabs, every
   settings page, the capture hub, demo data, the lock overlay and the crash banner.
+- **Stable debug signature**: CI runners used to generate a fresh debug key on every run, so a new build could not be
+  installed over the previous one (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`) without uninstalling and losing all data.
+  `app/debug.keystore` (public, password `android`, alias `androiddebugkey`) is now committed and used by the debug build;
+  release builds still sign only with the secret keystore from `release.yml`.
 - **Startup**: `YaadeinApplication` injects `AppDatabase`, `MediaStore` and `MediaImporter` as `dagger.Lazy`, so Keystore,
   EncryptedSharedPreferences and SQLCipher setup run on the IO thread that recovers imports, not on the main thread at process start.
 - **Device check** (headless emulators in the cloud container, software rendering, no KVM):
