@@ -30,9 +30,11 @@ class YaadeinApplication : Application(), SingletonImageLoader.Factory, Configur
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 
-    @Inject lateinit var database: AppDatabase
-    @Inject lateinit var mediaStore: MediaStore
-    @Inject lateinit var importer: MediaImporter
+    // Lazy so the encrypted database, vault keys and importer are not built on the main thread
+    // while the process is starting (Keystore + EncryptedSharedPreferences work is slow on low-end phones).
+    @Inject lateinit var database: dagger.Lazy<AppDatabase>
+    @Inject lateinit var mediaStore: dagger.Lazy<MediaStore>
+    @Inject lateinit var importer: dagger.Lazy<MediaImporter>
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -40,14 +42,14 @@ class YaadeinApplication : Application(), SingletonImageLoader.Factory, Configur
         super.onCreate()
         com.yaadein.data.crash.CrashLog.install(this, BuildConfig.VERSION_NAME)
         // Finish or discard imports interrupted by process death; prune orphan files.
-        appScope.launch { runCatching { importer.recoverPending() } }
+        appScope.launch { runCatching { importer.get().recoverPending() } }
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
             .components {
                 add(EncryptedImageKeyer())
-                add(EncryptedImageFetcher.Factory(database, mediaStore))
+                add(EncryptedImageFetcher.Factory(database.get(), mediaStore.get()))
             }
             .memoryCache { MemoryCache.Builder().maxSizePercent(context, 0.2).build() }
             // No disk cache: decrypted pixels must never be written to disk in the clear.
