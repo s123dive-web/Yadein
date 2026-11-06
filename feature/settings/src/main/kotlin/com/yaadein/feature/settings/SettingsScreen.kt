@@ -25,6 +25,7 @@ import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -49,17 +50,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.settings.UserSettings
 
-enum class SettingsPage { APPEARANCE, SECURITY, STORAGE, BACKUP, NOTIFICATIONS, FACES, PRIVACY, ABOUT, CRASH_LOG }
+enum class SettingsPage { APPEARANCE, SECURITY, STORAGE, BACKUP, NOTIFICATIONS, FACES, PRIVACY, ABOUT, CRASH_LOG, UPDATE }
 
 @Composable
 fun SettingsRoute(
     onOpen: (SettingsPage) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    showUpdate: Boolean = false,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
-    SettingsScreen(settings = settings, onToggleEasyMode = { viewModel.update { s -> s.copy(easyMode = it) } }, onOpen = onOpen, contentPadding = contentPadding, modifier = modifier)
+    SettingsScreen(settings = settings, onToggleEasyMode = { viewModel.update { s -> s.copy(easyMode = it) } }, onOpen = onOpen, contentPadding = contentPadding, modifier = modifier, showUpdate = showUpdate)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +72,8 @@ fun SettingsScreen(
     onOpen: (SettingsPage) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    /** Sideloaded (debug) builds only: Play-distributed apps may not update themselves. */
+    showUpdate: Boolean = false,
 ) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
@@ -95,6 +99,9 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(horizontal = spacing.gutter))
             SettingsRow(Icons.Rounded.PrivacyTip, stringResource(R.string.settings_privacy), stringResource(R.string.settings_privacy_subtitle)) { onOpen(SettingsPage.PRIVACY) }
             SettingsRow(Icons.Rounded.BugReport, stringResource(R.string.settings_crash_log), stringResource(R.string.settings_crash_log_subtitle)) { onOpen(SettingsPage.CRASH_LOG) }
+            if (showUpdate) {
+                SettingsRow(Icons.Rounded.SystemUpdate, stringResource(R.string.settings_update), stringResource(R.string.settings_update_subtitle)) { onOpen(SettingsPage.UPDATE) }
+            }
             SettingsRow(Icons.Rounded.Info, stringResource(R.string.settings_about), stringResource(R.string.settings_about_subtitle)) { onOpen(SettingsPage.ABOUT) }
         }
     }

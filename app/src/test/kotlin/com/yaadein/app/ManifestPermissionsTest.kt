@@ -3,6 +3,7 @@ package com.yaadein.app
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.test.core.app.ApplicationProvider
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -41,5 +42,11 @@ class ManifestPermissionsTest {
         val requested = requestedPermissions()
         assertTrue("android.permission.USE_BIOMETRIC" in requested)
         assertTrue("android.permission.POST_NOTIFICATIONS" in requested)
+    }
+
+    @Test
+    fun `install permission exists only in sideloaded debug builds`() {
+        // Settings → Update app (debug only). Play-distributed release builds must not update themselves.
+        assertEquals(BuildConfig.DEBUG, "android.permission.REQUEST_INSTALL_PACKAGES" in requestedPermissions())
     }
 }

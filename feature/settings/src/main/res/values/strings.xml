@@ -127,4 +127,26 @@
     <string name="crash_empty">No problems recorded. 🎉</string>
     <string name="crash_export">Share the log</string>
     <string name="crash_clear">Clear the log</string>
+    <string name="settings_update">Update app</string>
+    <string name="settings_update_subtitle">Install a newer Yaadein APK, keeping all your memories</string>
+    <string name="update_current_version">Installed version: %1$s</string>
+    <string name="update_intro">Choose the newest Yaadein APK file you downloaded. If it is newer than this one, it is installed over the current app.</string>
+    <string name="update_choose">Choose APK file</string>
+    <string name="update_checking">Checking the file…</string>
+    <string name="update_installing">Starting the update…</string>
+    <string name="update_ready_title">Version %1$s is ready to install</string>
+    <string name="update_ready_text">Android will ask you to confirm. Yaadein closes while it updates; open it again afterwards. Your memories, people, photos and settings stay as they are.</string>
+    <string name="update_install">Install update</string>
+    <string name="update_permission_title">Allow Yaadein to install updates</string>
+    <string name="update_permission_text">Android needs your permission once. Turn on “Allow from this source”, come back, and the update continues.</string>
+    <string name="update_up_to_date_title">Yaadein is already up to date</string>
+    <string name="update_file_same">This file is version %1$s, the same as the installed version %2$s.</string>
+    <string name="update_file_older">This file is version %1$s, older than the installed version %2$s. Nothing to update.</string>
+    <string name="update_not_this_app_title">This isn\'t a Yaadein update</string>
+    <string name="update_not_this_app_text">The file is a different app, or a different edition of Yaadein. Choose the Yaadein debug APK.</string>
+    <string name="update_signature_title">This APK was signed differently</string>
+    <string name="update_signature_text">Android only installs it after removing the current app, which would delete your memories. It was not installed. Use an APK from the same build source.</string>
+    <string name="update_failed_title">The update didn\'t install</string>
+    <string name="update_unreadable">The file couldn\'t be read as an app. Download it again and try once more.</string>
+    <string name="update_data_note">Updating keeps everything: Android only replaces the app itself when the new version has the same name and signing key. Making a backup first is still a good habit.</string>
 </resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug (sideloaded) builds only: Settings → Update app installs a newer Yaadein APK over this one, keeping all data.
+  Never in release: apps distributed through Google Play may not update themselves, and the release permission list
+  stays USE_BIOMETRIC / POST_NOTIFICATIONS / CAMERA / VIBRATE.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <application>
+        <receiver
+            android:name="com.yaadein.feature.settings.UpdateStatusReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.yaadein.app.UPDATE_STATUS" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

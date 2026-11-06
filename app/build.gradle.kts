@@ -7,6 +7,12 @@ plugins {
     alias(libs.plugins.screenshot)
 }
 
+// Every commit raises the version, so a newer APK can be told apart from an older one (Settings → Update app
+// relies on this) and Android accepts it as an update. CI checks out full history (fetch-depth: 0) for the count.
+val gitCommitCount: Int = runCatching {
+    providers.exec { commandLine("git", "rev-list", "--count", "HEAD") }.standardOutput.asText.get().trim().toInt()
+}.getOrDefault(1)
+
 android {
     namespace = "com.yaadein.app"
     compileSdk = 37
@@ -15,8 +21,8 @@ android {
         applicationId = "com.yaadein.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = gitCommitCount
+        versionName = "0.1.$gitCommitCount"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

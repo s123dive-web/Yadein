@@ -38,6 +38,7 @@ import com.yaadein.feature.settings.BackupRoute
 import com.yaadein.feature.settings.FacesRoute
 import com.yaadein.feature.settings.PrivacyScreen
 import com.yaadein.feature.settings.CrashLogScreen
+import com.yaadein.feature.settings.UpdateRoute
 import com.yaadein.feature.settings.SecurityRoute
 import com.yaadein.feature.settings.SettingsPage
 
@@ -171,6 +172,7 @@ fun AppNavHost(
                 SettingsPage.FACES -> FacesRoute(onBack = { navController.popBackStack() })
                 SettingsPage.PRIVACY -> PrivacyScreen(onBack = { navController.popBackStack() })
                 SettingsPage.CRASH_LOG -> CrashLogScreen(onBack = { navController.popBackStack() })
+                SettingsPage.UPDATE -> if (BuildConfig.DEBUG) UpdateRoute(onBack = { navController.popBackStack() }) else AboutRoute(onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = false)
                 SettingsPage.SECURITY -> SecurityRoute(biometricAvailable = biometricAvailable, onBack = { navController.popBackStack() }, onChangePin = { navController.navigate(Route.LockSetup) })
                 SettingsPage.ABOUT -> AboutRoute(onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = BuildConfig.DEBUG)
                 else -> AppearanceRoute(onBack = { navController.popBackStack() })

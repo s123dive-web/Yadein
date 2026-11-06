@@ -127,4 +127,26 @@
     <string name="crash_empty">कोई समस्या दर्ज नहीं। 🎉</string>
     <string name="crash_export">लॉग साझा करें</string>
     <string name="crash_clear">लॉग साफ़ करें</string>
+    <string name="settings_update">ऐप अपडेट करें</string>
+    <string name="settings_update_subtitle">नई Yaadein APK इंस्टॉल करें, सारी यादें सुरक्षित रहेंगी</string>
+    <string name="update_current_version">इंस्टॉल संस्करण: %1$s</string>
+    <string name="update_intro">आपने जो सबसे नई Yaadein APK फ़ाइल डाउनलोड की है, उसे चुनें। अगर वह इससे नई है, तो मौजूदा ऐप के ऊपर इंस्टॉल हो जाएगी।</string>
+    <string name="update_choose">APK फ़ाइल चुनें</string>
+    <string name="update_checking">फ़ाइल जाँच रहे हैं…</string>
+    <string name="update_installing">अपडेट शुरू हो रहा है…</string>
+    <string name="update_ready_title">संस्करण %1$s इंस्टॉल के लिए तैयार है</string>
+    <string name="update_ready_text">Android पुष्टि माँगेगा। अपडेट के दौरान Yaadein बंद होगा; बाद में फिर खोलें। आपकी यादें, लोग, फ़ोटो और सेटिंग्स जैसी हैं वैसी रहेंगी।</string>
+    <string name="update_install">अपडेट इंस्टॉल करें</string>
+    <string name="update_permission_title">Yaadein को अपडेट इंस्टॉल करने दें</string>
+    <string name="update_permission_text">Android को एक बार आपकी अनुमति चाहिए। “इस स्रोत से अनुमति दें” चालू करें, वापस आएँ, और अपडेट आगे बढ़ेगा।</string>
+    <string name="update_up_to_date_title">Yaadein पहले से अप टू डेट है</string>
+    <string name="update_file_same">यह फ़ाइल संस्करण %1$s है, इंस्टॉल संस्करण %2$s के समान।</string>
+    <string name="update_file_older">यह फ़ाइल संस्करण %1$s है, इंस्टॉल संस्करण %2$s से पुरानी। अपडेट करने को कुछ नहीं है।</string>
+    <string name="update_not_this_app_title">यह Yaadein का अपडेट नहीं है</string>
+    <string name="update_not_this_app_text">यह फ़ाइल कोई दूसरा ऐप है, या Yaadein का दूसरा संस्करण। Yaadein की debug APK चुनें।</string>
+    <string name="update_signature_title">यह APK अलग तरीके से साइन की गई है</string>
+    <string name="update_signature_text">Android इसे मौजूदा ऐप हटाने के बाद ही इंस्टॉल करेगा, जिससे आपकी यादें मिट जाएँगी। इसे इंस्टॉल नहीं किया गया। उसी बिल्ड स्रोत की APK इस्तेमाल करें।</string>
+    <string name="update_failed_title">अपडेट इंस्टॉल नहीं हुआ</string>
+    <string name="update_unreadable">फ़ाइल ऐप के रूप में पढ़ी नहीं जा सकी। फिर से डाउनलोड करके कोशिश करें।</string>
+    <string name="update_data_note">अपडेट से सब कुछ बना रहता है: नए संस्करण का नाम और साइनिंग कुंजी वही हो तो Android सिर्फ़ ऐप बदलता है। फिर भी पहले बैकअप बनाना अच्छी आदत है।</string>
 </resources>
