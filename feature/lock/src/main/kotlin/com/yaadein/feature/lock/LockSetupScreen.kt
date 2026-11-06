@@ -82,6 +82,9 @@ class LockSetupViewModel @Inject constructor(
                     viewModelScope.launch {
                         _state.update { it.copy(saving = true) }
                         withContext(Dispatchers.Default) { pinManager.setPin(pin) }
+                        // The user has just proven the PIN: unlock before the overlay could appear
+                        // (it shows as soon as pinConfigured becomes true while the vault is locked).
+                        lockState.unlock()
                         settingsRepository.update { it.copy(pinConfigured = true) }
                         _state.update { it.copy(saving = false, pin = "", step = SetupStep.BIOMETRIC) }
                     }
