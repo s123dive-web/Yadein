@@ -56,7 +56,7 @@ class RecapRenderDeviceTest {
     private fun vault(asset: String, kind: String, durationMs: Long? = null): Long = runBlocking {
         val target = store.newMediaFile(if (kind == "VIDEO") "mp4" else "jpg")
         val sha = testAssets.open(asset).use { store.crypto.encryptFile(it, target) }
-        val thumb = store.newThumbFile().also { store.crypto.encryptBytes(ByteArray(0), it) }
+        val thumb = store.newThumbFile().also { store.crypto.encryptBytes(thumbnailOf(asset, kind), it) }
         db.mediaDao().insert(
             MediaEntity(
                 memoryId = null, kind = kind, encryptedPath = store.relativize(target), thumbPath = store.relativize(thumb),
@@ -64,6 +64,20 @@ class RecapRenderDeviceTest {
                 sha256 = sha, position = 0, createdAt = 1,
             ),
         )
+    }
+
+    /** A real thumbnail like the importer makes (upright first frame for videos), so the clip backdrop path runs. */
+    private fun thumbnailOf(asset: String, kind: String): ByteArray {
+        val tmp = File(context.cacheDir, "thumb-src-$asset").apply { testAssets.open(asset).use { i -> outputStream().use { i.copyTo(it) } } }
+        val bmp = if (kind == "VIDEO") {
+            MediaMetadataRetriever().run { setDataSource(tmp.path); getFrameAtTime(0).also { release() } }!!
+        } else {
+            android.graphics.BitmapFactory.decodeFile(tmp.path, android.graphics.BitmapFactory.Options().apply { inSampleSize = 4 })
+        }
+        tmp.delete()
+        val scale = 512f / maxOf(bmp.width, bmp.height)
+        val small = android.graphics.Bitmap.createScaledBitmap(bmp, (bmp.width * scale).toInt(), (bmp.height * scale).toInt(), true)
+        return java.io.ByteArrayOutputStream().also { small.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, it) }.toByteArray()
     }
 
     private fun photo(id: Long, caption: String? = null) =

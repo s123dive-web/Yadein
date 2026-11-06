@@ -47,6 +47,27 @@ class PhotoFramer(private val frameWidth: Int, private val frameHeight: Int) {
         canvasBmp.recycle()
     }
 
+    /**
+     * For a video clip whose shape is far from the frame: a frame-sized (not supersampled) overlay made from the clip's
+     * thumbnail, blurred and dimmed, with a transparent window where the whole clip will play (the clip itself is laid
+     * out with Presentation LAYOUT_SCALE_TO_FIT). Null when the clip is close enough to the frame shape to simply fill it.
+     */
+    fun videoBackdrop(thumbBytes: ByteArray): Bitmap? {
+        val thumb = decodeUpright(thumbBytes)
+        val frameAspect = frameWidth.toFloat() / frameHeight
+        val clipAspect = thumb.width.toFloat() / thumb.height
+        if (abs(clipAspect - frameAspect) / frameAspect <= FILL_TOLERANCE) { thumb.recycle(); return null }
+        val out = Bitmap.createBitmap(frameWidth, frameHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(out)
+        drawBlurredBackdrop(canvas, thumb, frameWidth, frameHeight)
+        val s = min(frameWidth.toFloat() / thumb.width, frameHeight.toFloat() / thumb.height)
+        val w = thumb.width * s; val h = thumb.height * s
+        val window = RectF((frameWidth - w) / 2, (frameHeight - h) / 2, (frameWidth + w) / 2, (frameHeight + h) / 2)
+        canvas.drawRect(window, Paint().apply { xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR) })
+        thumb.recycle()
+        return out
+    }
+
     private fun decodeUpright(bytes: ByteArray): Bitmap {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
@@ -76,11 +97,11 @@ class PhotoFramer(private val frameWidth: Int, private val frameHeight: Int) {
         return Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, m, true).also { if (it != decoded) decoded.recycle() }
     }
 
-    /** Rectangle that covers the whole canvas, centred (crops the overflow). */
-    private fun cover(b: Bitmap): RectF {
-        val s = max(canvasWidth.toFloat() / b.width, canvasHeight.toFloat() / b.height)
+    /** Rectangle that covers a [cw]×[ch] canvas, centred (crops the overflow). */
+    private fun cover(b: Bitmap, cw: Int = canvasWidth, ch: Int = canvasHeight): RectF {
+        val s = max(cw.toFloat() / b.width, ch.toFloat() / b.height)
         val w = b.width * s; val h = b.height * s
-        return RectF((canvasWidth - w) / 2, (canvasHeight - h) / 2, (canvasWidth + w) / 2, (canvasHeight + h) / 2)
+        return RectF((cw - w) / 2, (ch - h) / 2, (cw + w) / 2, (ch + h) / 2)
     }
 
     /** Rectangle that shows the whole photo inside the canvas, centred. */
@@ -91,9 +112,11 @@ class PhotoFramer(private val frameWidth: Int, private val frameHeight: Int) {
     }
 
     /** Cheap, smooth blur: shrink a lot, then scale back up with filtering, twice. */
-    private fun drawBlurredBackdrop(canvas: Canvas, photo: Bitmap) {
-        val target = cover(photo)
-        val tiny1 = Bitmap.createScaledBitmap(photo, max(1, photo.width / BLUR_STEP_1), max(1, photo.height / BLUR_STEP_1), true)
+    private fun drawBlurredBackdrop(canvas: Canvas, photo: Bitmap, cw: Int = canvasWidth, ch: Int = canvasHeight) {
+        val target = cover(photo, cw, ch)
+        // Small sources (video thumbnails) get a gentler first step so the blur still has some shape.
+        val step1 = if (photo.width < 1000) BLUR_STEP_1 / 4 else BLUR_STEP_1
+        val tiny1 = Bitmap.createScaledBitmap(photo, max(1, photo.width / step1), max(1, photo.height / step1), true)
         val tiny2 = Bitmap.createScaledBitmap(tiny1, max(1, tiny1.width / BLUR_STEP_2), max(1, tiny1.height / BLUR_STEP_2), true)
         val back = Bitmap.createScaledBitmap(tiny2, max(1, tiny1.width), max(1, tiny1.height), true)
         canvas.drawBitmap(back, null, target, Paint(Paint.FILTER_BITMAP_FLAG))

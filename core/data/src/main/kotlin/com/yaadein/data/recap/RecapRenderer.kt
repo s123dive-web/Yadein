@@ -201,7 +201,15 @@ class RecapRenderer(
                 }
                 is RecapSegment.Clip -> {
                     val effects = ArrayList<Effect>()
-                    effects += fitToFrame(plan)
+                    // A wide (or square) clip cropped to 9:16 was magnified ~2.7x and looked soft. Show it whole instead,
+                    // over a blurred backdrop made from its thumbnail, like wide photos; near-9:16 clips fill the frame.
+                    val backdrop = clipBackdrop(framer, seg.mediaId)
+                    if (backdrop == null) {
+                        effects += fitToFrame(plan)
+                    } else {
+                        effects += Presentation.createForWidthAndHeight(plan.width, plan.height, Presentation.LAYOUT_SCALE_TO_FIT)
+                        effects += OverlayEffect(listOf(BitmapOverlay.createStaticBitmapOverlay(backdrop)))
+                    }
                     captionOverlay(painter, plan, seg.caption, seg.dateLabel)?.let { effects += it }
                     val mediaItem = MediaItem.Builder()
                         .setUri(EncryptedDataSource.uriFor(seg.mediaId))
@@ -234,6 +242,11 @@ class RecapRenderer(
         framer.frame(mediaStore.crypto.decryptToBytes(mediaStore.file(media.encryptedPath)), out)
         true
     }.getOrDefault(false)
+
+    private suspend fun clipBackdrop(framer: PhotoFramer, mediaId: Long): android.graphics.Bitmap? = runCatching {
+        val media = db.mediaDao().get(mediaId) ?: return null
+        framer.videoBackdrop(mediaStore.crypto.decryptToBytes(mediaStore.file(media.thumbPath)))
+    }.getOrNull()
 
     private fun imageItem(uri: Uri, durationMs: Long, mime: String, effects: List<Effect>): EditedMediaItem =
         EditedMediaItem.Builder(MediaItem.Builder().setUri(uri).setMimeType(mime).setImageDurationMs(durationMs).build())
