@@ -14,16 +14,19 @@ numbers come from `.github/workflows/device-tests.yml` (KVM-accelerated x86_64 A
 
 ## Measured so far
 
-First CI run (7 Nov 2026, KVM x86_64 emulator, Android 14, hand-written baseline profile):
+CI runs on 7 Nov 2026 (KVM x86_64 emulator, Android 14, hand-written baseline profile):
 
-| Benchmark | Median | Fastest | Slowest |
-|-----------|--------|---------|---------|
-| Cold start, profile applied | 1.71 s | 0.75 s | 1.82 s |
-| Cold start, no compilation | 1.75 s | 1.59 s | 1.79 s |
+| Run | Benchmark | Median | Fastest | Slowest |
+|-----|-----------|--------|---------|---------|
+| First | Cold start, profile applied | 1.71 s | 0.75 s | 1.82 s |
+| First | Cold start, no compilation | 1.75 s | 1.59 s | 1.79 s |
+| Second (R8 without obfuscation) | Cold start, profile applied | 1.00 s | | |
+| Second (R8 without obfuscation) | Cold start, no compilation | 1.01 s | | |
 
-The small gap between the two rows means the hand-written profile barely helps; adopting the generated profile (below)
-is the next speed step. The CI guard is the measured median plus headroom, so it catches regressions; the phone budget
-still needs a measurement on a real mid-range phone.
+Emulator timings vary a lot between runners, so compare runs on the same commit before reading a trend into them. The
+small gap between "profile applied" and "no compilation" means the hand-written profile barely helps; adopting the
+generated profile (below) is the next speed step. The CI guard (2.0 s) sits well above the measured medians, so it
+catches regressions without failing on a slow runner; the phone budget still needs a measurement on a real mid-range phone.
 
 ## What already helps
 

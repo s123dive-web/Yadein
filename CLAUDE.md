@@ -748,7 +748,7 @@ Settings ("What is Yaadein?"); media tiles use long-press for "Set as cover".
 
 **Performance**: `docs/PERFORMANCE.md` budgets; `:benchmark` module (StartupBenchmark, BaselineProfileGenerator) on the
 `benchmark` build type (beta + profileable); `.github/workflows/device-tests.yml` runs device tests, the benchmark
-with a 1.5 s cold-start budget, and uploads the generated baseline profile.
+with a 2.0 s cold-start guard (CI emulator medians 1.0–1.7 s), and prints and uploads the generated baseline profile.
 
 **Not done / owner actions**: add the release key secrets; native-speaker review of the five new languages; TalkBack
 walkthrough on a phone; GPS-based places need a bundled offline city list (the GeoNames host was not reachable here);
