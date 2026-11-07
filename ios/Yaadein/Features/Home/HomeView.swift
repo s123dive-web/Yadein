@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import YaadeinDomain
 
@@ -79,6 +80,12 @@ struct HomeView: View {
             .presentationDetents([.medium, .large])
             .presentationDragIndicator(.visible)
             .environment(\.look, look)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .yaadeinShake)) { _ in
+            guard model.settings.shakeForMemory, (model.store?.memoryCount ?? 0) > 0 else { return }
+            var p = paths[tab] ?? NavigationPath()
+            p.append(Route.randomMemory)
+            paths[tab] = p
         }
         .onChange(of: model.pendingMemoryId) { _, id in
             guard let id else { return }

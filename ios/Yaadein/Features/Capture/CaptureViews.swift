@@ -64,7 +64,8 @@ private struct DatePickSheet: View {
                     let suggestions: [(String, Int)] = [(L("date_label_summer"), 5), (L("date_label_monsoon"), 7), (L("date_label_winter"), 12),
                                                         (L("date_label_diwali"), 10), (L("date_label_early"), 2), (L("date_label_late"), 11)]
                     FlowLayout(spacing: Spacing.xs) {
-                        ForEach(suggestions, id: \.0) { s in
+                        ForEach(suggestions.indices, id: \.self) { i in
+                            let s = suggestions[i]
                             Chip(text: s.0, selected: label.hasPrefix(s.0)) {
                                 label = s.0
                                 anchorMonth = s.1
