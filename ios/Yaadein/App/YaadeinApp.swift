@@ -10,6 +10,7 @@ struct YaadeinApp: App {
         WindowGroup {
             RootView()
                 .environment(model)
+                .onOpenURL { model.handle(url: $0) }
         }
         .onChange(of: scenePhase) { _, phase in model.scenePhaseChanged(phase) }
     }

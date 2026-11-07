@@ -63,6 +63,40 @@ enum MediaImporter {
     static let maxPhotoEdge: CGFloat = 2560
     static let thumbEdge: CGFloat = 640
 
+    /// Takes the files waiting from Share → Save to Yaadein: each is moved out of the App Group into a private
+    /// temporary file (videos) or read into memory (photos), checked against the same limits, and the inbox is cleared.
+    static func takeShared(optimize: Bool) async -> ([PickedMedia], [ImportRejection]) {
+        let files = AppGroup.pendingShares()
+        guard !files.isEmpty else { return ([], []) }
+        var ok: [PickedMedia] = []
+        var rejected: [ImportRejection] = []
+        for file in files {
+            do {
+                let isVideo = UTType(filenameExtension: file.pathExtension)?.conforms(to: .movie) ?? false
+                if isVideo {
+                    let temp = FileManager.default.temporaryDirectory.appendingPathComponent("shared-\(UUID().uuidString).\(file.pathExtension)")
+                    try FileManager.default.moveItem(at: file, to: temp)
+                    let media = try await inspectVideo(temp)
+                    if media.sizeBytes > (optimize ? maxVideoBytesOptimized : maxVideoBytes) {
+                        media.discard()
+                        throw ImportRejection.videoTooLarge
+                    }
+                    ok.append(media)
+                } else {
+                    let data = try Data(contentsOf: file)
+                    if Int64(data.count) > maxPhotoBytes { throw ImportRejection.photoTooLarge }
+                    ok.append(try inspectPhoto(data))
+                }
+            } catch let r as ImportRejection {
+                rejected.append(r)
+            } catch {
+                rejected.append(.unreadable)
+            }
+        }
+        AppGroup.clearShares()
+        return (ok, rejected)
+    }
+
     /// Loads and inspects picked items; rejected ones are returned separately with the reason.
     static func inspect(_ items: [PhotosPickerItem], optimize: Bool) async -> ([PickedMedia], [ImportRejection]) {
         var ok: [PickedMedia] = []

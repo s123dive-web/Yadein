@@ -23,10 +23,11 @@ enum Route: Hashable {
     case reels
     case reelPlayer(String)
     case voiceCapture(memoryId: Int64?, prompt: String?)
+    case importExport
 }
 
 enum SettingsPage: String, Hashable, CaseIterable {
-    case appearance, security, notifications, storage, backup, privacy, about, appInfo
+    case appearance, security, notifications, faces, storage, backup, privacy, about, appInfo
 }
 
 extension View {
@@ -54,6 +55,7 @@ extension View {
             case .reels: ReelsView()
             case let .reelPlayer(id): ReelPlayerView(reelId: id)
             case let .voiceCapture(memoryId, prompt): VoiceCaptureView(memoryId: memoryId, prompt: prompt)
+            case .importExport: ImportExportView()
             }
         }
     }

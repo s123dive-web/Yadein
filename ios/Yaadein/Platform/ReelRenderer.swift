@@ -12,10 +12,15 @@ struct ReelTrack: Hashable, Identifiable {
     let key: String
     let theme: RecapTheme?
     let bpm: Int
+    /// The user's own audio file (copied into the app); nil for bundled tracks.
+    var customURL: URL? = nil
     var id: String { key }
-    var beatMs: Int64 { 60_000 / Int64(bpm) }
-    var label: String { L("track_\(key)") }
-    var url: URL? { Bundle.main.url(forResource: "track_\(key)", withExtension: "m4a") }
+    /// No beat for the user's own music: cuts follow the length preset instead.
+    var beatMs: Int64? { bpm > 0 ? 60_000 / Int64(bpm) : nil }
+    var label: String { customURL?.deletingPathExtension().lastPathComponent ?? L("track_\(key)") }
+    var url: URL? { customURL ?? Bundle.main.url(forResource: "track_\(key)", withExtension: "m4a") }
+
+    static func own(_ url: URL) -> ReelTrack { ReelTrack(key: "own", theme: nil, bpm: 0, customURL: url) }
 
     static let all: [ReelTrack] = [
         ReelTrack(key: "warm", theme: .WARM, bpm: 90), ReelTrack(key: "minimal", theme: .MINIMAL, bpm: 80),

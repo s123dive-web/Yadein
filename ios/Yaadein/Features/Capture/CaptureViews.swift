@@ -335,6 +335,16 @@ struct EventCaptureView: View {
         guard !loaded else { return }
         loaded = true
         keepOriginal = !model.settings.storeOptimizedCopies
+        if memoryId == nil, AppGroup.hasPendingShares {
+            inspecting = true
+            Task {
+                let (ok, bad) = await MediaImporter.takeShared(optimize: model.settings.storeOptimizedCopies)
+                media += ok
+                rejected = bad
+                inspecting = false
+                if let first = ok.compactMap(\.takenAtMillis).min() { date = Dates.exact(LocalDate(epochMillis: first, zone: .current)) }
+            }
+        }
         guard let memoryId, let d = model.store?.detail(id: memoryId) else { return }
         date = d.memory.date
         title = d.memory.title

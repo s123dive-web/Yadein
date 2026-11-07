@@ -17,6 +17,7 @@ struct SettingsView: View {
                 SettingsLink(icon: "paintpalette", title: L("settings_appearance"), subtitle: L("settings_appearance_subtitle"), page: .appearance)
                 SettingsLink(icon: "lock", title: L("settings_security"), subtitle: L("settings_security_subtitle"), page: .security)
                 SettingsLink(icon: "bell", title: L("settings_notifications"), subtitle: L("settings_notifications_subtitle"), page: .notifications)
+                SettingsLink(icon: "face.smiling", title: L("settings_faces"), subtitle: L("settings_faces_subtitle"), page: .faces)
                 SettingsLink(icon: "internaldrive", title: L("settings_storage"), subtitle: L("settings_storage_subtitle"), page: .storage)
                 SettingsLink(icon: "externaldrive.badge.timemachine", title: L("settings_backup"), subtitle: L("settings_backup_subtitle"), page: .backup)
                 SettingsLink(icon: "hand.raised", title: L("settings_privacy"), subtitle: L("settings_privacy_subtitle"), page: .privacy)
@@ -92,6 +93,7 @@ struct SettingsPageView: View {
         case .appearance: AppearanceView()
         case .security: SecurityView()
         case .notifications: NotificationsView()
+        case .faces: FacesView()
         case .storage: StorageView()
         case .backup: BackupView()
         case .privacy: PrivacyView()
@@ -312,6 +314,8 @@ struct NotificationsView: View {
                                   isOn: Binding(get: { s.birthdayReminders }, set: { v in model.updateSettings { $0.birthdayReminders = v }; Notifier.reschedule(model) }))
                 SettingsSwitchRow(icon: "text.bubble", title: L("notif_prompts"), subtitle: L("notif_prompts_help"),
                                   isOn: Binding(get: { s.storyPrompts }, set: { v in model.updateSettings { $0.storyPrompts = v }; Notifier.reschedule(model) }))
+                SettingsSwitchRow(icon: "square.grid.2x2", title: L("notif_widget"), subtitle: L("notif_widget_help"),
+                                  isOn: Binding(get: { s.widgetShowsMemories }, set: { v in model.updateSettings { $0.widgetShowsMemories = v }; WidgetBridge.update(model) }))
                 SettingsSwitchRow(icon: "iphone.radiowaves.left.and.right", title: L("notif_shake"), subtitle: L("notif_shake_help"),
                                   isOn: Binding(get: { s.shakeForMemory }, set: { v in model.updateSettings { $0.shakeForMemory = v } }))
                 Text(L("notif_privacy")).font(look.type.bodySmall).foregroundStyle(look.colors.onSurfaceVariant)
@@ -442,6 +446,8 @@ struct BackupView: View {
                     HStack(spacing: Spacing.md) { ProgressView(); Text(working).font(look.type.bodyMedium) }
                 }
                 Text(L("backup_note")).font(look.type.bodySmall).foregroundStyle(look.colors.onSurfaceVariant)
+                Divider().padding(.vertical, Spacing.sm)
+                AutoBackupSection()
             }
             .padding(Spacing.gutter)
         }

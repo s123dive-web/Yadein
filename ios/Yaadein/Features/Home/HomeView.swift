@@ -87,6 +87,8 @@ struct HomeView: View {
             p.append(Route.randomMemory)
             paths[tab] = p
         }
+        .onAppear(perform: openPending)
+        .onChange(of: model.pendingRoute) { _, _ in openPending() }
         .onChange(of: model.pendingMemoryId) { _, id in
             guard let id else { return }
             model.pendingMemoryId = nil
@@ -95,5 +97,22 @@ struct HomeView: View {
             p.append(Route.memory(id))
             paths[.timeline] = p
         }
+    }
+
+    private func openPending() {
+        if let id = model.pendingMemoryId {
+            model.pendingMemoryId = nil
+            tab = .timeline
+            var p = NavigationPath()
+            p.append(Route.memory(id))
+            paths[.timeline] = p
+        }
+        guard let route = model.pendingRoute else { return }
+        model.pendingRoute = nil
+        hubOpen = false
+        tab = .timeline
+        var p = NavigationPath()
+        p.append(route)
+        paths[.timeline] = p
     }
 }

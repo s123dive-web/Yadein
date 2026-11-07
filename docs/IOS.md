@@ -97,5 +97,14 @@ An iPhone only runs apps signed by Apple's system, so for family and friends use
 
 ## Not yet on iPhone
 
-Tracked in [IOS_PARITY.md](IOS_PARITY.md): the home-screen widget, face suggestions, Google Photos / WhatsApp import,
-PDF book, choosing exact photos and your own music for a reel, automatic weekly backup, Share → Yaadein from other apps.
+Every Android feature is on iPhone (see [IOS_PARITY.md](IOS_PARITY.md) for platform differences). Only Android-specific
+ones are left out: Material You colours, Update app (iPhone apps update through TestFlight / the App Store) and the
+problem log (iOS keeps its own crash reports).
+
+## App Group (widget and Share → Yaadein)
+
+The app, the widget (`YaadeinWidget`) and the share extension (`YaadeinShare`) share the App Group
+`group.com.yaadein.app`. It holds only the widget's prepared lines (`widget.json`, counts unless the user allows titles)
+and shared files waiting to be taken into the vault (`shared/`, deleted once taken). For TestFlight, automatic signing
+creates the group and the `com.yaadein.app.widget` / `com.yaadein.app.share` identifiers. Sideloading tools re-sign the
+group with your Apple ID; if they drop it, the app still works and the widget shows "Open Yaadein once".

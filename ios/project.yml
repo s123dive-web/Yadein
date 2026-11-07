@@ -24,11 +24,18 @@ targets:
     platform: iOS
     sources:
       - path: Yaadein
+      - path: Shared
       - path: ../core/ui/src/main/res/font
         buildPhase: resources
       - path: ../feature/recap/src/main/res/raw
         buildPhase: resources
+    entitlements:
+      path: Yaadein/Yaadein.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.yaadein.app]
     dependencies:
+      - target: YaadeinWidget
+      - target: YaadeinShare
       - package: YaadeinKit
         product: YaadeinDomain
       - package: YaadeinKit
@@ -61,6 +68,10 @@ targets:
         NSMicrophoneUsageDescription: Record a voice memory. Audio is recorded only while you hold record and stays on this phone.
         # Standard encryption of the user's own data at rest only (exempt).
         ITSAppUsesNonExemptEncryption: false
+        # Widget links: yaadein://quick, yaadein://memory/<id>.
+        CFBundleURLTypes:
+          - CFBundleURLName: com.yaadein.app
+            CFBundleURLSchemes: [yaadein]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.yaadein.app
@@ -68,6 +79,73 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         CODE_SIGN_STYLE: Automatic
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  # Home-screen widget (RemindersWidget on Android). Shows only what the app wrote to the App Group.
+  YaadeinWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: YaadeinWidget
+      - path: Shared
+      - path: Yaadein/Resources
+        buildPhase: resources
+      - path: ../core/ui/src/main/res/font
+        buildPhase: resources
+    entitlements:
+      path: YaadeinWidget/YaadeinWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.yaadein.app]
+    info:
+      path: YaadeinWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Yaadein
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, hi, mr, gu, ta, te, bn, kn]
+        UIAppFonts: [fraunces_semibold.ttf, manrope_medium.ttf]
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.yaadein.app.widget
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
+  # Share → Save to Yaadein (SEND / SEND_MULTIPLE on Android). Copies files into the App Group inbox only.
+  YaadeinShare:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: YaadeinShare
+      - path: Shared
+      - path: Yaadein/Resources
+        buildPhase: resources
+      - path: ../core/ui/src/main/res/font
+        buildPhase: resources
+    entitlements:
+      path: YaadeinShare/YaadeinShare.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.yaadein.app]
+    info:
+      path: YaadeinShare/Info.plist
+      properties:
+        CFBundleDisplayName: Save to Yaadein
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, hi, mr, gu, ta, te, bn, kn]
+        UIAppFonts: [fraunces_semibold.ttf, manrope_regular.ttf, manrope_semibold.ttf]
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsImageWithMaxCount: 100
+              NSExtensionActivationSupportsMovieWithMaxCount: 20
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.yaadein.app.share
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
   YaadeinTests:
     type: bundle.unit-test
     platform: iOS

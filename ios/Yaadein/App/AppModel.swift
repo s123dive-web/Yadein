@@ -20,6 +20,8 @@ final class AppModel {
     private(set) var vault: MediaVault?
     /// One-shot navigation requests from outside a screen (e.g. "open this memory" after unlock).
     var pendingMemoryId: Int64?
+    /// A screen to open once Home shows (widget + button, Share → Save to Yaadein).
+    var pendingRoute: Route?
 
     let aead: AEAD = CryptoKitAEAD()
     let session: VaultSession
@@ -115,7 +117,11 @@ final class AppModel {
         let referenced = Set(database.media.flatMap { [$0.encryptedPath, $0.thumbPath] } + database.memories.compactMap(\.voiceNotePath))
         DispatchQueue.global(qos: .utility).async { newVault.pruneOrphans(keeping: referenced) }
         revision += 1
-        if settings.onboardingDone { Notifier.reschedule(self) }
+        if settings.onboardingDone {
+            Notifier.reschedule(self)
+            AutoBackup.runIfDue(self)
+            checkSharedInbox()
+        }
     }
 
     private func closeVault() {
@@ -221,8 +227,24 @@ final class AppModel {
         case .active:
             if let at = backgroundedAtUptime, SystemClock.uptimeMs - at >= settings.lockTimeout.millis { lockNow() }
             backgroundedAtUptime = nil
+            if store != nil, settings.onboardingDone { checkSharedInbox() }
         default:
             break
+        }
+    }
+
+    /// Photos handed over by the share extension open a new memory once the vault is open.
+    func checkSharedInbox() {
+        if AppGroup.hasPendingShares { pendingRoute = .eventCapture(memoryId: nil) }
+    }
+
+    /// yaadein://quick (widget +), yaadein://memory/<id> (widget with titles), yaadein://open.
+    func handle(url: URL) {
+        guard url.scheme == AppGroup.urlScheme else { return }
+        switch url.host {
+        case "quick": pendingRoute = .quick
+        case "memory": if let id = Int64(url.lastPathComponent) { pendingMemoryId = id }
+        default: break
         }
     }
 
@@ -232,6 +254,7 @@ final class AppModel {
         vault?.wipe()
         try? FileManager.default.removeItem(at: root.appendingPathComponent("vault"))
         BiometricKeys.clear()
+        WidgetBridge.clear()
         session.wipe()
         settingsStore.clear()
         settings = UserSettings()

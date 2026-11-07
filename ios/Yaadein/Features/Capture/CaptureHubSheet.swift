@@ -33,6 +33,7 @@ struct CaptureHubSheet: View {
                     option("calendar", L("hub_event"), L("hub_event_sub")) { open(.eventCapture(memoryId: nil)) }
                     option("text.alignleft", L("hub_text"), L("hub_text_sub")) { open(.textOnly) }
                     option("clock.arrow.circlepath", L("hub_past"), L("hub_past_sub")) { open(.pastWizard) }
+                    option("square.and.arrow.down", L("hub_import"), L("hub_import_sub")) { open(.importExport) }
                 }
             }
             .padding(.horizontal, Spacing.gutter)

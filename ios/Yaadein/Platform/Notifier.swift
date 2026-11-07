@@ -14,6 +14,7 @@ enum Notifier {
 
     static func reschedule(_ model: AppModel) {
         guard let store = model.store else { return }
+        WidgetBridge.update(model)
         let settings = model.settings
         let digest = YaadeinDomain.Reminders.build(cards: store.cards(), people: store.persons(), nowMillis: Int64(Date().timeIntervalSince1970 * 1000))
         let center = UNUserNotificationCenter.current()

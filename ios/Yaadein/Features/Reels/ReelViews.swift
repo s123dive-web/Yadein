@@ -36,6 +36,11 @@ struct RecapView: View {
     @State private var renderer: ReelRenderer?
     @State private var done: ReelEntry?
     @State private var failure: String?
+    /// Exactly the photos and clips the user chose; nil = picked automatically (RecapPlanner.defaultSelection).
+    @State private var selection: Set<Int64>?
+    @State private var choosingPhotos = false
+    @State private var choosingMusic = false
+    @State private var ownTrack: ReelTrack?
 
     private func memories() -> [MemoryDetail] {
         guard let store = model.store else { return [] }
@@ -59,7 +64,7 @@ struct RecapView: View {
     private func plan(_ memories: [MemoryDetail]) -> RecapPlan {
         RecapPlanner.plan(memories, theme: theme, length: length, title: titleEdited ? title : defaultTitle(), subtitle: "",
                           outroText: L("recap_outro"), dateLabel: { memoryDateText($0.memory.date) }, includeVideos: includeVideos,
-                          outroSubtitle: L("recap_outro_credit"), beatMs: track?.beatMs)
+                          selectedMediaIds: selection, outroSubtitle: L("recap_outro_credit"), beatMs: track?.beatMs)
     }
 
     var body: some View {
@@ -91,7 +96,27 @@ struct RecapView: View {
         .screenTitle(L("recap_title"))
         .toolbar { ToolbarItem(placement: .topBarTrailing) { NavigationLink(value: Route.reels) { Image(systemName: "film.stack") }.accessibilityLabel(L("reels_library_title")) } }
         .onAppear { scope = initialScope }
+        .onChange(of: scope) { _, _ in selection = nil }
+        .sheet(isPresented: $choosingPhotos) {
+            MediaChooser(memories: ms, includeVideos: includeVideos, initial: selection ?? Set(RecapPlanner.defaultSelection(ms, includeVideos: includeVideos, maxItems: RecapPlanner.defaultItemCount(length)))) { chosen in
+                selection = chosen
+            }
+            .environment(\.look, look)
+        }
+        .fileImporter(isPresented: $choosingMusic, allowedContentTypes: [.audio]) { r in
+            guard case let .success(url) = r else { return }
+            let access = url.startAccessingSecurityScopedResource()
+            defer { if access { url.stopAccessingSecurityScopedResource() } }
+            let copy = FileManager.default.temporaryDirectory.appendingPathComponent(url.lastPathComponent)
+            try? FileManager.default.removeItem(at: copy)
+            if (try? FileManager.default.copyItem(at: url, to: copy)) != nil {
+                ownTrack = .own(copy)
+                track = ownTrack
+            }
+        }
     }
+
+    private func ms(_ p: RecapPlan) -> [MemoryDetail] { memories() }
 
     @ViewBuilder private func setup(_ p: RecapPlan) -> some View {
         let people = model.store?.persons() ?? []
@@ -116,6 +141,8 @@ struct RecapView: View {
         Text(L("recap_music")).font(look.type.titleSmall)
         FlowLayout(spacing: Spacing.sm) {
             ForEach(ReelTrack.all) { t in Chip(text: t.label, selected: track == t) { track = t } }
+            if let ownTrack { Chip(text: ownTrack.label, selected: track == ownTrack) { track = ownTrack } }
+            Chip(text: L("music_own"), icon: "music.note") { choosingMusic = true }
             Chip(text: L("music_none"), selected: track == nil) { track = nil }
         }
         Text(L("music_licence")).font(look.type.bodySmall).foregroundStyle(look.colors.onSurfaceVariant)
@@ -125,6 +152,14 @@ struct RecapView: View {
         }
         .pickerStyle(.segmented)
         Toggle(L("recap_include_videos"), isOn: $includeVideos).font(look.type.bodyLarge)
+        let totalMedia = ms(p).reduce(0) { $0 + RecapPlanner.usableMedia($1, includeVideos: includeVideos).count }
+        HStack {
+            Text(L("recap_photos_selected", p.mediaCount, totalMedia)).font(look.type.bodyMedium)
+            Spacer()
+            Button(L("recap_choose_photos")) { choosingPhotos = true }.buttonStyle(TextButtonStyle())
+            if selection != nil { Button(L("recap_auto_pick")) { selection = nil }.buttonStyle(TextButtonStyle()) }
+        }
+        Text(L("recap_photos_hint")).font(look.type.bodySmall).foregroundStyle(look.colors.onSurfaceVariant)
         Text(L("recap_summary", p.mediaCount, "\(p.totalDurationMs / 1000) s")).font(look.type.bodyMedium).foregroundStyle(look.colors.onSurfaceVariant)
         Button(L("recap_render")) { Task { await render(p) } }
             .buttonStyle(FilledButtonStyle(fullWidth: true))
@@ -315,6 +350,67 @@ enum AutoReels {
             let entry = ReelEntry(title: title, path: stored.path, createdAt: Int64(Date().timeIntervalSince1970 * 1000),
                                   durationMs: plan.totalDurationMs, slot: pick.slot.key, signature: pick.signature)
             (try? store.addReel(entry))?.forEach(vault.delete)
+        }
+    }
+}
+
+/// Choose exactly which photos and clips go into the reel (MediaChooser.kt), grouped by memory.
+struct MediaChooser: View {
+    let memories: [MemoryDetail]
+    let includeVideos: Bool
+    @State var initial: Set<Int64>
+    let done: (Set<Int64>) -> Void
+    @Environment(\.look) private var look
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        let all = memories.flatMap { RecapPlanner.usableMedia($0, includeVideos: includeVideos).map(\.id) }
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Spacing.lg) {
+                    HStack {
+                        Text(L("recap_photos_selected", initial.count, all.count)).font(look.type.titleMedium)
+                        Spacer()
+                        Button(L("recap_select_all")) { initial = Set(all.prefix(RecapPlanner.maxSelectedItems)) }.buttonStyle(TextButtonStyle())
+                        Button(L("recap_clear_all")) { initial = [] }.buttonStyle(TextButtonStyle())
+                    }
+                    if initial.count >= RecapPlanner.maxSelectedItems {
+                        Text(L("recap_limit", RecapPlanner.maxSelectedItems)).font(look.type.bodySmall).foregroundStyle(look.colors.error)
+                    }
+                    ForEach(memories) { m in
+                        let media = RecapPlanner.usableMedia(m, includeVideos: includeVideos)
+                        if !media.isEmpty {
+                            Text(m.memory.title).font(look.type.titleSmall)
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: Spacing.xs), count: 4), spacing: Spacing.xs) {
+                                ForEach(media) { item in
+                                    Button {
+                                        if initial.contains(item.id) { initial.remove(item.id) } else if initial.count < RecapPlanner.maxSelectedItems { initial.insert(item.id) }
+                                    } label: {
+                                        MediaThumb(media: item, isCover: false)
+                                            .opacity(initial.contains(item.id) ? 1 : 0.4)
+                                            .overlay(alignment: .topTrailing) {
+                                                if initial.contains(item.id) {
+                                                    Image(systemName: "checkmark.circle.fill").foregroundStyle(look.colors.primary, .white).padding(Spacing.xxs)
+                                                }
+                                            }
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(Spacing.gutter)
+            }
+            .screenTitle(L("recap_choose_photos"))
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(L("recap_choose_done")) {
+                        done(initial)
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 }

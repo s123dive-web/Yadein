@@ -27,10 +27,14 @@ public struct VaultDatabase: Codable, Equatable, Sendable {
     public var mediaPersons: [Link] = []
     /// Reels kept in "Your reels" (ReelLibrary on Android). Not part of backups, as on Android.
     public var reels: [ReelEntry] = []
+    /// Face suggestions (face_clusters on Android); nothing is tagged automatically.
+    public var faceClusters: [FaceCluster] = []
+    /// Media already scanned for faces.
+    public var faceScanned: [Int64] = []
 
     public init() {}
 
-    enum CodingKeys: String, CodingKey { case version, nextId, persons, groups, memories, media, memoryPersons, mediaPersons, reels }
+    enum CodingKeys: String, CodingKey { case version, nextId, persons, groups, memories, media, memoryPersons, mediaPersons, reels, faceClusters, faceScanned }
 
     // Fields added later default when absent, so a database written by an older build always opens.
     public init(from decoder: Decoder) throws {
@@ -44,6 +48,8 @@ public struct VaultDatabase: Codable, Equatable, Sendable {
         memoryPersons = try c.decodeIfPresent([Link].self, forKey: .memoryPersons) ?? []
         mediaPersons = try c.decodeIfPresent([Link].self, forKey: .mediaPersons) ?? []
         reels = try c.decodeIfPresent([ReelEntry].self, forKey: .reels) ?? []
+        faceClusters = try c.decodeIfPresent([FaceCluster].self, forKey: .faceClusters) ?? []
+        faceScanned = try c.decodeIfPresent([Int64].self, forKey: .faceScanned) ?? []
     }
 }
 
@@ -527,6 +533,50 @@ public final class VaultStore: @unchecked Sendable {
             let path = d.reels.first { $0.id == id }?.path
             d.reels.removeAll { $0.id == id }
             return path
+        }
+    }
+
+    // MARK: - Faces
+
+    public func faceClusters() -> [FaceCluster] { lock.withLock { db.faceClusters } }
+    public func unscannedPhotoIds() -> [Int64] {
+        lock.withLock {
+            let done = Set(db.faceScanned)
+            return db.media.filter { $0.kind == .PHOTO && !done.contains($0.id) }.map(\.id)
+        }
+    }
+
+    /// Adds the faces found in one photo (clustered against the existing suggestions) and marks it scanned.
+    public func addFaces(mediaId: Int64, samples: [FaceSample]) throws {
+        try transaction(.people) { d in
+            for s in samples {
+                let (clusters, joined) = FaceClustering.assign(s, clusters: d.faceClusters, nextId: d.nextId, threshold: FaceFeatures.threshold)
+                if joined == d.nextId { d.nextId += 1 }
+                d.faceClusters = clusters
+            }
+            d.faceScanned.append(mediaId)
+        }
+    }
+
+    /// "Yes, that's them": tags the sample photo and remembers the answer.
+    public func confirmFace(clusterId: Int64, personId: Int64) throws {
+        try transaction(.people) { d in
+            guard let i = d.faceClusters.firstIndex(where: { $0.id == clusterId }) else { return }
+            d.faceClusters[i].suggestedPersonId = personId
+            d.faceClusters[i].confirmed = true
+            let mediaId = d.faceClusters[i].sampleMediaId
+            if !d.mediaPersons.contains(Link(mediaId, personId)) { d.mediaPersons.append(Link(mediaId, personId)) }
+        }
+    }
+
+    public func dismissFace(clusterId: Int64) throws {
+        try transaction(.people) { d in d.faceClusters.removeAll { $0.id == clusterId } }
+    }
+
+    public func clearFaces() throws {
+        try transaction(.people) { d in
+            d.faceClusters = []
+            d.faceScanned = []
         }
     }
 

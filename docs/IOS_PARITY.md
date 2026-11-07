@@ -33,8 +33,8 @@
 | Import limits (20 MB photo, 200 MB video), optimised copies | ✅ | ✅ | |
 | Dictation in text capture | ✅ | 🟡 | iOS keyboard dictation (mic key) |
 | Voice memories (new memory, or a note on a memory; story prompt opens the recorder) | ✅ | ✅ | AAC, encrypted, streamed back from the vault |
-| Share → Yaadein from other apps | ✅ | ⬜ | needs a share extension |
-| Google Photos Takeout / WhatsApp import | ✅ | ⬜ | parsing rules already ported (ExportParsing) |
+| Share → Yaadein from other apps | ✅ | 🟡 | share extension "Save to Yaadein" keeps the files in the App Group; the new memory opens with them the next time Yaadein is opened and unlocked (iOS does not let a share sheet open the app) |
+| Google Photos Takeout / WhatsApp import | ✅ | ✅ | same ExportParsing rules; zip streamed on the phone |
 
 ## Relive and people
 
@@ -49,11 +49,11 @@
 | Yearly summary | ✅ | ✅ | |
 | Weekly story prompt | ✅ | ✅ | same rotation |
 | Reminders (on this day, birthdays, prompts) | ✅ | 🟡 | iOS schedules 30 days ahead when the app is opened |
-| Home-screen widget | ✅ | ⬜ | WidgetKit |
+| Home-screen widget | ✅ | ✅ | WidgetKit, small and medium; counts only unless "Show memories on the widget" is on; + opens quick add |
 | Reels: planner (beat snap, Ken Burns, selection) | ✅ | ✅ | same RecapPlanner / AutoReelPicker |
 | Reels: rendering, library (newest 10), player, share, 3 automatic reels | ✅ | ✅ | AVFoundation renderer, same storyboard, music and 1080×1920 output; automatic reels refresh when Your reels opens |
-| Reels: choose exact photos, own music | ✅ | ⬜ | |
-| Face suggestions | ✅ | ⬜ | Vision framework |
+| Reels: choose exact photos, own music | ✅ | ✅ | own music from Files |
+| Face suggestions | ✅ | ✅ | Vision face boxes + the same 64×64 LBP descriptor and clustering; nothing tagged until confirmed |
 
 ## Trust
 
@@ -61,10 +61,10 @@
 |---------|---------|--------|-------|
 | Backup / restore `.yaadein` | ✅ | ✅ | **cross-platform**: Android backups restore on iPhone and back |
 | Family packs (send from a memory, add from Backup) | ✅ | ✅ | same file format both ways |
-| Automatic weekly backup | ✅ | ⬜ | |
+| Automatic weekly backup | ✅ | ✅ | into a folder you choose (iCloud Drive, Google Drive's Files folder…), after an unlock when a week has passed |
 | Check my memories | ✅ | ✅ | |
 | Erase everything | ✅ | ✅ | |
 | Picture card sharing | ✅ | ✅ | |
-| PDF book | ✅ | ⬜ | |
+| PDF book | ✅ | ✅ | |
 | Problem log | ✅ | ⬜ | iOS has its own crash reports |
 | Update app (sideload) | ✅ | n/a | iPhone apps update through TestFlight / App Store |

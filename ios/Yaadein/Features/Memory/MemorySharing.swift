@@ -55,6 +55,9 @@ struct MemoryShareMenu: View {
     var body: some View {
         Menu {
             Button(L("share_card"), systemImage: "photo") { shareCard() }
+            Button(L("share_pdf"), systemImage: "doc.richtext") {
+                if let vault = model.vault, let url = PdfBook.make(detail, look: look, vault: vault) { shareItems = [url] } else { failed = true }
+            }
             Button(L("share_pack"), systemImage: "lock.doc") { askPassword = true }
         } label: { Image(systemName: "square.and.arrow.up") }
             .accessibilityLabel(L("share_card_chooser"))
