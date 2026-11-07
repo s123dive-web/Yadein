@@ -31,7 +31,7 @@ APK key rotation. Nothing is built on a laptop.
 - **Relive**: "On this day", shake for a random memory, yearly summaries, recap videos.
 - **Security**: the vault keys are sealed with the PIN (Argon2id + Android Keystore) or a biometric-bound Keystore key;
   optional phone screen lock mode; SQLCipher database; chunked AES-256-GCM media; tamper-proof lockout clock;
-  `FLAG_SECURE`; encrypted backups.
+  optional screenshot blocking (`FLAG_SECURE`); encrypted backups.
 - **All ages**: 48 dp targets, font scaling, Easy mode, compact and grid timelines; English, Hindi, Marathi, Gujarati,
   Tamil, Telugu, Bengali and Kannada.
 
@@ -78,7 +78,8 @@ Conventions, the Room schema and the navigation map live in [CLAUDE.md](CLAUDE.m
 | Backup / family pack | `.yaadein` = chunked AES-256-GCM container, key from the user's password with Argon2id. Automatic backups keep that derived key sealed with the vault's media key. |
 
 Decrypted bytes only ever live in memory: Coil's disk cache is disabled and decrypted previews
-are never written to storage. `FLAG_SECURE` (on by default) blocks screenshots and the Recents preview.
+are never written to storage. Screenshots are allowed by default; Settings → Security → Block screenshots turns on
+`FLAG_SECURE`, which also hides the Recents preview.
 
 ## Video pipeline (recap)
 

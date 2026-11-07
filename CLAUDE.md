@@ -53,7 +53,7 @@ reviewed or reverted in isolation.
 | Persistence | Room 2.8.x + SQLCipher (`net.zetetic:sqlcipher-android` 4.20) via `SupportOpenHelperFactory`, WAL mode, versioned migrations |
 | Settings | DataStore (Preferences) wrapped with AES-GCM via Keystore key (`EncryptedDataStore`); PIN hash + wrapped DB key in `EncryptedSharedPreferences` |
 | DI / async | Hilt 2.60, Coroutines + Flow, WorkManager 2.12 (Hilt workers) |
-| Security | BiometricPrompt (class 3) + 6-digit PIN (Argon2id via `argon2kt`), `FLAG_SECURE` default on, Keystore AES keys |
+| Security | BiometricPrompt (class 3) + 6-digit PIN (Argon2id via `argon2kt`), `FLAG_SECURE` optional (off by default since settings version 3), Keystore AES keys |
 | Media | Coil 3 (custom encrypted fetcher), Media3 1.11 ExoPlayer (custom decrypting `DataSource`), Media3 Transformer for recap rendering, `ExifInterface` for dates |
 | Faces (optional) | ML Kit Face Detection 16.1.7 (bundled model, on device); lightweight local embedding + clustering |
 | Smart polish (optional) | ML Kit GenAI Prompt API (Gemini Nano via AICore) behind a capability check; rule-based Polish engine is the default and always works |

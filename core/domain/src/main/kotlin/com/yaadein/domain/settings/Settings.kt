@@ -22,7 +22,8 @@ data class UserSettings(
     val theme: AppTheme = AppTheme.WARM_ALBUM,
     val darkMode: DarkMode = DarkMode.SYSTEM,
     val easyMode: Boolean = false,
-    val secureScreen: Boolean = true,
+    /** Block screenshots and the Recents preview (FLAG_SECURE). Off by default: people screenshot memories to share them. */
+    val secureScreen: Boolean = false,
     val lockTimeout: LockTimeout = LockTimeout.ONE_MINUTE,
     val biometricEnabled: Boolean = true,
     val wipeAfterTenFailures: Boolean = false,

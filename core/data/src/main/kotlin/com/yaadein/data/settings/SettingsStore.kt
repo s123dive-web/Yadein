@@ -21,9 +21,10 @@ import java.io.OutputStream
 
 /**
  * Bumped when a stored default needs a one-time migration. Version 1 files were written before the
- * lock timeout default moved from "immediately" to one minute.
+ * lock timeout default moved from "immediately" to one minute. Version 2 files were written while
+ * screenshots were blocked by default; the owner made screenshots allowed by default in version 3.
  */
-internal const val SETTINGS_VERSION = 2
+internal const val SETTINGS_VERSION = 3
 
 /** Serializable mirror of [UserSettings] with defaults so new fields are backward compatible. */
 @Serializable
@@ -32,7 +33,7 @@ internal data class SettingsDto(
     val theme: String = AppTheme.WARM_ALBUM.name,
     val darkMode: String = DarkMode.SYSTEM.name,
     val easyMode: Boolean = false,
-    val secureScreen: Boolean = true,
+    val secureScreen: Boolean = false,
     val lockTimeout: String = LockTimeout.ONE_MINUTE.name,
     val biometricEnabled: Boolean = true,
     val wipeAfterTenFailures: Boolean = false,
@@ -61,7 +62,9 @@ internal fun SettingsDto.toDomain() = UserSettings(
     theme = enumOr(theme, AppTheme.WARM_ALBUM),
     darkMode = enumOr(darkMode, DarkMode.SYSTEM),
     easyMode = easyMode,
-    secureScreen = secureScreen,
+    // Files from before version 3 stored "block screenshots" only because it was the default: allow screenshots once.
+    // Anyone who wants them blocked switches it back on in Settings → Security, and that choice is kept.
+    secureScreen = if (settingsVersion < 3) false else secureScreen,
     lockTimeout = migratedLockTimeout(),
     biometricEnabled = biometricEnabled,
     wipeAfterTenFailures = wipeAfterTenFailures,

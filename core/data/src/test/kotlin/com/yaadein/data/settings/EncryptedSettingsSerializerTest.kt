@@ -45,4 +45,12 @@ class EncryptedSettingsSerializerTest {
         assertEquals(LockTimeout.IMMEDIATELY, chosen.toDomain().lockTimeout)
         assertEquals(SETTINGS_VERSION, UserSettings().toDto().settingsVersion)
     }
+
+    @Test
+    fun `screenshots are allowed by default and old blocked-by-default files are switched once`() {
+        assertEquals(false, UserSettings().secureScreen)
+        assertEquals(false, SettingsDto(settingsVersion = 2, secureScreen = true).toDomain().secureScreen)
+        // Turning blocking back on after the update is kept.
+        assertEquals(true, SettingsDto(settingsVersion = SETTINGS_VERSION, secureScreen = true).toDomain().secureScreen)
+    }
 }
