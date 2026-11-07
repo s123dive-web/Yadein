@@ -47,16 +47,28 @@ jobs:
           YAADEIN_SLOW_TESTS: '1'
         run: swift test -c release -Xswiftc -enable-testing --filter Argon2
 
-  # The app itself: generate the Xcode project, build for the simulator, run the app tests, launch it once and keep a
-  # screenshot. Unsigned (CODE_SIGNING_ALLOWED=NO): signing for real iPhones needs the owner's Apple account
-  # (see docs/IOS.md).
+  # The app itself: generate the Xcode project, build, test on a simulator, launch once for a screenshot, then build
+  # an installable package for real iPhones and attach everything to a GitHub release "ios-build-<run>".
+  # Builds are unsigned unless the Apple secrets exist (see the testflight job and docs/IOS.md).
   app:
     runs-on: macos-15
-    timeout-minutes: 60
+    timeout-minutes: 75
+    permissions:
+      contents: write
+    env:
+      # Same numbering idea as the APK: build number = commit count, version 0.1.<count>.
+      DERIVED: build/DerivedData
     steps:
       - uses: actions/checkout@v4
-      - name: Xcode version
-        run: xcodebuild -version
+        with:
+          fetch-depth: 0
+      - name: Versions
+        id: ver
+        run: |
+          xcodebuild -version
+          COUNT=$(git rev-list --count HEAD)
+          echo "build=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "version=0.1.$COUNT" >> "$GITHUB_OUTPUT"
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Generate the Xcode project
@@ -76,39 +88,130 @@ jobs:
           ")
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           xcrun simctl list devices | grep "$UDID"
-      - name: Build and test
+          xcrun simctl boot "$UDID" || true
+      - name: Build for the simulator
         working-directory: ios
+        timeout-minutes: 30
         run: |
           set +e
           mkdir -p build
-          xcodebuild test -project Yaadein.xcodeproj -scheme Yaadein \
-            -destination "id=${{ steps.sim.outputs.udid }}" \
-            -derivedDataPath build/DerivedData \
-            CODE_SIGNING_ALLOWED=NO > build/xcodebuild.log 2>&1
+          xcodebuild build-for-testing -project Yaadein.xcodeproj -scheme Yaadein \
+            -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath "$DERIVED" \
+            MARKETING_VERSION=${{ steps.ver.outputs.version }} CURRENT_PROJECT_VERSION=${{ steps.ver.outputs.build }} \
+            CODE_SIGNING_ALLOWED=NO > build/build.log 2>&1
           status=$?
-          grep -E "error:|Test Case .*(passed|failed)|Executed|\*\* (BUILD|TEST)" build/xcodebuild.log | tail -150
+          grep -E "error:|\*\* (BUILD|TEST)" build/build.log | tail -100
+          if [ $status -ne 0 ]; then grep -E "error:" -A3 build/build.log | head -200; fi
           exit $status
-      - name: Show compiler errors
-        if: failure()
+      - name: App tests
         working-directory: ios
-        run: grep -E "error:" -A3 build/xcodebuild.log | head -200 || true
+        timeout-minutes: 20
+        run: |
+          set +e
+          xcodebuild test-without-building -project Yaadein.xcodeproj -scheme Yaadein \
+            -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath "$DERIVED" \
+            CODE_SIGNING_ALLOWED=NO > build/test.log 2>&1
+          status=$?
+          grep -E "error:|Test Case .*(passed|failed)|Executed|\*\* TEST" build/test.log | tail -100
+          exit $status
       - name: Launch screenshot
-        if: success()
+        timeout-minutes: 5
         run: |
           UDID=${{ steps.sim.outputs.udid }}
           APP=$(find ios/build/DerivedData/Build/Products -name "Yaadein.app" -path "*iphonesimulator*" | head -1)
-          xcrun simctl boot "$UDID" || true
           xcrun simctl install "$UDID" "$APP"
           xcrun simctl launch "$UDID" com.yaadein.app
-          sleep 8
-          mkdir -p ios/build/screenshots
-          xcrun simctl io "$UDID" screenshot ios/build/screenshots/launch.png
-      - name: Upload simulator app and screenshots
+          sleep 10
+          mkdir -p ios/build/out
+          xcrun simctl io "$UDID" screenshot ios/build/out/launch.png
+          (cd "$(dirname "$APP")" && zip -qry "$GITHUB_WORKSPACE/ios/build/out/Yaadein-v${{ steps.ver.outputs.version }}-simulator.zip" Yaadein.app)
+      - name: Build for iPhone (unsigned .ipa)
+        working-directory: ios
+        timeout-minutes: 30
+        run: |
+          set +e
+          xcodebuild archive -project Yaadein.xcodeproj -scheme Yaadein -configuration Release \
+            -destination "generic/platform=iOS" -archivePath build/Yaadein.xcarchive \
+            MARKETING_VERSION=${{ steps.ver.outputs.version }} CURRENT_PROJECT_VERSION=${{ steps.ver.outputs.build }} \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" > build/archive.log 2>&1
+          status=$?
+          grep -E "error:|\*\* ARCHIVE" build/archive.log | tail -50
+          [ $status -ne 0 ] && exit $status
+          mkdir -p build/ipa/Payload
+          cp -R build/Yaadein.xcarchive/Products/Applications/Yaadein.app build/ipa/Payload/
+          (cd build/ipa && zip -qry "../out/Yaadein-v${{ steps.ver.outputs.version }}-unsigned.ipa" Payload)
+          ls -la build/out
+      - name: Upload build outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Yaadein-ios-simulator
+          name: Yaadein-ios-${{ steps.ver.outputs.version }}
           path: |
-            ios/build/screenshots
-            ios/build/xcodebuild.log
+            ios/build/out
+            ios/build/*.log
           if-no-files-found: ignore
+      - name: Attach to a release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ios-build-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: iOS build ${{ github.run_number }} (v${{ steps.ver.outputs.version }})
+          body: |
+            iPhone app built from ${{ github.sha }}.
+            - `Yaadein-v*-unsigned.ipa`: install on your own iPhone with a signing tool (AltStore, Sideloadly or Xcode
+              with your Apple ID); for family and friends use TestFlight (add the Apple secrets, see docs/IOS.md).
+            - `Yaadein-v*-simulator.zip`: runs in the Xcode iPhone simulator.
+            - `launch.png`: the first screen, as launched on the simulator.
+          files: |
+            ios/build/out/*.ipa
+            ios/build/out/*.zip
+            ios/build/out/launch.png
+
+  # Signed build to TestFlight, only when the owner has added the Apple secrets (docs/IOS.md, "Installing on an iPhone").
+  testflight:
+    needs: app
+    if: github.event_name != 'pull_request'
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      HAS_APPLE: ${{ secrets.ASC_KEY_P8_BASE64 != '' && secrets.APPLE_TEAM_ID != '' }}
+    steps:
+      - name: Skip when the Apple secrets are missing
+        if: env.HAS_APPLE != 'true'
+        run: echo "No Apple secrets yet; the unsigned .ipa is on the release. See docs/IOS.md to enable TestFlight."
+      - uses: actions/checkout@v4
+        if: env.HAS_APPLE == 'true'
+        with:
+          fetch-depth: 0
+      - name: Archive, sign and upload to TestFlight
+        if: env.HAS_APPLE == 'true'
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+        run: |
+          set -euo pipefail
+          brew install xcodegen
+          cd ios && xcodegen generate
+          KEY="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
+          echo "$ASC_KEY_P8_BASE64" | base64 -d > "$KEY"
+          COUNT=$(git rev-list --count HEAD)
+          AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          xcodebuild archive -project Yaadein.xcodeproj -scheme Yaadein -configuration Release \
+            -destination "generic/platform=iOS" -archivePath build/Yaadein.xcarchive \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION=0.1.$COUNT CURRENT_PROJECT_VERSION=$COUNT "${AUTH[@]}" | tail -20
+          cat > build/ExportOptions.plist <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$APPLE_TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath build/Yaadein.xcarchive -exportOptionsPlist build/ExportOptions.plist \
+            -exportPath build/export "${AUTH[@]}" | tail -20

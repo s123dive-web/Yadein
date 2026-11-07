@@ -115,6 +115,7 @@ final class AppModel {
         let referenced = Set(database.media.flatMap { [$0.encryptedPath, $0.thumbPath] } + database.memories.compactMap(\.voiceNotePath))
         DispatchQueue.global(qos: .utility).async { newVault.pruneOrphans(keeping: referenced) }
         revision += 1
+        if settings.onboardingDone { Notifier.reschedule(self) }
     }
 
     private func closeVault() {
