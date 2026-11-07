@@ -11,6 +11,25 @@ attaches it to a release tagged `build-<run number>` (see the Releases page). It
 every memory. Add the release key secrets once (`docs/RELEASE_SIGNING.md`) and CI signs with your private key using
 APK key rotation. Nothing is built on a laptop.
 
+## Stable Android build (known good)
+
+This is the Android baseline to go back to if a later change breaks the app. iOS work (in `ios/`) does not touch any
+Android module, Gradle file or Android workflow.
+
+| | |
+|---|---|
+| APK | [`Yaadein-v0.1.46-beta.apk`](https://github.com/s123dive-web/Yadein/releases/download/build-42/Yaadein-v0.1.46-beta.apk) (release [Build 42](https://github.com/s123dive-web/Yadein/releases/tag/build-42), published 2026-11-07 14:08 UTC) |
+| APK SHA-256 | `eee15656499a07cff60881e0c0b99b117f233a75db18edb0d582ea17bdaafc13` |
+| Version | `versionName` 0.1.46, `versionCode` 46 (beta build type: R8-optimised, not debuggable, public debug key) |
+| Stable head | commit `189f6b273e3e08b158b971ed064856f138857efe` ("CI: print Hilt ViewModel generation diagnostics when unit tests fail"), originally on branch `claude/bulk-photo-upload-memory-filter-of4wnl` |
+| Git tag | `android-stable-build-42` → `189f6b2` |
+| CI | [Build APK run 42](https://github.com/s123dive-web/Yadein/actions/runs/42379000221): unit tests, zero-network guard, lint and beta APK all green |
+
+Note: the `build-N` release tags are created by the release action against `main`, so they do not point at the commit
+that was built. Use the commit/tag above (or the run's `head_sha`) to find the source of an APK.
+
+To rebuild or roll back to it: `git checkout android-stable-build-42 && ./gradlew :app:assembleBeta`.
+
 ## Features
 
 - **Voice memories**: record a grandparent telling the story in their own voice; weekly story prompts
