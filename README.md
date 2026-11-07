@@ -22,13 +22,13 @@ Android module, Gradle file or Android workflow.
 | APK SHA-256 | `eee15656499a07cff60881e0c0b99b117f233a75db18edb0d582ea17bdaafc13` |
 | Version | `versionName` 0.1.46, `versionCode` 46 (beta build type: R8-optimised, not debuggable, public debug key) |
 | Stable head | commit `189f6b273e3e08b158b971ed064856f138857efe` ("CI: print Hilt ViewModel generation diagnostics when unit tests fail"), originally on branch `claude/bulk-photo-upload-memory-filter-of4wnl` |
-| Git tag | `android-stable-build-42` → `189f6b2` |
+| Suggested tag | `android-stable-build-42` → `189f6b2` (create with `git tag android-stable-build-42 189f6b2 && git push origin android-stable-build-42`) |
 | CI | [Build APK run 42](https://github.com/s123dive-web/Yadein/actions/runs/42379000221): unit tests, zero-network guard, lint and beta APK all green |
 
 Note: the `build-N` release tags are created by the release action against `main`, so they do not point at the commit
 that was built. Use the commit/tag above (or the run's `head_sha`) to find the source of an APK.
 
-To rebuild or roll back to it: `git checkout android-stable-build-42 && ./gradlew :app:assembleBeta`.
+To rebuild or roll back to it: `git checkout 189f6b2 && ./gradlew :app:assembleBeta`.
 
 ## Features
 
