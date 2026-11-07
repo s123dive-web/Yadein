@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yaadein.data.backup.AutoBackup
 import com.yaadein.data.reminders.ReminderDigestStore
+import com.yaadein.feature.settings.AutoBackupWorker
 import com.yaadein.domain.settings.UserSettings
 import com.yaadein.feature.relive.notify.OnThisDayWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +23,7 @@ class SessionViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val digestStore: ReminderDigestStore,
 ) : ViewModel() {
+    // Note: automatic backups are checked here too (vault is open now).
     private var done = false
 
     fun onUnlocked(settings: UserSettings) {
@@ -31,6 +34,7 @@ class SessionViewModel @Inject constructor(
             // WorkManager can be unavailable (tests, a broken install); reminders are best effort.
             runCatching { OnThisDayWorker.sync(context, settings) }
             runCatching { context.sendBroadcast(Intent(OnThisDayWorker.ACTION_REMINDERS_REFRESHED).setPackage(context.packageName)) }
+            if (AutoBackup.isDue(settings, System.currentTimeMillis())) runCatching { AutoBackupWorker.enqueue(context) }
         }
     }
 }

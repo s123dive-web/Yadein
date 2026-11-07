@@ -236,6 +236,7 @@ fun RejectedDialog(failures: List<ImportFailure>, onDismiss: () -> Unit) {
                             ImportFailure.Unsupported -> stringResource(R.string.reject_unsupported)
                             is ImportFailure.Unreadable -> stringResource(R.string.reject_unreadable)
                             ImportFailure.IntegrityCheckFailed -> stringResource(R.string.reject_integrity)
+                            is ImportFailure.NotEnoughSpace -> stringResource(R.string.reject_no_space, formatBytes(f.neededBytes))
                         },
                     )
                 }

@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Voice memories, recorded only when the user presses record; the audio is encrypted on the phone. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Background recap rendering (WorkManager foreground job with a progress notification). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
@@ -56,6 +58,20 @@
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync|mediaProcessing"
             tools:node="merge" />
+
+        <!-- Home-screen widget: on this day / birthday / story prompt, and a quick-add button. -->
+        <receiver
+            android:name=".widget.RemindersWidget"
+            android:exported="false"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.yaadein.app.REMINDERS_REFRESHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/yaadein_widget_info" />
+        </receiver>
 
         <activity
             android:name=".MainActivity"

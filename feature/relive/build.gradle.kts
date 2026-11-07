@@ -44,6 +44,8 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

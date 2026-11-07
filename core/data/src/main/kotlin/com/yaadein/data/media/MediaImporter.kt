@@ -42,6 +42,8 @@ sealed interface ImportFailure {
     data object Unsupported : ImportFailure
     data class Unreadable(val reason: String?) : ImportFailure
     data object IntegrityCheckFailed : ImportFailure
+    /** The phone lacks the temporary space to copy and compress this file. */
+    data class NotEnoughSpace(val neededBytes: Long) : ImportFailure
 }
 
 sealed interface ImportOutcome {
@@ -99,16 +101,29 @@ class MediaImporter @Inject constructor(
         PickedMedia(uri = uri, isVideo = isVideo, mimeType = mime, sizeBytes = size, takenAtMillis = takenAt, displayName = name)
     }
 
-    fun limitFor(isVideo: Boolean): Long = if (isVideo) MAX_VIDEO_BYTES else MAX_PHOTO_BYTES
+    /**
+     * Largest file accepted. With [optimize] on, a video may be up to [MAX_SOURCE_VIDEO_BYTES]: it is compressed to 1080p
+     * first and [MAX_VIDEO_BYTES] applies to the compressed copy (a two-minute 4K clip used to be refused outright).
+     */
+    fun limitFor(isVideo: Boolean, optimize: Boolean = true): Long = when {
+        !isVideo -> MAX_PHOTO_BYTES
+        optimize -> MAX_SOURCE_VIDEO_BYTES
+        else -> MAX_VIDEO_BYTES
+    }
 
-    fun checkLimit(picked: PickedMedia): ImportFailure? {
-        val limit = limitFor(picked.isVideo)
-        return if (picked.sizeBytes > limit) ImportFailure.TooLarge(picked.isVideo, picked.sizeBytes, limit) else null
+    fun checkLimit(picked: PickedMedia, optimize: Boolean = true): ImportFailure? {
+        val limit = limitFor(picked.isVideo, optimize)
+        if (picked.sizeBytes > limit) return ImportFailure.TooLarge(picked.isVideo, picked.sizeBytes, limit)
+        // Copy + compressed copy + encrypted file can briefly need about three times the size.
+        val needed = picked.sizeBytes * 3 + SPACE_MARGIN_BYTES
+        val free = runCatching { android.os.StatFs(context.cacheDir.path).availableBytes }.getOrDefault(Long.MAX_VALUE)
+        if (picked.sizeBytes > MAX_VIDEO_BYTES && free < needed) return ImportFailure.NotEnoughSpace(needed)
+        return null
     }
 
     suspend fun import(picked: PickedMedia, memoryId: Long?, optimize: Boolean, position: Int, caption: String = ""): ImportOutcome =
         withContext(Dispatchers.IO) {
-            checkLimit(picked)?.let { return@withContext ImportOutcome.Failed(it) }
+            checkLimit(picked, optimize)?.let { return@withContext ImportOutcome.Failed(it) }
             val now = clock()
             var job = ImportJobEntity(
                 sourceUri = picked.uri.toString(), memoryId = memoryId, stage = STAGE_COPYING,
@@ -128,6 +143,12 @@ class MediaImporter @Inject constructor(
                 // 2. prepare plaintext (optimised or original), thumbnail, dimensions
                 val prepared = (if (picked.isVideo) prepareVideo(temp, optimize) else preparePhoto(temp, optimize))
                     ?: return@withContext fail(job, ImportFailure.Unsupported, temp, targetFile, thumbFile)
+                // The limit for what is kept applies after compression.
+                val keptSize = prepared.plainFile.length()
+                if (picked.isVideo && keptSize > MAX_VIDEO_BYTES) {
+                    if (prepared.plainFile != temp) prepared.plainFile.delete()
+                    return@withContext fail(job, ImportFailure.TooLarge(true, keptSize, MAX_VIDEO_BYTES), temp, targetFile, thumbFile)
+                }
 
                 // 3. encrypt + hash
                 val sha = FileInputStream(prepared.plainFile).use { mediaStore.crypto.encryptFile(it, targetFile) }
@@ -219,6 +240,7 @@ class MediaImporter @Inject constructor(
         mediaStore.clearTemp()
         val referenced = db.mediaDao().allPaths().toSet()
         mediaStore.pruneOrphans(referenced)
+        mediaStore.pruneVoiceOrphans(db.memoryDao().voicePaths().toSet())
     }
 
     private class Prepared(val plainFile: File, val thumbJpeg: ByteArray, val width: Int, val height: Int, val durationMs: Long?)
@@ -272,13 +294,16 @@ class MediaImporter @Inject constructor(
         }
         if (width <= 0 || height <= 0) return null
         var plainFile = temp
-        if (optimize && max(width, height) > MAX_VIDEO_EDGE) {
+        // Compress when larger than 1080p, or when the file alone is over the keep limit (long 1080p clips).
+        if (optimize && (max(width, height) > MAX_VIDEO_EDGE || temp.length() > MAX_VIDEO_BYTES)) {
             val out = mediaStore.newTempFile()
             val result = videoOptimizer.optimize(temp, out)
             if (result != null && result.exists() && result.length() > 0) {
                 plainFile = result
-                val scale = MAX_VIDEO_EDGE.toFloat() / max(width, height)
-                width = (width * scale).toInt(); height = (height * scale).toInt()
+                if (max(width, height) > MAX_VIDEO_EDGE) {
+                    val scale = MAX_VIDEO_EDGE.toFloat() / max(width, height)
+                    width = (width * scale).toInt(); height = (height * scale).toInt()
+                }
             }
         }
         val thumb = frame?.let { thumbnailOf(it).also { _ -> it.recycle() } } ?: placeholderThumb(width, height)
@@ -354,6 +379,9 @@ class MediaImporter @Inject constructor(
     companion object {
         const val MAX_PHOTO_BYTES = 20L * 1024 * 1024
         const val MAX_VIDEO_BYTES = 200L * 1024 * 1024
+        /** Source videos up to 2 GB are accepted when they will be compressed. */
+        const val MAX_SOURCE_VIDEO_BYTES = 2048L * 1024 * 1024
+        private const val SPACE_MARGIN_BYTES = 100L * 1024 * 1024
         const val MAX_PHOTO_EDGE = 2560
         const val MAX_VIDEO_EDGE = 1920
         /** Short edge for 1080p output (Presentation.createForHeight on landscape sources). */

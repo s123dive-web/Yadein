@@ -115,6 +115,11 @@ class AppSmokeTest {
     fun `capture hub opens and text-only flow saves a memory`() {
         compose.onAllNodesWithText("Create")[0].performClick()
         compose.waitForIdle()
+        // The hub leads with photos and a line of text; the other ways sit under "More ways".
+        compose.onNodeWithText("Start from photos").assertIsDisplayed()
+        compose.onNodeWithText("Record a voice memory").assertIsDisplayed()
+        compose.onNodeWithText("More ways").performClick()
+        compose.waitForIdle()
         compose.onNodeWithText("Just words").performClick()
         compose.waitForIdle()
         compose.onNodeWithText("One line is enough").assertIsDisplayed()

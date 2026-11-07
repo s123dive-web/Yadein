@@ -22,6 +22,10 @@ sealed interface Route {
     @Serializable data object TextOnly : Route
     @Serializable data object QuickCapture : Route
     @Serializable data object PastWizard : Route
+    /** Record a voice memory: new ([memoryId] 0) or attached to an existing memory; [prompt] from the weekly story prompt. */
+    /** Google Photos Takeout / WhatsApp chat export zip. */
+    @Serializable data object ImportExport : Route
+    @Serializable data class VoiceCapture(val memoryId: Long = 0L, val prompt: String = "", val personId: Long = 0L) : Route
     @Serializable data class RecapSetup(val personId: Long = 0L, val memoryId: Long = 0L, val year: Int = 0) : Route
     /** Reels kept in the app: three made automatically plus the user's last ten. */
     @Serializable data object Reels : Route

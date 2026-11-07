@@ -88,8 +88,13 @@ class MediaImporterTest {
         assertTrue(outcome is ImportOutcome.Failed && outcome.failure is ImportFailure.TooLarge)
         assertEquals(0, db.mediaDao().count())
         val video = picked.copy(isVideo = true, sizeBytes = MediaImporter.MAX_VIDEO_BYTES + 1)
-        assertNotNull(importer.checkLimit(video))
-        assertNull(importer.checkLimit(video.copy(sizeBytes = MediaImporter.MAX_VIDEO_BYTES)))
+        // Without compression the keep limit applies to the source file.
+        assertNotNull(importer.checkLimit(video, optimize = false))
+        assertNull(importer.checkLimit(video.copy(sizeBytes = MediaImporter.MAX_VIDEO_BYTES), optimize = false))
+        // With compression a larger source is accepted (the limit applies to the compressed copy), up to 2 GB.
+        // (The JVM test disk is tiny, so this may report NotEnoughSpace instead; never TooLarge.)
+        assertTrue(importer.checkLimit(video, optimize = true) !is ImportFailure.TooLarge)
+        assertTrue(importer.checkLimit(video.copy(sizeBytes = MediaImporter.MAX_SOURCE_VIDEO_BYTES + 1), optimize = true) is ImportFailure.TooLarge)
     }
 
     @Test

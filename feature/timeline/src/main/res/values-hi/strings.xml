@@ -26,4 +26,8 @@
     <string name="filter_to">तक</string>
     <string name="filter_apply">यादें दिखाएँ</string>
     <string name="timeline_about">Yaadein के बारे में</string>
+    <string name="timeline_layout">लेआउट: %1$s। बदलने के लिए टैप करें</string>
+    <string name="timeline_layout_cards">बड़े कार्ड</string>
+    <string name="timeline_layout_compact">छोटी सूची</string>
+    <string name="timeline_layout_grid">फ़ोटो ग्रिड</string>
 </resources>

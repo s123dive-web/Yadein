@@ -32,4 +32,8 @@
     <string name="notification_birthday_tomorrow">उद्या %1$s यांचा वाढदिवस आहे</string>
     <string name="notification_birthday_text">एकत्र घालवलेल्या आठवणींची रील बनवा आणि पाठवा.</string>
     <string name="notification_prompt_title">या आठवड्यात जपून ठेवण्यासारखी एक गोष्ट</string>
+    <string name="relive_made_for_you">तुमच्यासाठी बनवलेली</string>
+    <string name="relive_play_reel">रील पाहा</string>
+    <string name="relive_record_story">रेकॉर्ड करा</string>
+    <string name="relive_places">ठिकाणे</string>
 </resources>

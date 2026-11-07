@@ -329,7 +329,9 @@ class RecapRenderer(
         const val FRAME_RATE = 30
         const val MAX_DELAY_BETWEEN_MUXER_SAMPLES_MS = 60_000L
         /** 16 Mbit/s H.264 for 1080x1920 at 30 fps: visually clean, about 2 MB per second of reel. */
-        const val VIDEO_BITRATE = 16_000_000
+        // 10 Mbit/s: visually the same on a phone at 1080x1920, and Instagram/WhatsApp re-compress anyway; encodes and
+        // shares faster than the earlier 16 Mbit/s and makes files about 40% smaller.
+        const val VIDEO_BITRATE = 10_000_000
         const val AUDIO_BITRATE = 192_000
         private const val MAX_ATTEMPTS = 2
         private const val RETRY_DELAY_MS = 1_500L

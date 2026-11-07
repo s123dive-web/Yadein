@@ -23,7 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FilterList
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +55,10 @@ import com.yaadein.core.ui.util.keyAt
 import com.yaadein.core.ui.util.currentLocale
 import com.yaadein.core.ui.components.EmptyState
 import com.yaadein.core.ui.components.MemoryCardView
+import com.yaadein.domain.settings.TimelineLayout
+import androidx.compose.material.icons.rounded.ViewAgenda
+import androidx.compose.material.icons.rounded.GridView
+import androidx.compose.material.icons.automirrored.rounded.ViewList
 import com.yaadein.core.ui.illustrations.IllustrationKind
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.dates.Dates
@@ -71,9 +74,19 @@ fun TimelineRoute(
     modifier: Modifier = Modifier,
     twoPane: Boolean = false,
     onAbout: () -> Unit = {},
+    /** Opened from Relive → Places: show only memories from this place. */
+    placeFilter: String? = null,
+    onPlaceFilterConsumed: () -> Unit = {},
     viewModel: TimelineViewModel = hiltViewModel(),
 ) {
+    androidx.compose.runtime.LaunchedEffect(placeFilter) {
+        if (placeFilter != null) {
+            viewModel.setFilter(com.yaadein.domain.repository.TimelineFilter(place = placeFilter))
+            onPlaceFilterConsumed()
+        }
+    }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val layout by viewModel.layout.collectAsStateWithLifecycle()
     val items = viewModel.items.collectAsLazyPagingItems().asPagedItems()
     if (twoPane) {
         Row(modifier = modifier.fillMaxSize()) {
@@ -97,6 +110,8 @@ fun TimelineRoute(
                 onAbout = onAbout,
                 contentPadding = contentPadding,
                 modifier = Modifier.weight(1f),
+                layout = layout,
+                onCycleLayout = viewModel::cycleLayout,
             )
         }
         return
@@ -115,6 +130,8 @@ fun TimelineRoute(
         onAbout = onAbout,
         contentPadding = contentPadding,
         modifier = modifier,
+        layout = layout,
+        onCycleLayout = viewModel::cycleLayout,
     )
 }
 
@@ -135,6 +152,8 @@ fun TimelineScreen(
     onOpenFilters: () -> Unit = {},
     onCloseFilters: () -> Unit = {},
     onAbout: () -> Unit = {},
+    layout: TimelineLayout = TimelineLayout.CARDS,
+    onCycleLayout: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val scope = rememberCoroutineScope()
@@ -148,8 +167,21 @@ fun TimelineScreen(
                 )
             },
             actions = {
-                IconButton(onClick = onAbout) {
-                    Icon(imageVector = Icons.Rounded.Info, contentDescription = stringResource(R.string.timeline_about))
+                IconButton(onClick = onCycleLayout) {
+                    Icon(
+                        imageVector = when (layout) {
+                            TimelineLayout.CARDS -> Icons.Rounded.ViewAgenda
+                            TimelineLayout.COMPACT -> Icons.AutoMirrored.Rounded.ViewList
+                            TimelineLayout.GRID -> Icons.Rounded.GridView
+                        },
+                        contentDescription = stringResource(R.string.timeline_layout, stringResource(
+                            when (layout) {
+                                TimelineLayout.CARDS -> R.string.timeline_layout_cards
+                                TimelineLayout.COMPACT -> R.string.timeline_layout_compact
+                                TimelineLayout.GRID -> R.string.timeline_layout_grid
+                            },
+                        )),
+                    )
                 }
                 IconButton(onClick = { onSearchActive(!state.searchActive) }) {
                     Icon(
@@ -198,7 +230,10 @@ fun TimelineScreen(
                 },
                 modifier = Modifier.fillMaxSize().padding(contentPadding),
             )
-            else -> TimelineList(items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding, listState = listState)
+            else -> when (layout) {
+                TimelineLayout.GRID -> TimelineGrid(items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding)
+                else -> TimelineList(items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding, listState = listState, dense = layout == TimelineLayout.COMPACT)
+            }
         }
     }
     if (state.filterSheetOpen) {
@@ -259,6 +294,8 @@ fun TimelineList(
     contentPadding: PaddingValues,
     listState: LazyListState = rememberLazyListState(),
     compact: Boolean = false,
+    /** One line per memory with a small thumbnail: about four times as many memories per screen as cards. */
+    dense: Boolean = false,
 ) {
     val spacing = Yaadein.spacing
     val sizes = Yaadein.sizes
@@ -272,7 +309,7 @@ fun TimelineList(
             top = spacing.sm + contentPadding.calculateTopPadding(),
             bottom = spacing.xxxl + contentPadding.calculateBottomPadding() + sizes.fabSize,
         ),
-        verticalArrangement = Arrangement.spacedBy(spacing.md),
+        verticalArrangement = Arrangement.spacedBy(if (dense) spacing.xs else spacing.md),
     ) {
         items(
             count = items.itemCount,
@@ -282,9 +319,13 @@ fun TimelineList(
             when (val item = items[index]) {
                 is TimelineItem.YearHeader -> YearHeader(item)
                 is TimelineItem.MonthHeader -> MonthHeader(item)
-                is TimelineItem.Card -> Row(modifier = Modifier.fillMaxWidth()) {
-                    TimelineRail(color = railColor)
-                    MemoryCardView(card = item.card, onClick = { onOpenMemory(item.card.memory.id) }, compact = compact)
+                is TimelineItem.Card -> if (dense) {
+                    CompactMemoryRow(card = item.card, onClick = { onOpenMemory(item.card.memory.id) })
+                } else {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        TimelineRail(color = railColor)
+                        MemoryCardView(card = item.card, onClick = { onOpenMemory(item.card.memory.id) }, compact = compact)
+                    }
                 }
                 null -> Unit
             }

@@ -50,4 +50,6 @@ data class UserSettings(
     val lastBackupAtMillis: Long = 0L,
     /** When the "back up your memories" banner was last dismissed. */
     val backupNudgeDismissedAtMillis: Long = 0L,
+    /** The last automatic backup failed (target deleted or access revoked); shown on the Backup screen. */
+    val autoBackupFailed: Boolean = false,
 )

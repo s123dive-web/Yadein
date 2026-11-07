@@ -209,6 +209,12 @@ fun RecapScreen(
                     Column(Modifier.padding(spacing.lg), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
                         Text(stringResource(R.string.recap_rendering, r.progress), style = MaterialTheme.typography.titleMedium)
                         LinearProgressIndicator(progress = { r.progress / 100f }, modifier = Modifier.fillMaxWidth())
+                        r.etaSeconds?.let { secs ->
+                            Text(
+                                if (secs >= 90) stringResource(R.string.recap_eta_minutes, (secs + 59) / 60) else stringResource(R.string.recap_eta_seconds, secs),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                         Text(stringResource(R.string.recap_rendering_help), style = MaterialTheme.typography.bodySmall)
                         TextButton(onClick = onCancel) { Text(stringResource(CoreR.string.action_cancel)) }
                     }
@@ -259,7 +265,7 @@ fun RecapScreen(
                     FilterChip(
                         selected = (state.music as? MusicChoice.Bundled)?.key == track.key,
                         onClick = { onMusic(MusicChoice.Bundled(track.key)) },
-                        label = { Text(themeName(track.theme)) },
+                        label = { Text(stringResource(track.labelRes)) },
                         leadingIcon = { Icon(Icons.Rounded.MusicNote, contentDescription = null) },
                     )
                 }

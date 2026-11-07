@@ -16,4 +16,21 @@
     <string name="viewer_remove">याद से हटाएँ</string>
     <string name="viewer_tag_people">लोगों को टैग करें</string>
     <string name="viewer_previous">पिछला</string>
+    <string name="memory_record_voice">आवाज़ में नोट रिकॉर्ड करें</string>
+    <string name="memory_rerecord_voice">आवाज़ वाला नोट फिर से रिकॉर्ड करें</string>
+    <string name="memory_voice_title">आवाज़ वाला नोट</string>
+    <string name="memory_voice_play">आवाज़ वाला नोट चलाएँ</string>
+    <string name="memory_voice_pause">आवाज़ वाला नोट रोकें</string>
+    <string name="memory_voice_remove">हटाएँ</string>
+    <string name="share_card">तस्वीर बनाकर भेजें</string>
+    <string name="share_card_chooser">यह याद भेजें</string>
+    <string name="share_pdf">PDF के रूप में सहेजें</string>
+    <string name="share_pack">परिवार को भेजें (एन्क्रिप्टेड)</string>
+    <string name="share_pack_password_title">परिवार के लिए पासवर्ड चुनें</string>
+    <string name="share_pack_password_help">फ़ाइल किसी भी तरह भेजें और पासवर्ड अलग से बताएँ। वे इसे Yaadein में सेटिंग, बैकअप और रीस्टोर से जोड़ेंगे।</string>
+    <string name="share_pack_save">सहेजें</string>
+    <string name="share_working">तैयार हो रहा है…</string>
+    <string name="share_saved">सहेज लिया गया।</string>
+    <string name="share_failed">यह नहीं हो पाया। कृपया दोबारा कोशिश करें।</string>
+    <string name="share_footer">Yaadein में सहेजी गई</string>
 </resources>

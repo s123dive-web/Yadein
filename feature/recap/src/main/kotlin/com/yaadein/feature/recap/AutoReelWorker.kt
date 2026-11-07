@@ -82,6 +82,7 @@ class AutoReelWorker @AssistedInject constructor(
                 outroSubtitle = context.getString(R.string.recap_outro_credit),
                 dateLabel = { Dates.label(it.memory.date, Locale.getDefault()).text },
                 includeVideos = false, selectedMediaIds = pick.mediaIds,
+                beatMs = bundledTracks.first { it.theme == pick.theme }.beatMs,
             )
             val output = File(mediaStore.renderDir, "auto-${pick.slot.key}-$id.mp4")
             try {

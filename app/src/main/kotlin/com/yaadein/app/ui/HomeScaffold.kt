@@ -60,6 +60,7 @@ import com.yaadein.feature.timeline.TimelineRoute
 fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
     var tab by rememberSaveable { mutableStateOf(HomeTab.TIMELINE) }
     var hubOpen by rememberSaveable { mutableStateOf(false) }
+    var placeFilter by rememberSaveable { mutableStateOf<String?>(null) }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val expanded = windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
     val easy = settings.easyMode
@@ -72,11 +73,16 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
         onTextOnly = { hubOpen = false; navController.navigate(Route.TextOnly) },
         onQuick = { hubOpen = false; navController.navigate(Route.QuickCapture) },
         onPastWizard = { hubOpen = false; navController.navigate(Route.PastWizard) },
+        onVoice = { hubOpen = false; navController.navigate(Route.VoiceCapture()) },
+        onImport = { hubOpen = false; navController.navigate(Route.ImportExport) },
     )
 
     val content: @Composable (PaddingValues) -> Unit = { padding ->
         Column(Modifier.fillMaxSize()) {
-            if (tab == HomeTab.TIMELINE) CrashNoticeBanner()
+            if (tab == HomeTab.TIMELINE) {
+                CrashNoticeBanner()
+                BackupNudgeBanner(onSetUp = { navController.navigate(Route.Settings(SettingsPage.BACKUP.name)) })
+            }
             when (tab) {
             HomeTab.TIMELINE, HomeTab.CREATE -> TimelineRoute(
                 onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
@@ -84,6 +90,8 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                 onAbout = { navController.navigate(Route.Settings(SettingsPage.APP_INFO.name)) },
                 contentPadding = padding,
                 twoPane = expanded && !easy,
+                placeFilter = placeFilter,
+                onPlaceFilterConsumed = { placeFilter = null },
             )
             HomeTab.PEOPLE -> PeopleRoute(
                 onOpenPerson = { navController.navigate(Route.PersonDetail(it)) },
@@ -98,6 +106,9 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                 onOpenPerson = { navController.navigate(Route.PersonDetail(it)) },
                 onRecap = { navController.navigate(Route.RecapSetup()) },
                 onReels = { navController.navigate(Route.Reels) },
+                onPlayReel = { navController.navigate(Route.ReelPlayer(it)) },
+                onRecordPrompt = { text, personId -> navController.navigate(Route.VoiceCapture(prompt = text, personId = personId)) },
+                onPlace = { place -> placeFilter = place; tab = HomeTab.TIMELINE },
                 onYear = { year -> navController.navigate(Route.YearlySummary(0L, year)) },
                 contentPadding = padding,
             )

@@ -26,4 +26,8 @@
     <string name="filter_to">To</string>
     <string name="filter_apply">Show memories</string>
     <string name="timeline_about">About Yaadein</string>
+    <string name="timeline_layout">Layout: %1$s. Tap to change</string>
+    <string name="timeline_layout_cards">big cards</string>
+    <string name="timeline_layout_compact">compact list</string>
+    <string name="timeline_layout_grid">photo grid</string>
 </resources>

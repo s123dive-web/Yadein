@@ -76,4 +76,14 @@
     <string name="recap_clear_all">Clear</string>
     <string name="recap_limit">A reel can hold up to %1$d photos and clips.</string>
     <string name="recap_remove_photo">Remove from reel</string>
+    <string name="recap_eta_minutes">About %1$d min left</string>
+    <string name="recap_eta_seconds">About %1$d s left</string>
+    <string name="track_warm">Warm</string>
+    <string name="track_minimal">Minimal</string>
+    <string name="track_festive">Festive</string>
+    <string name="track_classic">Classic film</string>
+    <string name="track_lullaby">Lullaby</string>
+    <string name="track_celebration">Dhol celebration</string>
+    <string name="track_acoustic">Acoustic</string>
+    <string name="track_upbeat">Upbeat</string>
 </resources>

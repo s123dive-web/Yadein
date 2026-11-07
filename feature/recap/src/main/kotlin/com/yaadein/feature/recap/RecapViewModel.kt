@@ -36,13 +36,20 @@ import javax.inject.Inject
 
 enum class Scope { ALL, PERSON, GROUP, YEAR, MEMORY, DATE_RANGE }
 
-data class BundledTrack(val key: String, val rawResId: Int, val theme: RecapTheme)
+/** A bundled soundtrack. [theme]: the reel theme it is the default for (null for extra tracks); [bpm] drives beat-synced cuts. */
+data class BundledTrack(val key: String, val rawResId: Int, val theme: RecapTheme?, val bpm: Int, val labelRes: Int) {
+    val beatMs: Long get() = 60_000L / bpm
+}
 
 val bundledTracks = listOf(
-    BundledTrack("warm", R.raw.track_warm, RecapTheme.WARM),
-    BundledTrack("minimal", R.raw.track_minimal, RecapTheme.MINIMAL),
-    BundledTrack("festive", R.raw.track_festive, RecapTheme.FESTIVE),
-    BundledTrack("classic", R.raw.track_classic, RecapTheme.CLASSIC_FILM),
+    BundledTrack("warm", R.raw.track_warm, RecapTheme.WARM, 90, R.string.track_warm),
+    BundledTrack("minimal", R.raw.track_minimal, RecapTheme.MINIMAL, 80, R.string.track_minimal),
+    BundledTrack("festive", R.raw.track_festive, RecapTheme.FESTIVE, 110, R.string.track_festive),
+    BundledTrack("classic", R.raw.track_classic, RecapTheme.CLASSIC_FILM, 84, R.string.track_classic),
+    BundledTrack("lullaby", R.raw.track_lullaby, null, 72, R.string.track_lullaby),
+    BundledTrack("celebration", R.raw.track_celebration, null, 112, R.string.track_celebration),
+    BundledTrack("acoustic", R.raw.track_acoustic, null, 96, R.string.track_acoustic),
+    BundledTrack("upbeat", R.raw.track_upbeat, null, 120, R.string.track_upbeat),
 )
 
 sealed interface MusicChoice {
@@ -53,7 +60,8 @@ sealed interface MusicChoice {
 
 sealed interface RenderStatus {
     data object Idle : RenderStatus
-    data class Running(val progress: Int) : RenderStatus
+    /** [etaSeconds]: estimated time left, once enough progress has been seen to guess (null before that). */
+    data class Running(val progress: Int, val etaSeconds: Int? = null) : RenderStatus
     /** [reelId]: the copy kept in the app's reel library, for in-app playback (null if it could not be stored). */
     data class Done(val uri: Uri, val reelId: String? = null) : RenderStatus
     data class Failed(val message: String) : RenderStatus
@@ -131,7 +139,11 @@ class RecapViewModel @Inject constructor(
     fun setYear(y: Int?) { _state.update { it.copy(year = y, scope = if (y != null) Scope.YEAR else Scope.ALL) }; reload() }
     fun setRange(from: Long?, to: Long?) { _state.update { it.copy(fromEpochDay = from, toEpochDay = to, scope = Scope.DATE_RANGE) }; reload() }
     fun setTheme(t: RecapTheme) {
-        _state.update { s -> s.copy(theme = t, music = if (s.music is MusicChoice.Bundled) MusicChoice.Bundled(bundledTracks.first { it.theme == t }.key) else s.music) }
+        // A theme's own track follows the theme; an extra track the user picked (lullaby, upbeat...) stays.
+        _state.update { s ->
+            val current = (s.music as? MusicChoice.Bundled)?.let { m -> bundledTracks.firstOrNull { it.key == m.key } }
+            s.copy(theme = t, music = if (current?.theme != null) MusicChoice.Bundled(bundledTracks.first { it.theme == t }.key) else s.music)
+        }
         replan()
     }
     fun setLength(l: RecapLength) {
@@ -145,7 +157,7 @@ class RecapViewModel @Inject constructor(
         }
         replan()
     }
-    fun setMusic(m: MusicChoice) = _state.update { it.copy(music = m) }
+    fun setMusic(m: MusicChoice) { _state.update { it.copy(music = m) }; replan() }
     fun setTitle(t: String) { _state.update { it.copy(title = t) }; replan() }
 
     /** Adds or removes one photo/clip (tap in the chooser or on the storyboard). */
@@ -224,6 +236,7 @@ class RecapViewModel @Inject constructor(
             outroSubtitle = context.getString(R.string.recap_outro_credit),
             dateLabel = { Dates.label(it.memory.date, Locale.getDefault()).text },
             includeVideos = s.includeVideos, selectedMediaIds = s.selectedMediaIds,
+            beatMs = (s.music as? MusicChoice.Bundled)?.let { m -> bundledTracks.firstOrNull { it.key == m.key }?.beatMs },
         ).takeIf { p -> p.segments.size > 2 }
         _state.update { it.copy(plan = plan) }
     }
@@ -261,13 +274,17 @@ class RecapViewModel @Inject constructor(
     fun cancelRender() { RecapRenderWorker.cancel(context); _state.update { it.copy(render = RenderStatus.Idle) } }
     fun resetRender() = _state.update { it.copy(render = RenderStatus.Idle) }
 
+    private val eta = EtaEstimator()
+
     private fun observeWork() {
         viewModelScope.launch {
             WorkManager.getInstance(context).getWorkInfosForUniqueWorkFlow(RecapRenderWorker.WORK_NAME).collect { infos ->
                 val info = infos.firstOrNull() ?: return@collect
                 val status = when (info.state) {
-                    WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED -> RenderStatus.Running(0)
-                    WorkInfo.State.RUNNING -> RenderStatus.Running(info.progress.getInt(RecapRenderWorker.KEY_PROGRESS, 0))
+                    WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED -> { eta.reset(); RenderStatus.Running(0) }
+                    WorkInfo.State.RUNNING -> info.progress.getInt(RecapRenderWorker.KEY_PROGRESS, 0).let { p ->
+                        RenderStatus.Running(p, eta.estimate(p, android.os.SystemClock.elapsedRealtime()))
+                    }
                     WorkInfo.State.SUCCEEDED -> info.outputData.getString(RecapRenderWorker.KEY_OUTPUT_URI)
                         ?.let { RenderStatus.Done(Uri.parse(it), info.outputData.getString(RecapRenderWorker.KEY_REEL_ID)) } ?: RenderStatus.Idle
                     WorkInfo.State.FAILED -> RenderStatus.Failed(info.outputData.getString(RecapRenderWorker.KEY_ERROR) ?: "")
@@ -279,4 +296,23 @@ class RecapViewModel @Inject constructor(
     }
 
     fun yearsAvailable(): List<Int> = _state.value.let { s -> (LocalDate.now().year downTo LocalDate.now().year - 30).toList() }
+}
+
+/** Time left from the rate of progress since the first progress report (linear; rendering is close to linear). */
+class EtaEstimator {
+    private var startProgress = -1
+    private var startAt = 0L
+
+    fun reset() { startProgress = -1 }
+
+    fun estimate(progress: Int, nowMs: Long): Int? {
+        if (progress <= 0) return null
+        if (startProgress < 0 || progress < startProgress) { startProgress = progress; startAt = nowMs; return null }
+        val done = progress - startProgress
+        if (done < MIN_STEP) return null
+        val msPerPercent = (nowMs - startAt).toDouble() / done
+        return ((100 - progress) * msPerPercent / 1000).toInt().coerceAtLeast(1)
+    }
+
+    private companion object { const val MIN_STEP = 3 }
 }

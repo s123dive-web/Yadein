@@ -42,4 +42,10 @@
     <string name="today">आज</string>
     <string name="yesterday">कल</string>
     <string name="app_credit">Suresh Dongardive ने AI की मदद से डिज़ाइन और तैयार किया</string>
+    <string name="pw_password">पासवर्ड</string>
+    <string name="pw_again">पासवर्ड दोबारा</string>
+    <string name="pw_show">पासवर्ड दिखाएँ</string>
+    <string name="pw_hide">पासवर्ड छिपाएँ</string>
+    <string name="pw_too_short">कम से कम %1$d अक्षर</string>
+    <string name="pw_mismatch">पासवर्ड मेल नहीं खाते</string>
 </resources>

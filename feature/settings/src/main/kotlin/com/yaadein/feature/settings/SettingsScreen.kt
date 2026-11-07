@@ -20,6 +20,9 @@ import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Face
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.foundation.layout.height
+import com.yaadein.core.ui.components.AppCredit
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Palette
@@ -102,7 +105,10 @@ fun SettingsScreen(
             if (showUpdate) {
                 SettingsRow(Icons.Rounded.SystemUpdate, stringResource(R.string.settings_update), stringResource(R.string.settings_update_subtitle)) { onOpen(SettingsPage.UPDATE) }
             }
+            SettingsRow(Icons.AutoMirrored.Rounded.HelpOutline, stringResource(R.string.app_info_open), null) { onOpen(SettingsPage.APP_INFO) }
             SettingsRow(Icons.Rounded.Info, stringResource(R.string.settings_about), stringResource(R.string.settings_about_subtitle)) { onOpen(SettingsPage.ABOUT) }
+            Spacer(Modifier.height(Yaadein.spacing.lg))
+            AppCredit()
         }
     }
 }

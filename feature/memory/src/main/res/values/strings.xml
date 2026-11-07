@@ -16,4 +16,21 @@
     <string name="viewer_remove">Remove from memory</string>
     <string name="viewer_tag_people">Tag people</string>
     <string name="viewer_previous">Previous</string>
+    <string name="memory_record_voice">Record a voice note</string>
+    <string name="memory_rerecord_voice">Record the voice note again</string>
+    <string name="memory_voice_title">Voice note</string>
+    <string name="memory_voice_play">Play voice note</string>
+    <string name="memory_voice_pause">Pause voice note</string>
+    <string name="memory_voice_remove">Remove</string>
+    <string name="share_card">Share as a picture</string>
+    <string name="share_card_chooser">Share this memory</string>
+    <string name="share_pdf">Save as PDF</string>
+    <string name="share_pack">Send to family (encrypted)</string>
+    <string name="share_pack_password_title">Choose a password for the family</string>
+    <string name="share_pack_password_help">Send the file any way you like and tell them the password separately. They add it in Yaadein, Settings, Backup and restore.</string>
+    <string name="share_pack_save">Save</string>
+    <string name="share_working">Preparing…</string>
+    <string name="share_saved">Saved.</string>
+    <string name="share_failed">That didn\'t work. Please try again.</string>
+    <string name="share_footer">Kept with Yaadein</string>
 </resources>

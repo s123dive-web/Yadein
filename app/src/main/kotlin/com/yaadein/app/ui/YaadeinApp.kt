@@ -66,7 +66,8 @@ fun YaadeinApp(
                 when (pendingNav) {
                     is PendingNav.Memory -> navController.navigate(Route.MemoryDetail(pendingNav.id))
                     is PendingNav.Reel -> navController.navigate(Route.RecapSetup(personId = pendingNav.personId))
-                    is PendingNav.Prompt -> navController.navigate(Route.QuickCapture)
+                    is PendingNav.Prompt -> navController.navigate(Route.VoiceCapture(prompt = pendingNav.text, personId = pendingNav.personId))
+                    PendingNav.QuickAdd -> navController.navigate(Route.QuickCapture)
                 }
                 onPendingConsumed()
             }

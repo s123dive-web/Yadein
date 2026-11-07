@@ -14,6 +14,8 @@ import com.yaadein.domain.repository.GroupRepository
 import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.PersonRepository
 import com.yaadein.domain.repository.TimelineFilter
+import com.yaadein.domain.repository.SettingsRepository
+import com.yaadein.domain.settings.TimelineLayout
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -62,7 +64,20 @@ class TimelineViewModel @Inject constructor(
     private val memoryRepository: MemoryRepository,
     personRepository: PersonRepository,
     groupRepository: GroupRepository,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
+
+    /** Cards, compact list or photo grid; remembered across launches. */
+    val layout: StateFlow<TimelineLayout> = settingsRepository.settings.map { it.timelineLayout }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, TimelineLayout.CARDS)
+
+    fun cycleLayout() {
+        viewModelScope.launch {
+            settingsRepository.update {
+                it.copy(timelineLayout = TimelineLayout.entries[(it.timelineLayout.ordinal + 1) % TimelineLayout.entries.size])
+            }
+        }
+    }
 
     private val filter = MutableStateFlow(TimelineFilter())
     private val searchActive = MutableStateFlow(false)

@@ -15,6 +15,8 @@ object FaceClustering {
     const val DEFAULT_THRESHOLD = 0.32f
 
     fun cosineDistance(a: FloatArray, b: FloatArray): Float {
+        // Embeddings from an older descriptor have another length: never similar.
+        if (a.size != b.size) return 1f
         var dot = 0f; var na = 0f; var nb = 0f
         for (i in a.indices) { dot += a[i] * b[i]; na += a[i] * a[i]; nb += b[i] * b[i] }
         if (na == 0f || nb == 0f) return 1f

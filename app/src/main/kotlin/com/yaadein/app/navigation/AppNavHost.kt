@@ -29,6 +29,8 @@ import com.yaadein.feature.capture.PastWizardRoute
 import com.yaadein.feature.capture.PhotoFirstRoute
 import com.yaadein.feature.capture.QuickCaptureRoute
 import com.yaadein.feature.capture.TextOnlyRoute
+import com.yaadein.feature.capture.VoiceCaptureRoute
+import com.yaadein.feature.capture.ImportExportRoute
 import com.yaadein.feature.memory.MediaViewerRoute
 import com.yaadein.feature.people.GroupEditRoute
 import com.yaadein.feature.people.RelationshipsRoute
@@ -90,6 +92,7 @@ fun AppNavHost(
                 onEdit = { navController.navigate(Route.EventCapture(it)) },
                 onAddMedia = { navController.navigate(Route.EventCapture(it)) },
                 onRecap = { navController.navigate(Route.RecapSetup(memoryId = it)) },
+                onRecordVoice = { navController.navigate(Route.VoiceCapture(memoryId = it)) },
             )
         }
         composable<Route.PersonDetail> {
@@ -149,6 +152,17 @@ fun AppNavHost(
             PhotoFirstRoute(
                 onBack = { navController.popBackStack() },
                 onDone = { first -> if (first != null) navController.navigate(Route.MemoryDetail(first)) { popUpTo<Route.Home>() } else navController.popBackStack() },
+                onAddPerson = { navController.navigate(Route.PersonEdit()) },
+            )
+        }
+        composable<Route.ImportExport> {
+            ImportExportRoute(onBack = { navController.popBackStack() }, onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) { popUpTo<Route.Home>() } })
+        }
+        composable<Route.VoiceCapture> { entry ->
+            val existing = entry.toRoute<Route.VoiceCapture>().memoryId != 0L
+            VoiceCaptureRoute(
+                onBack = { navController.popBackStack() },
+                onSaved = { id -> if (existing) navController.popBackStack() else navController.navigate(Route.MemoryDetail(id)) { popUpTo<Route.Home>() } },
                 onAddPerson = { navController.navigate(Route.PersonEdit()) },
             )
         }

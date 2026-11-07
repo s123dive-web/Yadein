@@ -10,4 +10,28 @@
     <string name="crash_notice_share">रिपोर्ट साझा करें</string>
     <string name="crash_notice_dismiss">हटाएँ</string>
     <string name="share_target_label">Yaadein में सहेजें</string>
+    <string name="backup_nudge_title">अपनी यादें सुरक्षित रखें</string>
+    <string name="backup_nudge_text">ये सिर्फ़ इसी फ़ोन पर हैं। हफ़्तेवार बैकअप चालू करें ताकि फ़ोन खोने पर यादें न खोएँ।</string>
+    <string name="backup_nudge_action">बैकअप सेट करें</string>
+    <string name="backup_nudge_later">बाद में</string>
+    <string name="widget_name">Yaadein: आज के दिन</string>
+    <string name="widget_description">आज के दिन की यादें, जन्मदिन और कहानी के सवाल, जल्दी जोड़ने के बटन के साथ।</string>
+    <string name="widget_add">याद जोड़ें</string>
+    <string name="widget_title_default">Yaadein</string>
+    <string name="widget_open_app">इसे भरने के लिए एक बार Yaadein खोलें</string>
+    <string name="widget_title_on_this_day">आज के दिन</string>
+    <string name="widget_title_birthday">जन्मदिन</string>
+    <string name="widget_birthday_today">आज %1$s का जन्मदिन है</string>
+    <string name="widget_birthday_tomorrow">कल %1$s का जन्मदिन है</string>
+    <string name="widget_birthday_hidden">किसी का जन्मदिन आने वाला है</string>
+    <string name="widget_title_prompt">सहेजने लायक कहानी</string>
+    <string name="widget_prompt_hidden">एक कहानी सुनाए जाने का इंतज़ार कर रही है</string>
+    <plurals name="widget_years_ago">
+        <item quantity="one">%1$d साल पहले: %2$s</item>
+        <item quantity="other">%1$d साल पहले: %2$s</item>
+    </plurals>
+    <plurals name="widget_memories_waiting">
+        <item quantity="one">आज के दिन की %1$d याद</item>
+        <item quantity="other">आज के दिन की %1$d यादें</item>
+    </plurals>
 </resources>

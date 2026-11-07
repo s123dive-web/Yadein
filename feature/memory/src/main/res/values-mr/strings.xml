@@ -16,4 +16,21 @@
     <string name="viewer_remove">आठवणीतून काढा</string>
     <string name="viewer_tag_people">माणसांना टॅग करा</string>
     <string name="viewer_previous">मागील</string>
+    <string name="memory_record_voice">आवाजात नोंद रेकॉर्ड करा</string>
+    <string name="memory_rerecord_voice">आवाजातील नोंद पुन्हा रेकॉर्ड करा</string>
+    <string name="memory_voice_title">आवाजातील नोंद</string>
+    <string name="memory_voice_play">आवाजातील नोंद ऐका</string>
+    <string name="memory_voice_pause">आवाजातील नोंद थांबवा</string>
+    <string name="memory_voice_remove">काढा</string>
+    <string name="share_card">चित्र म्हणून पाठवा</string>
+    <string name="share_card_chooser">ही आठवण पाठवा</string>
+    <string name="share_pdf">PDF म्हणून जतन करा</string>
+    <string name="share_pack">कुटुंबाला पाठवा (एन्क्रिप्टेड)</string>
+    <string name="share_pack_password_title">कुटुंबासाठी पासवर्ड निवडा</string>
+    <string name="share_pack_password_help">फाइल कोणत्याही प्रकारे पाठवा आणि पासवर्ड वेगळा सांगा. ते Yaadein मध्ये सेटिंग्ज, बॅकअप आणि रिस्टोअर मधून जोडतील.</string>
+    <string name="share_pack_save">जतन करा</string>
+    <string name="share_working">तयार होत आहे…</string>
+    <string name="share_saved">जतन झाले.</string>
+    <string name="share_failed">हे झाले नाही. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="share_footer">Yaadein मध्ये जपलेली</string>
 </resources>

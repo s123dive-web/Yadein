@@ -184,4 +184,29 @@
     <string name="notif_prompts_help">दर रविवारी आपल्या माणसाला विचारण्यासाठी एक प्रश्न, जसे \"आजीला विचारा आजोबांना कशा भेटल्या\".</string>
     <string name="notif_widget">होम-स्क्रीन विजेटवर आठवणी दाखवा</string>
     <string name="notif_widget_help">बंद: विजेट फक्त किती आठवणी वाट पाहत आहेत ते सांगतो. सुरू: तो शीर्षके दाखवतो, जी फोन हातात घेणारा कोणीही पाहू शकतो.</string>
+    <string name="storage_check">माझ्या आठवणी तपासा</string>
+    <string name="storage_check_help">प्रत्येक फोटो आणि व्हिडिओ उघडून तो जसा जतन केला तसाच आहे याची खात्री करते. काहीही बदलले किंवा हटवले जात नाही.</string>
+    <string name="storage_check_run">आता तपासा</string>
+    <string name="storage_check_again">पुन्हा तपासा</string>
+    <string name="storage_check_progress">%2$d पैकी %1$d तपासले</string>
+    <string name="storage_check_problems">%2$d आठवणींमधील %1$d फाइल्स वाचता आल्या नाहीत. त्या बॅकअपमधून परत आणा.</string>
+    <plurals name="storage_check_ok">
+        <item quantity="one">सर्व ठीक: %1$d फाइल तपासली.</item>
+        <item quantity="other">सर्व ठीक: %1$d फाइल्स तपासल्या.</item>
+    </plurals>
+    <string name="autobackup_title">आपोआप बॅकअप</string>
+    <string name="autobackup_help">दर आठवड्याला Yaadein तुम्ही निवडलेल्या एका फाइलमध्ये एन्क्रिप्टेड बॅकअप जतन करते, उदा. तुमच्या Google Drive फोल्डरमध्ये. फोन हरवला तरी आठवणी हरवत नाहीत.</string>
+    <string name="autobackup_enable">आपोआप बॅकअप सुरू करा</string>
+    <string name="autobackup_never">अजून नाही</string>
+    <string name="autobackup_on">सुरू, दर आठवड्याला. शेवटचा बॅकअप: %1$s</string>
+    <string name="autobackup_failed">शेवटचा आपोआप बॅकअप जतन होऊ शकला नाही. फाइल हलवली किंवा हटवली असावी. नवीन फाइल निवडण्यासाठी हे बंद करून पुन्हा सुरू करा.</string>
+    <string name="autobackup_running">तुमच्या आठवणींचा बॅकअप होत आहे…</string>
+    <string name="autobackup_now">आता बॅकअप घ्या</string>
+    <string name="autobackup_disable">बंद करा</string>
+    <string name="autobackup_channel">आपोआप बॅकअप</string>
+    <string name="pack_confirm_title">कुटुंबाच्या आठवणी जोडायच्या?</string>
+    <string name="pack_confirm_text">या फॅमिली पॅकमध्ये %1$d आठवणी आणि %2$d फोटो किंवा व्हिडिओ आहेत. त्या तुमच्या आठवणींसोबत जोडल्या जातील; काहीही बदलले जाणार नाही. एकाच नावाची माणसे एकच मानली जातील.</string>
+    <string name="pack_add_now">जोडा</string>
+    <string name="pack_added_title">आठवणी जोडल्या</string>
+    <string name="pack_added_text">%1$d आठवणी जोडल्या, %2$d नवीन माणसे.</string>
 </resources>

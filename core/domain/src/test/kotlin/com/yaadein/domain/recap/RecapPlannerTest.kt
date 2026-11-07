@@ -114,4 +114,13 @@ class RecapPlannerTest {
         val p = RecapPlanner.plan(listOf(m), RecapTheme.MINIMAL, RecapLength.SHORT, "t", "s", "o", { "d" }, includeVideos = false)
         assertTrue(p.segments.none { it is RecapSegment.Clip })
     }
+
+    @Test
+    fun `photo durations snap to whole beats of the soundtrack`() {
+        assertEquals(2_000L, RecapPlanner.snapToBeat(2_100L, 500L))
+        assertEquals(2_500L, RecapPlanner.snapToBeat(2_300L, 500L))
+        // At least two beats, so very fast tracks never flash a photo for one beat.
+        assertEquals(1_000L, RecapPlanner.snapToBeat(300L, 500L))
+        assertEquals(2_345L, RecapPlanner.snapToBeat(2_345L, null))
+    }
 }

@@ -111,6 +111,13 @@ object RecapPlanner {
      * @param selectedMediaIds the photos and clips to use, chosen by the user; null picks them with [defaultSelection].
      *   A memory with media but nothing selected is left out; memories with no media at all become text cards.
      */
+    /** Rounds a photo duration to whole beats (at least two) so cuts fall on the music; unchanged without a beat. */
+    fun snapToBeat(ms: Long, beatMs: Long?): Long {
+        if (beatMs == null || beatMs <= 0 || ms <= 0) return ms
+        val beats = ((ms + beatMs / 2) / beatMs).coerceAtLeast(2)
+        return beats * beatMs
+    }
+
     fun plan(
         memories: List<MemoryDetail>,
         theme: RecapTheme,
@@ -122,6 +129,8 @@ object RecapPlanner {
         includeVideos: Boolean = true,
         selectedMediaIds: Set<Long>? = null,
         outroSubtitle: String = "",
+        /** Beat length of the soundtrack; photo cuts then land on the beat (whole beats, at least two). */
+        beatMs: Long? = null,
     ): RecapPlan {
         val ordered = ordered(memories)
         val selection = selectedMediaIds ?: defaultSelection(ordered, includeVideos, defaultItemCount(length))
@@ -143,7 +152,8 @@ object RecapPlanner {
         val mediaBudget = max(0L, targetMs - textCards * TEXT_CARD_MS)
         // Clips take up to MAX_CLIP_MS; photos share what is left, within bounds (a long selection makes a longer reel).
         val clipMs = if (clipCount == 0) 0L else min(MAX_CLIP_MS, max(MIN_CLIP_MS, mediaBudget / max(1, (photoCount + clipCount * 2)) * 2))
-        val photoMs = if (photoCount == 0) 0L else (mediaBudget - clipMs * clipCount).let { left -> (left / photoCount).coerceIn(MIN_PHOTO_MS, MAX_PHOTO_MS) }
+        val rawPhotoMs = if (photoCount == 0) 0L else (mediaBudget - clipMs * clipCount).let { left -> (left / photoCount).coerceIn(MIN_PHOTO_MS, MAX_PHOTO_MS) }
+        val photoMs = snapToBeat(rawPhotoMs, beatMs)
 
         items += RecapSegment.TitleCard(title, subtitle, INTRO_MS)
         var lastMemoryId = -1L

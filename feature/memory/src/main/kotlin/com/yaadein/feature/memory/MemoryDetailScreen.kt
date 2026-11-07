@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,20 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.PictureAsPdf
+import androidx.compose.material.icons.rounded.FamilyRestroom
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.res.ResourcesCompat
+import com.yaadein.core.ui.components.PasswordDialog
+import com.yaadein.core.ui.util.memoryDateText
+import com.yaadein.data.backup.BackupManager
+import com.yaadein.data.recap.RenderStyle
+import com.yaadein.data.share.MemoryExporter
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.PlayCircle
@@ -31,6 +46,12 @@ import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -60,7 +81,6 @@ import com.yaadein.core.ui.components.CoverArt
 import com.yaadein.core.ui.components.PersonAvatar
 import com.yaadein.core.ui.media.ThumbnailImage
 import com.yaadein.core.ui.theme.Yaadein
-import com.yaadein.core.ui.util.memoryDateText
 import com.yaadein.domain.model.Media
 import com.yaadein.domain.model.MediaKind
 import com.yaadein.domain.model.MemoryDetail
@@ -76,9 +96,21 @@ fun MemoryDetailRoute(
     onAddMedia: (Long) -> Unit,
     onRecap: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    onRecordVoice: (Long) -> Unit = {},
     viewModel: MemoryDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val share by viewModel.share.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val footer = stringResource(R.string.share_footer)
+    val chooser = stringResource(R.string.share_card_chooser)
+    var askPackPassword by remember { mutableStateOf<Uri?>(null) }
+    val style = remember { renderStyle(context) }
+    val pdfPicker = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        val d = state.detail
+        if (uri != null && d != null) viewModel.savePdf(uri, memoryDateText(context, d.memory.date), d.people.joinToString(", ") { it.displayName }, style, footer)
+    }
+    val packPicker = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(BackupManager.MIME)) { uri -> askPackPassword = uri }
     MemoryDetailScreen(
         state = state,
         onBack = onBack,
@@ -90,8 +122,40 @@ fun MemoryDetailRoute(
         onDelete = { viewModel.delete(onBack) },
         onSetCover = viewModel::setCover,
         modifier = modifier,
+        onRecordVoice = { onRecordVoice(viewModel.memoryId) },
+        voicePlayer = { path -> VoiceNoteCard(path = path, voiceNotes = viewModel.voiceNotes, onRemove = viewModel::removeVoice) },
+        onShareCard = {
+            state.detail?.let { d ->
+                viewModel.shareCard(MemoryExporter.Labels(memoryDateText(context, d.memory.date), footer), style, chooser) { intent -> runCatching { context.startActivity(intent) } }
+            }
+        },
+        onSavePdf = { state.detail?.let { pdfPicker.launch(safeName(it.memory.title) + ".pdf") } },
+        onSendPack = { state.detail?.let { packPicker.launch(safeName(it.memory.title) + "." + BackupManager.EXTENSION) } },
     )
+    askPackPassword?.let { uri ->
+        PasswordDialog(
+            title = stringResource(R.string.share_pack_password_title),
+            message = stringResource(R.string.share_pack_password_help),
+            confirmLabel = stringResource(R.string.share_pack_save),
+            requireConfirm = true,
+            onDismiss = { askPackPassword = null },
+        ) { pw -> askPackPassword = null; viewModel.savePack(uri, pw) }
+    }
+    when (val s = share) {
+        ShareStatus.Working -> AlertDialog(onDismissRequest = {}, confirmButton = {}, text = { Row(verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(Yaadein.sizes.icon)); Spacer(Modifier.width(Yaadein.spacing.md)); Text(stringResource(R.string.share_working)) } })
+        ShareStatus.Saved -> AlertDialog(onDismissRequest = viewModel::resetShare, confirmButton = { TextButton(onClick = viewModel::resetShare) { Text(stringResource(CoreR.string.action_done)) } }, text = { Text(stringResource(R.string.share_saved)) })
+        is ShareStatus.Failed -> AlertDialog(onDismissRequest = viewModel::resetShare, confirmButton = { TextButton(onClick = viewModel::resetShare) { Text(stringResource(CoreR.string.action_done)) } }, text = { Text(stringResource(R.string.share_failed)) })
+        ShareStatus.Idle -> Unit
+    }
 }
+
+private fun safeName(title: String) = title.replace(Regex("[^\\p{L}\\p{N} _-]"), "").trim().take(40).ifBlank { "yaadein" }
+
+/** Fonts for drawn exports (same as reels). */
+internal fun renderStyle(context: android.content.Context) = RenderStyle(
+    titleTypeface = ResourcesCompat.getFont(context, CoreR.font.fraunces_semibold) ?: android.graphics.Typeface.SERIF,
+    bodyTypeface = ResourcesCompat.getFont(context, CoreR.font.manrope_medium) ?: android.graphics.Typeface.SANS_SERIF,
+)
 
 @Composable
 fun MemoryDetailScreen(
@@ -105,6 +169,12 @@ fun MemoryDetailScreen(
     onDelete: () -> Unit,
     onSetCover: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    onRecordVoice: () -> Unit = {},
+    /** Renders the voice note player (needs the vault's decrypting data source, so it is supplied by the route). */
+    voicePlayer: @Composable (String) -> Unit = {},
+    onShareCard: () -> Unit = {},
+    onSavePdf: () -> Unit = {},
+    onSendPack: () -> Unit = {},
 ) {
     val detail = state.detail
     if (state.loading || detail == null) {
@@ -115,7 +185,7 @@ fun MemoryDetailScreen(
     var confirmDelete by remember { mutableStateOf(false) }
     LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = spacing.xxxl)) {
         item(key = "hero") {
-            Hero(detail = detail, onBack = onBack, onEdit = onEdit, onDelete = { confirmDelete = true }, onRecap = onRecap, onOpenCover = { index -> onOpenMedia(index) })
+            Hero(detail = detail, onBack = onBack, onEdit = onEdit, onDelete = { confirmDelete = true }, onRecap = onRecap, onOpenCover = { index -> onOpenMedia(index) }, onRecordVoice = onRecordVoice, onShareCard = onShareCard, onSavePdf = onSavePdf, onSendPack = onSendPack)
         }
         item(key = "body") {
             Column(modifier = Modifier.padding(horizontal = spacing.gutter)) {
@@ -137,6 +207,10 @@ fun MemoryDetailScreen(
                 if (detail.memory.description.isNotBlank()) {
                     Spacer(Modifier.height(spacing.lg))
                     Text(text = detail.memory.description, style = MaterialTheme.typography.bodyLarge)
+                }
+                detail.memory.voiceNotePath?.let { path ->
+                    Spacer(Modifier.height(spacing.lg))
+                    voicePlayer(path)
                 }
                 if (detail.people.isNotEmpty()) {
                     Spacer(Modifier.height(spacing.xl))
@@ -215,6 +289,10 @@ private fun Hero(
     onDelete: () -> Unit,
     onRecap: () -> Unit,
     onOpenCover: (Int) -> Unit,
+    onRecordVoice: () -> Unit = {},
+    onShareCard: () -> Unit = {},
+    onSavePdf: () -> Unit = {},
+    onSendPack: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val cover = detail.media.firstOrNull { it.id == detail.memory.coverMediaId } ?: detail.media.firstOrNull()
@@ -250,6 +328,26 @@ private fun Hero(
                 }
                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                     DropdownMenuItem(
+                        text = { Text(stringResource(R.string.share_card)) },
+                        leadingIcon = { Icon(Icons.Rounded.Share, contentDescription = null) },
+                        onClick = { menu = false; onShareCard() },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.share_pdf)) },
+                        leadingIcon = { Icon(Icons.Rounded.PictureAsPdf, contentDescription = null) },
+                        onClick = { menu = false; onSavePdf() },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.share_pack)) },
+                        leadingIcon = { Icon(Icons.Rounded.FamilyRestroom, contentDescription = null) },
+                        onClick = { menu = false; onSendPack() },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(if (detail.memory.voiceNotePath == null) R.string.memory_record_voice else R.string.memory_rerecord_voice)) },
+                        leadingIcon = { Icon(Icons.Rounded.Mic, contentDescription = null) },
+                        onClick = { menu = false; onRecordVoice() },
+                    )
+                    DropdownMenuItem(
                         text = { Text(stringResource(CoreR.string.action_delete)) },
                         leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
                         onClick = { menu = false; onDelete() },
@@ -268,11 +366,19 @@ private fun Hero(
     }
 }
 
+/** Tap opens the photo; long-press (or TalkBack's actions menu) offers "Set as cover". No menu dots on every tile. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MediaThumb(media: Media, isCover: Boolean, onClick: () -> Unit, onSetCover: () -> Unit, modifier: Modifier = Modifier) {
     val radius = Yaadein.radius
     var menu by remember { mutableStateOf(false) }
-    Box(modifier = modifier.aspectRatio(1f).clip(RoundedCornerShape(radius.sm)).clickable(onClick = onClick)) {
+    val setCoverLabel = stringResource(R.string.memory_set_cover)
+    val haptics = LocalHapticFeedback.current
+    Box(
+        modifier = modifier.aspectRatio(1f).clip(RoundedCornerShape(radius.sm))
+            .combinedClickable(onClick = onClick, onLongClick = { haptics.performHapticFeedback(HapticFeedbackType.LongPress); menu = true })
+            .semantics { customActions = listOf(CustomAccessibilityAction(setCoverLabel) { onSetCover(); true }) },
+    ) {
         ThumbnailImage(mediaId = media.id, contentDescription = media.caption.ifBlank { null }, modifier = Modifier.fillMaxSize())
         if (media.kind == MediaKind.VIDEO) {
             Icon(Icons.Rounded.PlayCircle, contentDescription = null, tint = Color.White, modifier = Modifier.align(Alignment.Center).size(Yaadein.sizes.iconLg))
@@ -285,15 +391,8 @@ private fun MediaThumb(media: Media, isCover: Boolean, onClick: () -> Unit, onSe
                 Text(stringResource(R.string.memory_cover_badge), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onPrimary)
             }
         }
-        Box(modifier = Modifier.align(Alignment.TopEnd)) {
-            IconButton(onClick = { menu = true }, modifier = Modifier.size(Yaadein.sizes.touchTarget)) {
-                Box(Modifier.size(Yaadein.sizes.icon).clip(CircleShape).background(Color.Black.copy(alpha = 0.4f)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Rounded.MoreVert, contentDescription = stringResource(CoreR.string.action_more), tint = Color.White, modifier = Modifier.size(Yaadein.sizes.iconSm))
-                }
-            }
-            DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                DropdownMenuItem(text = { Text(stringResource(R.string.memory_set_cover)) }, onClick = { menu = false; onSetCover() })
-            }
+        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+            DropdownMenuItem(text = { Text(setCoverLabel) }, onClick = { menu = false; onSetCover() })
         }
     }
 }

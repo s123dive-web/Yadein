@@ -184,4 +184,29 @@
     <string name="notif_prompts_help">On Sundays, a question to ask someone you love, like \"Ask Aaji how she met Ajoba\".</string>
     <string name="notif_widget">Show memories on the home-screen widget</string>
     <string name="notif_widget_help">Off: the widget only says how many memories are waiting. On: it shows titles, which anyone holding your phone can see.</string>
+    <string name="storage_check">Check my memories</string>
+    <string name="storage_check_help">Opens every photo and video and confirms it is exactly as saved. Nothing is changed or deleted.</string>
+    <string name="storage_check_run">Check now</string>
+    <string name="storage_check_again">Check again</string>
+    <string name="storage_check_progress">Checked %1$d of %2$d</string>
+    <string name="storage_check_problems">%1$d files in %2$d memories could not be read. Restore them from a backup.</string>
+    <plurals name="storage_check_ok">
+        <item quantity="one">All good: %1$d file checked.</item>
+        <item quantity="other">All good: %1$d files checked.</item>
+    </plurals>
+    <string name="autobackup_title">Automatic backup</string>
+    <string name="autobackup_help">Every week, Yaadein saves an encrypted backup to one file you choose, for example in your Google Drive folder. If this phone is lost, your memories are not.</string>
+    <string name="autobackup_enable">Turn on automatic backup</string>
+    <string name="autobackup_never">not yet</string>
+    <string name="autobackup_on">On, every week. Last backup: %1$s</string>
+    <string name="autobackup_failed">The last automatic backup could not be saved. The file may have been moved or deleted. Turn it off and on again to pick a new file.</string>
+    <string name="autobackup_running">Backing up your memories…</string>
+    <string name="autobackup_now">Back up now</string>
+    <string name="autobackup_disable">Turn off</string>
+    <string name="autobackup_channel">Automatic backup</string>
+    <string name="pack_confirm_title">Add memories from family?</string>
+    <string name="pack_confirm_text">This family pack has %1$d memories and %2$d photos or videos. They are added next to yours; nothing is replaced. People with the same name are joined.</string>
+    <string name="pack_add_now">Add them</string>
+    <string name="pack_added_title">Memories added</string>
+    <string name="pack_added_text">%1$d memories added, %2$d new people.</string>
 </resources>

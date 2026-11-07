@@ -76,4 +76,14 @@
     <string name="recap_clear_all">काढा</string>
     <string name="recap_limit">एका रीलमध्ये जास्तीत जास्त %1$d फोटो आणि क्लिप बसू शकतात.</string>
     <string name="recap_remove_photo">रीलमधून काढा</string>
+    <string name="recap_eta_minutes">सुमारे %1$d मिनिटे बाकी</string>
+    <string name="recap_eta_seconds">सुमारे %1$d सेकंद बाकी</string>
+    <string name="track_warm">उबदार</string>
+    <string name="track_minimal">साधे</string>
+    <string name="track_festive">सणासुदीचे</string>
+    <string name="track_classic">जुना चित्रपट</string>
+    <string name="track_lullaby">अंगाई</string>
+    <string name="track_celebration">ढोल उत्सव</string>
+    <string name="track_acoustic">गिटार</string>
+    <string name="track_upbeat">उत्साही</string>
 </resources>

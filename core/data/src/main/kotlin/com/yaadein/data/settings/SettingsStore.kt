@@ -54,6 +54,7 @@ internal data class SettingsDto(
     val autoBackupUri: String? = null,
     val lastBackupAtMillis: Long = 0L,
     val backupNudgeDismissedAtMillis: Long = 0L,
+    val autoBackupFailed: Boolean = false,
 )
 
 internal fun SettingsDto.toDomain() = UserSettings(
@@ -82,6 +83,7 @@ internal fun SettingsDto.toDomain() = UserSettings(
     autoBackupUri = autoBackupUri,
     lastBackupAtMillis = lastBackupAtMillis,
     backupNudgeDismissedAtMillis = backupNudgeDismissedAtMillis,
+    autoBackupFailed = autoBackupFailed,
 )
 
 /** Files saved by version 1 carried IMMEDIATELY only because it was the default; lift them to the new default. */
@@ -117,6 +119,7 @@ internal fun UserSettings.toDto() = SettingsDto(
     autoBackupUri = autoBackupUri,
     lastBackupAtMillis = lastBackupAtMillis,
     backupNudgeDismissedAtMillis = backupNudgeDismissedAtMillis,
+    autoBackupFailed = autoBackupFailed,
 )
 
 private inline fun <reified E : Enum<E>> enumOr(name: String, default: E): E =

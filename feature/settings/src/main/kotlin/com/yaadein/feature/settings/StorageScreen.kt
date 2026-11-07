@@ -44,6 +44,8 @@ import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.core.ui.util.formatBytes
 import com.yaadein.data.db.AppDatabase
 import com.yaadein.data.media.MediaStore
+import com.yaadein.data.media.VaultChecker
+import com.yaadein.data.media.VaultReport
 import com.yaadein.domain.repository.SettingsRepository
 import com.yaadein.domain.settings.UserSettings
 import com.yaadein.feature.lock.VaultWiper
@@ -68,7 +70,15 @@ data class StorageUiState(
     val videoCount: Int = 0,
     val freeBytes: Long = 0,
     val loading: Boolean = true,
+    /** Vault check: null = not run; progress while running. */
+    val check: VaultCheckState = VaultCheckState.Idle,
 )
+
+sealed interface VaultCheckState {
+    data object Idle : VaultCheckState
+    data class Running(val done: Int, val total: Int) : VaultCheckState
+    data class Done(val report: VaultReport) : VaultCheckState
+}
 
 @HiltViewModel
 class StorageViewModel @Inject constructor(
@@ -77,6 +87,7 @@ class StorageViewModel @Inject constructor(
     private val mediaStore: MediaStore,
     private val wiper: VaultWiper,
     @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context,
+    private val checker: VaultChecker,
 ) : ViewModel() {
     private val usage = MutableStateFlow(StorageUiState())
 
@@ -96,6 +107,15 @@ class StorageViewModel @Inject constructor(
         }
     }
 
+    fun checkVault() {
+        if (usage.value.check is VaultCheckState.Running) return
+        viewModelScope.launch {
+            usage.value = usage.value.copy(check = VaultCheckState.Running(0, 0))
+            val report = checker.check { done, total -> usage.value = usage.value.copy(check = VaultCheckState.Running(done, total)) }
+            usage.value = usage.value.copy(check = VaultCheckState.Done(report))
+        }
+    }
+
     fun setOptimize(v: Boolean) { viewModelScope.launch { settingsRepository.update { it.copy(storeOptimizedCopies = v) } } }
     fun eraseEverything() { viewModelScope.launch(Dispatchers.IO) { wiper.wipeEverything() } }
 }
@@ -103,12 +123,12 @@ class StorageViewModel @Inject constructor(
 @Composable
 fun StorageRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: StorageViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    StorageScreen(state = state, onBack = onBack, onOptimize = viewModel::setOptimize, onErase = viewModel::eraseEverything, modifier = modifier)
+    StorageScreen(state = state, onBack = onBack, onOptimize = viewModel::setOptimize, onErase = viewModel::eraseEverything, onCheck = viewModel::checkVault, modifier = modifier)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StorageScreen(state: StorageUiState, onBack: () -> Unit, onOptimize: (Boolean) -> Unit, onErase: () -> Unit, modifier: Modifier = Modifier) {
+fun StorageScreen(state: StorageUiState, onBack: () -> Unit, onOptimize: (Boolean) -> Unit, onErase: () -> Unit, modifier: Modifier = Modifier, onCheck: () -> Unit = {}) {
     val spacing = Yaadein.spacing
     var confirmErase by remember { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxSize()) {
@@ -137,6 +157,26 @@ fun StorageScreen(state: StorageUiState, onBack: () -> Unit, onOptimize: (Boolea
                 }
             }
             SettingsSwitchRow(icon = null, title = stringResource(R.string.storage_optimize), subtitle = stringResource(R.string.storage_optimize_help), checked = state.settings.storeOptimizedCopies, onCheckedChange = onOptimize)
+            HorizontalDivider()
+            Text(stringResource(R.string.storage_check), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            Text(stringResource(R.string.storage_check_help), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            when (val c = state.check) {
+                VaultCheckState.Idle -> OutlinedButton(onClick = onCheck) { Text(stringResource(R.string.storage_check_run)) }
+                is VaultCheckState.Running -> {
+                    LinearProgressIndicator(progress = { if (c.total > 0) c.done.toFloat() / c.total else 0f }, modifier = Modifier.fillMaxWidth())
+                    Text(stringResource(R.string.storage_check_progress, c.done, c.total), style = MaterialTheme.typography.bodyMedium)
+                }
+                is VaultCheckState.Done -> {
+                    val r = c.report
+                    Text(
+                        if (r.healthy) pluralStringResource(R.plurals.storage_check_ok, r.checked, r.checked)
+                        else stringResource(R.string.storage_check_problems, r.damaged + r.missing, r.affectedMemoryIds.size),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = if (r.healthy) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                    )
+                    TextButton(onClick = onCheck) { Text(stringResource(R.string.storage_check_again)) }
+                }
+            }
             HorizontalDivider()
             Text(stringResource(R.string.storage_danger), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             Text(stringResource(R.string.storage_erase_help), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

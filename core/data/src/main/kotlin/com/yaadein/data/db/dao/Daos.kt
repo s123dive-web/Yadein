@@ -185,6 +185,9 @@ interface MemoryDao {
     @Query("SELECT DISTINCT place FROM memories WHERE place <> '' ORDER BY place COLLATE NOCASE")
     suspend fun distinctPlaces(): List<String>
 
+    @Query("SELECT place, COUNT(*) AS n FROM memories WHERE place <> '' GROUP BY place COLLATE NOCASE ORDER BY n DESC, place COLLATE NOCASE LIMIT :limit")
+    suspend fun placeCounts(limit: Int): List<PlaceCount>
+
     @Query("SELECT CAST(strftime('%Y', start_epoch_day * 86400, 'unixepoch') AS INTEGER) AS year, COUNT(*) AS n FROM memories GROUP BY year ORDER BY year DESC")
     suspend fun countsByYear(): List<YearCount>
 
@@ -211,6 +214,12 @@ interface MemoryDao {
         """,
     )
     suspend fun onThisDay(monthDay: Int, excludeYear: Int?): List<MemoryWithRelations>
+
+    @Query("SELECT voice_note_path FROM memories WHERE voice_note_path IS NOT NULL")
+    suspend fun voicePaths(): List<String>
+
+    @Query("UPDATE memories SET voice_note_path = :path, updated_at = :now WHERE id = :id")
+    suspend fun setVoiceNote(id: Long, path: String?, now: Long)
 
     @Transaction
     @Query(
@@ -339,3 +348,6 @@ interface ImportJobDao {
     @Query("DELETE FROM import_jobs WHERE stage IN ('DONE', 'FAILED')")
     suspend fun clearFinished()
 }
+
+/** Row of [MemoryDao.placeCounts]. */
+data class PlaceCount(val place: String, val n: Int)

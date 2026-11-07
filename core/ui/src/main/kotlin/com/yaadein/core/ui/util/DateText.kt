@@ -36,3 +36,14 @@ fun formatBytes(bytes: Long, locale: Locale = Locale.getDefault()): String {
         else -> "$bytes B"
     }
 }
+
+/** Same text as [memoryDateText] for use outside composition (exports, notifications). */
+fun memoryDateText(context: android.content.Context, date: MemoryDate): String {
+    val locale = context.resources.configuration.locales[0]
+    return when (val label = Dates.label(date, locale)) {
+        is DateLabel.Exact -> label.text
+        is DateLabel.Month -> label.text
+        is DateLabel.Year -> context.getString(R.string.date_sometime_in, label.text)
+        is DateLabel.Fuzzy -> label.text
+    }
+}

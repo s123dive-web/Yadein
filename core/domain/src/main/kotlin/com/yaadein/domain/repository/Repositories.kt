@@ -70,6 +70,8 @@ interface MemoryRepository {
     suspend fun countsByYear(): Map<Int, Int>
     suspend fun cardsForYear(year: Int, personId: Long? = null): List<MemoryCard>
     suspend fun distinctPlaces(): List<String>
+    /** Places with the most memories, most first. */
+    suspend fun topPlaces(limit: Int = 12): List<Pair<String, Int>>
     suspend fun setCover(memoryId: Long, mediaId: Long?)
     suspend fun search(query: String, limit: Int = 50): List<MemoryCard>
     suspend fun details(ids: List<Long>): List<MemoryDetail>

@@ -83,6 +83,7 @@ class MemoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun distinctPlaces(): List<String> = memoryDao.distinctPlaces()
+    override suspend fun topPlaces(limit: Int): List<Pair<String, Int>> = memoryDao.placeCounts(limit).map { it.place to it.n }
 
     override suspend fun setCover(memoryId: Long, mediaId: Long?) = memoryDao.setCover(memoryId, mediaId, clock())
 

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cake
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.Shuffle
+import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -56,9 +57,14 @@ fun ReliveRoute(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     onReels: () -> Unit = {},
+    onPlayReel: (String) -> Unit = {},
+    onRecordPrompt: (text: String, personId: Long) -> Unit = { _, _ -> },
+    onPlace: (String) -> Unit = {},
     viewModel: ReliveViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val promptText = state.prompt?.let { com.yaadein.feature.relive.notify.OnThisDayWorker.promptText(context, it.index, it.person?.name, it.person?.relation) }
     ReliveScreen(
         state = state,
         onOpenMemory = onOpenMemory,
@@ -70,6 +76,9 @@ fun ReliveRoute(
         contentPadding = contentPadding,
         modifier = modifier,
         onReels = onReels,
+        latestReel = state.latestReel?.let { reel -> { LatestReelCard(reel = reel, library = viewModel.reelLibrary, onPlay = { onPlayReel(reel.id) }) } },
+        onPlace = onPlace,
+        promptCard = promptText?.let { text -> { PromptCard(text = text, onRecord = { onRecordPrompt(text, state.prompt?.person?.id ?: 0L) }) } },
     )
 }
 
@@ -86,6 +95,10 @@ fun ReliveScreen(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     onReels: () -> Unit = {},
+    /** Slots filled by the route (they need the vault's players); null hides them. */
+    latestReel: (@Composable () -> Unit)? = null,
+    promptCard: (@Composable () -> Unit)? = null,
+    onPlace: (String) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
@@ -106,6 +119,8 @@ fun ReliveScreen(
                 contentPadding = PaddingValues(start = spacing.gutter, end = spacing.gutter, bottom = spacing.xxxl + contentPadding.calculateBottomPadding() + Yaadein.sizes.fabSize),
                 verticalArrangement = Arrangement.spacedBy(spacing.md),
             ) {
+                latestReel?.let { card -> item(key = "latest-reel") { card() } }
+                promptCard?.let { card -> item(key = "prompt") { card() } }
                 item(key = "actions") {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
                         FilledTonalButton(onClick = onSurprise) {
@@ -162,6 +177,23 @@ fun ReliveScreen(
                     items(state.onThisDay.size, key = { "otd-" + state.onThisDay[it].memory.id }) { i ->
                         val card = state.onThisDay[i]
                         MemoryCardView(card = card, onClick = { onOpenMemory(card.memory.id) }, compact = true)
+                    }
+                }
+                if (state.places.isNotEmpty()) {
+                    item(key = "places") {
+                        Column {
+                            SectionTitle(stringResource(R.string.relive_places))
+                            LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                                items(state.places.size, key = { "place-" + state.places[it].first }) { i ->
+                                    val (place, count) = state.places[i]
+                                    AssistChip(
+                                        onClick = { onPlace(place) },
+                                        leadingIcon = { Icon(Icons.Rounded.Place, contentDescription = null) },
+                                        label = { Text("$place · " + pluralStringResource(CoreR.plurals.memory_count, count, count)) },
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
                 if (state.years.isNotEmpty()) {

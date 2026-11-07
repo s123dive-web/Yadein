@@ -51,6 +51,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.data.backup.BackupManager
+import androidx.compose.material3.FilledTonalButton
+import androidx.work.WorkInfo
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+import com.yaadein.domain.settings.UserSettings
+import com.yaadein.domain.repository.SettingsRepository
+import com.yaadein.data.backup.AutoBackup
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -67,19 +75,58 @@ sealed interface BackupStatus {
     data class Exported(val uri: Uri) : BackupStatus
     data class Peeked(val uri: Uri, val manifest: BackupManager.Manifest, val password: String) : BackupStatus
     data object Restored : BackupStatus
+    data class PackAdded(val memories: Int, val newPeople: Int) : BackupStatus
     data class Error(val wrongPassword: Boolean, val message: String?) : BackupStatus
 }
 
 @HiltViewModel
-class BackupViewModel @Inject constructor(private val backup: BackupManager) : ViewModel() {
+class BackupViewModel @Inject constructor(
+    private val backup: BackupManager,
+    private val autoBackup: AutoBackup,
+    private val settingsRepository: SettingsRepository,
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context,
+) : ViewModel() {
     private val _status = MutableStateFlow<BackupStatus>(BackupStatus.Idle)
     val status: StateFlow<BackupStatus> = _status.asStateFlow()
+    val settings: StateFlow<UserSettings> = settingsRepository.settings
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), UserSettings())
+    /** True while an automatic backup is running. */
+    val autoRunning: StateFlow<Boolean> = AutoBackupWorker.observe(context)
+        .map { infos -> infos.any { it.state == WorkInfo.State.RUNNING || it.state == WorkInfo.State.ENQUEUED } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    /** Sets up weekly backups to [uri] with [password] and runs the first one now. */
+    fun enableAuto(uri: Uri, password: String) {
+        viewModelScope.launch {
+            _status.value = BackupStatus.Working(0, 0, false)
+            runCatching { autoBackup.configure(uri, password.toCharArray()) }
+                .onSuccess {
+                    settingsRepository.update { it.copy(autoBackupEnabled = true, autoBackupUri = uri.toString(), autoBackupFailed = false, lastBackupAtMillis = 0L) }
+                    _status.value = BackupStatus.Idle
+                    AutoBackupWorker.enqueue(context, now = true)
+                }
+                .onFailure { _status.value = BackupStatus.Error(false, it.message) }
+        }
+    }
+
+    fun backUpNow() = AutoBackupWorker.enqueue(context, now = true)
+
+    fun disableAuto() {
+        viewModelScope.launch {
+            val uri = settingsRepository.current().autoBackupUri?.let(Uri::parse)
+            autoBackup.clear(uri)
+            settingsRepository.update { it.copy(autoBackupEnabled = false, autoBackupUri = null, autoBackupFailed = false) }
+        }
+    }
 
     fun export(uri: Uri, password: String) {
         viewModelScope.launch {
             _status.value = BackupStatus.Working(0, 0, false)
             runCatching { backup.export(uri, password.toCharArray()) { p -> if (p is BackupManager.Progress.Working) _status.value = BackupStatus.Working(p.done, p.total, false) } }
-                .onSuccess { _status.value = BackupStatus.Exported(uri) }
+                .onSuccess {
+                    settingsRepository.update { s -> s.copy(lastBackupAtMillis = System.currentTimeMillis()) }
+                    _status.value = BackupStatus.Exported(uri)
+                }
                 .onFailure { _status.value = BackupStatus.Error(false, it.message) }
         }
     }
@@ -102,6 +149,16 @@ class BackupViewModel @Inject constructor(private val backup: BackupManager) : V
         }
     }
 
+    /** Adds a family pack's memories to this vault (nothing existing is replaced). */
+    fun addPack(uri: Uri, password: String) {
+        viewModelScope.launch {
+            _status.value = BackupStatus.Working(0, 0, true)
+            runCatching { backup.importPack(uri, password.toCharArray()) }
+                .onSuccess { _status.value = BackupStatus.PackAdded(it.memories, it.newPeople) }
+                .onFailure { _status.value = BackupStatus.Error(isWrongPassword(it), it.message) }
+        }
+    }
+
     fun reset() = _status.update { BackupStatus.Idle }
 
     private fun isWrongPassword(t: Throwable): Boolean =
@@ -111,6 +168,15 @@ class BackupViewModel @Inject constructor(private val backup: BackupManager) : V
 @Composable
 fun BackupRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: BackupViewModel = hiltViewModel()) {
     val status by viewModel.status.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val autoRunning by viewModel.autoRunning.collectAsStateWithLifecycle()
+    var askAutoPassword by remember { mutableStateOf(false) }
+    var autoPassword by remember { mutableStateOf<String?>(null) }
+    val createAuto = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(BackupManager.MIME)) { uri ->
+        val pw = autoPassword
+        autoPassword = null
+        if (uri != null && pw != null) viewModel.enableAuto(uri, pw)
+    }
     var pendingExport by remember { mutableStateOf<Uri?>(null) }
     var pendingImport by remember { mutableStateOf<Uri?>(null) }
     val create = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(BackupManager.MIME)) { uri -> pendingExport = uri }
@@ -119,10 +185,26 @@ fun BackupRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: Ba
         status = status, onBack = onBack,
         onExport = { create.launch("yaadein-backup-${LocalDate.now()}.${BackupManager.EXTENSION}") },
         onImport = { open.launch(arrayOf("*/*")) },
-        onConfirmRestore = { s -> viewModel.restore(s.uri, s.password) },
+        onConfirmRestore = { s -> if (s.manifest.pack) viewModel.addPack(s.uri, s.password) else viewModel.restore(s.uri, s.password) },
         onReset = viewModel::reset,
         modifier = modifier,
+        auto = AutoBackupUi(
+            enabled = settings.autoBackupEnabled,
+            lastBackupAtMillis = settings.lastBackupAtMillis,
+            failed = settings.autoBackupFailed,
+            running = autoRunning,
+            onEnable = { askAutoPassword = true },
+            onBackUpNow = viewModel::backUpNow,
+            onDisable = viewModel::disableAuto,
+        ),
     )
+    if (askAutoPassword) {
+        PasswordDialog(title = stringResource(R.string.backup_set_password), confirmLabel = stringResource(CoreR.string.action_next), requireConfirm = true, onDismiss = { askAutoPassword = false }) { pw ->
+            askAutoPassword = false
+            autoPassword = pw
+            createAuto.launch(AutoBackup.DEFAULT_NAME)
+        }
+    }
     pendingExport?.let { uri ->
         PasswordDialog(title = stringResource(R.string.backup_set_password), confirmLabel = stringResource(R.string.backup_export), requireConfirm = true, onDismiss = { pendingExport = null }) { pw -> pendingExport = null; viewModel.export(uri, pw) }
     }
@@ -183,7 +265,7 @@ private fun PasswordDialog(title: String, confirmLabel: String, requireConfirm: 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackupScreen(status: BackupStatus, onBack: () -> Unit, onExport: () -> Unit, onImport: () -> Unit, onConfirmRestore: (BackupStatus.Peeked) -> Unit, onReset: () -> Unit, modifier: Modifier = Modifier) {
+fun BackupScreen(status: BackupStatus, onBack: () -> Unit, onExport: () -> Unit, onImport: () -> Unit, onConfirmRestore: (BackupStatus.Peeked) -> Unit, onReset: () -> Unit, modifier: Modifier = Modifier, auto: AutoBackupUi? = null) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
@@ -193,6 +275,7 @@ fun BackupScreen(status: BackupStatus, onBack: () -> Unit, onExport: () -> Unit,
         )
         Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.lg)) {
             Text(stringResource(R.string.backup_intro), style = MaterialTheme.typography.bodyLarge)
+            auto?.let { AutoBackupCard(it) }
             when (status) {
                 is BackupStatus.Working -> Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(spacing.lg), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
@@ -201,15 +284,20 @@ fun BackupScreen(status: BackupStatus, onBack: () -> Unit, onExport: () -> Unit,
                     }
                 }
                 is BackupStatus.Exported -> Card(stringResource(R.string.backup_exported_title), stringResource(R.string.backup_exported_text), onReset)
-                is BackupStatus.Peeked -> Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.errorContainer, modifier = Modifier.fillMaxWidth()) {
+                is BackupStatus.Peeked -> Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = if (status.manifest.pack) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.errorContainer, modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(spacing.lg), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                        Text(stringResource(R.string.backup_restore_confirm_title), style = MaterialTheme.typography.titleMedium)
-                        Text(stringResource(R.string.backup_restore_confirm_text, status.manifest.persons, status.manifest.memories, status.manifest.media), style = MaterialTheme.typography.bodyMedium)
-                        Button(onClick = { onConfirmRestore(status) }) { Text(stringResource(R.string.backup_restore_now)) }
+                        Text(stringResource(if (status.manifest.pack) R.string.pack_confirm_title else R.string.backup_restore_confirm_title), style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            if (status.manifest.pack) stringResource(R.string.pack_confirm_text, status.manifest.memories, status.manifest.media)
+                            else stringResource(R.string.backup_restore_confirm_text, status.manifest.persons, status.manifest.memories, status.manifest.media),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Button(onClick = { onConfirmRestore(status) }) { Text(stringResource(if (status.manifest.pack) R.string.pack_add_now else R.string.backup_restore_now)) }
                         TextButton(onClick = onReset) { Text(stringResource(CoreR.string.action_cancel)) }
                     }
                 }
                 BackupStatus.Restored -> Card(stringResource(R.string.backup_restored_title), stringResource(R.string.backup_restored_text), onReset)
+                is BackupStatus.PackAdded -> Card(stringResource(R.string.pack_added_title), stringResource(R.string.pack_added_text, status.memories, status.newPeople), onReset)
                 is BackupStatus.Error -> Card(stringResource(if (status.wrongPassword) R.string.backup_wrong_password else R.string.backup_error_title), status.message ?: stringResource(CoreR.string.error_generic), onReset)
                 BackupStatus.Idle -> Unit
             }
@@ -228,6 +316,50 @@ private fun Card(title: String, text: String, onDismiss: () -> Unit) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             Text(text, style = MaterialTheme.typography.bodyMedium)
             TextButton(onClick = onDismiss) { Text(stringResource(CoreR.string.action_done)) }
+        }
+    }
+}
+
+/** State and actions of the "Automatic backup" card. */
+data class AutoBackupUi(
+    val enabled: Boolean,
+    val lastBackupAtMillis: Long,
+    val failed: Boolean,
+    val running: Boolean,
+    val onEnable: () -> Unit,
+    val onBackUpNow: () -> Unit,
+    val onDisable: () -> Unit,
+)
+
+@Composable
+private fun AutoBackupCard(auto: AutoBackupUi) {
+    val spacing = Yaadein.spacing
+    Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(spacing.lg), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+            Text(stringResource(R.string.autobackup_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            if (!auto.enabled) {
+                Text(stringResource(R.string.autobackup_help), style = MaterialTheme.typography.bodyMedium)
+                Button(onClick = auto.onEnable) { Text(stringResource(R.string.autobackup_enable)) }
+            } else {
+                val last = if (auto.lastBackupAtMillis > 0) {
+                    java.time.Instant.ofEpochMilli(auto.lastBackupAtMillis).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                        .format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM))
+                } else {
+                    stringResource(R.string.autobackup_never)
+                }
+                Text(stringResource(R.string.autobackup_on, last), style = MaterialTheme.typography.bodyMedium)
+                if (auto.failed) {
+                    Text(stringResource(R.string.autobackup_failed), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+                }
+                if (auto.running) {
+                    Text(stringResource(R.string.autobackup_running), style = MaterialTheme.typography.bodyMedium)
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+                androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                    FilledTonalButton(onClick = auto.onBackUpNow, enabled = !auto.running) { Text(stringResource(R.string.autobackup_now)) }
+                    TextButton(onClick = auto.onDisable) { Text(stringResource(R.string.autobackup_disable)) }
+                }
+            }
         }
     }
 }

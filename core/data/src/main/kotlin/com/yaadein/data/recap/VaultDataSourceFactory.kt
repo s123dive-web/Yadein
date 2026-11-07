@@ -12,7 +12,7 @@ import com.yaadein.data.media.MediaStore
 @UnstableApi
 class VaultDataSourceFactory(private val context: Context, private val db: AppDatabase, private val mediaStore: MediaStore) : DataSource.Factory {
     private val fallback = DefaultDataSource.Factory(context)
-    override fun createDataSource(): DataSource = RoutingDataSource(EncryptedDataSource(db, mediaStore), fallback.createDataSource())
+    override fun createDataSource(): DataSource = RoutingDataSource(EncryptedDataSource.Factory(db, mediaStore).createDataSource(), fallback.createDataSource())
 }
 
 @UnstableApi

@@ -20,7 +20,7 @@ import com.yaadein.data.media.MediaImporter
 import com.yaadein.data.media.MediaStore
 import com.yaadein.data.media.TransformerVideoOptimizer
 import com.yaadein.data.media.VideoOptimizer
-import com.yaadein.data.polish.NoSmartPolish
+import com.yaadein.data.polish.GeminiNanoPolish
 import com.yaadein.data.polish.SmartPolishProvider
 import com.yaadein.data.repository.MemoryRepositoryImpl
 import com.yaadein.data.repository.GroupRepositoryImpl
@@ -111,7 +111,7 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun smartPolish(): SmartPolishProvider = NoSmartPolish
+    fun smartPolish(): SmartPolishProvider = GeminiNanoPolish()
 
     @Provides
     @Singleton

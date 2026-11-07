@@ -32,4 +32,8 @@
     <string name="notification_birthday_tomorrow">कल %1$s का जन्मदिन है</string>
     <string name="notification_birthday_text">साथ की यादों की एक रील बनाइए और भेजिए।</string>
     <string name="notification_prompt_title">इस हफ़्ते सहेजने लायक एक कहानी</string>
+    <string name="relive_made_for_you">आपके लिए बनी</string>
+    <string name="relive_play_reel">रील चलाएँ</string>
+    <string name="relive_record_story">रिकॉर्ड करें</string>
+    <string name="relive_places">जगहें</string>
 </resources>

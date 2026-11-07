@@ -32,4 +32,8 @@
     <string name="notification_birthday_tomorrow">%1$s\'s birthday is tomorrow</string>
     <string name="notification_birthday_text">Make a reel of your memories together and share it.</string>
     <string name="notification_prompt_title">A story to save this week</string>
+    <string name="relive_made_for_you">Made for you</string>
+    <string name="relive_play_reel">Play reel</string>
+    <string name="relive_record_story">Record it</string>
+    <string name="relive_places">Places</string>
 </resources>
