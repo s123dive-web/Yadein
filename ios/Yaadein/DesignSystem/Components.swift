@@ -246,7 +246,7 @@ struct MemoryCardView: View {
         let dateText = memoryDateText(card.memory.date)
         VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .bottom) {
-                Group {
+                SwiftUI.Group {
                     if let cover = card.cover {
                         VaultImage(path: cover.thumbPath)
                     } else {

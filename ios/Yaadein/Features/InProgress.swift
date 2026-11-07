@@ -11,12 +11,8 @@ private struct Pending: View {
     }
 }
 
-struct PeopleView: View { var body: some View { Pending(title: L("people_title")) } }
 struct ReliveView: View { let onPlace: (String) -> Void; var body: some View { Pending(title: L("relive_title")) } }
 struct SettingsView: View { var body: some View { Pending(title: L("settings_title")) } }
-struct PersonDetailView: View { let personId: Int64; var body: some View { Pending(title: "") } }
-struct GroupEditView: View { let groupId: Int64?; var body: some View { Pending(title: L("group_new_title")) } }
-struct TogetherView: View { let initialIds: [Int64]; var body: some View { Pending(title: L("together_title")) } }
 struct RelationshipsMapView: View { var body: some View { Pending(title: L("relationships_title")) } }
 struct YearlySummaryView: View { let personId: Int64; let year: Int; var body: some View { Pending(title: String(year)) } }
 struct EventCaptureView: View { let memoryId: Int64?; var body: some View { Pending(title: L("event_new_title")) } }

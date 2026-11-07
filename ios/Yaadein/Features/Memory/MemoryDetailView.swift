@@ -235,7 +235,7 @@ struct MediaViewerView: View {
             } else {
                 TabView(selection: $index) {
                     ForEach(Array(media.enumerated()), id: \.element.id) { i, m in
-                        Group {
+                        SwiftUI.Group {
                             if m.kind == .VIDEO { EncryptedVideoPlayer(path: m.encryptedPath) } else { ZoomableVaultImage(path: m.encryptedPath) }
                         }
                         .tag(i)
