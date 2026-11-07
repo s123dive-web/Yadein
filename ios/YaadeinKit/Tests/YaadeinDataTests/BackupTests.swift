@@ -85,7 +85,9 @@ final class BackupTests: XCTestCase {
         let header = try BackupCodec.readHeader(source)
         let (_, archive) = try BackupCodec.read(source, header: header, key: key, aead: aead, staging: staging)
         let a = try XCTUnwrap(archive)
-        let json = String(decoding: try JSONEncoder().encode(a.dump), as: UTF8.self)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys] // as BackupCodec writes it; the default key order is not stable
+        let json = String(decoding: try encoder.encode(a.dump), as: UTF8.self)
         XCTAssertTrue(json.contains("\"nickname\":null"))
         XCTAssertTrue(json.contains("\"memoryPersons\":[{\"first\":"))
         let restored = try BackupCodec.restoredDatabase(a) { url, folder, ext in try vault.store(file: url, folder: folder, ext: ext).path }

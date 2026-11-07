@@ -12,7 +12,9 @@ func L(_ key: String, _ args: CVarArg...) -> String {
 /// Plurals (`R.plurals.*`): the count selects the form and is also argument 1.
 func LP(_ key: String, _ count: Int, _ extra: CVarArg...) -> String {
     let format = Bundle.main.localizedString(forKey: key, value: nil, table: nil)
-    return String(format: format, locale: Locale.current, arguments: [count] + extra)
+    var all: [CVarArg] = [count]
+    all.append(contentsOf: extra)
+    return String(format: format, locale: Locale.current, arguments: all)
 }
 
 /// One item of a `<string-array>` (`prompts_family_0`...).

@@ -1,3 +1,5 @@
+import Combine
+import LocalAuthentication
 import SwiftUI
 import YaadeinData
 
@@ -72,7 +74,6 @@ struct PinPad: View {
                 .background(Circle().fill(look.colors.surfaceContainerLow))
         }
         .buttonStyle(.plain)
-        .sensoryFeedback(.selection, trigger: d)
     }
 }
 

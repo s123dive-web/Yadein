@@ -142,11 +142,11 @@ enum MediaImporter {
         let gen = AVAssetImageGenerator(asset: AVURLAsset(url: url))
         gen.appliesPreferredTrackTransform = true
         gen.maximumSize = CGSize(width: thumbEdge, height: thumbEdge)
-        guard let (image, _) = try? await gen.image(at: CMTime(seconds: 0.5, preferredTimescale: 600)) else { return nil }
-        return UIImage(cgImage: image)
+        guard let frame = try? await gen.image(at: CMTime(seconds: 0.5, preferredTimescale: 600)) else { return nil }
+        return UIImage(cgImage: frame.image)
     }
 
-    private static func jpeg(_ image: CGImage, quality: CGFloat) -> Data? { UIImage(cgImage: image).jpegData(compressionQuality: quality) }
+    static func jpeg(_ image: CGImage, quality: CGFloat) -> Data? { UIImage(cgImage: image).jpegData(compressionQuality: quality) }
 
     /// Encrypts one picked item into the vault and adds its row (first photo becomes the cover). Returns the media id.
     @discardableResult
@@ -164,29 +164,29 @@ enum MediaImporter {
             case .PHOTO:
                 guard let data = media.data, let src = CGImageSourceCreateWithData(data as CFData, nil) else { throw ImportRejection.unreadable }
                 var bytes = [UInt8](data)
-                if !keepOriginal && CGFloat(max(width, height)) > maxPhotoEdge, let scaled = downscaled(src, edge: maxPhotoEdge), let jpg = jpeg(scaled, quality: 0.9) {
+                if !keepOriginal && CGFloat(max(width, height)) > MediaImporter.maxPhotoEdge, let scaled = MediaImporter.downscaled(src, edge: MediaImporter.maxPhotoEdge), let jpg = MediaImporter.jpeg(scaled, quality: 0.9) {
                     bytes = [UInt8](jpg)
                     width = scaled.width
                     height = scaled.height
-                } else if let upright = downscaled(src, edge: CGFloat(max(width, height))), let jpg = jpeg(upright, quality: 0.92), !data.isJPEGWithoutRotation {
+                } else if let upright = MediaImporter.downscaled(src, edge: CGFloat(max(width, height))), let jpg = MediaImporter.jpeg(upright, quality: 0.92), !data.isJPEGWithoutRotation {
                     // HEIC/PNG or a rotated JPEG: store upright JPEG so every viewer (and Android after a backup) shows it right.
                     bytes = [UInt8](jpg)
                 }
                 size = Int64(bytes.count)
                 stored = try vault.store(bytes: bytes, folder: .media, ext: "jpg")
-                let t = downscaled(src, edge: thumbEdge).flatMap { jpeg($0, quality: 0.8) } ?? Data()
+                let t = MediaImporter.downscaled(src, edge: MediaImporter.thumbEdge).flatMap { MediaImporter.jpeg($0, quality: 0.8) } ?? Data()
                 thumb = try vault.store(bytes: [UInt8](t), folder: .thumbs, ext: "jpg")
             case .VIDEO:
                 guard let url = media.fileURL else { throw ImportRejection.unreadable }
                 var source = url
                 var exported: URL?
-                if !keepOriginal && (min(width, height) > 1080 || media.sizeBytes > maxVideoBytes) {
-                    exported = await exportVideo1080(url)
+                if !keepOriginal && (min(width, height) > 1080 || media.sizeBytes > MediaImporter.maxVideoBytes) {
+                    exported = await MediaImporter.exportVideo1080(url)
                     if let exported { source = exported }
                 }
                 defer { if let exported { try? FileManager.default.removeItem(at: exported) } }
                 size = ((try? FileManager.default.attributesOfItem(atPath: source.path)[.size]) as? NSNumber)?.int64Value ?? media.sizeBytes
-                if size > maxVideoBytes { throw ImportRejection.videoTooLarge }
+                if size > MediaImporter.maxVideoBytes { throw ImportRejection.videoTooLarge }
                 if exported != nil, min(width, height) > 1080 {
                     let scale = 1080 / CGFloat(min(width, height))
                     width = Int(CGFloat(width) * scale)

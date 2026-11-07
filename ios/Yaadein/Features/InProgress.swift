@@ -14,8 +14,6 @@ private struct Pending: View {
 struct PeopleView: View { var body: some View { Pending(title: L("people_title")) } }
 struct ReliveView: View { let onPlace: (String) -> Void; var body: some View { Pending(title: L("relive_title")) } }
 struct SettingsView: View { var body: some View { Pending(title: L("settings_title")) } }
-struct MemoryDetailView: View { let memoryId: Int64; var body: some View { Pending(title: "") } }
-struct MediaViewerView: View { let memoryId: Int64; let startIndex: Int; var body: some View { Pending(title: "") } }
 struct PersonDetailView: View { let personId: Int64; var body: some View { Pending(title: "") } }
 struct GroupEditView: View { let groupId: Int64?; var body: some View { Pending(title: L("group_new_title")) } }
 struct TogetherView: View { let initialIds: [Int64]; var body: some View { Pending(title: L("together_title")) } }

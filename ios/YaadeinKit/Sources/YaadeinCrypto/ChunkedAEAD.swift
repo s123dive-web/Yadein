@@ -221,3 +221,70 @@ public func readAll(_ source: ByteSource) throws -> [UInt8] {
         out += b
     }
 }
+
+/// Random access to the plaintext of a `YDN2` file (MediaCrypto.openReader on Android): only the chunks covering the
+/// requested range are read and decrypted, so a video can be scrubbed without decrypting it all or writing plaintext.
+public final class MediaRandomReader {
+    private let handle: FileHandle
+    private let aead: AEAD
+    private let key: [UInt8]
+    private let header: [UInt8]
+    private let prefix: [UInt8]
+    private let fileLength: Int64
+    private let chunkCount: Int64
+    public let plainLength: Int64
+    private var cachedIndex: Int64 = -1
+    private var cached: [UInt8] = []
+    private let lock = NSLock()
+
+    public init(url: URL, aead: AEAD, key: [UInt8]) throws {
+        handle = try FileHandle(forReadingFrom: url)
+        self.aead = aead
+        self.key = key
+        let h = [UInt8](try handle.read(upToCount: MediaFileFormat.headerBytes) ?? Data())
+        guard h.count == MediaFileFormat.headerBytes, Array(h.prefix(4)) == MediaFileFormat.magic else {
+            try? handle.close()
+            throw CryptoError.invalidFormat("Not a Yaadein media file")
+        }
+        header = h
+        prefix = Array(h[4...])
+        fileLength = Int64(try handle.seekToEnd())
+        let body = fileLength - Int64(MediaFileFormat.headerBytes)
+        let sealedChunk = Int64(ChunkedAEAD.chunk + ChunkedAEAD.tagBytes)
+        chunkCount = max(1, (body + sealedChunk - 1) / sealedChunk)
+        plainLength = MediaFileFormat.plainLength(fileLength: fileLength)
+    }
+
+    deinit { try? handle.close() }
+
+    private func chunk(_ index: Int64) throws -> [UInt8] {
+        if index == cachedIndex { return cached }
+        let sealedChunk = Int64(ChunkedAEAD.chunk + ChunkedAEAD.tagBytes)
+        let offset = Int64(MediaFileFormat.headerBytes) + index * sealedChunk
+        try handle.seek(toOffset: UInt64(offset))
+        let sealed = [UInt8](try handle.read(upToCount: Int(min(sealedChunk, fileLength - offset))) ?? Data())
+        let nonce = ChunkedAEAD.nonce(prefix: prefix, index: UInt32(index), last: index == chunkCount - 1)
+        cached = try aead.open(sealed, key: key, nonce: nonce, aad: header)
+        cachedIndex = index
+        return cached
+    }
+
+    /// Up to `length` plaintext bytes starting at `offset` (fewer at the end).
+    public func read(offset: Int64, length: Int) throws -> [UInt8] {
+        try lock.withLock {
+            var out: [UInt8] = []
+            var pos = offset
+            let end = min(plainLength, offset + Int64(length))
+            while pos < end {
+                let index = pos / Int64(ChunkedAEAD.chunk)
+                let c = try chunk(index)
+                let start = Int(pos - index * Int64(ChunkedAEAD.chunk))
+                let n = min(c.count - start, Int(end - pos))
+                guard n > 0 else { break }
+                out += c[start..<(start + n)]
+                pos += Int64(n)
+            }
+            return out
+        }
+    }
+}

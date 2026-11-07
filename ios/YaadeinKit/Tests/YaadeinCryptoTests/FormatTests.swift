@@ -99,3 +99,20 @@ final class FormatTests: XCTestCase {
         XCTAssertEqual(big, seen["media/1.bin"])
     }
 }
+
+extension FormatTests {
+    func testRandomAccessReads() throws {
+        let plain = (0..<200_000).map { UInt8(truncatingIfNeeded: $0 &* 17) }
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("ra-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: url) }
+        let sink = try FileSink(url: url)
+        try MediaFileFormat.encrypt(MemorySource(plain), to: sink, aead: aead, key: key, prefix: prefix)
+        try sink.close()
+        let r = try MediaRandomReader(url: url, aead: aead, key: key)
+        XCTAssertEqual(Int64(plain.count), r.plainLength)
+        for (o, n) in [(0, 10), (65_530, 20), (131_000, 70_000), (199_990, 100), (0, 200_000)] {
+            XCTAssertEqual(Array(plain[o..<min(plain.count, o + n)]), try r.read(offset: Int64(o), length: n), "\(o)+\(n)")
+        }
+        XCTAssertEqual([], try r.read(offset: 200_000, length: 5))
+    }
+}

@@ -47,7 +47,7 @@ struct Illustration: View {
                 circle(&ctx, CGPoint(x: w * 0.5, y: h * 0.48), s * 0.26, c.primary)
                 circle(&ctx, CGPoint(x: w * 0.5, y: h * 0.48), s * 0.06, surface)
                 for i in 0..<5 {
-                    let a = Double(i * 72 - 90) * .pi / 180
+                    let a = CGFloat(i * 72 - 90) * .pi / 180
                     circle(&ctx, CGPoint(x: w * 0.5 + s * 0.16 * cos(a), y: h * 0.48 + s * 0.16 * sin(a)), s * 0.045, surface)
                 }
                 var strip = Path()
@@ -136,7 +136,7 @@ struct Illustration: View {
         var p = Path()
         for i in 0..<10 {
             let radius = i % 2 == 0 ? r : r * 0.45
-            let a = Double(i * 36 - 90) * .pi / 180
+            let a = CGFloat(i * 36 - 90) * .pi / 180
             let pt = CGPoint(x: center.x + radius * cos(a), y: center.y + radius * sin(a))
             if i == 0 { p.move(to: pt) } else { p.addLine(to: pt) }
         }
