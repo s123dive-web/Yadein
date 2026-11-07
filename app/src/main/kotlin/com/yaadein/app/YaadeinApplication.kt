@@ -11,6 +11,7 @@ import coil3.request.crossfade
 import com.yaadein.app.media.EncryptedImageFetcher
 import com.yaadein.app.media.EncryptedImageKeyer
 import com.yaadein.data.db.AppDatabase
+import com.yaadein.data.lock.VaultSession
 import com.yaadein.data.media.MediaImporter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,14 +36,20 @@ class YaadeinApplication : Application(), SingletonImageLoader.Factory, Configur
     @Inject lateinit var database: dagger.Lazy<AppDatabase>
     @Inject lateinit var mediaStore: dagger.Lazy<MediaStore>
     @Inject lateinit var importer: dagger.Lazy<MediaImporter>
+    @Inject lateinit var vaultSession: VaultSession
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
         com.yaadein.data.crash.CrashLog.install(this, BuildConfig.VERSION_NAME)
-        // Finish or discard imports interrupted by process death; prune orphan files.
-        appScope.launch { runCatching { importer.get().recoverPending() } }
+        // Finish or discard imports interrupted by process death; prune orphan files. A PIN-protected vault cannot be
+        // read before the user unlocks it, so this waits for the first unlock.
+        appScope.launch {
+            vaultSession.start()
+            vaultSession.awaitOpen()
+            runCatching { importer.get().recoverPending() }
+        }
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader =

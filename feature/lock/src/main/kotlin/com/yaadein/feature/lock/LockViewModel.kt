@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.yaadein.data.crypto.PinManager
 import com.yaadein.data.crypto.PinResult
 import com.yaadein.data.lock.AppLockState
+import com.yaadein.data.lock.VaultSession
 import com.yaadein.domain.repository.SettingsRepository
+import com.yaadein.domain.settings.LockMethod
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -25,6 +27,12 @@ data class LockUiState(
     val biometricAvailable: Boolean = false,
     val biometricEnabled: Boolean = true,
     val attemptsBeforeWipe: Int? = null,
+    /** Older install: the next correct PIN re-seals the keys with it (fingerprint is not offered until then). */
+    val migrationPending: Boolean = false,
+    val lockMethod: LockMethod = LockMethod.PIN,
+    /** PIN accepted and a fingerprint copy of the keys should be made before the app opens. */
+    val enrollBiometric: Boolean = false,
+    val biometricChanged: Boolean = false,
 )
 
 sealed interface LockError {
@@ -32,14 +40,25 @@ sealed interface LockError {
     data object Wiped : LockError
 }
 
-/** Thin interface so the ViewModel can request a biometric prompt without touching Android APIs. */
-fun interface BiometricLauncher {
-    fun launch(onSuccess: () -> Unit, onError: (String?) -> Unit)
+/** Biometric prompts, implemented in the app module (Android APIs, Keystore, CryptoObject). */
+interface BiometricLauncher {
+    /** Authenticates and opens the vault with the fingerprint copy of its keys (or just unlocks when already open). */
+    fun unlock(onSuccess: () -> Unit, onError: (BiometricError) -> Unit)
+    /** Seals a fingerprint copy of the (open) vault keys. */
+    fun enroll(onSuccess: () -> Unit, onError: (BiometricError) -> Unit)
+}
+
+enum class BiometricError { CANCELLED, CHANGED, UNAVAILABLE, FAILED }
+
+/** The phone's own screen lock (PIN/pattern/password or biometrics), Android 11+. */
+fun interface DeviceLockLauncher {
+    fun unlock(onSuccess: () -> Unit, onError: (BiometricError) -> Unit)
 }
 
 @HiltViewModel
 class LockViewModel @Inject constructor(
     private val pinManager: PinManager,
+    private val session: VaultSession,
     private val lockState: AppLockState,
     private val settingsRepository: SettingsRepository,
     private val wiper: VaultWiper,
@@ -50,7 +69,17 @@ class LockViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val settings = settingsRepository.current()
-            _state.update { it.copy(biometricEnabled = settings.biometricEnabled, lockedForMs = pinManager.remainingLockMs()) }
+            val migration = withContext(Dispatchers.IO) { (session.state.value as? VaultSession.State.Open)?.migrationPending == true }
+            val canUseBiometric = withContext(Dispatchers.IO) { session.isOpen || session.hasBiometricCopy }
+            val lockMs = withContext(Dispatchers.IO) { pinManager.remainingLockMs() }
+            _state.update {
+                it.copy(
+                    biometricEnabled = settings.biometricEnabled && settings.lockMethod == LockMethod.PIN && canUseBiometric && !migration,
+                    lockedForMs = lockMs,
+                    migrationPending = migration,
+                    lockMethod = settings.lockMethod,
+                )
+            }
             tickLockout()
         }
     }
@@ -69,17 +98,40 @@ class LockViewModel @Inject constructor(
 
     fun onBiometricSuccess() = lockState.unlock()
 
+    fun onBiometricError(error: BiometricError) {
+        if (error == BiometricError.CHANGED) {
+            viewModelScope.launch { settingsRepository.update { it.copy(biometricEnabled = false) } }
+            _state.update { it.copy(biometricEnabled = false, biometricChanged = true) }
+        }
+    }
+
+    fun onDeviceUnlocked() = lockState.unlock()
+
+    /** After the fingerprint copy is made (or the user declined), open the app. */
+    fun onEnrollFinished(enrolled: Boolean) {
+        viewModelScope.launch {
+            if (!enrolled) settingsRepository.update { it.copy(biometricEnabled = false) }
+            _state.update { it.copy(enrollBiometric = false) }
+            lockState.unlock()
+        }
+    }
+
     private fun submit(pin: String) {
         viewModelScope.launch {
             _state.update { it.copy(checking = true) }
             val wipe = settingsRepository.current().wipeAfterTenFailures
             val result = withContext(Dispatchers.Default) {
-                pinManager.verify(pin, wipeEnabled = wipe, onWipe = { wiper.wipeEverything() })
+                session.unlockWithPin(pin, wipeEnabled = wipe, onWipe = { wiper.wipeEverything() })
             }
             when (result) {
                 PinResult.Success -> {
-                    _state.update { it.copy(pin = "", checking = false) }
-                    lockState.unlock()
+                    val settings = settingsRepository.current()
+                    val hasCopy = withContext(Dispatchers.IO) { session.hasBiometricCopy }
+                    // Fingerprint was on but there is no fingerprint copy of the keys yet (just upgraded, or biometrics
+                    // changed): make one now, while the user is here, before showing the app.
+                    val enroll = settings.biometricEnabled && settings.lockMethod == LockMethod.PIN && !hasCopy && _state.value.biometricAvailable
+                    _state.update { it.copy(pin = "", checking = false, migrationPending = false, enrollBiometric = enroll) }
+                    if (!enroll) lockState.unlock()
                 }
                 is PinResult.Wrong -> {
                     _state.update {

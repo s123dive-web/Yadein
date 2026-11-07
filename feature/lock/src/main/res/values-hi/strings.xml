@@ -25,4 +25,15 @@
     <string name="setup_biometric_unavailable">इस फ़ोन में फ़िंगरप्रिंट या फ़ेस अनलॉक सेट नहीं है। इसे बाद में सेटिंग्स में चालू कर सकते हैं।</string>
     <string name="setup_biometric_switch">फ़िंगरप्रिंट या चेहरा इस्तेमाल करें</string>
     <string name="setup_finish">यादें सँजोना शुरू करें</string>
+    <string name="lock_migration_note">मज़बूत सुरक्षा चालू करने के लिए एक बार अपना PIN डालें। इसके बाद सिर्फ़ आपका PIN या फ़िंगरप्रिंट ही आपकी यादें खोल पाएगा।</string>
+    <string name="lock_biometric_changed">आपके फ़िंगरप्रिंट या चेहरा बदल गए हैं। PIN डालें, फिर सेटिंग में फ़िंगरप्रिंट दोबारा चालू करें।</string>
+    <string name="lock_device_subtitle">अपने फ़ोन के स्क्रीन लॉक से खोलें</string>
+    <string name="lock_device_button">खोलें</string>
+    <string name="lock_device_unavailable">इस फ़ोन में स्क्रीन लॉक नहीं है, इसलिए Yaadein लॉक नहीं रह सकता। सेटिंग, सुरक्षा में Yaadein PIN सेट करें।</string>
+    <string name="lock_device_open_anyway">Yaadein खोलें</string>
+    <string name="lock_biometric_enroll_title">अपना फ़िंगरप्रिंट पक्का करें</string>
+    <string name="lock_biometric_enroll_subtitle">ताकि अगली बार यह आपकी यादें खोल सके</string>
+    <string name="lock_biometric_cancel">रद्द करें</string>
+    <string name="setup_use_device_lock">इसके बजाय फ़ोन का स्क्रीन लॉक इस्तेमाल करें</string>
+    <string name="setup_device_lock_help">आसान: कोई नया PIN याद नहीं रखना। Yaadein PIN ज़्यादा मज़बूत है, क्योंकि यह आपकी यादों को एन्क्रिप्ट भी करता है।</string>
 </resources>

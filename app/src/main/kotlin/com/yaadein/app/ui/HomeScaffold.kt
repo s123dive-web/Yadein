@@ -104,7 +104,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
             HomeTab.SETTINGS -> SettingsRoute(
                 onOpen = { page -> navController.navigate(Route.Settings(page.name)) },
                 contentPadding = padding,
-                showUpdate = com.yaadein.app.BuildConfig.DEBUG,
+                showUpdate = com.yaadein.app.BuildConfig.SIDELOAD_UPDATES,
             )
             }
         }

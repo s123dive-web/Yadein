@@ -20,7 +20,13 @@ import javax.crypto.spec.IvParameterSpec
  * seekable so ExoPlayer can scrub a video without decrypting the whole file; integrity is covered
  * by a SHA-256 of the plaintext stored in the database and verified when the file is imported.
  */
-class MediaCrypto(private val key: SecretKey, private val random: SecureRandom = SecureRandom()) {
+class MediaCrypto(private val keyProvider: () -> SecretKey, private val random: SecureRandom = SecureRandom()) {
+    /** Fixed key (tests, device tests). */
+    constructor(key: SecretKey) : this({ key })
+
+    // Read on every operation, not at construction: the key exists only once the vault is open
+    // (VaultKeys.mediaKey throws VaultLockedException before that).
+    private val key: SecretKey get() = keyProvider()
 
     fun encryptingStream(out: OutputStream): OutputStream {
         val iv = ByteArray(IV_SIZE).also(random::nextBytes)

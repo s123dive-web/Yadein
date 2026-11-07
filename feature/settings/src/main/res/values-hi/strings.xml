@@ -167,4 +167,21 @@
     <string name="update_channel">ऐप अपडेट</string>
     <string name="update_done_title">Yaadein %1$s पर अपडेट हुआ</string>
     <string name="update_done_text">खोलने के लिए टैप करें। आपकी सारी यादें यहीं हैं।</string>
+    <string name="security_lock_method">Yaadein कैसे लॉक होता है</string>
+    <string name="security_lock_pin">Yaadein PIN. आपकी यादें इसी से एन्क्रिप्ट होती हैं।</string>
+    <string name="security_lock_device">आपके फ़ोन का स्क्रीन लॉक</string>
+    <string name="security_use_device_lock">इसके बजाय फ़ोन का स्क्रीन लॉक इस्तेमाल करें</string>
+    <string name="security_use_device_lock_help">अलग PIN नहीं। यादें फ़ोन पर एन्क्रिप्ट रहती हैं, पर ऐसे PIN से नहीं जो सिर्फ़ आप जानते हैं।</string>
+    <string name="security_set_pin">Yaadein PIN सेट करें</string>
+    <string name="security_set_pin_help">सबसे मज़बूत: आपकी यादें आपके PIN से एन्क्रिप्ट होंगी।</string>
+    <string name="security_device_confirm_title">फ़ोन के स्क्रीन लॉक पर जाएँ?</string>
+    <string name="security_device_confirm_text">Yaadein आपके फ़ोन के PIN, पैटर्न या फ़िंगरप्रिंट से खुलेगा और आपका Yaadein PIN काम करना बंद कर देगा। आप कभी भी नया सेट कर सकते हैं।</string>
+    <string name="security_switch">बदलें</string>
+    <string name="security_biometric_failed">फ़िंगरप्रिंट चालू नहीं हुआ। दोबारा कोशिश करें।</string>
+    <string name="notif_birthdays">जन्मदिन की याद</string>
+    <string name="notif_birthdays_help">एक दिन पहले और उसी दिन, उस व्यक्ति की रील एक टैप में।</string>
+    <string name="notif_prompts">हर हफ़्ते एक कहानी का सवाल</string>
+    <string name="notif_prompts_help">हर रविवार किसी अपने से पूछने के लिए एक सवाल, जैसे \"दादी से पूछिए कि दादाजी से कैसे मिलीं\"।</string>
+    <string name="notif_widget">होम-स्क्रीन विजेट पर यादें दिखाएँ</string>
+    <string name="notif_widget_help">बंद: विजेट सिर्फ़ बताता है कि कितनी यादें इंतज़ार कर रही हैं। चालू: वह शीर्षक दिखाता है, जो फ़ोन हाथ में लेने वाला कोई भी देख सकता है।</string>
 </resources>

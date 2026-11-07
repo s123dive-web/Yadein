@@ -50,18 +50,41 @@ android {
     }
 
     buildTypes {
+        // Developer build: debuggable, unshrunk, used by unit/Robolectric/screenshot tests. Not handed to users.
         debug {
             signingConfig = signingConfigs.getByName("debug")
             applicationIdSuffix = ".debug"
             isDebuggable = true
+            buildConfigField("boolean", "SIDELOAD_UPDATES", "true")
         }
+        // The APK people install from GitHub Releases. Same application id and signing key as the debug builds handed
+        // out before (so it installs over them and keeps every memory), but optimised by R8 and NOT debuggable: a
+        // debuggable app lets anyone with USB access run code inside it and read the vault. CI re-signs it with the
+        // private release key plus a rotation proof from the old key when the KEYSTORE_* secrets exist
+        // (docs/RELEASE_SIGNING.md), which shuts out the public debug key on Android 9+.
+        create("beta") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".debug"
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            buildConfigField("boolean", "SIDELOAD_UPDATES", "true")
+        }
+        // Google Play build: Play forbids self-updating apps, so no Update screen and no install permission.
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
+            buildConfigField("boolean", "SIDELOAD_UPDATES", "false")
         }
     }
+
+    // The beta build shares the debug-only manifest (Update app permission + receivers).
+    sourceSets.getByName("beta").manifest.srcFile("src/debug/AndroidManifest.xml")
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

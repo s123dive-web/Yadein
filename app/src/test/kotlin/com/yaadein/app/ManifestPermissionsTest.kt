@@ -47,6 +47,6 @@ class ManifestPermissionsTest {
     @Test
     fun `install permission exists only in sideloaded debug builds`() {
         // Settings → Update app (debug only). Play-distributed release builds must not update themselves.
-        assertEquals(BuildConfig.DEBUG, "android.permission.REQUEST_INSTALL_PACKAGES" in requestedPermissions())
+        assertEquals(BuildConfig.SIDELOAD_UPDATES, "android.permission.REQUEST_INSTALL_PACKAGES" in requestedPermissions())
     }
 }

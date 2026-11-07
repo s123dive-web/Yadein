@@ -36,7 +36,10 @@ sealed interface UpdateDecision {
             candidate.packageName != installed.packageName -> NotThisApp
             // Unknown signers (some Android versions do not report them for a file) fall through: the system
             // installer compares keys itself and refuses a mismatch without touching any data.
-            candidate.signers.isNotEmpty() && installed.signers.isNotEmpty() && candidate.signers != installed.signers -> DifferentSignature
+            // A file signed with a newer key carries the older keys in its signing history (APK key rotation), so it is
+            // accepted when that history contains the key this install is signed with today. A file signed only with an
+            // older key than the installed one is refused (Android does not allow rolling a rotated key back).
+            candidate.signers.isNotEmpty() && installed.signers.isNotEmpty() && installed.signers.last() !in candidate.signers -> DifferentSignature
             candidate.versionCode <= installed.versionCode ->
                 AlreadyUpToDate(installed.versionName, candidate.versionName, fileIsOlder = candidate.versionCode < installed.versionCode)
             else -> Install(candidate.versionName, candidate.versionCode)
@@ -44,8 +47,11 @@ sealed interface UpdateDecision {
     }
 }
 
-/** Package identity of an installed app or an APK file. [signers] are SHA-256 fingerprints of the signing certificates. */
-data class AppVersion(val packageName: String, val versionCode: Long, val versionName: String, val signers: Set<String>)
+/**
+ * Package identity of an installed app or an APK file. [signers] are SHA-256 fingerprints of the signing certificates,
+ * oldest first: with APK key rotation the history ends with the key currently signing the app.
+ */
+data class AppVersion(val packageName: String, val versionCode: Long, val versionName: String, val signers: List<String>)
 
 /**
  * Installs a newer Yaadein APK over the current one with [PackageInstaller]. Same package name and same signing
@@ -123,14 +129,15 @@ class AppUpdater(private val context: Context) {
     }
 
     @Suppress("DEPRECATION")
-    private fun signersOf(info: PackageInfo): Set<String> {
+    private fun signersOf(info: PackageInfo): List<String> {
         val certs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val signing = info.signingInfo ?: return emptySet()
+            val signing = info.signingInfo ?: return emptyList()
+            // signingCertificateHistory is ordered oldest → current.
             if (signing.hasMultipleSigners()) signing.apkContentsSigners else signing.signingCertificateHistory
         } else {
             info.signatures
         }
-        return certs.orEmpty().map { sha256(it.toByteArray()) }.toSet()
+        return certs.orEmpty().map { sha256(it.toByteArray()) }.distinct()
     }
 
     private fun sha256(bytes: ByteArray) = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }

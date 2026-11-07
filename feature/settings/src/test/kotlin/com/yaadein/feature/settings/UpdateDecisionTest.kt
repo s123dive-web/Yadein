@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class UpdateDecisionTest {
-    private val key = setOf("aa11")
+    private val key = listOf("aa11")
     private val installed = AppVersion("com.yaadein.app.debug", 30, "0.1.30", key)
 
     @Test
@@ -32,12 +32,24 @@ class UpdateDecisionTest {
 
     @Test
     fun `a different signing key is refused so data is never put at risk`() {
-        assertEquals(UpdateDecision.DifferentSignature, UpdateDecision.decide(installed, installed.copy(versionCode = 31, signers = setOf("bb22"))))
+        assertEquals(UpdateDecision.DifferentSignature, UpdateDecision.decide(installed, installed.copy(versionCode = 31, signers = listOf("bb22"))))
     }
 
     @Test
     fun `unknown signers on the file are left to the system installer`() {
-        assertEquals(UpdateDecision.Install("0.1.31", 31), UpdateDecision.decide(installed, installed.copy(versionCode = 31, versionName = "0.1.31", signers = emptySet())))
+        assertEquals(UpdateDecision.Install("0.1.31", 31), UpdateDecision.decide(installed, installed.copy(versionCode = 31, versionName = "0.1.31", signers = emptyList())))
+    }
+
+    @Test
+    fun `a build signed with a rotated key whose history holds the installed key installs`() {
+        val rotated = installed.copy(versionCode = 31, versionName = "0.1.31", signers = listOf("aa11", "cc33"))
+        assertEquals(UpdateDecision.Install("0.1.31", 31), UpdateDecision.decide(installed, rotated))
+    }
+
+    @Test
+    fun `after rotation a build signed only with the old key is refused`() {
+        val rotatedInstall = installed.copy(signers = listOf("aa11", "cc33"))
+        assertEquals(UpdateDecision.DifferentSignature, UpdateDecision.decide(rotatedInstall, installed.copy(versionCode = 31)))
     }
 
     @Test

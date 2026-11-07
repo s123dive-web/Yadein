@@ -54,9 +54,12 @@ class AutoReelWorker @AssistedInject constructor(
     private val mediaStore: MediaStore,
     private val library: ReelLibrary,
     private val memoryRepository: MemoryRepository,
+    private val vaultKeys: com.yaadein.data.crypto.VaultKeys,
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
+        // PIN-protected vault not opened in this process: nothing can be read. The next unlock queues this again.
+        if (!vaultKeys.canOpenWithoutUser()) return Result.success()
         if (userReelInProgress(context)) return Result.retry()
         val details = memoryRepository.details(memoryRepository.idsFor(TimelineFilter()))
         val picks = AutoReelPicker.pick(details, LocalDate.now())

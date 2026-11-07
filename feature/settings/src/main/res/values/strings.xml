@@ -167,4 +167,21 @@
     <string name="update_channel">App updates</string>
     <string name="update_done_title">Yaadein updated to %1$s</string>
     <string name="update_done_text">Tap to open. All your memories are here.</string>
+    <string name="security_lock_method">How Yaadein locks</string>
+    <string name="security_lock_pin">Yaadein PIN. Your memories are encrypted with it.</string>
+    <string name="security_lock_device">Your phone\'s screen lock</string>
+    <string name="security_use_device_lock">Use phone screen lock instead</string>
+    <string name="security_use_device_lock_help">No separate PIN. Memories stay encrypted on the phone, but not with a PIN only you know.</string>
+    <string name="security_set_pin">Set a Yaadein PIN</string>
+    <string name="security_set_pin_help">Strongest: your memories get encrypted with your PIN.</string>
+    <string name="security_device_confirm_title">Switch to phone screen lock?</string>
+    <string name="security_device_confirm_text">Yaadein will open with your phone\'s PIN, pattern or fingerprint, and your Yaadein PIN will stop working. You can set a new one any time.</string>
+    <string name="security_switch">Switch</string>
+    <string name="security_biometric_failed">Fingerprint wasn\'t switched on. Try again.</string>
+    <string name="notif_birthdays">Birthday reminders</string>
+    <string name="notif_birthdays_help">The day before and on the day, with a one-tap reel for that person.</string>
+    <string name="notif_prompts">Weekly story prompt</string>
+    <string name="notif_prompts_help">On Sundays, a question to ask someone you love, like \"Ask Aaji how she met Ajoba\".</string>
+    <string name="notif_widget">Show memories on the home-screen widget</string>
+    <string name="notif_widget_help">Off: the widget only says how many memories are waiting. On: it shows titles, which anyone holding your phone can see.</string>
 </resources>

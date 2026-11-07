@@ -28,4 +28,8 @@
     <string name="yearly_empty">%1$d की अभी कोई याद नहीं।</string>
     <plurals name="notification_years_ago"><item quantity="one">आज से %1$d साल पहले</item><item quantity="other">आज से %1$d साल पहले</item></plurals>
     <string name="relive_your_reels">आपकी रील्स</string>
+    <string name="notification_birthday_today">आज %1$s का जन्मदिन है 🎂</string>
+    <string name="notification_birthday_tomorrow">कल %1$s का जन्मदिन है</string>
+    <string name="notification_birthday_text">साथ की यादों की एक रील बनाइए और भेजिए।</string>
+    <string name="notification_prompt_title">इस हफ़्ते सहेजने लायक एक कहानी</string>
 </resources>

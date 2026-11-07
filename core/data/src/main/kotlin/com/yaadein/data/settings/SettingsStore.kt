@@ -7,7 +7,9 @@ import com.yaadein.data.crypto.KeyWrapper
 import com.yaadein.domain.repository.SettingsRepository
 import com.yaadein.domain.settings.AppTheme
 import com.yaadein.domain.settings.DarkMode
+import com.yaadein.domain.settings.LockMethod
 import com.yaadein.domain.settings.LockTimeout
+import com.yaadein.domain.settings.TimelineLayout
 import com.yaadein.domain.settings.UserSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -43,6 +45,15 @@ internal data class SettingsDto(
     val onboardingDone: Boolean = false,
     val pinConfigured: Boolean = false,
     val demoMode: Boolean = false,
+    val lockMethod: String = LockMethod.PIN.name,
+    val timelineLayout: String = TimelineLayout.CARDS.name,
+    val birthdayReminders: Boolean = true,
+    val storyPrompts: Boolean = true,
+    val widgetShowsMemories: Boolean = false,
+    val autoBackupEnabled: Boolean = false,
+    val autoBackupUri: String? = null,
+    val lastBackupAtMillis: Long = 0L,
+    val backupNudgeDismissedAtMillis: Long = 0L,
 )
 
 internal fun SettingsDto.toDomain() = UserSettings(
@@ -62,6 +73,15 @@ internal fun SettingsDto.toDomain() = UserSettings(
     onboardingDone = onboardingDone,
     pinConfigured = pinConfigured,
     demoMode = demoMode,
+    lockMethod = enumOr(lockMethod, LockMethod.PIN),
+    timelineLayout = enumOr(timelineLayout, TimelineLayout.CARDS),
+    birthdayReminders = birthdayReminders,
+    storyPrompts = storyPrompts,
+    widgetShowsMemories = widgetShowsMemories,
+    autoBackupEnabled = autoBackupEnabled,
+    autoBackupUri = autoBackupUri,
+    lastBackupAtMillis = lastBackupAtMillis,
+    backupNudgeDismissedAtMillis = backupNudgeDismissedAtMillis,
 )
 
 /** Files saved by version 1 carried IMMEDIATELY only because it was the default; lift them to the new default. */
@@ -88,6 +108,15 @@ internal fun UserSettings.toDto() = SettingsDto(
     onboardingDone = onboardingDone,
     pinConfigured = pinConfigured,
     demoMode = demoMode,
+    lockMethod = lockMethod.name,
+    timelineLayout = timelineLayout.name,
+    birthdayReminders = birthdayReminders,
+    storyPrompts = storyPrompts,
+    widgetShowsMemories = widgetShowsMemories,
+    autoBackupEnabled = autoBackupEnabled,
+    autoBackupUri = autoBackupUri,
+    lastBackupAtMillis = lastBackupAtMillis,
+    backupNudgeDismissedAtMillis = backupNudgeDismissedAtMillis,
 )
 
 private inline fun <reified E : Enum<E>> enumOr(name: String, default: E): E =

@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import com.yaadein.data.backup.BackupManager
 import com.yaadein.data.crypto.Argon2PinHasher
+import com.yaadein.data.crypto.BiometricKeys
 import com.yaadein.data.crypto.EncryptedPrefsSecretStore
 import com.yaadein.data.crypto.KeyWrapper
 import com.yaadein.data.crypto.KeystoreKeyWrapper
@@ -64,20 +65,30 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun vaultKeys(wrapper: KeyWrapper, store: SecretStore): VaultKeys = VaultKeys(wrapper, store)
+    fun vaultKeys(wrapper: KeyWrapper, store: SecretStore): VaultKeys = VaultKeys(wrapper, store, Argon2PinHasher())
 
     @Provides
     @Singleton
-    fun pinManager(store: SecretStore): PinManager = PinManager(store, Argon2PinHasher())
+    fun biometricKeys(): BiometricKeys = BiometricKeys()
 
+    @Provides
+    @Singleton
+    fun pinManager(@ApplicationContext context: Context, store: SecretStore): PinManager = PinManager(
+        store = store,
+        hasher = Argon2PinHasher(),
+        elapsed = { android.os.SystemClock.elapsedRealtime() },
+        bootId = { android.provider.Settings.Global.getInt(context.contentResolver, android.provider.Settings.Global.BOOT_COUNT, 0) },
+    )
+
+    /** Built without the key: SQLCipher asks for it on the first query, which only happens once the vault is open. */
     @Provides
     @Singleton
     fun database(@ApplicationContext context: Context, keys: VaultKeys): AppDatabase =
-        DatabaseFactory.encrypted(context, keys.databaseKey())
+        DatabaseFactory.encrypted(context) { keys.databaseKey() }
 
     @Provides
     @Singleton
-    fun mediaCrypto(keys: VaultKeys): MediaCrypto = MediaCrypto(keys.mediaKey())
+    fun mediaCrypto(keys: VaultKeys): MediaCrypto = MediaCrypto({ keys.mediaKey() })
 
     @Provides
     @Singleton

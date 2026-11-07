@@ -25,6 +25,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.Button
+import com.yaadein.domain.settings.LockMethod
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,16 +51,35 @@ import com.yaadein.data.crypto.PinManager
 fun LockRoute(
     biometricLauncher: BiometricLauncher?,
     modifier: Modifier = Modifier,
+    deviceLockLauncher: DeviceLockLauncher? = null,
     viewModel: LockViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(biometricLauncher) { viewModel.setBiometricAvailable(biometricLauncher != null) }
     val launchBiometric: (() -> Unit)? = biometricLauncher?.let { launcher ->
-        { launcher.launch(onSuccess = viewModel::onBiometricSuccess, onError = {}) }
+        { launcher.unlock(onSuccess = viewModel::onBiometricSuccess, onError = viewModel::onBiometricError) }
     }
     // Offer biometrics automatically when the lock screen appears.
-    LaunchedEffect(launchBiometric, state.biometricEnabled) {
-        if (state.biometricEnabled && launchBiometric != null && state.lockedForMs == 0L) launchBiometric()
+    LaunchedEffect(launchBiometric, state.biometricEnabled, state.lockMethod) {
+        if (state.lockMethod == LockMethod.PIN && state.biometricEnabled && launchBiometric != null && state.lockedForMs == 0L) launchBiometric()
+    }
+    // PIN accepted, fingerprint wanted but not yet sealed: ask once, then open the app either way.
+    LaunchedEffect(state.enrollBiometric) {
+        if (state.enrollBiometric) {
+            val launcher = biometricLauncher
+            if (launcher == null) viewModel.onEnrollFinished(false)
+            else launcher.enroll(onSuccess = { viewModel.onEnrollFinished(true) }, onError = { viewModel.onEnrollFinished(false) })
+        }
+    }
+    var deviceUnavailable by remember { mutableStateOf(false) }
+    val launchDevice: () -> Unit = {
+        if (deviceLockLauncher == null) deviceUnavailable = true
+        else deviceLockLauncher.unlock(onSuccess = viewModel::onDeviceUnlocked, onError = { if (it == BiometricError.UNAVAILABLE) deviceUnavailable = true })
+    }
+    LaunchedEffect(state.lockMethod) { if (state.lockMethod == LockMethod.DEVICE) launchDevice() }
+    if (state.lockMethod == LockMethod.DEVICE) {
+        DeviceLockScreen(unavailable = deviceUnavailable, onUnlock = launchDevice, onOpenAnyway = viewModel::onDeviceUnlocked, modifier = modifier)
+        return
     }
     LockScreen(
         state = state,
@@ -63,7 +87,42 @@ fun LockRoute(
         onBackspace = viewModel::onBackspace,
         onBiometric = launchBiometric,
         modifier = modifier,
+        subtitle = when {
+            state.migrationPending -> stringResource(R.string.lock_migration_note)
+            state.biometricChanged -> stringResource(R.string.lock_biometric_changed)
+            else -> stringResource(R.string.lock_subtitle)
+        },
     )
+}
+
+/** Lock screen for "phone screen lock" mode: one button that opens the system credential prompt. */
+@Composable
+fun DeviceLockScreen(unavailable: Boolean, onUnlock: () -> Unit, onOpenAnyway: () -> Unit, modifier: Modifier = Modifier) {
+    val spacing = Yaadein.spacing
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+        Column(
+            modifier = Modifier.fillMaxSize().systemBarsPadding().padding(spacing.xl),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Illustration(kind = IllustrationKind.LOCK_HEART, modifier = Modifier.size(Yaadein.sizes.illustration * 0.7f))
+            Spacer(Modifier.height(spacing.lg))
+            Text(text = stringResource(R.string.lock_title), style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() })
+            Spacer(Modifier.height(spacing.xs))
+            Text(
+                text = stringResource(if (unavailable) R.string.lock_device_unavailable else R.string.lock_device_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(spacing.xl))
+            if (unavailable) {
+                Button(onClick = onOpenAnyway, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.lock_device_open_anyway)) }
+            } else {
+                Button(onClick = onUnlock, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.lock_device_button)) }
+            }
+        }
+    }
 }
 
 @Composable

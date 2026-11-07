@@ -33,6 +33,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.rounded.Cake
+import androidx.compose.material.icons.rounded.RecordVoiceOver
+import androidx.compose.material.icons.rounded.Widgets
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaadein.core.ui.theme.Yaadein
@@ -47,43 +52,65 @@ import com.yaadein.core.ui.R as CoreR
 fun NotificationsRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: SettingsViewModel = hiltViewModel()) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    // A reminder switched on before notifications were allowed waits here for the permission answer.
+    var pending by remember { mutableStateOf<((UserSettings) -> UserSettings)?>(null) }
+    fun apply(transform: (UserSettings) -> UserSettings) {
+        viewModel.update(transform)
+        runCatching { OnThisDayWorker.sync(context, transform(settings)) }
+    }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) { viewModel.update { it.copy(onThisDayEnabled = true) }; OnThisDayWorker.schedule(context, settings.onThisDayMinuteOfDay) }
+        val t = pending
+        pending = null
+        if (granted && t != null) apply(t)
+    }
+    fun toggle(enabled: Boolean, transform: (UserSettings) -> UserSettings) {
+        if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !OnThisDayWorker.canNotify(context)) {
+            pending = transform
+            permission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            apply(transform)
+        }
     }
     NotificationsScreen(
         settings = settings,
         onBack = onBack,
-        onOnThisDay = { enabled ->
-            if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !OnThisDayWorker.canNotify(context)) {
-                permission.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                viewModel.update { it.copy(onThisDayEnabled = enabled) }
-                if (enabled) OnThisDayWorker.schedule(context, settings.onThisDayMinuteOfDay) else OnThisDayWorker.cancel(context)
-            }
-        },
-        onTime = { minute ->
-            viewModel.update { it.copy(onThisDayMinuteOfDay = minute) }
-            if (settings.onThisDayEnabled) OnThisDayWorker.schedule(context, minute)
-        },
+        onOnThisDay = { enabled -> toggle(enabled) { it.copy(onThisDayEnabled = enabled) } },
+        onBirthdays = { enabled -> toggle(enabled) { it.copy(birthdayReminders = enabled) } },
+        onPrompts = { enabled -> toggle(enabled) { it.copy(storyPrompts = enabled) } },
+        onTime = { minute -> apply { it.copy(onThisDayMinuteOfDay = minute) } },
         onShake = { viewModel.update { s -> s.copy(shakeForMemory = it) } },
+        onWidgetPrivacy = { viewModel.update { s -> s.copy(widgetShowsMemories = it) }; context.sendBroadcast(android.content.Intent(OnThisDayWorker.ACTION_REMINDERS_REFRESHED).setPackage(context.packageName)) },
         modifier = modifier,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationsScreen(settings: UserSettings, onBack: () -> Unit, onOnThisDay: (Boolean) -> Unit, onTime: (Int) -> Unit, onShake: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+fun NotificationsScreen(
+    settings: UserSettings,
+    onBack: () -> Unit,
+    onOnThisDay: (Boolean) -> Unit,
+    onTime: (Int) -> Unit,
+    onShake: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    onBirthdays: (Boolean) -> Unit = {},
+    onPrompts: (Boolean) -> Unit = {},
+    onWidgetPrivacy: (Boolean) -> Unit = {},
+) {
     var pickTime by remember { mutableStateOf(false) }
     val time = LocalTime.of(settings.onThisDayMinuteOfDay / 60, settings.onThisDayMinuteOfDay % 60)
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopAppBar(
             title = { Text(stringResource(R.string.settings_notifications), modifier = Modifier.semantics { heading() }) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(CoreR.string.action_back)) } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
         )
         SettingsSwitchRow(icon = Icons.Rounded.WbSunny, title = stringResource(R.string.notif_on_this_day), subtitle = stringResource(R.string.notif_on_this_day_help), checked = settings.onThisDayEnabled, onCheckedChange = onOnThisDay)
+        SettingsSwitchRow(icon = Icons.Rounded.Cake, title = stringResource(R.string.notif_birthdays), subtitle = stringResource(R.string.notif_birthdays_help), checked = settings.birthdayReminders, onCheckedChange = onBirthdays)
+        SettingsSwitchRow(icon = Icons.Rounded.RecordVoiceOver, title = stringResource(R.string.notif_prompts), subtitle = stringResource(R.string.notif_prompts_help), checked = settings.storyPrompts, onCheckedChange = onPrompts)
         SettingsRow(icon = Icons.Rounded.Schedule, title = stringResource(R.string.notif_time), subtitle = time.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))) { pickTime = true }
         SettingsSwitchRow(icon = Icons.Rounded.Vibration, title = stringResource(R.string.notif_shake), subtitle = stringResource(R.string.notif_shake_help), checked = settings.shakeForMemory, onCheckedChange = onShake)
+        SettingsSwitchRow(icon = Icons.Rounded.Widgets, title = stringResource(R.string.notif_widget), subtitle = stringResource(R.string.notif_widget_help), checked = settings.widgetShowsMemories, onCheckedChange = onWidgetPrivacy)
         Text(stringResource(R.string.notif_privacy), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(Yaadein.spacing.gutter))
     }
     if (pickTime) {

@@ -16,8 +16,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.yaadein.app.lock.BiometricHelper
+import com.yaadein.app.ui.PendingNav
 import com.yaadein.app.ui.YaadeinApp
+import com.yaadein.data.crypto.BiometricKeys
 import com.yaadein.data.lock.AppLockState
+import com.yaadein.data.lock.VaultSession
 import com.yaadein.domain.repository.SettingsRepository
 import com.yaadein.domain.settings.LockTimeout
 import com.yaadein.domain.settings.UserSettings
@@ -34,18 +37,22 @@ class MainActivity : FragmentActivity() {
 
     @Inject lateinit var lockState: AppLockState
     @Inject lateinit var settingsRepository: SettingsRepository
+    @Inject lateinit var vaultSession: VaultSession
+    @Inject lateinit var biometricKeys: BiometricKeys
 
     private lateinit var settings: StateFlow<UserSettings?>
     @Volatile private var lockTimeout: LockTimeout = LockTimeout.ONE_MINUTE
-    /** Memory to open once unlocked (from an "On this day" notification). */
-    private val pendingMemory = MutableStateFlow<Long?>(null)
+    /** Where a reminder notification asked to go, opened once unlocked. */
+    private val pendingNav = MutableStateFlow<PendingNav?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         settings = settingsRepository.settings.stateIn(lifecycleScope, SharingStarted.Eagerly, null)
-        splash.setKeepOnScreenCondition { settings.value == null }
+        // Decide whether the vault opens by itself or needs the PIN before drawing anything.
+        lifecycleScope.launch { vaultSession.start() }
+        splash.setKeepOnScreenCondition { settings.value == null || vaultSession.state.value == VaultSession.State.Checking }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -58,17 +65,20 @@ class MainActivity : FragmentActivity() {
             }
         }
 
-        pendingMemory.value = intent?.getLongExtra(OnThisDayWorker.EXTRA_MEMORY_ID, -1L)?.takeIf { it > 0 }
+        pendingNav.value = PendingNav.from(intent)
         // A share from a gallery app; skip it when the activity is only being recreated (rotation, process restore).
         if (savedInstanceState == null) receiveShare(intent)
         // A share copied before Android closed the app (e.g. while it sat on the PIN screen) is picked up again.
         if (!SharedMediaInbox.isShare(intent)) lifecycleScope.launch { SharedMediaInbox.restore(applicationContext) }
-        val biometricLauncher = BiometricHelper.launcher(this)
+        val biometricLauncher = BiometricHelper.launcher(this, vaultSession, biometricKeys)
+        val deviceLockLauncher = BiometricHelper.deviceLauncher(this)
         setContent {
             val current by settings.collectAsStateWithLifecycle()
             val locked by lockState.locked.collectAsStateWithLifecycle()
+            val vault by vaultSession.state.collectAsStateWithLifecycle()
+            if (vault == VaultSession.State.Checking) return@setContent
             current?.let { s ->
-                val pending by pendingMemory.collectAsStateWithLifecycle()
+                val pending by pendingNav.collectAsStateWithLifecycle()
                 val shared by SharedMediaInbox.pending.collectAsStateWithLifecycle()
                 YaadeinApp(
                     hasSharedMedia = shared.isNotEmpty(),
@@ -76,8 +86,10 @@ class MainActivity : FragmentActivity() {
                     locked = locked,
                     biometricLauncher = biometricLauncher,
                     biometricAvailable = biometricLauncher != null,
-                    pendingMemoryId = pending,
-                    onPendingConsumed = { pendingMemory.value = null },
+                    deviceLockLauncher = deviceLockLauncher,
+                    vaultLocked = vault == VaultSession.State.Locked,
+                    pendingNav = pending,
+                    onPendingConsumed = { pendingNav.value = null },
                 )
             }
         }
@@ -86,7 +98,7 @@ class MainActivity : FragmentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        pendingMemory.value = intent.getLongExtra(OnThisDayWorker.EXTRA_MEMORY_ID, -1L).takeIf { it > 0 }
+        PendingNav.from(intent)?.let { pendingNav.value = it }
         receiveShare(intent)
     }
 

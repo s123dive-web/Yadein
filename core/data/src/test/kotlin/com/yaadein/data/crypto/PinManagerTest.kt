@@ -16,13 +16,16 @@ private class FakeHasher : PinHasher {
 class PinManagerTest {
     private lateinit var store: InMemorySecretStore
     private var now = 1_000_000L
+    private var boot = 1
     private lateinit var pin: PinManager
     private var wiped = false
+
+    private fun manager() = PinManager(store, FakeHasher(), elapsed = { now }, bootId = { boot })
 
     @BeforeEach
     fun setUp() {
         store = InMemorySecretStore()
-        pin = PinManager(store, FakeHasher(), clock = { now })
+        pin = manager()
         wiped = false
     }
 
@@ -31,6 +34,15 @@ class PinManagerTest {
         assertFalse(pin.isConfigured)
         pin.setPin("123456")
         assertTrue(pin.isConfigured)
+        assertTrue(pin.hasLegacyHash)
+    }
+
+    @Test
+    fun `vault-bound pin stays configured without a hash`() {
+        pin.setPin("123456")
+        pin.markVaultBound()
+        assertTrue(pin.isConfigured)
+        assertFalse(pin.hasLegacyHash)
     }
 
     @Test
@@ -43,17 +55,46 @@ class PinManagerTest {
     }
 
     @Test
+    fun `a custom check decides success`() {
+        pin.setPin("123456")
+        pin.markVaultBound()
+        assertEquals(PinResult.Success, pin.verify("999999", false, {}) { it == "999999" })
+        assertTrue(pin.verify("123456", false, {}) { it == "999999" } is PinResult.Wrong)
+    }
+
+    @Test
     fun `fifth wrong pin starts a 30 second lockout that survives restarts`() {
         pin.setPin("123456")
         repeat(4) { assertTrue(pin.verify("111111", false) { } is PinResult.Wrong) }
         val fifth = pin.verify("111111", false) { } as PinResult.Wrong
         assertEquals(5, fifth.failures)
         assertEquals(30_000L, fifth.lockedForMs)
-        // A fresh manager over the same store still sees the lock.
-        val restarted = PinManager(store, FakeHasher(), clock = { now })
+        val restarted = manager()
         assertTrue(restarted.verify("123456", false) { } is PinResult.LockedOut)
         now += 30_000L
         assertEquals(PinResult.Success, restarted.verify("123456", false) { })
+    }
+
+    @Test
+    fun `changing the wall clock does not shorten the lockout`() {
+        pin.setPin("123456")
+        repeat(5) { pin.verify("111111", false) { } }
+        // Only the monotonic clock counts; nothing here moves it, so the lock holds no matter the date.
+        assertEquals(30_000L, pin.remainingLockMs())
+        now += 10_000L
+        assertEquals(20_000L, pin.remainingLockMs())
+    }
+
+    @Test
+    fun `after a reboot the full delay applies again`() {
+        pin.setPin("123456")
+        repeat(5) { pin.verify("111111", false) { } }
+        now += 25_000L
+        boot = 2
+        now = 500L // monotonic clock restarted
+        assertEquals(30_000L, pin.remainingLockMs())
+        now += 30_000L
+        assertEquals(0L, pin.remainingLockMs())
     }
 
     @Test
@@ -61,7 +102,7 @@ class PinManagerTest {
         pin.setPin("123456")
         repeat(9) {
             pin.verify("111111", true) { wiped = true }
-            now += 3_600_000L // skip past any lockout
+            now += 3_600_000L
         }
         assertFalse(wiped)
         assertEquals(PinResult.Wiped, pin.verify("111111", true) { wiped = true })

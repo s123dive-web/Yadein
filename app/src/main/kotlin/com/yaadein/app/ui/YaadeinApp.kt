@@ -18,9 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.yaadein.app.navigation.AppNavHost
 import com.yaadein.app.navigation.Route
-import com.yaadein.core.ui.components.AppCredit
 import com.yaadein.core.ui.theme.YaadeinTheme
 import com.yaadein.feature.lock.BiometricLauncher
+import com.yaadein.feature.lock.DeviceLockLauncher
 import com.yaadein.feature.lock.LockRoute
 import com.yaadein.feature.relive.ShakeListener
 import androidx.compose.runtime.LaunchedEffect
@@ -35,11 +35,21 @@ fun YaadeinApp(
     locked: Boolean,
     biometricLauncher: BiometricLauncher?,
     biometricAvailable: Boolean,
-    pendingMemoryId: Long? = null,
+    pendingNav: PendingNav? = null,
     onPendingConsumed: () -> Unit = {},
     hasSharedMedia: Boolean = false,
+    deviceLockLauncher: DeviceLockLauncher? = null,
+    /** PIN-protected vault not opened yet in this process: only the lock screen may be composed (nothing reads data). */
+    vaultLocked: Boolean = false,
 ) {
     YaadeinTheme(theme = settings.theme, darkMode = settings.darkMode, easyMode = settings.easyMode) {
+        if (vaultLocked) {
+            LockRoute(
+                biometricLauncher = if (settings.biometricEnabled) biometricLauncher else null,
+                deviceLockLauncher = deviceLockLauncher,
+            )
+            return@YaadeinTheme
+        }
         val navController = rememberNavController()
         // Start destination is decided once per process from persisted state.
         val start: Route = remember {
@@ -50,10 +60,14 @@ fun YaadeinApp(
             }
         }
         val unlocked = !locked || !settings.pinConfigured
-        // Open the memory a notification pointed at, once the vault is unlocked.
-        LaunchedEffect(pendingMemoryId, unlocked, start) {
-            if (pendingMemoryId != null && unlocked && start == Route.Home) {
-                navController.navigate(Route.MemoryDetail(pendingMemoryId))
+        // Open what a reminder notification pointed at, once the vault is unlocked.
+        LaunchedEffect(pendingNav, unlocked, start) {
+            if (pendingNav != null && unlocked && start == Route.Home) {
+                when (pendingNav) {
+                    is PendingNav.Memory -> navController.navigate(Route.MemoryDetail(pendingNav.id))
+                    is PendingNav.Reel -> navController.navigate(Route.RecapSetup(personId = pendingNav.personId))
+                    is PendingNav.Prompt -> navController.navigate(Route.QuickCapture)
+                }
                 onPendingConsumed()
             }
         }
@@ -65,8 +79,12 @@ fun YaadeinApp(
         }
         // Keep the three automatic reels ready (queues background work only when they are missing or a day old).
         val autoReels: AutoReelsViewModel = hiltViewModel()
+        val session: SessionViewModel = hiltViewModel()
         LaunchedEffect(unlocked, settings.onboardingDone, settings.pinConfigured) {
-            if (unlocked && settings.onboardingDone && settings.pinConfigured) autoReels.ensure()
+            if (unlocked && settings.onboardingDone && settings.pinConfigured) {
+                autoReels.ensure()
+                session.onUnlocked(settings)
+            }
         }
         // Shake for a random memory (only while unlocked and on the home graph).
         val randomViewModel: RandomMemoryViewModel = hiltViewModel()
@@ -74,17 +92,20 @@ fun YaadeinApp(
             randomViewModel.pick { id -> navController.navigate(Route.MemoryDetail(id)) }
         }
         Surface(modifier = Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxSize()) {
-                // The credit strip below takes the navigation-bar inset, so the screens above treat it as consumed
-                // (Scaffold, NavigationBar and navigationBarsPadding all respect consumed insets).
-                Box(Modifier.weight(1f).fillMaxWidth().consumeWindowInsets(WindowInsets.navigationBars)) {
-                    AppNavHost(navController = navController, start = start, settings = settings, biometricAvailable = biometricAvailable)
-                    // Lock overlay sits above everything once a PIN exists.
-                    androidx.compose.animation.AnimatedVisibility(visible = locked && settings.pinConfigured, enter = fadeIn(), exit = fadeOut()) {
-                        LockRoute(biometricLauncher = if (settings.biometricEnabled) biometricLauncher else null)
-                    }
+            // The maker credit lives on Settings, About and every reel's last card, not on every screen.
+            Box(Modifier.fillMaxSize()) {
+                AppNavHost(
+                    navController = navController,
+                    start = start,
+                    settings = settings,
+                    biometricAvailable = biometricAvailable,
+                    biometricLauncher = biometricLauncher,
+                    deviceLockLauncher = deviceLockLauncher,
+                )
+                // Lock overlay sits above everything once a lock is set up.
+                androidx.compose.animation.AnimatedVisibility(visible = locked && settings.pinConfigured, enter = fadeIn(), exit = fadeOut()) {
+                    LockRoute(biometricLauncher = if (settings.biometricEnabled) biometricLauncher else null, deviceLockLauncher = deviceLockLauncher)
                 }
-                AppCredit(Modifier.navigationBarsPadding())
             }
         }
     }

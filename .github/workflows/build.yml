@@ -1,4 +1,4 @@
-name: Build debug APK
+name: Build APK
 
 on:
   push:
@@ -15,7 +15,10 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
+    env:
+      # True once the owner has added the private release key (docs/RELEASE_SIGNING.md).
+      HAS_RELEASE_KEY: ${{ secrets.KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,18 +34,43 @@ jobs:
       - name: Gradle cache
         uses: gradle/actions/setup-gradle@v4
       - name: Unit tests
-        run: ./gradlew test --no-daemon --stacktrace
+        run: ./gradlew testDebugUnitTest :core:domain:test --no-daemon --stacktrace
       - name: Zero-network guard
-        run: ./gradlew :app:verifyNoNetworkPermissionDebug --no-daemon --stacktrace
+        run: ./gradlew :app:verifyNoNetworkPermissionDebug :app:verifyNoNetworkPermissionBeta --no-daemon --stacktrace
       - name: Lint
         run: ./gradlew :app:lintDebug --no-daemon --stacktrace
-      - name: Assemble debug APK
-        run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
+      # The APK people install: R8-optimised, not debuggable, same app id as earlier builds so it updates in place.
+      - name: Assemble beta APK
+        run: ./gradlew :app:assembleBeta --no-daemon --stacktrace
+      # With the private key present, sign with it plus a rotation proof from the old public debug key. Android 9+
+      # then accepts it as an update over existing installs and refuses any later APK signed only with the public key.
+      - name: Sign with the private release key (key rotation)
+        if: env.HAS_RELEASE_KEY == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          BT="$ANDROID_HOME/build-tools/36.0.0"
+          APK=$(ls app/build/outputs/apk/beta/Yaadein-*.apk)
+          OLD=(--ks app/debug.keystore --ks-pass pass:android --ks-key-alias androiddebugkey --key-pass pass:android)
+          NEW=(--ks "$RUNNER_TEMP/release.jks" --ks-pass env:KEYSTORE_PASSWORD --ks-key-alias "$KEY_ALIAS" --key-pass env:KEY_PASSWORD)
+          "$BT/apksigner" rotate --out "$RUNNER_TEMP/lineage" --old-signer "${OLD[@]}" --new-signer "${NEW[@]}"
+          "$BT/apksigner" sign "${OLD[@]}" --next-signer "${NEW[@]}" --lineage "$RUNNER_TEMP/lineage" --rotation-min-sdk-version 28 "$APK"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/verify.txt"
+          grep -E "Verified|DN" "$RUNNER_TEMP/verify.txt" || true
+          rm -f "$RUNNER_TEMP/release.jks"
+      - name: Warn when still signed with the public debug key
+        if: env.HAS_RELEASE_KEY != 'true'
+        run: echo "::warning::APK is signed with the public debug key. Add the KEYSTORE_* secrets (docs/RELEASE_SIGNING.md) to finish securing updates."
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Yaadein-debug-apk
-          path: app/build/outputs/apk/debug/Yaadein-*.apk
+          name: Yaadein-apk
+          path: app/build/outputs/apk/beta/Yaadein-*.apk
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -55,4 +83,7 @@ jobs:
         with:
           tag_name: build-${{ github.run_number }}
           name: Build ${{ github.run_number }}
-          files: app/build/outputs/apk/debug/Yaadein-*.apk
+          body: |
+            Install **Yaadein-v*-beta.apk**. It updates an existing install in place and keeps every memory.
+            Signed with: ${{ env.HAS_RELEASE_KEY == 'true' && 'the private release key (rotated from the old debug key)' || 'the public debug key (add the release key secrets, see docs/RELEASE_SIGNING.md)' }}.
+          files: app/build/outputs/apk/beta/Yaadein-*.apk

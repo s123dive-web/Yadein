@@ -13,6 +13,8 @@ import androidx.navigation.toRoute
 import com.yaadein.app.ui.HomeScaffold
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.settings.UserSettings
+import com.yaadein.feature.lock.BiometricLauncher
+import com.yaadein.feature.lock.DeviceLockLauncher
 import com.yaadein.feature.lock.LockSetupRoute
 import com.yaadein.feature.memory.MemoryDetailRoute
 import com.yaadein.feature.onboarding.OnboardingRoute
@@ -51,6 +53,8 @@ fun AppNavHost(
     start: Route,
     settings: UserSettings,
     biometricAvailable: Boolean,
+    biometricLauncher: BiometricLauncher? = null,
+    deviceLockLauncher: DeviceLockLauncher? = null,
 ) {
     val motion = Yaadein.motion
     NavHost(
@@ -67,6 +71,8 @@ fun AppNavHost(
         composable<Route.LockSetup> {
             LockSetupRoute(
                 biometricAvailable = biometricAvailable,
+                biometricLauncher = biometricLauncher,
+                deviceLockLauncher = deviceLockLauncher,
                 onDone = {
                     if (settings.pinConfigured && navController.previousBackStackEntry != null) navController.popBackStack()
                     else navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } }
@@ -189,8 +195,14 @@ fun AppNavHost(
                 SettingsPage.FACES -> FacesRoute(onBack = { navController.popBackStack() })
                 SettingsPage.PRIVACY -> PrivacyScreen(onBack = { navController.popBackStack() })
                 SettingsPage.CRASH_LOG -> CrashLogScreen(onBack = { navController.popBackStack() })
-                SettingsPage.UPDATE -> if (BuildConfig.DEBUG) UpdateRoute(onBack = { navController.popBackStack() }) else AboutRoute(onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = false)
-                SettingsPage.SECURITY -> SecurityRoute(biometricAvailable = biometricAvailable, onBack = { navController.popBackStack() }, onChangePin = { navController.navigate(Route.LockSetup) })
+                SettingsPage.UPDATE -> if (BuildConfig.SIDELOAD_UPDATES) UpdateRoute(onBack = { navController.popBackStack() }) else AboutRoute(onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = false)
+                SettingsPage.SECURITY -> SecurityRoute(
+                    biometricAvailable = biometricAvailable,
+                    onBack = { navController.popBackStack() },
+                    onChangePin = { navController.navigate(Route.LockSetup) },
+                    enrollBiometric = biometricLauncher?.let { launcher -> { done: (Boolean) -> Unit -> launcher.enroll(onSuccess = { done(true) }, onError = { done(false) }) } },
+                    confirmDeviceLock = deviceLockLauncher?.let { launcher -> { done: (Boolean) -> Unit -> launcher.unlock(onSuccess = { done(true) }, onError = { done(false) }) } },
+                )
                 SettingsPage.ABOUT -> AboutRoute(
                     onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = BuildConfig.DEBUG,
                     onOpenAppInfo = { navController.navigate(Route.Settings(SettingsPage.APP_INFO.name)) },

@@ -167,4 +167,21 @@
     <string name="update_channel">अ‍ॅप अपडेट</string>
     <string name="update_done_title">Yaadein %1$s वर अपडेट झाले</string>
     <string name="update_done_text">उघडण्यासाठी टॅप करा. तुमच्या सगळ्या आठवणी इथेच आहेत.</string>
+    <string name="security_lock_method">Yaadein कसे लॉक होते</string>
+    <string name="security_lock_pin">Yaadein PIN. तुमच्या आठवणी याच्याने एन्क्रिप्ट होतात.</string>
+    <string name="security_lock_device">तुमच्या फोनचा स्क्रीन लॉक</string>
+    <string name="security_use_device_lock">त्याऐवजी फोनचा स्क्रीन लॉक वापरा</string>
+    <string name="security_use_device_lock_help">वेगळा PIN नाही. आठवणी फोनवर एन्क्रिप्ट राहतात, पण फक्त तुम्हाला माहीत असलेल्या PIN ने नाही.</string>
+    <string name="security_set_pin">Yaadein PIN सेट करा</string>
+    <string name="security_set_pin_help">सर्वात मजबूत: तुमच्या आठवणी तुमच्या PIN ने एन्क्रिप्ट होतील.</string>
+    <string name="security_device_confirm_title">फोनच्या स्क्रीन लॉकवर जायचे?</string>
+    <string name="security_device_confirm_text">Yaadein तुमच्या फोनच्या PIN, पॅटर्न किंवा फिंगरप्रिंटने उघडेल आणि तुमचा Yaadein PIN काम करणे थांबवेल. तुम्ही कधीही नवीन सेट करू शकता.</string>
+    <string name="security_switch">बदला</string>
+    <string name="security_biometric_failed">फिंगरप्रिंट सुरू झाला नाही. पुन्हा प्रयत्न करा.</string>
+    <string name="notif_birthdays">वाढदिवसाची आठवण</string>
+    <string name="notif_birthdays_help">एक दिवस आधी आणि त्याच दिवशी, त्या व्यक्तीची रील एका टॅपमध्ये.</string>
+    <string name="notif_prompts">दर आठवड्याला एका गोष्टीचा प्रश्न</string>
+    <string name="notif_prompts_help">दर रविवारी आपल्या माणसाला विचारण्यासाठी एक प्रश्न, जसे \"आजीला विचारा आजोबांना कशा भेटल्या\".</string>
+    <string name="notif_widget">होम-स्क्रीन विजेटवर आठवणी दाखवा</string>
+    <string name="notif_widget_help">बंद: विजेट फक्त किती आठवणी वाट पाहत आहेत ते सांगतो. सुरू: तो शीर्षके दाखवतो, जी फोन हातात घेणारा कोणीही पाहू शकतो.</string>
 </resources>

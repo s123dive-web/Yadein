@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import com.yaadein.data.backup.BackupManager
+import com.yaadein.data.crypto.BiometricKeys
 import com.yaadein.data.crypto.KeyWrapper
 import com.yaadein.data.crypto.MediaCrypto
 import com.yaadein.data.crypto.PinHasher
@@ -47,13 +48,14 @@ object TestDataModule {
     @Provides @Singleton fun clock(): () -> Long = { System.currentTimeMillis() }
     @Provides @Singleton fun keyWrapper(): KeyWrapper = XorKeyWrapper()
     @Provides @Singleton fun secretStore(): SecretStore = InMemorySecretStore()
-    @Provides @Singleton fun vaultKeys(wrapper: KeyWrapper, store: SecretStore): VaultKeys = VaultKeys(wrapper, store)
-    @Provides @Singleton fun pinManager(store: SecretStore): PinManager =
-        PinManager(store, object : PinHasher {
-            override fun hash(pin: String, salt: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(salt + pin.toByteArray())
-        })
+    private val fastKdf = object : PinHasher {
+        override fun hash(pin: String, salt: ByteArray): ByteArray = MessageDigest.getInstance("SHA-256").digest(salt + pin.toByteArray())
+    }
+    @Provides @Singleton fun vaultKeys(wrapper: KeyWrapper, store: SecretStore): VaultKeys = VaultKeys(wrapper, store, fastKdf)
+    @Provides @Singleton fun biometricKeys(): BiometricKeys = BiometricKeys()
+    @Provides @Singleton fun pinManager(store: SecretStore): PinManager = PinManager(store, fastKdf)
     @Provides @Singleton fun database(@ApplicationContext context: Context): AppDatabase = DatabaseFactory.plainForTests(context)
-    @Provides @Singleton fun mediaCrypto(keys: VaultKeys): MediaCrypto = MediaCrypto(keys.mediaKey())
+    @Provides @Singleton fun mediaCrypto(keys: VaultKeys): MediaCrypto = MediaCrypto({ keys.mediaKey() })
     @Provides @Singleton fun mediaStore(@ApplicationContext context: Context, crypto: MediaCrypto): MediaStore = MediaStore(context, crypto)
     @Provides @Singleton fun videoOptimizer(): VideoOptimizer = VideoOptimizer { _, _ -> null }
     @Provides @Singleton fun mediaImporter(@ApplicationContext context: Context, db: AppDatabase, mediaStore: MediaStore, memoryRepository: MemoryRepositoryImpl, optimizer: VideoOptimizer, clock: () -> Long): MediaImporter =

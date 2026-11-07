@@ -28,4 +28,8 @@
     <string name="yearly_empty">No memories from %1$d yet.</string>
     <plurals name="notification_years_ago"><item quantity="one">%1$d year ago today</item><item quantity="other">%1$d years ago today</item></plurals>
     <string name="relive_your_reels">Your reels</string>
+    <string name="notification_birthday_today">Today is %1$s\'s birthday 🎂</string>
+    <string name="notification_birthday_tomorrow">%1$s\'s birthday is tomorrow</string>
+    <string name="notification_birthday_text">Make a reel of your memories together and share it.</string>
+    <string name="notification_prompt_title">A story to save this week</string>
 </resources>

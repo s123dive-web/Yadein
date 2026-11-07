@@ -4,6 +4,12 @@ enum class AppTheme { WARM_ALBUM, MIDNIGHT, MONSOON, FESTIVE, MINIMAL_MONO, DYNA
 
 enum class DarkMode { SYSTEM, LIGHT, DARK }
 
+/** How the vault is unlocked: a Yaadein PIN (keys are encrypted with it) or the phone's own screen lock (Android 11+). */
+enum class LockMethod { PIN, DEVICE }
+
+/** Timeline density: big cards, a compact list, or a photo grid. */
+enum class TimelineLayout { CARDS, COMPACT, GRID }
+
 /** How long the app may stay in the background before it locks again. */
 enum class LockTimeout(val millis: Long) {
     IMMEDIATELY(0),
@@ -30,4 +36,18 @@ data class UserSettings(
     val onboardingDone: Boolean = false,
     val pinConfigured: Boolean = false,
     val demoMode: Boolean = false,
+    val lockMethod: LockMethod = LockMethod.PIN,
+    val timelineLayout: TimelineLayout = TimelineLayout.CARDS,
+    /** "Rahul's birthday is tomorrow" notifications. */
+    val birthdayReminders: Boolean = true,
+    /** Weekly "Ask Aaji how she met Ajoba" prompt notification. */
+    val storyPrompts: Boolean = true,
+    /** Home-screen widget may show memory titles and photos (off: it only says how many memories are waiting). */
+    val widgetShowsMemories: Boolean = false,
+    /** Weekly automatic backup to [autoBackupUri] (a document the user picked once). */
+    val autoBackupEnabled: Boolean = false,
+    val autoBackupUri: String? = null,
+    val lastBackupAtMillis: Long = 0L,
+    /** When the "back up your memories" banner was last dismissed. */
+    val backupNudgeDismissedAtMillis: Long = 0L,
 )

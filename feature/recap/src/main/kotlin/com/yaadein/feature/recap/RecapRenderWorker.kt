@@ -45,9 +45,12 @@ class RecapRenderWorker @AssistedInject constructor(
     private val db: AppDatabase,
     private val mediaStore: MediaStore,
     private val library: ReelLibrary,
+    private val vaultKeys: com.yaadein.data.crypto.VaultKeys,
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
+        // Android restarted the app in the background while the PIN-protected vault is locked: wait for an unlock.
+        if (!vaultKeys.canOpenWithoutUser()) return Result.retry()
         val planFile = inputData.getString(KEY_PLAN_FILE)?.let(::File)
         val planJson = planFile?.takeIf { it.exists() }?.readText() ?: inputData.getString(KEY_PLAN)
             ?: return Result.failure(workDataOf(KEY_ERROR to "missing plan"))

@@ -30,7 +30,10 @@ import androidx.lifecycle.viewModelScope
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.data.crypto.PinManager
 import com.yaadein.data.lock.AppLockState
+import com.yaadein.data.lock.VaultSession
 import com.yaadein.domain.repository.SettingsRepository
+import com.yaadein.domain.settings.LockMethod
+import androidx.compose.material3.TextButton
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +58,7 @@ data class LockSetupUiState(
 
 @HiltViewModel
 class LockSetupViewModel @Inject constructor(
-    private val pinManager: PinManager,
+    private val session: VaultSession,
     private val settingsRepository: SettingsRepository,
     private val lockState: AppLockState,
 ) : ViewModel() {
@@ -81,11 +84,12 @@ class LockSetupViewModel @Inject constructor(
                 if (pin == _state.value.firstPin) {
                     viewModelScope.launch {
                         _state.update { it.copy(saving = true) }
-                        withContext(Dispatchers.Default) { pinManager.setPin(pin) }
+                        // Seals the vault keys with the new PIN (Argon2id + Keystore). Changing the PIN keeps the keys.
+                        withContext(Dispatchers.Default) { session.setPin(pin) }
                         // The user has just proven the PIN: unlock before the overlay could appear
                         // (it shows as soon as pinConfigured becomes true while the vault is locked).
                         lockState.unlock()
-                        settingsRepository.update { it.copy(pinConfigured = true) }
+                        settingsRepository.update { it.copy(pinConfigured = true, lockMethod = LockMethod.PIN) }
                         _state.update { it.copy(saving = false, pin = "", step = SetupStep.BIOMETRIC) }
                     }
                 } else {
@@ -96,11 +100,24 @@ class LockSetupViewModel @Inject constructor(
         }
     }
 
-    fun finish(biometricAvailable: Boolean) {
+    /** [biometricSealed]: a fingerprint copy of the keys was made (false when declined, unavailable or cancelled). */
+    fun finish(biometricSealed: Boolean) {
         viewModelScope.launch {
-            settingsRepository.update { it.copy(biometricEnabled = biometricAvailable && _state.value.useBiometric) }
+            if (!biometricSealed) withContext(Dispatchers.IO) { session.clearBiometricCopy() }
+            settingsRepository.update { it.copy(biometricEnabled = biometricSealed) }
             lockState.unlock()
             _state.update { it.copy(done = true) }
+        }
+    }
+
+    /** "Use my phone's screen lock instead" (confirmed with the system prompt first). */
+    fun chooseDeviceLock() {
+        viewModelScope.launch {
+            _state.update { it.copy(saving = true) }
+            withContext(Dispatchers.Default) { if (session.isOpen) session.useDeviceLock() }
+            lockState.unlock()
+            settingsRepository.update { it.copy(pinConfigured = true, lockMethod = LockMethod.DEVICE, biometricEnabled = false) }
+            _state.update { it.copy(saving = false, done = true) }
         }
     }
 }
@@ -110,6 +127,8 @@ fun LockSetupRoute(
     biometricAvailable: Boolean,
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
+    biometricLauncher: BiometricLauncher? = null,
+    deviceLockLauncher: DeviceLockLauncher? = null,
     viewModel: LockSetupViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -122,7 +141,17 @@ fun LockSetupRoute(
         onDigit = viewModel::onDigit,
         onBackspace = viewModel::onBackspace,
         onBiometricToggle = viewModel::setBiometric,
-        onFinish = { viewModel.finish(biometricAvailable) },
+        onFinish = {
+            val launcher = biometricLauncher
+            if (biometricAvailable && state.useBiometric && launcher != null) {
+                launcher.enroll(onSuccess = { viewModel.finish(true) }, onError = { viewModel.finish(false) })
+            } else {
+                viewModel.finish(false)
+            }
+        },
+        onUseDeviceLock = deviceLockLauncher?.let { launcher ->
+            { launcher.unlock(onSuccess = viewModel::chooseDeviceLock, onError = {}) }
+        },
         modifier = modifier,
     )
 }
@@ -136,6 +165,8 @@ fun LockSetupScreen(
     onBiometricToggle: (Boolean) -> Unit,
     onFinish: () -> Unit,
     modifier: Modifier = Modifier,
+    /** Null when the phone cannot offer it (Android 10 or older, or no screen lock). */
+    onUseDeviceLock: (() -> Unit)? = null,
 ) {
     val spacing = Yaadein.spacing
     Surface(modifier = modifier.fillMaxSize()) {
@@ -170,6 +201,16 @@ fun LockSetupScreen(
                     )
                     Spacer(Modifier.height(spacing.lg))
                     PinPad(enabled = !state.saving, onDigit = onDigit, onBackspace = onBackspace, onBiometric = null)
+                    if (onUseDeviceLock != null && state.step == SetupStep.CHOOSE) {
+                        Spacer(Modifier.height(spacing.lg))
+                        TextButton(onClick = onUseDeviceLock, enabled = !state.saving) { Text(stringResource(R.string.setup_use_device_lock)) }
+                        Text(
+                            text = stringResource(R.string.setup_device_lock_help),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
                 }
                 SetupStep.BIOMETRIC -> {
                     Text(text = stringResource(R.string.setup_biometric_title), style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() })

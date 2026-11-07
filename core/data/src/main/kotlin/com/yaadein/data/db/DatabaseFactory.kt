@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
-import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 object DatabaseFactory {
     @Volatile private var sqlCipherLoaded = false
@@ -21,13 +20,13 @@ object DatabaseFactory {
     }
 
     /**
-     * Opens the encrypted production database. [rawKey] is the 32-byte key unwrapped from the Keystore;
-     * SQLCipher receives it as a raw key so no KDF runs on the hot path.
+     * Builds the encrypted production database. [rawKey] supplies the 32-byte vault key; SQLCipher receives it as a raw
+     * key so no KDF runs on the hot path. It is called on first use, not here, so the database object can exist while
+     * the vault is locked.
      */
-    fun encrypted(context: Context, rawKey: ByteArray): AppDatabase {
+    fun encrypted(context: Context, rawKey: () -> ByteArray): AppDatabase {
         ensureSqlCipher()
-        val factory = SupportOpenHelperFactory(rawKey)
-        return builder(context, factory).build()
+        return builder(context, DeferredKeyOpenHelperFactory(rawKey)).build()
     }
 
     /** Plain (unencrypted) database used only by JVM/Robolectric tests, where SQLCipher's native library is unavailable. */

@@ -25,4 +25,15 @@
     <string name="setup_biometric_unavailable">This phone has no fingerprint or face unlock set up. You can turn it on later in Settings.</string>
     <string name="setup_biometric_switch">Use fingerprint or face</string>
     <string name="setup_finish">Start remembering</string>
+    <string name="lock_migration_note">Enter your PIN once to switch on stronger protection. After this, only your PIN or fingerprint can open your memories.</string>
+    <string name="lock_biometric_changed">Your fingerprints or face changed. Enter your PIN, then switch fingerprint on again in Settings.</string>
+    <string name="lock_device_subtitle">Unlock with your phone\'s screen lock</string>
+    <string name="lock_device_button">Unlock</string>
+    <string name="lock_device_unavailable">This phone has no screen lock, so Yaadein can\'t stay locked. Set a Yaadein PIN in Settings, Security.</string>
+    <string name="lock_device_open_anyway">Open Yaadein</string>
+    <string name="lock_biometric_enroll_title">Confirm your fingerprint</string>
+    <string name="lock_biometric_enroll_subtitle">So it can open your memories next time</string>
+    <string name="lock_biometric_cancel">Cancel</string>
+    <string name="setup_use_device_lock">Use my phone\'s screen lock instead</string>
+    <string name="setup_device_lock_help">Easier: no new PIN to remember. A Yaadein PIN is stronger, because it also encrypts your memories.</string>
 </resources>

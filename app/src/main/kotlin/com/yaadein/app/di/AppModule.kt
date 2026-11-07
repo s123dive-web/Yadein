@@ -1,6 +1,7 @@
 package com.yaadein.app.di
 
 import android.content.Context
+import com.yaadein.data.crypto.BiometricKeys
 import com.yaadein.data.crypto.PinManager
 import com.yaadein.data.crypto.VaultKeys
 import com.yaadein.data.media.MediaStore
@@ -25,11 +26,13 @@ object AppModule {
     fun vaultWiper(
         @ApplicationContext context: Context,
         keys: VaultKeys,
-        mediaStore: MediaStore,
+        mediaStore: dagger.Lazy<MediaStore>,
         pinManager: PinManager,
+        biometricKeys: BiometricKeys,
     ): VaultWiper = VaultWiper {
         keys.wipe()
-        mediaStore.wipeAll()
+        biometricKeys.delete()
+        mediaStore.get().wipeAll()
         pinManager.clear()
         context.getDatabasePath("yaadein.db").let { db ->
             db.delete()
