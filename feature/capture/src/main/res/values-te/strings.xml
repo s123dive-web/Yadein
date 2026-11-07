@@ -135,4 +135,35 @@
     <string name="import_privacy">అంతా ఈ ఫోన్‌లోనే జరుగుతుంది. zip చదవబడుతుంది, దాని ఫోటోలు ఎన్‌క్రిప్ట్ చేసి Yaadeinలో దాచబడతాయి, కాపీలు తొలగించబడతాయి.</string>
     <string name="import_untitled">ఫోటోలు, %1$s</string>
     <string name="import_chat_title">WhatsAppలో %1$s, %2$s</string>
+
+    <!-- Bulk upload: one memory per year or month -->
+    <string name="hub_bulk">సంవత్సరం లేదా నెల వారీగా బల్క్ అప్‌లోడ్</string>
+    <string name="hub_bulk_sub">చాలా ఫోటోలు ఎంచుకోండి; ప్రతి సంవత్సరానికి లేదా నెలకు ఒక జ్ఞాపకం చేస్తాం.</string>
+    <string name="bulk_title">బల్క్ అప్‌లోడ్</string>
+    <string name="bulk_empty_message">కావలసినన్ని ఫోటోలు ఎంచుకోండి, ప్రతి సంవత్సరానికి లేదా నెలకు ఒక జ్ఞాపకం చేస్తాం.</string>
+    <string name="bulk_inspect_progress">%2$d లో %1$d</string>
+    <string name="bulk_add_more">మరిన్ని ఫోటోలు జోడించండి</string>
+    <string name="bulk_split_label">ప్రతి దానికి ఒక జ్ఞాపకం</string>
+    <string name="bulk_split_month">నెల</string>
+    <string name="bulk_split_year">సంవత్సరం</string>
+    <string name="bulk_filter_years">ఈ సంవత్సరాలు మాత్రమే</string>
+    <string name="bulk_filter_months">ఈ నెలలు మాత్రమే</string>
+    <string name="bulk_filter_hint">అన్ని ఫోటోలు ఉంచడానికి రెండూ ఖాళీగా వదలండి. 2023 మాత్రమే కావాలంటే 2023; ప్రతి డిసెంబర్‌కు డిసెంబర్ ఎంచుకోండి.</string>
+    <string name="bulk_reset">రీసెట్</string>
+    <string name="bulk_nothing_matches">ఈ సంవత్సరాలు, నెలల ఫోటోలు ఏవీ లేవు.</string>
+    <string name="bulk_more_count">+%1$d</string>
+    <string name="bulk_people">ఈ ఫోటోల్లో ఎవరున్నారు? (ప్రతి జ్ఞాపకానికీ జోడించబడుతుంది)</string>
+    <string name="bulk_undated_sub">వీటిని ఒకే జ్ఞాపకంగా సేవ్ చేసి దాని తేదీ ఎంచుకోండి.</string>
+    <plurals name="bulk_will_create">
+        <item quantity="one">%1$d జ్ఞాపకం సృష్టించబడుతుంది</item>
+        <item quantity="other">%1$d జ్ఞాపకాలు సృష్టించబడతాయి</item>
+    </plurals>
+    <plurals name="bulk_filtered_out">
+        <item quantity="one">ఫిల్టర్ వల్ల %1$d ఫోటో వదిలివేయబడింది</item>
+        <item quantity="other">ఫిల్టర్ వల్ల %1$d ఫోటోలు వదిలివేయబడ్డాయి</item>
+    </plurals>
+    <plurals name="bulk_undated">
+        <item quantity="one">%1$d ఫోటోకు తేదీ లేదు</item>
+        <item quantity="other">%1$d ఫోటోలకు తేదీ లేదు</item>
+    </plurals>
 </resources>

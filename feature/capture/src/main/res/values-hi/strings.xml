@@ -135,4 +135,35 @@
     <string name="import_privacy">सब कुछ इसी फ़ोन पर होता है। zip पढ़ी जाती है, उसकी फ़ोटो Yaadein में एन्क्रिप्ट होती हैं, और कॉपियाँ मिटा दी जाती हैं।</string>
     <string name="import_untitled">फ़ोटो, %1$s</string>
     <string name="import_chat_title">WhatsApp पर %1$s, %2$s</string>
+
+    <!-- Bulk upload: one memory per year or month -->
+    <string name="hub_bulk">साल या महीने के हिसाब से बल्क अपलोड</string>
+    <string name="hub_bulk_sub">ढेर सारी फ़ोटो चुनें; हम हर साल या हर महीने की एक याद बनाएँगे।</string>
+    <string name="bulk_title">बल्क अपलोड</string>
+    <string name="bulk_empty_message">जितनी चाहें फ़ोटो चुनें, हम हर साल या महीने की एक याद बनाएँगे।</string>
+    <string name="bulk_inspect_progress">%2$d में से %1$d</string>
+    <string name="bulk_add_more">और फ़ोटो जोड़ें</string>
+    <string name="bulk_split_label">हर एक के लिए एक याद बनाएँ</string>
+    <string name="bulk_split_month">महीना</string>
+    <string name="bulk_split_year">साल</string>
+    <string name="bulk_filter_years">सिर्फ़ ये साल</string>
+    <string name="bulk_filter_months">सिर्फ़ ये महीने</string>
+    <string name="bulk_filter_hint">सारी फ़ोटो रखने के लिए दोनों खाली छोड़ें। सिर्फ़ 2023 रखने के लिए 2023 चुनें; हर दिसंबर के लिए दिसंबर चुनें।</string>
+    <string name="bulk_reset">रीसेट</string>
+    <string name="bulk_nothing_matches">इन सालों और महीनों की कोई फ़ोटो नहीं है।</string>
+    <string name="bulk_more_count">+%1$d</string>
+    <string name="bulk_people">इन फ़ोटो में कौन है? (हर याद में जुड़ेगा)</string>
+    <string name="bulk_undated_sub">इन्हें एक याद में सहेजें और उसकी तारीख चुनें।</string>
+    <plurals name="bulk_will_create">
+        <item quantity="one">%1$d याद बनेगी</item>
+        <item quantity="other">%1$d यादें बनेंगी</item>
+    </plurals>
+    <plurals name="bulk_filtered_out">
+        <item quantity="one">फ़िल्टर से %1$d फ़ोटो छूटी</item>
+        <item quantity="other">फ़िल्टर से %1$d फ़ोटो छूटीं</item>
+    </plurals>
+    <plurals name="bulk_undated">
+        <item quantity="one">%1$d फ़ोटो की कोई तारीख नहीं है</item>
+        <item quantity="other">%1$d फ़ोटो की कोई तारीख नहीं है</item>
+    </plurals>
 </resources>

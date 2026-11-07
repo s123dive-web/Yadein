@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Collections
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
@@ -54,6 +55,8 @@ data class CaptureActions(
     val onPastWizard: () -> Unit,
     /** Record a voice memory (null hides it). */
     val onVoice: (() -> Unit)? = null,
+    /** Pick many photos and make one memory per year or month (null hides it). */
+    val onBulk: (() -> Unit)? = null,
     /** Bring in a Google Photos or WhatsApp export (null hides it). */
     val onImport: (() -> Unit)? = null,
 )
@@ -83,6 +86,7 @@ fun CaptureHubContent(actions: CaptureActions, modifier: Modifier = Modifier, in
             BigOption(Icons.Rounded.PhotoLibrary, stringResource(R.string.hub_photos), stringResource(R.string.hub_photos_short), actions.onPhotos, primary = true, modifier = Modifier.weight(1f).fillMaxHeight())
             BigOption(Icons.Rounded.Bolt, stringResource(R.string.hub_quick), stringResource(R.string.hub_quick_short), actions.onQuick, primary = false, modifier = Modifier.weight(1f).fillMaxHeight())
         }
+        actions.onBulk?.let { HubOption(Icons.Rounded.Collections, stringResource(R.string.hub_bulk), stringResource(R.string.hub_bulk_sub), onClick = it) }
         actions.onVoice?.let { HubOption(Icons.Rounded.Mic, stringResource(R.string.hub_voice), stringResource(R.string.hub_voice_sub), onClick = it) }
         TextButton(onClick = { more = !more }, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(if (more) R.string.hub_fewer else R.string.hub_more))

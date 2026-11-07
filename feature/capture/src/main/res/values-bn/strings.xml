@@ -135,4 +135,35 @@
     <string name="import_privacy">সবকিছু এই ফোনেই হয়। zip পড়া হয়, ছবিগুলো এনক্রিপ্ট করে Yaadein-এ রাখা হয়, আর কপিগুলো মুছে ফেলা হয়।</string>
     <string name="import_untitled">ছবি, %1$s</string>
     <string name="import_chat_title">WhatsApp-এ %1$s, %2$s</string>
+
+    <!-- Bulk upload: one memory per year or month -->
+    <string name="hub_bulk">বছর বা মাস অনুযায়ী একসাথে আপলোড</string>
+    <string name="hub_bulk_sub">অনেক ছবি বেছে নিন; আমরা প্রতি বছর বা প্রতি মাসের একটি স্মৃতি বানাব।</string>
+    <string name="bulk_title">একসাথে আপলোড</string>
+    <string name="bulk_empty_message">যত খুশি ছবি বেছে নিন, আমরা প্রতি বছর বা মাসের একটি স্মৃতি বানাব।</string>
+    <string name="bulk_inspect_progress">%2$d-এর মধ্যে %1$d</string>
+    <string name="bulk_add_more">আরও ছবি যোগ করুন</string>
+    <string name="bulk_split_label">প্রতিটির জন্য একটি স্মৃতি</string>
+    <string name="bulk_split_month">মাস</string>
+    <string name="bulk_split_year">বছর</string>
+    <string name="bulk_filter_years">শুধু এই বছরগুলো</string>
+    <string name="bulk_filter_months">শুধু এই মাসগুলো</string>
+    <string name="bulk_filter_hint">সব ছবি রাখতে দুটোই ফাঁকা রাখুন। শুধু 2023 রাখতে 2023 বাছুন; প্রতি ডিসেম্বরের জন্য ডিসেম্বর বাছুন।</string>
+    <string name="bulk_reset">রিসেট</string>
+    <string name="bulk_nothing_matches">এই বছর ও মাসের কোনো ছবি নেই।</string>
+    <string name="bulk_more_count">+%1$d</string>
+    <string name="bulk_people">এই ছবিগুলোতে কে আছেন? (প্রতিটি স্মৃতিতে যোগ হবে)</string>
+    <string name="bulk_undated_sub">এগুলো একটি স্মৃতিতে সংরক্ষণ করুন এবং তারিখ বাছুন।</string>
+    <plurals name="bulk_will_create">
+        <item quantity="one">%1$dটি স্মৃতি তৈরি হবে</item>
+        <item quantity="other">%1$dটি স্মৃতি তৈরি হবে</item>
+    </plurals>
+    <plurals name="bulk_filtered_out">
+        <item quantity="one">ফিল্টারে %1$dটি ছবি বাদ গেছে</item>
+        <item quantity="other">ফিল্টারে %1$dটি ছবি বাদ গেছে</item>
+    </plurals>
+    <plurals name="bulk_undated">
+        <item quantity="one">%1$dটি ছবির কোনো তারিখ নেই</item>
+        <item quantity="other">%1$dটি ছবির কোনো তারিখ নেই</item>
+    </plurals>
 </resources>

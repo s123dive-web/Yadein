@@ -75,6 +75,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
         onPastWizard = { hubOpen = false; navController.navigate(Route.PastWizard) },
         onVoice = { hubOpen = false; navController.navigate(Route.VoiceCapture()) },
         onImport = { hubOpen = false; navController.navigate(Route.ImportExport) },
+        onBulk = { hubOpen = false; navController.navigate(Route.BulkUpload) },
     )
 
     val content: @Composable (PaddingValues) -> Unit = { padding ->

@@ -193,7 +193,7 @@ RootGraph
     ├── Timeline            (filters sheet, search bar) ──► MemoryDetail(id) ──► MediaViewer(memoryId, index)
     ├── People              ──► PersonDetail(id) ──► Together(ids) / YearlySummary(personId, year)
     │                       ──► PersonEdit(id?) / GroupEdit(id?) / RelationshipsMap
-    ├── Create (hub sheet)  ──► EventCapture(memoryId?) / PhotoFirst / TextOnly / QuickCapture / PastWizard
+    ├── Create (hub sheet)  ──► EventCapture(memoryId?) / PhotoFirst / TextOnly / QuickCapture / PastWizard / BulkUpload
     ├── Relive              ──► OnThisDay / RandomMemory(shake) / YearlySummary / RecapSetup
     │                       RecapSetup ──► RecapPreview ──► (WorkManager render) ──► share sheet
     └── Settings            ──► Appearance / Security / Storage / Backup / Notifications / Faces / Privacy / About / CrashLog
@@ -754,3 +754,19 @@ with a 2.0 s cold-start guard (CI emulator medians 1.0–1.7 s), and prints and 
 walkthrough on a phone; GPS-based places need a bundled offline city list (the GeoNames host was not reachable here);
 Play Billing for Plus is planned, not built.
 
+### Bulk upload by year or month (owner: "bulk photo upload, filter by year or month, one memory per split")
+
+- Create hub → **Bulk upload by year or month** (always visible, under the two big options) → `Route.BulkUpload` →
+  `BulkUploadRoute` (`feature/capture/BulkUploadScreen.kt`, `BulkUploadViewModel`).
+- Photo Picker with no `maxItems` (the system maximum); **Add more photos** adds further picks, de-duplicated by URI,
+  so a library larger than one pick can be brought in. Same `inspect` + `checkLimit` + `RejectedDialog` as photo-first.
+- Split: **Month** (default) or **Year** (segmented button). Filter: chips for the years found in the picked photos and
+  the twelve months; empty means keep everything, years × months combine ("2023" → only 2023; "December" → every
+  December; both → December 2023). The summary says how many memories will be created and how many photos the filter
+  left out; each memory card shows its period, count, thumbnails and an editable title, and can be removed (Reset
+  brings removed ones back and clears the filter). Edited titles survive filter changes (keyed by "2024" / "2024-03").
+- Dates: `Dates.month(YearMonth)` / `Dates.year(year)` (MONTH / YEAR kinds). Undated photos are listed separately and
+  are saved as one extra memory with a user-chosen date only when switched on. People picked at the bottom are tagged
+  on every created memory. Saving creates each memory then `ImportCoordinator.enqueue`s its media; lands on Home.
+- Pure logic: `core/domain/grouping/PeriodGrouper` (`SplitBy`, `PeriodFilter`, `PeriodBucket`, `PeriodSplit`), tested in
+  `PeriodGrouperTest`. Strings in all eight locales (`hub_bulk*`, `bulk_*`; non-English ones machine-assisted).

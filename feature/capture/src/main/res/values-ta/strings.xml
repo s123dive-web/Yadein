@@ -135,4 +135,35 @@
     <string name="import_privacy">அனைத்தும் இந்த ஃபோனிலேயே நடக்கும். zip படிக்கப்பட்டு, அதன் படங்கள் Yaadein-இல் மறையாக்கம் செய்யப்பட்டு, நகல்கள் நீக்கப்படும்.</string>
     <string name="import_untitled">படங்கள், %1$s</string>
     <string name="import_chat_title">WhatsApp-இல் %1$s, %2$s</string>
+
+    <!-- Bulk upload: one memory per year or month -->
+    <string name="hub_bulk">ஆண்டு அல்லது மாதம் வாரியாக மொத்தப் பதிவேற்றம்</string>
+    <string name="hub_bulk_sub">நிறைய புகைப்படங்களைத் தேர்ந்தெடுங்கள்; ஒவ்வொரு ஆண்டுக்கும் அல்லது மாதத்துக்கும் ஒரு நினைவு உருவாக்குவோம்.</string>
+    <string name="bulk_title">மொத்தப் பதிவேற்றம்</string>
+    <string name="bulk_empty_message">எத்தனை புகைப்படங்கள் வேண்டுமானாலும் தேர்ந்தெடுங்கள்; ஒவ்வொரு ஆண்டுக்கும் அல்லது மாதத்துக்கும் ஒரு நினைவு உருவாக்குவோம்.</string>
+    <string name="bulk_inspect_progress">%2$d இல் %1$d</string>
+    <string name="bulk_add_more">மேலும் புகைப்படங்கள் சேர்</string>
+    <string name="bulk_split_label">ஒவ்வொன்றுக்கும் ஒரு நினைவு</string>
+    <string name="bulk_split_month">மாதம்</string>
+    <string name="bulk_split_year">ஆண்டு</string>
+    <string name="bulk_filter_years">இந்த ஆண்டுகள் மட்டும்</string>
+    <string name="bulk_filter_months">இந்த மாதங்கள் மட்டும்</string>
+    <string name="bulk_filter_hint">எல்லா புகைப்படங்களையும் வைக்க இரண்டையும் காலியாக விடுங்கள். 2023 மட்டும் வேண்டுமெனில் 2023; ஒவ்வொரு டிசம்பருக்கும் டிசம்பர் தேர்ந்தெடுங்கள்.</string>
+    <string name="bulk_reset">மீட்டமை</string>
+    <string name="bulk_nothing_matches">இந்த ஆண்டுகள், மாதங்களில் புகைப்படங்கள் இல்லை.</string>
+    <string name="bulk_more_count">+%1$d</string>
+    <string name="bulk_people">இந்தப் புகைப்படங்களில் யார் இருக்கிறார்கள்? (ஒவ்வொரு நினைவிலும் சேர்க்கப்படும்)</string>
+    <string name="bulk_undated_sub">இவற்றை ஒரே நினைவாகச் சேமித்து அதன் தேதியைத் தேர்ந்தெடுங்கள்.</string>
+    <plurals name="bulk_will_create">
+        <item quantity="one">%1$d நினைவு உருவாக்கப்படும்</item>
+        <item quantity="other">%1$d நினைவுகள் உருவாக்கப்படும்</item>
+    </plurals>
+    <plurals name="bulk_filtered_out">
+        <item quantity="one">வடிகட்டியால் %1$d புகைப்படம் விடுபட்டது</item>
+        <item quantity="other">வடிகட்டியால் %1$d புகைப்படங்கள் விடுபட்டன</item>
+    </plurals>
+    <plurals name="bulk_undated">
+        <item quantity="one">%1$d புகைப்படத்துக்குத் தேதி இல்லை</item>
+        <item quantity="other">%1$d புகைப்படங்களுக்குத் தேதி இல்லை</item>
+    </plurals>
 </resources>

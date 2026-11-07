@@ -135,4 +135,35 @@
     <string name="import_privacy">ಎಲ್ಲವೂ ಈ ಫೋನ್‌ನಲ್ಲೇ ನಡೆಯುತ್ತದೆ. zip ಅನ್ನು ಓದಿ, ಅದರ ಫೋಟೋಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ Yaadein ಗೆ ಸೇರಿಸಲಾಗುತ್ತದೆ, ಮತ್ತು ಪ್ರತಿಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</string>
     <string name="import_untitled">ಫೋಟೋಗಳು, %1$s</string>
     <string name="import_chat_title">WhatsApp ನಲ್ಲಿ %1$s, %2$s</string>
+
+    <!-- Bulk upload: one memory per year or month -->
+    <string name="hub_bulk">ವರ್ಷ ಅಥವಾ ತಿಂಗಳ ಪ್ರಕಾರ ಬಲ್ಕ್ ಅಪ್‌ಲೋಡ್</string>
+    <string name="hub_bulk_sub">ಹಲವು ಫೋಟೋಗಳನ್ನು ಆರಿಸಿ; ಪ್ರತಿ ವರ್ಷ ಅಥವಾ ತಿಂಗಳಿಗೆ ಒಂದು ನೆನಪು ಮಾಡುತ್ತೇವೆ.</string>
+    <string name="bulk_title">ಬಲ್ಕ್ ಅಪ್‌ಲೋಡ್</string>
+    <string name="bulk_empty_message">ಬೇಕಾದಷ್ಟು ಫೋಟೋಗಳನ್ನು ಆರಿಸಿ, ಪ್ರತಿ ವರ್ಷ ಅಥವಾ ತಿಂಗಳಿಗೆ ಒಂದು ನೆನಪು ಮಾಡುತ್ತೇವೆ.</string>
+    <string name="bulk_inspect_progress">%2$d ರಲ್ಲಿ %1$d</string>
+    <string name="bulk_add_more">ಇನ್ನಷ್ಟು ಫೋಟೋ ಸೇರಿಸಿ</string>
+    <string name="bulk_split_label">ಪ್ರತಿಯೊಂದಕ್ಕೂ ಒಂದು ನೆನಪು</string>
+    <string name="bulk_split_month">ತಿಂಗಳು</string>
+    <string name="bulk_split_year">ವರ್ಷ</string>
+    <string name="bulk_filter_years">ಈ ವರ್ಷಗಳು ಮಾತ್ರ</string>
+    <string name="bulk_filter_months">ಈ ತಿಂಗಳುಗಳು ಮಾತ್ರ</string>
+    <string name="bulk_filter_hint">ಎಲ್ಲ ಫೋಟೋ ಇಡಲು ಎರಡನ್ನೂ ಖಾಲಿ ಬಿಡಿ. 2023 ಮಾತ್ರಕ್ಕೆ 2023 ಆರಿಸಿ; ಪ್ರತಿ ಡಿಸೆಂಬರ್‌ಗೆ ಡಿಸೆಂಬರ್ ಆರಿಸಿ.</string>
+    <string name="bulk_reset">ಮರುಹೊಂದಿಸಿ</string>
+    <string name="bulk_nothing_matches">ಈ ವರ್ಷ ಮತ್ತು ತಿಂಗಳುಗಳ ಯಾವುದೇ ಫೋಟೋ ಇಲ್ಲ.</string>
+    <string name="bulk_more_count">+%1$d</string>
+    <string name="bulk_people">ಈ ಫೋಟೋಗಳಲ್ಲಿ ಯಾರಿದ್ದಾರೆ? (ಪ್ರತಿ ನೆನಪಿಗೂ ಸೇರುತ್ತದೆ)</string>
+    <string name="bulk_undated_sub">ಇವನ್ನು ಒಂದು ನೆನಪಾಗಿ ಉಳಿಸಿ ಮತ್ತು ದಿನಾಂಕ ಆರಿಸಿ.</string>
+    <plurals name="bulk_will_create">
+        <item quantity="one">%1$d ನೆನಪು ರಚನೆಯಾಗುತ್ತದೆ</item>
+        <item quantity="other">%1$d ನೆನಪುಗಳು ರಚನೆಯಾಗುತ್ತವೆ</item>
+    </plurals>
+    <plurals name="bulk_filtered_out">
+        <item quantity="one">ಫಿಲ್ಟರ್‌ನಿಂದ %1$d ಫೋಟೋ ಹೊರಗುಳಿದಿದೆ</item>
+        <item quantity="other">ಫಿಲ್ಟರ್‌ನಿಂದ %1$d ಫೋಟೋಗಳು ಹೊರಗುಳಿದಿವೆ</item>
+    </plurals>
+    <plurals name="bulk_undated">
+        <item quantity="one">%1$d ಫೋಟೋಗೆ ದಿನಾಂಕ ಇಲ್ಲ</item>
+        <item quantity="other">%1$d ಫೋಟೋಗಳಿಗೆ ದಿನಾಂಕ ಇಲ್ಲ</item>
+    </plurals>
 </resources>

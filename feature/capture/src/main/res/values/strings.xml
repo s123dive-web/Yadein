@@ -135,4 +135,35 @@
     <string name="import_privacy">Everything happens on this phone. The zip is read, its photos are encrypted into Yaadein, and the copies are deleted.</string>
     <string name="import_untitled">Photos, %1$s</string>
     <string name="import_chat_title">%1$s on WhatsApp, %2$s</string>
+
+    <!-- Bulk upload: one memory per year or month -->
+    <string name="hub_bulk">Bulk upload by year or month</string>
+    <string name="hub_bulk_sub">Pick lots of photos; we make one memory per year or per month.</string>
+    <string name="bulk_title">Bulk upload</string>
+    <string name="bulk_empty_message">Pick as many photos as you like and we\'ll make one memory for each year or month.</string>
+    <string name="bulk_inspect_progress">%1$d of %2$d</string>
+    <string name="bulk_add_more">Add more photos</string>
+    <string name="bulk_split_label">Make one memory per</string>
+    <string name="bulk_split_month">Month</string>
+    <string name="bulk_split_year">Year</string>
+    <string name="bulk_filter_years">Only these years</string>
+    <string name="bulk_filter_months">Only these months</string>
+    <string name="bulk_filter_hint">Leave both empty to keep every photo. Pick 2023 to keep only 2023; pick December to keep every December.</string>
+    <string name="bulk_reset">Reset</string>
+    <string name="bulk_nothing_matches">No photos match these years and months.</string>
+    <string name="bulk_more_count">+%1$d</string>
+    <string name="bulk_people">Who is in these photos? (added to every memory)</string>
+    <string name="bulk_undated_sub">Save them together as one memory and pick its date.</string>
+    <plurals name="bulk_will_create">
+        <item quantity="one">%1$d memory will be created</item>
+        <item quantity="other">%1$d memories will be created</item>
+    </plurals>
+    <plurals name="bulk_filtered_out">
+        <item quantity="one">%1$d photo left out by the filter</item>
+        <item quantity="other">%1$d photos left out by the filter</item>
+    </plurals>
+    <plurals name="bulk_undated">
+        <item quantity="one">%1$d photo has no date</item>
+        <item quantity="other">%1$d photos have no date</item>
+    </plurals>
 </resources>

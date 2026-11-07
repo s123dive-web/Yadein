@@ -24,6 +24,7 @@ import com.yaadein.app.BuildConfig
 import com.yaadein.feature.settings.AboutRoute
 import com.yaadein.feature.settings.AppearanceRoute
 import com.yaadein.feature.settings.StorageRoute
+import com.yaadein.feature.capture.BulkUploadRoute
 import com.yaadein.feature.capture.EventCaptureRoute
 import com.yaadein.feature.capture.PastWizardRoute
 import com.yaadein.feature.capture.PhotoFirstRoute
@@ -152,6 +153,14 @@ fun AppNavHost(
             PhotoFirstRoute(
                 onBack = { navController.popBackStack() },
                 onDone = { first -> if (first != null) navController.navigate(Route.MemoryDetail(first)) { popUpTo<Route.Home>() } else navController.popBackStack() },
+                onAddPerson = { navController.navigate(Route.PersonEdit()) },
+            )
+        }
+        composable<Route.BulkUpload> {
+            BulkUploadRoute(
+                onBack = { navController.popBackStack() },
+                // Several memories are created; land on the timeline so all of them are visible.
+                onDone = { navController.popBackStack() },
                 onAddPerson = { navController.navigate(Route.PersonEdit()) },
             )
         }

@@ -135,4 +135,35 @@
     <string name="import_privacy">सर्व काही याच फोनवर होते. zip वाचली जाते, त्यातील फोटो Yaadein मध्ये एन्क्रिप्ट होतात आणि प्रती हटवल्या जातात.</string>
     <string name="import_untitled">फोटो, %1$s</string>
     <string name="import_chat_title">WhatsApp वर %1$s, %2$s</string>
+
+    <!-- Bulk upload: one memory per year or month -->
+    <string name="hub_bulk">वर्ष किंवा महिन्यानुसार बल्क अपलोड</string>
+    <string name="hub_bulk_sub">भरपूर फोटो निवडा; आम्ही प्रत्येक वर्षाची किंवा महिन्याची एक आठवण बनवू.</string>
+    <string name="bulk_title">बल्क अपलोड</string>
+    <string name="bulk_empty_message">हवे तितके फोटो निवडा, आम्ही प्रत्येक वर्षाची किंवा महिन्याची एक आठवण बनवू.</string>
+    <string name="bulk_inspect_progress">%2$d पैकी %1$d</string>
+    <string name="bulk_add_more">आणखी फोटो जोडा</string>
+    <string name="bulk_split_label">प्रत्येकासाठी एक आठवण</string>
+    <string name="bulk_split_month">महिना</string>
+    <string name="bulk_split_year">वर्ष</string>
+    <string name="bulk_filter_years">फक्त ही वर्षे</string>
+    <string name="bulk_filter_months">फक्त हे महिने</string>
+    <string name="bulk_filter_hint">सर्व फोटो ठेवण्यासाठी दोन्ही रिकामे ठेवा. फक्त 2023 साठी 2023 निवडा; प्रत्येक डिसेंबरसाठी डिसेंबर निवडा.</string>
+    <string name="bulk_reset">रीसेट</string>
+    <string name="bulk_nothing_matches">या वर्षांचे आणि महिन्यांचे कोणतेही फोटो नाहीत.</string>
+    <string name="bulk_more_count">+%1$d</string>
+    <string name="bulk_people">या फोटोंमध्ये कोण आहे? (प्रत्येक आठवणीत जोडले जाईल)</string>
+    <string name="bulk_undated_sub">त्यांना एका आठवणीत जतन करा आणि तिची तारीख निवडा.</string>
+    <plurals name="bulk_will_create">
+        <item quantity="one">%1$d आठवण बनेल</item>
+        <item quantity="other">%1$d आठवणी बनतील</item>
+    </plurals>
+    <plurals name="bulk_filtered_out">
+        <item quantity="one">फिल्टरमुळे %1$d फोटो वगळला</item>
+        <item quantity="other">फिल्टरमुळे %1$d फोटो वगळले</item>
+    </plurals>
+    <plurals name="bulk_undated">
+        <item quantity="one">%1$d फोटोला तारीख नाही</item>
+        <item quantity="other">%1$d फोटोंना तारीख नाही</item>
+    </plurals>
 </resources>

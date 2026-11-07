@@ -19,6 +19,8 @@ sealed interface Route {
     /** [fromShare]: attach the photos/videos waiting in SharedMediaInbox (Share → Yaadein). */
     @Serializable data class EventCapture(val memoryId: Long = 0L, val fromShare: Boolean = false) : Route
     @Serializable data object PhotoFirst : Route
+    /** Bulk upload: one memory per year or month of the picked photos. */
+    @Serializable data object BulkUpload : Route
     @Serializable data object TextOnly : Route
     @Serializable data object QuickCapture : Route
     @Serializable data object PastWizard : Route
