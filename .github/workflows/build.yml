@@ -35,6 +35,24 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Unit tests
         run: ./gradlew testDebugUnitTest :core:domain:test --no-daemon --stacktrace
+      # Diagnostics for the intermittent "Cannot create an instance of PeopleViewModel" smoke-test failure:
+      # shows whether Hilt generated (and aggregated) the ViewModel modules for feature:people in this run.
+      - name: Hilt ViewModel diagnostics
+        if: failure()
+        run: |
+          echo "--- KSP output for PeopleViewModel / ReliveViewModel"
+          find feature -path '*/build/generated/ksp/*' \( -name 'PeopleViewModel*' -o -name 'ReliveViewModel*' \) | sort
+          echo "--- hilt_aggregated_deps mentioning PeopleViewModel"
+          grep -rl "PeopleViewModel" --include='*.java' feature/people/build/generated/ksp || echo "none"
+          echo "--- compiled key/binds module classes for PeopleViewModel"
+          find feature/people/build -name 'PeopleViewModel_HiltModules*.class' | sort || true
+          echo "--- PeopleViewModel / ReliveViewModel references in the app unit-test Hilt component"
+          for vm in PeopleViewModel ReliveViewModel TimelineViewModel; do
+            n=$(grep -rho "$vm" app/build/generated/hilt/component_sources/debugUnitTest 2>/dev/null | wc -l)
+            echo "$vm: $n"
+          done
+          echo "--- feature:people KSP log lines"
+          ls -la feature/people/build/generated/ksp/debug/java/hilt_aggregated_deps 2>/dev/null || echo "no hilt_aggregated_deps dir"
       - name: Zero-network guard
         run: ./gradlew :app:verifyNoNetworkPermissionDebug :app:verifyNoNetworkPermissionBeta --no-daemon --stacktrace
       - name: Lint
