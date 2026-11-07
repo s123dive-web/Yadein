@@ -23,6 +23,12 @@ public struct Framing: Hashable, Codable, Sendable {
     public let cx: Float
     public let cy: Float
     public let zoom: Float
+
+    public init(cx: Float, cy: Float, zoom: Float) {
+        self.cx = cx
+        self.cy = cy
+        self.zoom = zoom
+    }
 }
 
 public enum RecapSegment: Hashable, Codable, Sendable {
