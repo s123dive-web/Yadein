@@ -55,6 +55,13 @@ jobs:
             ./gradlew :core:data:connectedDebugAndroidTest --no-daemon
             ./gradlew :feature:recap:connectedDebugAndroidTest --no-daemon || echo "::warning::reel rendering test failed (slow emulator?)"
             ./gradlew :benchmark:connectedBenchmarkAndroidTest --no-daemon
+      # The artifact store may be unreachable from where the profile is reviewed, so the profile is also printed here
+      # between markers; copy it into app/src/main/baseline-prof.txt (docs/PERFORMANCE.md).
+      - name: Print the generated baseline profile
+        if: always()
+        run: |
+          f=$(find benchmark/build/outputs -name '*BaselineProfileGenerator*baseline-prof*.txt' | head -1)
+          if [ -n "$f" ]; then echo "PROFILE-BEGIN $(wc -l < "$f") lines"; cat "$f"; echo "PROFILE-END"; else echo "no profile generated"; fi
       - name: Check the startup budget
         run: |
           python3 - <<'PY'

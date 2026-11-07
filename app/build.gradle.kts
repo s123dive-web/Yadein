@@ -76,6 +76,7 @@ android {
         // For Macrobenchmark / baseline-profile generation on CI only: the beta build plus <profileable>.
         create("benchmark") {
             initWith(getByName("beta"))
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro", "benchmark-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += listOf("release")
             buildConfigField("boolean", "SIDELOAD_UPDATES", "false")
