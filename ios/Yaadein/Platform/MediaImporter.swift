@@ -50,7 +50,7 @@ enum ImportRejection: Error, Equatable {
         case .videoTooLarge: return L("reject_video_too_large")
         case .unsupported: return L("reject_unsupported")
         case .unreadable: return L("reject_unreadable")
-        case .noSpace: return L("reject_no_space")
+        case .noSpace: return L("reject_no_space", "50 MB")
         }
     }
 }

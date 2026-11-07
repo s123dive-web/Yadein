@@ -25,10 +25,8 @@ targets:
     sources:
       - path: Yaadein
       - path: ../core/ui/src/main/res/font
-        group: SharedWithAndroid/Fonts
         buildPhase: resources
       - path: ../feature/recap/src/main/res/raw
-        group: SharedWithAndroid/Music
         buildPhase: resources
     dependencies:
       - package: YaadeinKit
