@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timeline_title">ಕಾಲರೇಖೆ</string>
+    <string name="timeline_search">ನೆನಪುಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="timeline_search_hint">ಜನರು, ಸ್ಥಳಗಳು, ಪದಗಳನ್ನು ಹುಡುಕಿ…</string>
+    <string name="timeline_filters">ಫಿಲ್ಟರ್‌ಗಳು</string>
+    <string name="timeline_clear_filters">ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತೆಗೆಯಿರಿ</string>
+    <string name="timeline_empty_title">ನಿಮ್ಮ ಕಥೆ ಇಲ್ಲಿಂದ ಶುರು</string>
+    <string name="timeline_empty_message">ನೀವು ನೆನಪಿಡಬೇಕೆನ್ನುವ ದಿನದ ಬಗ್ಗೆ ಒಂದು ಫೋಟೋ, ವೀಡಿಯೊ ಅಥವಾ ಒಂದು ಸಾಲು ಸೇರಿಸಿ. ಎಲ್ಲವೂ ಈ ಫೋನ್‌ನಲ್ಲೇ ಇರುತ್ತದೆ.</string>
+    <string name="timeline_empty_action">ನಿಮ್ಮ ಮೊದಲ ನೆನಪು ಸೇರಿಸಿ</string>
+    <string name="timeline_no_results_title">ಇನ್ನೂ ಏನೂ ಹೊಂದುತ್ತಿಲ್ಲ</string>
+    <string name="timeline_no_results_message">ಬೇರೆ ಪದ, ವ್ಯಕ್ತಿ ಅಥವಾ ಸ್ಥಳದಿಂದ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="sidebar_show">ತೋರಿಸಿ</string>
+    <string name="sidebar_all">ಎಲ್ಲಾ</string>
+    <string name="sidebar_photos">ಫೋಟೋಗಳಿರುವವು</string>
+    <string name="sidebar_stories">ಕಥೆಗಳು</string>
+    <string name="sidebar_people">ಜನರು</string>
+    <string name="filter_people">ಜನರು</string>
+    <string name="filter_all_together">ಎಲ್ಲರೂ ಇರುವ ನೆನಪುಗಳು ಮಾತ್ರ</string>
+    <string name="filter_groups">ಗುಂಪುಗಳು</string>
+    <string name="filter_places">ಸ್ಥಳಗಳು</string>
+    <string name="filter_type">ಬಗೆ</string>
+    <string name="filter_quick">ಚಿಕ್ಕ ಟಿಪ್ಪಣಿಗಳು</string>
+    <string name="filter_dates">ದಿನಾಂಕಗಳು</string>
+    <string name="filter_from">ಇಂದ</string>
+    <string name="filter_to">ವರೆಗೆ</string>
+    <string name="filter_apply">ನೆನಪುಗಳನ್ನು ತೋರಿಸಿ</string>
+    <string name="timeline_about">Yaadein ಬಗ್ಗೆ</string>
+    <string name="timeline_layout">ವಿನ್ಯಾಸ: %1$s. ಬದಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</string>
+    <string name="timeline_layout_cards">ದೊಡ್ಡ ಕಾರ್ಡ್‌ಗಳು</string>
+    <string name="timeline_layout_compact">ಚಿಕ್ಕ ಪಟ್ಟಿ</string>
+    <string name="timeline_layout_grid">ಫೋಟೋ ಗ್ರಿಡ್</string>
+</resources>

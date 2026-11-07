@@ -32,7 +32,8 @@ reviewed or reverted in isolation.
 - 100% on-device. **No INTERNET permission**, no analytics, no crash SDKs, no ads, no accounts.
   A unit test fails the build if `android.permission.INTERNET` appears in the merged manifest.
 - Only these permissions: `USE_BIOMETRIC`, `POST_NOTIFICATIONS`, `CAMERA` (optional, in-app capture),
-  `VIBRATE`. Photo Picker is used for import (no storage permissions ever).
+  `RECORD_AUDIO` (voice memories, only while the user records), `VIBRATE`. Photo Picker is used for import (no storage
+  permissions ever). Sideloaded builds (debug/beta) add `REQUEST_INSTALL_PACKAGES` for Settings → Update app.
 - No hardcoded colors, sizes or strings: everything goes through `Tokens.kt` and string resources
   (English, Hindi, Marathi).
 - Every write is atomic: Room transactions; media uses temp-file → encrypt → verify checksum → DB row
@@ -203,13 +204,24 @@ Shared-element transitions: Timeline card → MemoryDetail cover → MediaViewer
 
 ## 7. Encryption design (summary; full text in README)
 
-- **DB key**: 32 random bytes generated on first launch, wrapped with an Android Keystore AES-256-GCM
-  key (`yaadein_master`), persisted in EncryptedSharedPreferences. SQLCipher opens the DB with the raw key.
-- **Media key**: separate 32 random bytes wrapped the same way. Files are encrypted with
-  AES-256-CTR (random 16-byte IV stored in the file header) so playback can seek; integrity is a
-  SHA-256 of the plaintext stored in the DB and verified at import. Thumbnails use the same scheme.
-- **PIN**: Argon2id (m=64 MiB, t=3, p=2), 16-byte salt, stored in EncryptedSharedPreferences; 5 wrong
-  PINs → escalating delay (30 s, 1 m, 5 m, 15 m, 1 h); optional wipe after 10.
+- **Vault keys bound to the PIN (since the improvement round)**: `VaultKeys` keeps the DB and media keys as
+  `salt ‖ Keystore(AES-GCM(Argon2id(PIN, salt), dbKey ‖ mediaKey))` (`vault.pin.keys`, one atomic value). A second copy
+  may be sealed by `BiometricKeys` (auth-per-use, invalidated by new enrolment) via BiometricPrompt CryptoObject.
+  `Protection.DEVICE` (Keystore only) is used during onboarding, in "phone screen lock" mode and by pre-upgrade installs,
+  which `VaultSession.unlockWithPin` migrates on the next correct PIN. Every re-seal writes, verifies, then deletes.
+- **Locked process rule**: with a PIN-protected vault and a fresh process, nothing may read the DB or media before
+  `VaultSession` reports `Open`. `YaadeinApp` composes only `LockRoute` while locked; `DatabaseFactory.encrypted` and
+  `MediaCrypto` take key *providers* (`DeferredKeyOpenHelperFactory`), so building Hilt graphs never needs the key;
+  workers check `VaultKeys.canOpenWithoutUser()` first. Reminders and the widget read the Keystore-sealed
+  `ReminderDigestStore` instead of the DB.
+- **DB key**: 32 random bytes generated on first launch (see above for how it is sealed). SQLCipher opens the DB with the raw key.
+- **Media key**: separate 32 random bytes sealed the same way. New files (photos, videos, thumbnails, voice, reels) use
+  `YDN2`: 64 KiB AES-256-GCM chunks, nonce `prefix ‖ index ‖ last-flag`, header as AAD; seekable through
+  `MediaCrypto.openReader` and tamper/truncation evident. `YDN1` (AES-CTR) files stay readable. Never add a reader that
+  bypasses `MediaCrypto`.
+- **PIN**: not stored; it derives the sealing key (Argon2id m=64 MiB, t=3, p=2). `PinManager` keeps only the lockout
+  (monotonic clock + boot count, so changing the date does not help) and the legacy hash of pre-upgrade installs.
+  5 wrong PINs → escalating delay (30 s, 1 m, 5 m, 15 m, 1 h); optional wipe after 10.
 - **Backup**: `.yaadein` file = ZIP of (db dump + media + manifest) encrypted with AES-256-GCM, key derived
   from the user password with Argon2id. Restore verifies the manifest before touching the live DB.
 
@@ -686,3 +698,59 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
 - Tests: `RecapPlannerTest` (whole album, even sampling, fair budget, explicit selection, outro credit), `AutoReelPickerTest`,
   `ReelLibraryTest` (retention, slot replacement, encryption at rest, restart, seekable playback, share, delete), smoke test opens
   Your reels; screenshot "Your reels" added, Create a reel / Relive / About references updated.
+
+---
+
+## Improvement round (30-item review, November 2026)
+
+The owner approved a 30-point review (security, reliability, speed, look and feel, engagement, features). What was
+built, with the rules it established:
+
+**Security and distribution**
+- `beta` build type: R8, not debuggable, `.debug` app id and debug signature so it installs over earlier GitHub builds.
+  CI publishes only it and re-signs with the private key + APK key rotation (`apksigner --lineage`, min SDK 28) when the
+  `KEYSTORE_*` secrets exist (`docs/RELEASE_SIGNING.md`). `UpdateDecision` accepts a file whose signing history holds
+  the installed key and refuses old-key files after rotation. `SIDELOAD_UPDATES` (BuildConfig) gates the Update screen.
+- PIN/biometric-bound vault, phone-screen-lock mode (Android 11+, `BiometricHelper.deviceLauncher`), monotonic lockout:
+  see §7. Device test: `core/data/src/androidTest/.../VaultMigrationDeviceTest` (verified on the API 34 emulator).
+- Media `YDN2` format (§7); Storage → Check my memories (`VaultChecker`).
+
+**Reliability**
+- Automatic weekly backup (`AutoBackup`, `AutoBackupWorker`): password → Argon2id key once, sealed with the media key in
+  `noBackupFiles/autobackup.key`; target is one SAF document with a persisted grant (works with Drive's provider, so
+  still no INTERNET); runs after an unlock when due. Home `BackupNudgeBanner` after 30 days without a backup.
+- Videos up to 2 GB accepted when "store optimised copies" is on; the 200 MB limit applies after compression;
+  `ImportFailure.NotEnoughSpace`.
+- Backups include voice notes (`MemoryRow.voice`, `voice/<id>.m4a`); `MediaStore.pruneVoiceOrphans`.
+
+**Engagement and features**
+- Voice memories (`VoiceNotes`, `VoiceCaptureScreen`, `VoiceNoteCard`), one per memory in `memories.voice_note_path`.
+- `Reminders` (domain) + `ReminderDigestStore`: on this day, birthdays (today/tomorrow → "Create a reel"), Sunday story
+  prompts (`prompts_family/friend/self` arrays; counts must match `Reminders.*_PROMPTS`). `OnThisDayWorker` keeps its
+  class name (queued work) and handles all three; `OnThisDayWorker.sync` arms it.
+- `RemindersWidget` (RemoteViews, counts unless `widgetShowsMemories`), + opens quick add (`PendingNav`).
+- Relive: newest reel muted on loop (`LatestReelCard`), prompt card, places → timeline filtered by place.
+- Timeline layouts (`TimelineLayout`: cards / compact / grid), capture hub with two primary options + "More ways".
+- Sharing: `MemoryExporter` (picture card, PDF book), family packs (`BackupManager.exportPack/importPack`, merge by
+  person name; a pack can never be restored over the vault, `PackNotBackupException`).
+- Takeout / WhatsApp zip import (`ExportParsing` domain + `ExportImporter`).
+- Reels: 10 Mbit/s, ETA, eight bundled tracks (four new, synthesised for the project, `BundledTrack.bpm`), beat-snapped
+  photo durations (`RecapPlanner.snapToBeat`).
+- Faces: eye-aligned 64×64 crops, uniform LBP histograms (`FaceFeatures`), old-format suggestions dropped.
+- Smart polish: `GeminiNanoPolish` (ML Kit GenAI Prompt) only when the model is already AVAILABLE; never triggers a
+  download. The library's telemetry transport has no INTERNET permission to use (removed in the app manifest).
+- Premium: `PremiumGate` with `AllUnlocked` everywhere; plan in `docs/PREMIUM.md`.
+- Languages: Gujarati, Tamil, Telugu, Bengali, Kannada added (machine-assisted; need native review).
+  `scratchpad`-style check: every new English string needs all eight locales or lint fails (MissingTranslation).
+
+**Look and feel**: credit strip removed from every screen (kept in Settings, About and reel outros); info button moved to
+Settings ("What is Yaadein?"); media tiles use long-press for "Set as cover".
+
+**Performance**: `docs/PERFORMANCE.md` budgets; `:benchmark` module (StartupBenchmark, BaselineProfileGenerator) on the
+`benchmark` build type (beta + profileable); `.github/workflows/device-tests.yml` runs device tests, the benchmark
+with a 1.5 s cold-start budget, and uploads the generated baseline profile.
+
+**Not done / owner actions**: add the release key secrets; native-speaker review of the five new languages; TalkBack
+walkthrough on a phone; GPS-based places need a bundled offline city list (the GeoNames host was not reachable here);
+Play Billing for Plus is planned, not built.
+

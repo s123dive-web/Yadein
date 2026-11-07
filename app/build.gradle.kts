@@ -73,6 +73,13 @@ android {
             matchingFallbacks += listOf("release")
             buildConfigField("boolean", "SIDELOAD_UPDATES", "true")
         }
+        // For Macrobenchmark / baseline-profile generation on CI only: the beta build plus <profileable>.
+        create("benchmark") {
+            initWith(getByName("beta"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            buildConfigField("boolean", "SIDELOAD_UPDATES", "false")
+        }
         // Google Play build: Play forbids self-updating apps, so no Update screen and no install permission.
         release {
             isMinifyEnabled = true

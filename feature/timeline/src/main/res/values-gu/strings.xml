@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timeline_title">ટાઈમલાઈન</string>
+    <string name="timeline_search">યાદો શોધો</string>
+    <string name="timeline_search_hint">લોકો, જગ્યાઓ, શબ્દો શોધો…</string>
+    <string name="timeline_filters">ફિલ્ટર</string>
+    <string name="timeline_clear_filters">ફિલ્ટર હટાવો</string>
+    <string name="timeline_empty_title">તમારી વાર્તા અહીંથી શરૂ થાય છે</string>
+    <string name="timeline_empty_message">ફોટો, વીડિયો અથવા જે દિવસ સાચવવો હોય તેના વિશે ફક્ત એક લાઇન ઉમેરો. બધું આ ફોનમાં જ રહે છે.</string>
+    <string name="timeline_empty_action">તમારી પહેલી યાદ ઉમેરો</string>
+    <string name="timeline_no_results_title">હજી કંઈ મળ્યું નથી</string>
+    <string name="timeline_no_results_message">બીજો શબ્દ, વ્યક્તિ કે જગ્યા અજમાવો.</string>
+    <string name="sidebar_show">બતાવો</string>
+    <string name="sidebar_all">બધું</string>
+    <string name="sidebar_photos">ફોટાવાળી</string>
+    <string name="sidebar_stories">વાર્તાઓ</string>
+    <string name="sidebar_people">લોકો</string>
+    <string name="filter_people">લોકો</string>
+    <string name="filter_all_together">ફક્ત એવી યાદો જેમાં આ બધા હોય</string>
+    <string name="filter_groups">ગ્રુપ</string>
+    <string name="filter_places">જગ્યાઓ</string>
+    <string name="filter_type">પ્રકાર</string>
+    <string name="filter_quick">ઝડપી નોંધો</string>
+    <string name="filter_dates">તારીખો</string>
+    <string name="filter_from">થી</string>
+    <string name="filter_to">સુધી</string>
+    <string name="filter_apply">યાદો બતાવો</string>
+    <string name="timeline_about">Yaadein વિશે</string>
+    <string name="timeline_layout">લેઆઉટ: %1$s. બદલવા માટે ટેપ કરો</string>
+    <string name="timeline_layout_cards">મોટાં કાર્ડ</string>
+    <string name="timeline_layout_compact">નાની યાદી</string>
+    <string name="timeline_layout_grid">ફોટો ગ્રિડ</string>
+</resources>

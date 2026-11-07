@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_timeline">காலவரிசை</string>
+    <string name="nav_people">நபர்கள்</string>
+    <string name="nav_create">உருவாக்கு</string>
+    <string name="nav_relive">நினைவலைகள்</string>
+    <string name="nav_settings">அமைப்புகள்</string>
+    <string name="crash_notice_title">கடந்த முறை Yaadein எதிர்பாராமல் மூடப்பட்டது</string>
+    <string name="crash_notice_body">ஒரு சிறிய தொழில்நுட்பக் குறிப்பு இந்த ஃபோனில் மட்டும் சேமிக்கப்பட்டுள்ளது. அதை டெவலப்பருடன் பகிர்ந்தால் பிரச்சனையைச் சரிசெய்ய உதவும்; வேறு எதுவும் உங்கள் ஃபோனை விட்டு வெளியே போகாது.</string>
+    <string name="crash_notice_share">அறிக்கையைப் பகிர்</string>
+    <string name="crash_notice_dismiss">மூடு</string>
+    <string name="share_target_label">Yaadein-இல் சேமி</string>
+    <string name="backup_nudge_title">உங்கள் நினைவுகளைப் பத்திரமாக வையுங்கள்</string>
+    <string name="backup_nudge_text">அவை இந்த ஃபோனில் மட்டுமே உள்ளன. ஃபோன் தொலைந்தாலும் நினைவுகள் தொலையாமல் இருக்க, வாராந்திரக் காப்புப்பிரதியை இயக்குங்கள்.</string>
+    <string name="backup_nudge_action">காப்புப்பிரதியை அமை</string>
+    <string name="backup_nudge_later">பிறகு</string>
+    <string name="widget_name">Yaadein: இதே நாளில்</string>
+    <string name="widget_description">இதே நாளின் நினைவுகள், பிறந்தநாட்கள், கதைக் கேள்விகள், விரைவாகச் சேர்க்கும் பட்டனுடன்.</string>
+    <string name="widget_add">நினைவைச் சேர்</string>
+    <string name="widget_title_default">Yaadein</string>
+    <string name="widget_open_app">இதை நிரப்ப Yaadein-ஐ ஒருமுறை திறக்கவும்</string>
+    <string name="widget_title_on_this_day">இதே நாளில்</string>
+    <string name="widget_title_birthday">பிறந்தநாள்</string>
+    <string name="widget_birthday_today">இன்று %1$s-இன் பிறந்தநாள்</string>
+    <string name="widget_birthday_tomorrow">நாளை %1$s-இன் பிறந்தநாள்</string>
+    <string name="widget_birthday_hidden">ஒருவரின் பிறந்தநாள் வரவிருக்கிறது</string>
+    <string name="widget_title_prompt">சேமிக்க ஒரு கதை</string>
+    <string name="widget_prompt_hidden">ஒரு கதை சொல்லப்படக் காத்திருக்கிறது</string>
+    <plurals name="widget_years_ago">
+        <item quantity="one">%1$d ஆண்டுக்கு முன்: %2$s</item>
+        <item quantity="other">%1$d ஆண்டுகளுக்கு முன்: %2$s</item>
+    </plurals>
+    <plurals name="widget_memories_waiting">
+        <item quantity="one">இதே நாளின் %1$d நினைவு</item>
+        <item quantity="other">இதே நாளின் %1$d நினைவுகள்</item>
+    </plurals>
+</resources>

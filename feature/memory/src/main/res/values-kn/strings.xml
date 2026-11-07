@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_who_was_there">ಯಾರೆಲ್ಲ ಇದ್ದರು</string>
+    <string name="memory_photos">ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳು</string>
+    <string name="memory_add_photos">ಸೇರಿಸಿ</string>
+    <string name="memory_no_photos_hint">ಇನ್ನೂ ಫೋಟೋಗಳಿಲ್ಲ. ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊ ಸೇರಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ — ಈ ಕಥೆ ತಾನಾಗಿಯೇ ಇನ್ನಷ್ಟು ಚೆಂದವಾಗುತ್ತದೆ.</string>
+    <string name="memory_cover_cd">%1$s ಗಾಗಿ ಮುಖಪುಟ ಫೋಟೋ</string>
+    <string name="memory_cover_badge">ಮುಖಪುಟ</string>
+    <string name="memory_set_cover">ಮುಖಪುಟವಾಗಿ ಬಳಸಿ</string>
+    <string name="memory_make_recap">ರೀಲ್ ಮಾಡಿ</string>
+    <string name="memory_play_video">ವೀಡಿಯೊ ಪ್ಲೇ ಮಾಡಿ</string>
+    <string name="memory_delete_title">ಈ ನೆನಪನ್ನು ಅಳಿಸಬೇಕೆ?</string>
+    <string name="memory_delete_message">ಈ ನೆನಪು ಮತ್ತು ಅದರ ಫೋಟೋಗಳು ಈ ಫೋನ್‌ನಿಂದ ತೆಗೆಯಲ್ಪಡುತ್ತವೆ. ಇದನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ.</string>
+    <string name="viewer_caption_hint">ಶೀರ್ಷಿಕೆ ಸೇರಿಸಿ</string>
+    <string name="viewer_of">%2$d ರಲ್ಲಿ %1$d</string>
+    <string name="viewer_remove">ನೆನಪಿನಿಂದ ತೆಗೆಯಿರಿ</string>
+    <string name="viewer_tag_people">ಜನರನ್ನು ಟ್ಯಾಗ್ ಮಾಡಿ</string>
+    <string name="viewer_previous">ಹಿಂದಿನದು</string>
+    <string name="memory_record_voice">ಧ್ವನಿ ಟಿಪ್ಪಣಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ</string>
+    <string name="memory_rerecord_voice">ಧ್ವನಿ ಟಿಪ್ಪಣಿಯನ್ನು ಮತ್ತೆ ರೆಕಾರ್ಡ್ ಮಾಡಿ</string>
+    <string name="memory_voice_title">ಧ್ವನಿ ಟಿಪ್ಪಣಿ</string>
+    <string name="memory_voice_play">ಧ್ವನಿ ಟಿಪ್ಪಣಿ ಪ್ಲೇ ಮಾಡಿ</string>
+    <string name="memory_voice_pause">ಧ್ವನಿ ಟಿಪ್ಪಣಿ ನಿಲ್ಲಿಸಿ</string>
+    <string name="memory_voice_remove">ತೆಗೆಯಿರಿ</string>
+    <string name="share_card">ಚಿತ್ರವಾಗಿ ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="share_card_chooser">ಈ ನೆನಪನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="share_pdf">PDF ಆಗಿ ಉಳಿಸಿ</string>
+    <string name="share_pack">ಕುಟುಂಬಕ್ಕೆ ಕಳುಹಿಸಿ (ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿ)</string>
+    <string name="share_pack_password_title">ಕುಟುಂಬಕ್ಕಾಗಿ ಒಂದು ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="share_pack_password_help">ಫೈಲ್ ಅನ್ನು ನಿಮಗೆ ಇಷ್ಟವಾದ ರೀತಿಯಲ್ಲಿ ಕಳುಹಿಸಿ, ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬೇರೆಯಾಗಿ ತಿಳಿಸಿ. ಅವರು ಅದನ್ನು Yaadein, ಸೆಟ್ಟಿಂಗ್‌ಗಳು, ಬ್ಯಾಕಪ್ ಮತ್ತು ಮರುಸ್ಥಾಪನೆ ಯಲ್ಲಿ ಸೇರಿಸುತ್ತಾರೆ.</string>
+    <string name="share_pack_save">ಉಳಿಸಿ</string>
+    <string name="share_working">ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ…</string>
+    <string name="share_saved">ಉಳಿಸಲಾಗಿದೆ.</string>
+    <string name="share_failed">ಅದು ಆಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="share_footer">Yaadein ನಲ್ಲಿ ಜೋಪಾನ ಮಾಡಲಾಗಿದೆ</string>
+</resources>

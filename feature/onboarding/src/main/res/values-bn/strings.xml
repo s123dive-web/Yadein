@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_1_title">মনে রাখার মতো দিনগুলো সাজিয়ে রাখুন</string>
+    <string name="onboarding_1_body">ছবি, ভিডিও, বা শুধু এক লাইন যেমন “গোয়া ট্রিপ 2024”। Yaadein এগুলো দিয়ে এমন একটা টাইমলাইন বানায়, যেখানে আপনি ঘুরে বেড়াতে পারেন।</string>
+    <string name="onboarding_2_title">ডায়েরির মতোই একান্ত</string>
+    <string name="onboarding_2_body">সবকিছু এই ফোনেই থাকে, এনক্রিপ্ট করা আর আপনার PIN বা আঙুলের ছাপ দিয়ে লক করা। কোনো অ্যাকাউন্ট নেই, ইন্টারনেট নেই, বিজ্ঞাপন নেই।</string>
+    <string name="onboarding_3_title">প্রিয় মানুষদের গল্প</string>
+    <string name="onboarding_3_body">পরিবার আর বন্ধুদের ট্যাগ করুন, প্রত্যেকের সঙ্গে আপনার গল্প দেখুন, আর জন্মদিনে শেয়ার করার জন্য রিল বানান।</string>
+    <string name="onboarding_add_first_person">প্রথম মানুষটিকে যোগ করুন</string>
+</resources>

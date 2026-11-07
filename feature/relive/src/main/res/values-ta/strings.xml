@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relive_title">நினைவலைகள்</string>
+    <string name="relive_surprise">ஆச்சரியப்படுத்து</string>
+    <string name="relive_make_recap">ரீல் உருவாக்கு</string>
+    <string name="relive_birthdays">வரவிருப்பவை</string>
+    <string name="relive_birthday_today">இன்று %1$s-இன் பிறந்தநாள்</string>
+    <string name="relive_birthday_in">%1$s · %2$d நாட்கள்</string>
+    <string name="relive_on_this_day">இதே நாளில்</string>
+    <string name="relive_on_this_day_empty">முந்தைய ஆண்டுகளில் இதே நாளில் இன்னும் எதுவும் இல்லை. இன்றைய தருணத்தைச் சேருங்கள், அடுத்த ஆண்டு அது இங்கே தோன்றும்.</string>
+    <string name="relive_years">உங்கள் ஆண்டுகள்</string>
+    <string name="relive_random_title">தற்செயலாகத் தேர்ந்த ஒரு நினைவு</string>
+    <string name="relive_another">இன்னொன்று</string>
+    <string name="relive_empty_title">மீண்டும் காண இன்னும் எதுவும் இல்லை</string>
+    <string name="relive_empty_message">சில நினைவுகள் சேர்ந்தவுடன், “இதே நாளில்”, ஆச்சரியங்கள், ஆண்டுக் கதைகள் எல்லாம் இங்கே இருக்கும்.</string>
+    <string name="notification_channel_on_this_day">இதே நாளில்</string>
+    <string name="notification_on_this_day_title">இதே நாளில்: %1$s</string>
+    <string name="notification_on_this_day_text">%1$s · %2$s</string>
+    <string name="shake_hint">ஒரு தற்செயல் நினைவுக்கு, ஆப்பில் எங்கிருந்தாலும் ஃபோனைக் குலுக்குங்கள்.</string>
+    <string name="yearly_title">%2$s உடன் %1$d</string>
+    <string name="yearly_all_title">உங்கள் %1$d</string>
+    <string name="yearly_memories">%1$d நினைவுகள்</string>
+    <string name="yearly_photos">%1$d படங்கள்</string>
+    <string name="yearly_places">%1$d இடங்கள்</string>
+    <string name="yearly_top_people">அதிக நேரம் இருந்தது</string>
+    <string name="yearly_first">ஆண்டின் முதல் நினைவு</string>
+    <string name="yearly_last">ஆண்டின் கடைசி நினைவு</string>
+    <string name="yearly_empty">%1$d-இலிருந்து இன்னும் நினைவுகள் இல்லை.</string>
+    <plurals name="notification_years_ago"><item quantity="one">%1$d ஆண்டுக்கு முன் இன்று</item><item quantity="other">%1$d ஆண்டுகளுக்கு முன் இன்று</item></plurals>
+    <string name="relive_your_reels">உங்கள் ரீல்கள்</string>
+    <string name="notification_birthday_today">இன்று %1$s-இன் பிறந்தநாள் 🎂</string>
+    <string name="notification_birthday_tomorrow">நாளை %1$s-இன் பிறந்தநாள்</string>
+    <string name="notification_birthday_text">உங்கள் இருவரின் நினைவுகளிலிருந்து ஒரு ரீல் உருவாக்கிப் பகிருங்கள்.</string>
+    <string name="notification_prompt_title">இந்த வாரம் சேமிக்க ஒரு கதை</string>
+    <string name="relive_made_for_you">உங்களுக்காக உருவாக்கியது</string>
+    <string name="relive_play_reel">ரீலை இயக்கு</string>
+    <string name="relive_record_story">பதிவுசெய்</string>
+    <string name="relive_places">இடங்கள்</string>
+</resources>

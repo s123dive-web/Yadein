@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_who_was_there">કોણ કોણ હતું</string>
+    <string name="memory_photos">ફોટા અને વીડિયો</string>
+    <string name="memory_add_photos">ઉમેરો</string>
+    <string name="memory_no_photos_hint">હજી કોઈ ફોટા નથી. ફોટા કે વીડિયો ઉમેરવા ટેપ કરો — આ વાર્તા જાતે જ વધુ સુંદર બની જશે.</string>
+    <string name="memory_cover_cd">%1$s માટે કવર ફોટો</string>
+    <string name="memory_cover_badge">કવર</string>
+    <string name="memory_set_cover">કવર તરીકે વાપરો</string>
+    <string name="memory_make_recap">રીલ બનાવો</string>
+    <string name="memory_play_video">વીડિયો ચલાવો</string>
+    <string name="memory_delete_title">આ યાદ ડિલીટ કરવી છે?</string>
+    <string name="memory_delete_message">આ યાદ અને તેના ફોટા આ ફોનમાંથી કાઢી નાખવામાં આવશે. આ પાછું લાવી શકાશે નહીં.</string>
+    <string name="viewer_caption_hint">કૅપ્શન ઉમેરો</string>
+    <string name="viewer_of">%2$d માંથી %1$d</string>
+    <string name="viewer_remove">યાદમાંથી કાઢો</string>
+    <string name="viewer_tag_people">લોકોને ટેગ કરો</string>
+    <string name="viewer_previous">પાછલું</string>
+    <string name="memory_record_voice">વૉઇસ નોટ રેકોર્ડ કરો</string>
+    <string name="memory_rerecord_voice">વૉઇસ નોટ ફરીથી રેકોર્ડ કરો</string>
+    <string name="memory_voice_title">વૉઇસ નોટ</string>
+    <string name="memory_voice_play">વૉઇસ નોટ ચલાવો</string>
+    <string name="memory_voice_pause">વૉઇસ નોટ થોભાવો</string>
+    <string name="memory_voice_remove">કાઢો</string>
+    <string name="share_card">ચિત્ર તરીકે શેર કરો</string>
+    <string name="share_card_chooser">આ યાદ શેર કરો</string>
+    <string name="share_pdf">PDF તરીકે સાચવો</string>
+    <string name="share_pack">પરિવારને મોકલો (એન્ક્રિપ્ટેડ)</string>
+    <string name="share_pack_password_title">પરિવાર માટે પાસવર્ડ પસંદ કરો</string>
+    <string name="share_pack_password_help">ફાઇલ ગમે તે રીતે મોકલો અને પાસવર્ડ અલગથી જણાવો. તેઓ તેને Yaadein માં સેટિંગ્સ, બેકઅપ અને રિસ્ટોરમાં ઉમેરી શકે છે.</string>
+    <string name="share_pack_save">સાચવો</string>
+    <string name="share_working">તૈયાર થઈ રહ્યું છે…</string>
+    <string name="share_saved">સાચવ્યું.</string>
+    <string name="share_failed">એ કામ ન થયું. કૃપા કરીને ફરી પ્રયાસ કરો.</string>
+    <string name="share_footer">Yaadein સાથે સાચવેલું</string>
+</resources>

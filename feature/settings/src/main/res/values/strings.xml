@@ -114,11 +114,11 @@
     <string name="privacy_s1_title">What Yaadein collects</string>
     <string name="privacy_s1_body">Nothing. Yaadein has no internet permission, no accounts and no analytics. It cannot send your data anywhere.</string>
     <string name="privacy_s2_title">What stays on your phone</string>
-    <string name="privacy_s2_body">Your people, memories, photos, videos, notes and settings — all in the app\'s private storage, encrypted with a key kept in your phone\'s secure hardware. Android cloud backup is switched off for this app.</string>
+    <string name="privacy_s2_body">Your people, memories, photos, videos, voice recordings, notes and settings stay in the app\'s private storage, encrypted. With a Yaadein PIN, the keys can only be unlocked with your PIN or fingerprint. Android cloud backup is switched off for this app.</string>
     <string name="privacy_s3_title">Optional on-device features</string>
-    <string name="privacy_s3_body">Face suggestions and Smart polish run locally with bundled models and are off by default. Reminders are scheduled on the phone and hidden on the lock screen.</string>
+    <string name="privacy_s3_body">Face suggestions (off by default) run on the phone. Smart polish uses Gemini Nano on the phone only where it is already installed. Voice memories use the microphone only while you record. Reminders and the widget are scheduled on the phone and hidden on the lock screen.</string>
     <string name="privacy_s4_title">When data leaves the phone</string>
-    <string name="privacy_s4_body">Only when you choose to: sharing a reel, or exporting a password-protected backup file through the share sheet.</string>
+    <string name="privacy_s4_body">Only when you choose to: sharing a reel, a picture or PDF of a memory, a password-protected family pack, or a password-protected backup (by hand, or weekly to a file you picked).</string>
     <string name="privacy_s5_title">Deleting your data</string>
     <string name="privacy_s5_body">Uninstall the app, or use Settings → Storage → Erase everything. There is nothing else to delete.</string>
     <string name="privacy_s6_title">Children and families</string>
@@ -209,4 +209,6 @@
     <string name="pack_add_now">Add them</string>
     <string name="pack_added_title">Memories added</string>
     <string name="pack_added_text">%1$d memories added, %2$d new people.</string>
+    <string name="appearance_language">Language</string>
+    <string name="appearance_language_help">Choose Yaadein\'s language: English, Hindi, Marathi, Gujarati, Tamil, Telugu, Bengali or Kannada.</string>
 </resources>

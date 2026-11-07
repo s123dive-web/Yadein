@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lock_title">আবার স্বাগতম</string>
+    <string name="lock_subtitle">আপনার ৬ সংখ্যার PIN দিন বা আঙুলের ছাপ ব্যবহার করুন</string>
+    <string name="lock_wrong_pin">PIN ঠিক হয়নি। আবার চেষ্টা করুন।</string>
+    <plurals name="lock_wrong_pin_wipe">
+        <item quantity="one">ভুল PIN। সব মুছে যাওয়ার আগে আর %1$d বার চেষ্টা বাকি।</item>
+        <item quantity="other">ভুল PIN। সব মুছে যাওয়ার আগে আর %1$d বার চেষ্টা বাকি।</item>
+    </plurals>
+    <string name="lock_wait_seconds">অনেকবার চেষ্টা হয়েছে। %1$d সেকেন্ড অপেক্ষা করুন।</string>
+    <string name="lock_wait_minutes">অনেকবার চেষ্টা হয়েছে। %1$d মিনিট অপেক্ষা করুন।</string>
+    <string name="lock_wiped">অনেকবার ভুল PIN দেওয়ায় সব স্মৃতি মুছে ফেলা হয়েছে।</string>
+    <string name="lock_use_biometric">আঙুলের ছাপ বা মুখ ব্যবহার করুন</string>
+    <string name="lock_backspace">শেষ সংখ্যাটি মুছুন</string>
+    <string name="lock_pin_entered">%2$d-এর মধ্যে %1$d সংখ্যা দেওয়া হয়েছে</string>
+    <string name="lock_biometric_title">Yaadein খুলুন</string>
+    <string name="lock_biometric_subtitle">আপনার স্মৃতি শুধু আপনারই</string>
+    <string name="lock_biometric_negative">PIN ব্যবহার করুন</string>
+    <string name="setup_choose_title">৬ সংখ্যার একটি PIN বেছে নিন</string>
+    <string name="setup_confirm_title">আরেকবার দিন</string>
+    <string name="setup_pin_help">আপনার PIN দিয়ে Yaadein খোলে। কিছুই কোথাও পাঠানো হয় না, তাই এটি রিসেট করার কোনো উপায় নেই — কোথাও নিরাপদে লিখে রাখুন।</string>
+    <string name="setup_mismatch">PIN দুটো মেলেনি। চলুন আবার শুরু করি।</string>
+    <string name="setup_biometric_title">আরও তাড়াতাড়ি খুলুন</string>
+    <string name="setup_biometric_help">অ্যাপ খুলতে আঙুলের ছাপ বা মুখ ব্যবহার করুন। PIN সবসময় বিকল্প হিসেবে কাজ করবে।</string>
+    <string name="setup_biometric_unavailable">এই ফোনে আঙুলের ছাপ বা ফেস আনলক সেট করা নেই। পরে সেটিংসে গিয়ে চালু করতে পারবেন।</string>
+    <string name="setup_biometric_switch">আঙুলের ছাপ বা মুখ ব্যবহার করুন</string>
+    <string name="setup_finish">স্মৃতি সাজানো শুরু করুন</string>
+    <string name="lock_migration_note">আরও মজবুত সুরক্ষা চালু করতে একবার আপনার PIN দিন। এরপর শুধু আপনার PIN বা আঙুলের ছাপ দিয়েই স্মৃতিগুলো খোলা যাবে।</string>
+    <string name="lock_biometric_changed">আপনার আঙুলের ছাপ বা মুখের তথ্য বদলে গেছে। PIN দিন, তারপর সেটিংসে আবার আঙুলের ছাপ চালু করুন।</string>
+    <string name="lock_device_subtitle">ফোনের স্ক্রিন লক দিয়ে খুলুন</string>
+    <string name="lock_device_button">খুলুন</string>
+    <string name="lock_device_unavailable">এই ফোনে কোনো স্ক্রিন লক নেই, তাই Yaadein লক থাকতে পারছে না। সেটিংস, সুরক্ষা-তে গিয়ে একটি Yaadein PIN সেট করুন।</string>
+    <string name="lock_device_open_anyway">Yaadein খুলুন</string>
+    <string name="lock_biometric_enroll_title">আপনার আঙুলের ছাপ নিশ্চিত করুন</string>
+    <string name="lock_biometric_enroll_subtitle">যাতে পরের বার এটি দিয়ে আপনার স্মৃতি খোলা যায়</string>
+    <string name="lock_biometric_cancel">বাতিল</string>
+    <string name="setup_use_device_lock">এর বদলে ফোনের স্ক্রিন লক ব্যবহার করুন</string>
+    <string name="setup_device_lock_help">সহজ: নতুন কোনো PIN মনে রাখতে হবে না। Yaadein PIN বেশি মজবুত, কারণ এটি আপনার স্মৃতিগুলো এনক্রিপ্টও করে।</string>
+</resources>

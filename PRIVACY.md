@@ -11,31 +11,41 @@ request the INTERNET permission, so it is technically unable to send data anywhe
 
 ## What stays on your device
 
-- The people, memories, photos, videos, captions and notes you add.
-- Your settings (theme, lock timeout, reminder time).
-- Your PIN, stored only as a salted Argon2id hash.
+- The people, memories, photos, videos, voice recordings, captions and notes you add.
+- Your settings (theme, lock, reminders, backup choice).
+- Your PIN never leaves the phone and is never stored as such: it is used (with Argon2id) to seal the keys that
+  encrypt your memories.
 
-All of this is stored in the app's private storage and encrypted at rest (SQLCipher for the
-database, AES-256 for media). It is excluded from Android cloud backup and device-to-device transfer.
+All of this is stored in the app's private storage and encrypted at rest (SQLCipher for the database, AES-256-GCM for
+media and voice recordings). When you use a Yaadein PIN, the encryption keys can only be unlocked with that PIN or your
+fingerprint. Data is excluded from Android cloud backup and device-to-device transfer.
 
 ## Optional on-device features
 
+- **Voice memories** use the microphone only while you press record. Recordings are encrypted on the phone.
 - **Face suggestions** (off by default) run ML Kit face detection locally. No images or face data
   leave the device, and nothing is tagged until you confirm it.
-- **Smart polish** (if your device supports on-device Gemini Nano) rewrites your text locally. It is
-  optional and never required.
-- **Notifications**: "On this day" reminders are scheduled on the device and contain only your own
-  memory titles.
+- **Smart polish** uses Gemini Nano through Android's on-device AICore service, only on phones where that model is
+  already installed. Your text goes to the on-phone model, not to the internet.
+- **Reminders** ("On this day", birthdays, weekly story prompts) are scheduled on the device and hidden on the lock
+  screen. To work while the app is locked they keep a small list of memory titles and first names, encrypted with the
+  phone's hardware key store.
+- **Home-screen widget** shows only how many memories are waiting, unless you choose to show titles.
 
-## Sharing
+## Sharing and backups
 
-The only way data leaves the device is when **you** export it: sharing a recap video, or creating a
-password-protected `.yaadein` backup file through the Android share sheet. You choose where it goes.
+Data leaves the device only when **you** send it:
+
+- sharing a reel, a picture card or a PDF of a memory through the Android share sheet;
+- a password-protected **family pack** of chosen memories;
+- a password-protected `.yaadein` **backup**, made by hand or weekly to a file you picked (for example in your Google
+  Drive folder; then the Drive app, not Yaadein, uploads it).
+
+Backups and family packs are encrypted with AES-256-GCM using your password; without it they cannot be opened.
 
 ## Deleting your data
 
-Uninstall the app, or use *Settings → Storage → Erase everything*. Because nothing is stored off
-your device, there is nothing else to delete.
+Uninstall the app, or use *Settings → Storage → Erase everything*. Backup files you saved elsewhere are yours to delete.
 
 ## Children
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timeline_title">টাইমলাইন</string>
+    <string name="timeline_search">স্মৃতি খুঁজুন</string>
+    <string name="timeline_search_hint">মানুষ, জায়গা, শব্দ খুঁজুন…</string>
+    <string name="timeline_filters">ফিল্টার</string>
+    <string name="timeline_clear_filters">ফিল্টার সরান</string>
+    <string name="timeline_empty_title">আপনার গল্প এখান থেকেই শুরু</string>
+    <string name="timeline_empty_message">একটি ছবি, ভিডিও বা যে দিনটা মনে রাখতে চান তার কথা এক লাইনে লিখুন। সবকিছু এই ফোনেই থাকে।</string>
+    <string name="timeline_empty_action">প্রথম স্মৃতি যোগ করুন</string>
+    <string name="timeline_no_results_title">এখনও কিছু মেলেনি</string>
+    <string name="timeline_no_results_message">অন্য কোনো শব্দ, মানুষ বা জায়গা দিয়ে চেষ্টা করুন।</string>
+    <string name="sidebar_show">দেখান</string>
+    <string name="sidebar_all">সব</string>
+    <string name="sidebar_photos">ছবি সহ</string>
+    <string name="sidebar_stories">গল্প</string>
+    <string name="sidebar_people">মানুষ</string>
+    <string name="filter_people">মানুষ</string>
+    <string name="filter_all_together">শুধু যে স্মৃতিতে সবাই আছেন</string>
+    <string name="filter_groups">দল</string>
+    <string name="filter_places">জায়গা</string>
+    <string name="filter_type">ধরন</string>
+    <string name="filter_quick">ছোট নোট</string>
+    <string name="filter_dates">তারিখ</string>
+    <string name="filter_from">থেকে</string>
+    <string name="filter_to">পর্যন্ত</string>
+    <string name="filter_apply">স্মৃতি দেখান</string>
+    <string name="timeline_about">Yaadein সম্পর্কে</string>
+    <string name="timeline_layout">লেআউট: %1$s। বদলাতে ট্যাপ করুন</string>
+    <string name="timeline_layout_cards">বড় কার্ড</string>
+    <string name="timeline_layout_compact">ছোট তালিকা</string>
+    <string name="timeline_layout_grid">ছবির গ্রিড</string>
+</resources>

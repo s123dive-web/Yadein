@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timeline_title">காலவரிசை</string>
+    <string name="timeline_search">நினைவுகளைத் தேடு</string>
+    <string name="timeline_search_hint">நபர்கள், இடங்கள், சொற்களைத் தேடுங்கள்…</string>
+    <string name="timeline_filters">வடிகட்டிகள்</string>
+    <string name="timeline_clear_filters">வடிகட்டிகளை அழி</string>
+    <string name="timeline_empty_title">உங்கள் கதை இங்கே தொடங்குகிறது</string>
+    <string name="timeline_empty_message">நீங்கள் நினைவில் வைக்க விரும்பும் ஒரு நாளைப் பற்றி ஒரு படம், வீடியோ அல்லது ஒரு வரியைச் சேர்க்கவும். அனைத்தும் இந்த ஃபோனிலேயே இருக்கும்.</string>
+    <string name="timeline_empty_action">உங்கள் முதல் நினைவைச் சேர்க்கவும்</string>
+    <string name="timeline_no_results_title">இன்னும் எதுவும் பொருந்தவில்லை</string>
+    <string name="timeline_no_results_message">வேறு சொல், நபர் அல்லது இடத்தை முயலுங்கள்.</string>
+    <string name="sidebar_show">காட்டு</string>
+    <string name="sidebar_all">அனைத்தும்</string>
+    <string name="sidebar_photos">படங்களுடன்</string>
+    <string name="sidebar_stories">கதைகள்</string>
+    <string name="sidebar_people">நபர்கள்</string>
+    <string name="filter_people">நபர்கள்</string>
+    <string name="filter_all_together">அனைவரும் உள்ள நினைவுகள் மட்டும்</string>
+    <string name="filter_groups">குழுக்கள்</string>
+    <string name="filter_places">இடங்கள்</string>
+    <string name="filter_type">வகை</string>
+    <string name="filter_quick">சிறு குறிப்புகள்</string>
+    <string name="filter_dates">தேதிகள்</string>
+    <string name="filter_from">முதல்</string>
+    <string name="filter_to">வரை</string>
+    <string name="filter_apply">நினைவுகளைக் காட்டு</string>
+    <string name="timeline_about">Yaadein பற்றி</string>
+    <string name="timeline_layout">தோற்றம்: %1$s. மாற்ற தட்டவும்</string>
+    <string name="timeline_layout_cards">பெரிய அட்டைகள்</string>
+    <string name="timeline_layout_compact">சுருக்கமான பட்டியல்</string>
+    <string name="timeline_layout_grid">படக் கட்டம்</string>
+</resources>

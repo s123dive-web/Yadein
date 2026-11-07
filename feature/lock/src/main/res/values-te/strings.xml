@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lock_title">మళ్ళీ స్వాగతం</string>
+    <string name="lock_subtitle">మీ 6 అంకెల PIN ఎంటర్ చేయండి లేదా వేలిముద్ర వాడండి</string>
+    <string name="lock_wrong_pin">ఆ PIN సరైనది కాదు. మళ్ళీ ప్రయత్నించండి.</string>
+    <plurals name="lock_wrong_pin_wipe">
+        <item quantity="one">తప్పు PIN. అంతా తొలగిపోయే ముందు ఇంకా %1$d ప్రయత్నం మిగిలి ఉంది.</item>
+        <item quantity="other">తప్పు PIN. అంతా తొలగిపోయే ముందు ఇంకా %1$d ప్రయత్నాలు మిగిలి ఉన్నాయి.</item>
+    </plurals>
+    <string name="lock_wait_seconds">చాలా ప్రయత్నాలు అయ్యాయి. %1$d సెకన్లు ఆగండి.</string>
+    <string name="lock_wait_minutes">చాలా ప్రయత్నాలు అయ్యాయి. %1$d నిమిషాలు ఆగండి.</string>
+    <string name="lock_wiped">చాలా సార్లు తప్పు PIN ఎంటర్ చేయడంతో అన్ని జ్ఞాపకాలు తొలగించబడ్డాయి.</string>
+    <string name="lock_use_biometric">వేలిముద్ర లేదా ముఖం వాడండి</string>
+    <string name="lock_backspace">చివరి అంకెను తొలగించండి</string>
+    <string name="lock_pin_entered">%2$d లో %1$d అంకెలు ఎంటర్ చేశారు</string>
+    <string name="lock_biometric_title">Yaadeinను అన్‌లాక్ చేయండి</string>
+    <string name="lock_biometric_subtitle">మీ జ్ఞాపకాలు మీకు మాత్రమే</string>
+    <string name="lock_biometric_negative">PIN వాడండి</string>
+    <string name="setup_choose_title">6 అంకెల PIN ఎంచుకోండి</string>
+    <string name="setup_confirm_title">ఇంకోసారి ఎంటర్ చేయండి</string>
+    <string name="setup_pin_help">మీ PIN Yaadeinను అన్‌లాక్ చేస్తుంది. ఏదీ ఎక్కడికీ పంపబడదు, కాబట్టి దాన్ని రీసెట్ చేసే మార్గం లేదు — దాన్ని ఎక్కడైనా భద్రంగా రాసి ఉంచుకోండి.</string>
+    <string name="setup_mismatch">PINలు సరిపోలలేదు. మళ్ళీ మొదలుపెడదాం.</string>
+    <string name="setup_biometric_title">త్వరగా అన్‌లాక్ చేయండి</string>
+    <string name="setup_biometric_help">యాప్ తెరవడానికి మీ వేలిముద్ర లేదా ముఖం వాడండి. మీ PIN ఎప్పుడూ బ్యాకప్‌గా పనిచేస్తుంది.</string>
+    <string name="setup_biometric_unavailable">ఈ ఫోన్‌లో వేలిముద్ర లేదా ముఖం అన్‌లాక్ సెటప్ చేయలేదు. దాన్ని తర్వాత సెట్టింగ్‌లలో ఆన్ చేయవచ్చు.</string>
+    <string name="setup_biometric_switch">వేలిముద్ర లేదా ముఖం వాడండి</string>
+    <string name="setup_finish">గుర్తుచేసుకోవడం మొదలుపెట్టండి</string>
+    <string name="lock_migration_note">మరింత బలమైన రక్షణ ఆన్ చేయడానికి మీ PIN ఒక్కసారి ఎంటర్ చేయండి. దీని తర్వాత, మీ PIN లేదా వేలిముద్ర మాత్రమే మీ జ్ఞాపకాలను తెరవగలవు.</string>
+    <string name="lock_biometric_changed">మీ వేలిముద్రలు లేదా ముఖం మారాయి. మీ PIN ఎంటర్ చేసి, తర్వాత సెట్టింగ్‌లలో వేలిముద్రను మళ్ళీ ఆన్ చేయండి.</string>
+    <string name="lock_device_subtitle">మీ ఫోన్ స్క్రీన్ లాక్‌తో అన్‌లాక్ చేయండి</string>
+    <string name="lock_device_button">అన్‌లాక్ చేయండి</string>
+    <string name="lock_device_unavailable">ఈ ఫోన్‌కు స్క్రీన్ లాక్ లేదు, కాబట్టి Yaadein లాక్ అయి ఉండలేదు. సెట్టింగ్‌లు, భద్రతలో Yaadein PIN సెట్ చేయండి.</string>
+    <string name="lock_device_open_anyway">Yaadein తెరవండి</string>
+    <string name="lock_biometric_enroll_title">మీ వేలిముద్రను నిర్ధారించండి</string>
+    <string name="lock_biometric_enroll_subtitle">తర్వాతి సారి అది మీ జ్ఞాపకాలను తెరవగలిగేలా</string>
+    <string name="lock_biometric_cancel">రద్దు చేయండి</string>
+    <string name="setup_use_device_lock">బదులుగా నా ఫోన్ స్క్రీన్ లాక్ వాడండి</string>
+    <string name="setup_device_lock_help">ఇది సులభం: కొత్త PIN గుర్తుంచుకోవక్కర్లేదు. Yaadein PIN ఇంకా బలమైనది, ఎందుకంటే అది మీ జ్ఞాపకాలను ఎన్‌క్రిప్ట్ కూడా చేస్తుంది.</string>
+</resources>

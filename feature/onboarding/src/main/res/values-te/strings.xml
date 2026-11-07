@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_1_title">గుర్తుంచుకోదగిన రోజులను దాచుకోండి</string>
+    <string name="onboarding_1_body">ఫోటోలు, వీడియోలు, లేదా “గోవా ట్రిప్ 2024” లాంటి ఒక్క వాక్యం చాలు. Yaadein వాటిని మీరు తిరిగి చూసుకోగల కాలక్రమంగా మారుస్తుంది.</string>
+    <string name="onboarding_2_title">డైరీ లాగే, ప్రైవేట్‌గా</string>
+    <string name="onboarding_2_body">అంతా ఈ ఫోన్‌లోనే ఉంటుంది, ఎన్‌క్రిప్ట్ చేసి మీ PIN లేదా వేలిముద్రతో లాక్ చేయబడి. అకౌంట్ లేదు, ఇంటర్నెట్ లేదు, ప్రకటనలు లేవు.</string>
+    <string name="onboarding_3_title">మీరు ప్రేమించే వారి కథలు</string>
+    <string name="onboarding_3_body">కుటుంబాన్ని, స్నేహితులను ట్యాగ్ చేయండి, ఒక్కొక్కరితో మీ కథను చూడండి, పుట్టినరోజులకు షేర్ చేయడానికి రీల్స్ తయారు చేయండి.</string>
+    <string name="onboarding_add_first_person">మీ మొదటి వ్యక్తిని జోడించండి</string>
+</resources>

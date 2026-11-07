@@ -6,11 +6,21 @@ stories, and as recap videos with music. No account, no internet permission, no 
 
 [![Build debug APK](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 
-Every push to `main` builds a debug APK (`Yaadein-v<version>-debug.apk`) on GitHub Actions and attaches it to a release tagged
-`build-<run number>` (see the Releases page). Nothing is built on a laptop; the build needs no
-`local.properties`, keystore or secrets.
+Every push builds the **beta APK** (`Yaadein-v<version>-beta.apk`: R8-optimised, not debuggable) on GitHub Actions and
+attaches it to a release tagged `build-<run number>` (see the Releases page). It installs over earlier builds and keeps
+every memory. Add the release key secrets once (`docs/RELEASE_SIGNING.md`) and CI signs with your private key using
+APK key rotation. Nothing is built on a laptop.
 
 ## Features
+
+- **Voice memories**: record a grandparent telling the story in their own voice; weekly story prompts
+  ("Ask Aaji how she met Ajoba") open the recorder.
+- **Never lose them**: weekly automatic encrypted backup to a file you choose (e.g. in Google Drive), a home banner
+  when there has been no backup for a month, and a "Check my memories" integrity scan.
+- **Share without a server**: a memory as a picture card or PDF, or an encrypted family pack another Yaadein adds.
+- **Come back daily**: home-screen widget, birthday reminders with a one-tap reel, Relive "For you" feed with the newest
+  reel playing, places.
+- **Bring your history**: import a Google Photos Takeout or WhatsApp chat export with real dates.
 
 - **Three ways in, one + button**: event-first, photo-first (auto-grouped by date), or just words with
   a rule-based *Polish* step that turns "goa trip 2024" into a proper card.
@@ -19,9 +29,11 @@ Every push to `main` builds a debug APK (`Yaadein-v<version>-debug.apk`) on GitH
 - **People**: a face grid, each person's own story (count, first and last memory, upcoming birthday,
   groups), *Together* view, relationships map.
 - **Relive**: "On this day", shake for a random memory, yearly summaries, recap videos.
-- **Security**: app lock (biometric class 3 + 6-digit PIN with Argon2id), SQLCipher database,
-  AES-encrypted media, `FLAG_SECURE`, encrypted password-protected backups.
-- **All ages**: 48 dp targets, font scaling, Easy mode, English / Hindi / Marathi.
+- **Security**: the vault keys are sealed with the PIN (Argon2id + Android Keystore) or a biometric-bound Keystore key;
+  optional phone screen lock mode; SQLCipher database; chunked AES-256-GCM media; tamper-proof lockout clock;
+  `FLAG_SECURE`; encrypted backups.
+- **All ages**: 48 dp targets, font scaling, Easy mode, compact and grid timelines; English, Hindi, Marathi, Gujarati,
+  Tamil, Telugu, Bengali and Kannada.
 
 ## Architecture
 
@@ -57,13 +69,13 @@ Conventions, the Room schema and the navigation map live in [CLAUDE.md](CLAUDE.m
 | Asset | Protection |
 |-------|------------|
 | Wrapping key | AES-256-GCM key in the Android Keystore (`yaadein_master`), hardware-backed where available. Never leaves the Keystore. |
-| Database key | 32 random bytes, wrapped by the Keystore key, stored in `EncryptedSharedPreferences`. SQLCipher opens `yaadein.db` with the raw key (WAL mode). |
-| Media key | A second 32 random bytes, wrapped the same way. |
-| Photos, videos, thumbnails | `AES-256-CTR` with a random 16-byte IV per file (`YDN1` header + IV + ciphertext). CTR keeps files seekable so video playback can scrub without decrypting the whole file. Integrity: SHA-256 of the plaintext stored in the DB and verified at import. |
+| Database + media keys | 2 × 32 random bytes. With a PIN: `salt ‖ Keystore(AES-GCM(Argon2id(PIN, salt), keys))`, so they cannot be recovered without the PIN, even by code running as the app; an optional second copy is sealed by a biometric-bound Keystore key (CryptoObject). Without a PIN (onboarding, phone-screen-lock mode): wrapped by the Keystore key only. Keys live in memory only after unlock; nothing reads the database before that. SQLCipher opens `yaadein.db` with the raw key (WAL mode). |
+| Photos, videos, thumbnails, voice, reels | `YDN2`: 64 KiB chunks, each AES-256-GCM with nonce `prefix ‖ index ‖ last` (STREAM), so files stay seekable and any change, reordering or truncation is detected. Older `YDN1` (AES-256-CTR) files are still read. SHA-256 of the plaintext is recorded at import for *Check my memories*. |
+| Reminder digest | Memory titles and first names for reminders and the widget, sealed with the Keystore key so notifications work while the vault is locked. |
 | Settings | DataStore whose serializer encrypts the JSON with the Keystore key (AES-GCM). |
-| PIN | Argon2id (m = 64 MiB, t = 3, p = 2), random 16-byte salt; hash in `EncryptedSharedPreferences`. 5 wrong PINs → 30 s, then 1 m, 5 m, 15 m, 1 h. Optional wipe after 10. |
+| PIN | Never stored: it derives the key that seals the vault keys (Argon2id m = 64 MiB, t = 3, p = 2). 5 wrong PINs → 30 s, then 1 m, 5 m, 15 m, 1 h, measured on the monotonic clock (changing the date does not help); optional wipe after 10. |
 | Wipe | Deletes the Keystore key (everything wrapped with it becomes unrecoverable), the DB, the vault files and the PIN, then restarts the process. |
-| Backup | `.yaadein` = AES-256-GCM container, key derived from the user's password with Argon2id. |
+| Backup / family pack | `.yaadein` = chunked AES-256-GCM container, key from the user's password with Argon2id. Automatic backups keep that derived key sealed with the vault's media key. |
 
 Decrypted bytes only ever live in memory: Coil's disk cache is disabled and decrypted previews
 are never written to storage. `FLAG_SECURE` (on by default) blocks screenshots and the Recents preview.
@@ -84,9 +96,11 @@ All five build phases from the master prompt are implemented and documented in [
 (phase table and STOP reports). Screenshots for every main screen live in [docs/SCREENSHOTS.md](docs/SCREENSHOTS.md);
 Play Store copy and asset index in [docs/PLAY_LISTING.md](docs/PLAY_LISTING.md).
 
-What still needs a real device before publishing: a first on-device run of the recap renderer (Media3 Transformer
-needs MediaCodec), a TalkBack walkthrough, and a Macrobenchmark-generated baseline profile to replace the
-hand-authored one.
+The improvement round (security, backups, voice, sharing, widget, languages, performance) is described in CLAUDE.md
+under "Improvement round". Device tests, a startup benchmark with a budget and baseline-profile generation run in
+`.github/workflows/device-tests.yml` (see docs/PERFORMANCE.md). Still open before Play: a TalkBack walkthrough on a
+phone, native-speaker review of the Gujarati, Tamil, Telugu, Bengali and Kannada text, and adding the release key
+secrets (docs/RELEASE_SIGNING.md).
 
 ## Building
 
@@ -94,8 +108,9 @@ CI does everything (`.github/workflows/build.yml`). To build locally you need JD
 SDK with platform 37 and build-tools 36.0.0:
 
 ```
-ANDROID_HOME=/path/to/sdk ./gradlew :app:assembleDebug
-ANDROID_HOME=/path/to/sdk ./gradlew test
+ANDROID_HOME=/path/to/sdk ./gradlew :app:assembleBeta          # the APK users install
+ANDROID_HOME=/path/to/sdk ./gradlew testDebugUnitTest :core:domain:test
+ANDROID_HOME=/path/to/sdk ./gradlew :core:data:connectedDebugAndroidTest   # vault migration on a device
 ANDROID_HOME=/path/to/sdk ./gradlew :app:updateDebugScreenshotTest   # regenerate screenshots
 ```
 
@@ -111,7 +126,7 @@ storage permission to the merged manifest; `ManifestPermissionsTest` checks the 
 | Do you provide a way for users to request that their data is deleted? | Yes — uninstalling the app or using *Settings → Storage → Erase everything* deletes all data; nothing is stored off-device. |
 | Data types | None collected, none shared. Photos, videos and text the user adds are stored only on the device, encrypted. |
 | Security practices | Data encrypted at rest (SQLCipher + AES-256). No data sent to third parties. Independent security review: no. |
-| Permissions | `USE_BIOMETRIC`/`USE_FINGERPRINT` (app lock), `POST_NOTIFICATIONS` ("On this day" reminders), `CAMERA` (optional in-app capture), `VIBRATE` (haptics). WorkManager adds `WAKE_LOCK`, `FOREGROUND_SERVICE` and `RECEIVE_BOOT_COMPLETED` for background video rendering and daily reminders. Photos are imported with the Android Photo Picker, which needs no storage permission. |
+| Permissions | `USE_BIOMETRIC`/`USE_FINGERPRINT` (app lock), `POST_NOTIFICATIONS` (reminders), `CAMERA` (optional in-app capture), `RECORD_AUDIO` (voice memories, only while recording), `VIBRATE` (haptics). WorkManager adds `WAKE_LOCK`, `FOREGROUND_SERVICE` and `RECEIVE_BOOT_COMPLETED` for background video rendering and daily reminders. Photos are imported with the Android Photo Picker, which needs no storage permission. |
 
 See [PRIVACY.md](PRIVACY.md) for the user-facing policy.
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_1_title">ನೆನಪಿಡಬೇಕಾದ ದಿನಗಳನ್ನು ಜೋಪಾನ ಮಾಡಿ</string>
+    <string name="onboarding_1_body">ಫೋಟೋಗಳು, ವೀಡಿಯೊಗಳು, ಅಥವಾ “ಗೋವಾ ಪ್ರವಾಸ 2024” ಅಂತಹ ಒಂದು ಸಾಲು. Yaadein ಅವುಗಳನ್ನು ನೀವು ಸುತ್ತಾಡಬಹುದಾದ ಒಂದು ಕಾಲರೇಖೆಯಾಗಿ ಮಾಡುತ್ತದೆ.</string>
+    <string name="onboarding_2_title">ಡೈರಿಯಂತೆ ಖಾಸಗಿ</string>
+    <string name="onboarding_2_body">ಎಲ್ಲವೂ ಈ ಫೋನ್‌ನಲ್ಲೇ ಇರುತ್ತದೆ, ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿ, ನಿಮ್ಮ PIN ಅಥವಾ ಬೆರಳಚ್ಚಿನಿಂದ ಲಾಕ್ ಆಗಿ. ಖಾತೆ ಇಲ್ಲ, ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ, ಜಾಹೀರಾತುಗಳಿಲ್ಲ.</string>
+    <string name="onboarding_3_title">ನೀವು ಪ್ರೀತಿಸುವವರ ಕಥೆಗಳು</string>
+    <string name="onboarding_3_body">ಕುಟುಂಬ ಮತ್ತು ಸ್ನೇಹಿತರನ್ನು ಟ್ಯಾಗ್ ಮಾಡಿ, ಪ್ರತಿಯೊಬ್ಬರ ಜೊತೆಗಿನ ನಿಮ್ಮ ಕಥೆ ನೋಡಿ, ಮತ್ತು ಹುಟ್ಟುಹಬ್ಬಗಳಂದು ಹಂಚಿಕೊಳ್ಳಲು ರೀಲ್‌ಗಳನ್ನು ಮಾಡಿ.</string>
+    <string name="onboarding_add_first_person">ನಿಮ್ಮ ಮೊದಲ ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ</string>
+</resources>
