@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yaadein.app.ui.RandomMemoryViewModel
 import com.yaadein.domain.settings.UserSettings
+import com.yaadein.feature.recap.AutoReelsViewModel
 
 @Composable
 fun YaadeinApp(
@@ -61,6 +62,11 @@ fun YaadeinApp(
             if (hasSharedMedia && unlocked && settings.onboardingDone && settings.pinConfigured) {
                 navController.navigate(Route.EventCapture(fromShare = true))
             }
+        }
+        // Keep the three automatic reels ready (queues background work only when they are missing or a day old).
+        val autoReels: AutoReelsViewModel = hiltViewModel()
+        LaunchedEffect(unlocked, settings.onboardingDone, settings.pinConfigured) {
+            if (unlocked && settings.onboardingDone && settings.pinConfigured) autoReels.ensure()
         }
         // Shake for a random memory (only while unlocked and on the home graph).
         val randomViewModel: RandomMemoryViewModel = hiltViewModel()

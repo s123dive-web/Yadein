@@ -95,6 +95,23 @@ class AppSmokeTest {
     }
 
     @Test
+    fun `your reels opens from relive with its two sections`() {
+        // Relive shows its actions only once there are memories.
+        runBlocking { seeder.seed() }
+        scenario.recreate()
+        compose.waitForIdle()
+        tab("Relive")
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("Your reels").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Your reels").performClick()
+        compose.waitForIdle()
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("Made for you").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Made by you").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Back").performClick()
+        compose.waitForIdle()
+        compose.onAllNodesWithText("Relive")[0].assertIsDisplayed()
+    }
+
+    @Test
     fun `capture hub opens and text-only flow saves a memory`() {
         compose.onAllNodesWithText("Create")[0].performClick()
         compose.waitForIdle()

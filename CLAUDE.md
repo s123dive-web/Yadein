@@ -603,7 +603,7 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
   the overloaded emulator, possible on a phone under memory pressure) is retried once.
 - **Import fix**: `TransformerVideoOptimizer` used `Presentation.createForHeight(1080)`, which made portrait 4K clips 607×1080;
   now `createForShortSide(1080)` (portrait → 1080×1920) at 12 Mbit/s.
-- **Maker credit**: `AppCredit` ("Crafted with AI by Suresh Dongardive", EN/HI/MR) is a one-line strip at the root of
+- **Maker credit**: `AppCredit` (now "Designed and built with AI by Suresh Dongardive", EN/HI/MR) is a one-line strip at the root of
   `YaadeinApp`, below every screen including the lock screen. The content above it calls
   `consumeWindowInsets(WindowInsets.navigationBars)` so Scaffold/NavigationBar/navigationBarsPadding don't pad twice. Also on About.
 - **About this app**: Timeline top bar has an info button ("About Yaadein") → `AppInfoScreen` (`SettingsPage.APP_INFO`), a plain
@@ -646,3 +646,43 @@ video exclusion); build passes with the zero-network guard; 1 new screenshot. Th
 - Emulator notes: `adb shell am start ... --grant-read-uri-permission` cannot grant MediaStore URIs (shell lacks access), so share
   tests go through the Files app. After an in-app (session) update the app runs interpreted on the unaccelerated emulator and can
   hit input ANRs; `cmd package compile -m speed -f <pkg>` fixes it. Keep `hide_error_dialogs=0` (with 1, every ANR kills the app).
+
+### Reel library, automatic reels, choose-your-photos (owner: "play reels in the app, keep the last 10, always 3 ready, more photos")
+
+- **Credit on reels**: the outro card is "Made with Yaadein" with the subtitle "App designed and built with AI by Suresh Dongardive"
+  (`recap_outro_credit`, passed to `RecapPlanner.plan(outroSubtitle = …)`). The in-app strip reads "Designed and built with AI by
+  Suresh Dongardive" (`app_credit`).
+- **More photos per reel**: the planner used to keep at most 8 photos per memory (`MAX_ITEMS_PER_MEMORY`), so a 100-photo
+  album gave an 8-photo reel. Now `RecapPlanner.defaultSelection` water-fills a per-length budget (Short 20, Medium 40,
+  Long 80) fairly across memories (small albums whole, big ones evenly sampled) and `plan(selectedMediaIds = …)` uses exactly
+  the user's choice (up to `MAX_SELECTED_ITEMS` = 150; the reel grows past the length preset when needed, photos ≥ 1.5 s).
+  A memory with photos but none chosen is left out; memories without media still become text cards.
+- **WorkManager 10 KB limit**: the plan JSON was passed as worker input data, which throws past 10 240 bytes (≈ 60 photos).
+  `RecapRenderWorker.enqueue` now writes the plan to `noBackupFilesDir/reel-jobs/plan-*.json` and passes the path
+  (`KEY_PLAN_FILE`; `KEY_PLAN` is still read for work queued by older builds). The file is deleted when the work ends.
+- **Choosing photos**: the Create a reel screen shows "24 of 130 photos and clips" with **Choose photos** (full-screen
+  `MediaChooser`: every photo/clip of the memories in scope, grouped by memory, tap to add/remove, Select all / Clear per memory
+  and overall, Auto-pick to go back). Tapping a storyboard thumbnail removes it. Changing who/what reloads and re-picks
+  automatically; changing the length re-picks only while the selection is still automatic.
+- **Reel library** (`core/data/reels/ReelLibrary`, `@Singleton`, constructor-injected): `vault/reels/` holds each reel as an
+  encrypted MP4 (same AES-CTR format as media, so it is seekable) plus `index.enc`, an encrypted JSON list written with
+  temp-file + rename. Keeps the newest 10 user reels (`MAX_USER_REELS`) and one reel per automatic slot (3). Under the vault
+  root, so Erase everything removes it; not counted in Storage usage and not touched by `pruneOrphans`. The first load drops
+  entries whose video is missing and deletes stray files (so `add` loads before writing). Playback: `ReelLibrary.dataSourceFactory()`
+  (`EncryptedFileDataSource`, `yaadein-reel://reel/{id}`). Share: decrypts one copy to `cache/exports/reel-*.mp4` (FileProvider)
+  and returns a chooser; the previous export is deleted.
+- **User reels**: after rendering, `RecapRenderWorker` adds the reel to the library (output `KEY_REEL_ID`) and still saves a copy to
+  Movies/Yaadein. The done card has **Play** (opens the in-app player), Share and Make another.
+- **Automatic reels** (`AutoReelWorker`, unique work `auto_reels`, KEEP, battery/storage not low): `AutoReelPicker` (pure, domain)
+  fills three slots, each with the first variant that has photos: recent (last 60 days → latest 10 memories), person (who appears
+  most → a sample of everything), throwback (this month in earlier years → one memory per year). 15 photos each, Short length, photos
+  only, bundled music, themes Warm/Festive/Classic Film. Identical photo sets are never used twice (seeded sampling makes overlapping
+  slots differ). Each reel stores a signature of its photos; an unchanged slot is not rendered again. `AutoReelWorker.ensure` queues a
+  run when the reels are a day old (or hourly while fewer than three exist); called when the app opens unlocked (`AutoReelsViewModel`
+  in `YaadeinApp`) and when Your reels opens. The worker steps aside (`Result.retry()`) while a user reel is queued or running, and
+  queueing a user reel cancels it. Foreground notification is best effort (Android may refuse it from the background).
+- **Screens**: `Route.Reels` (Your reels: "Made for you" row + "Made by you" grid, play/share/delete) from Relive → **Your reels** and
+  the Create a reel top bar; `Route.ReelPlayer(reelId)` (ExoPlayer full screen, pauses on stop, Share, Delete).
+- Tests: `RecapPlannerTest` (whole album, even sampling, fair budget, explicit selection, outro credit), `AutoReelPickerTest`,
+  `ReelLibraryTest` (retention, slot replacement, encryption at rest, restart, seekable playback, share, delete), smoke test opens
+  Your reels; screenshot "Your reels" added, Create a reel / Relive / About references updated.

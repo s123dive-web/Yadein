@@ -97,6 +97,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                 onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
                 onOpenPerson = { navController.navigate(Route.PersonDetail(it)) },
                 onRecap = { navController.navigate(Route.RecapSetup()) },
+                onReels = { navController.navigate(Route.Reels) },
                 onYear = { year -> navController.navigate(Route.YearlySummary(0L, year)) },
                 contentPadding = padding,
             )

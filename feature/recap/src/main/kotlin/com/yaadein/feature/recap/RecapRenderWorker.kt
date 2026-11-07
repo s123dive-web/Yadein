@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
@@ -24,7 +23,8 @@ import com.yaadein.data.media.MediaStore
 import com.yaadein.data.recap.MusicSource
 import com.yaadein.data.recap.RecapOutput
 import com.yaadein.data.recap.RecapRenderer
-import com.yaadein.data.recap.RenderStyle
+import com.yaadein.data.reels.ReelKind
+import com.yaadein.data.reels.ReelLibrary
 import com.yaadein.domain.recap.RecapPlan
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -44,10 +44,13 @@ class RecapRenderWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val db: AppDatabase,
     private val mediaStore: MediaStore,
+    private val library: ReelLibrary,
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val planJson = inputData.getString(KEY_PLAN) ?: return Result.failure(workDataOf(KEY_ERROR to "missing plan"))
+        val planFile = inputData.getString(KEY_PLAN_FILE)?.let(::File)
+        val planJson = planFile?.takeIf { it.exists() }?.readText() ?: inputData.getString(KEY_PLAN)
+            ?: return Result.failure(workDataOf(KEY_ERROR to "missing plan"))
         val plan = Json.decodeFromString(RecapPlan.serializer(), planJson)
         val music = when (inputData.getString(KEY_MUSIC_KIND)) {
             MUSIC_BUNDLED -> MusicSource.Bundled(inputData.getInt(KEY_MUSIC_RES, 0))
@@ -57,20 +60,20 @@ class RecapRenderWorker @AssistedInject constructor(
         val title = inputData.getString(KEY_TITLE) ?: "Yaadein"
         ensureChannel(context)
         setForeground(foregroundInfo(0, title))
-        val style = RenderStyle(
-            titleTypeface = ResourcesCompat.getFont(context, CoreR.font.fraunces_semibold) ?: android.graphics.Typeface.SERIF,
-            bodyTypeface = ResourcesCompat.getFont(context, CoreR.font.manrope_medium) ?: android.graphics.Typeface.SANS_SERIF,
-        )
         val output = File(mediaStore.renderDir, "recap-${id}.mp4")
         return try {
-            RecapRenderer(context, db, mediaStore).render(plan, music, style, output) { pct ->
+            RecapRenderer(context, db, mediaStore).render(plan, music, ReelRendering.style(context), output) { pct ->
                 setProgressAsync(workDataOf(KEY_PROGRESS to pct))
                 runCatching { setForegroundAsync(foregroundInfo(pct, title)) }
             }
+            // Keep it in the app's reel library (encrypted, last 10 kept) first, then put a copy in Movies/Yaadein.
+            val entry = runCatching {
+                library.add(output, title, ReelKind.USER, plan.totalDurationMs, ReelRendering.coverMediaId(plan), plan.theme.name)
+            }.onFailure { CrashLog.recordNonFatal(context, "reel library", it) }.getOrNull()
             val fileName = title.replace(Regex("[^\\p{L}\\p{N} _-]"), "").trim().ifBlank { "Yaadein" } + "-" + System.currentTimeMillis() / 1000
             val uri = RecapOutput.save(context, output, fileName)
             notifyDone(context, uri.toString(), title)
-            Result.success(workDataOf(KEY_OUTPUT_URI to uri.toString()))
+            Result.success(workDataOf(KEY_OUTPUT_URI to uri.toString(), KEY_REEL_ID to entry?.id))
         } catch (e: kotlinx.coroutines.CancellationException) {
             output.delete()
             throw e
@@ -78,6 +81,8 @@ class RecapRenderWorker @AssistedInject constructor(
             output.delete()
             CrashLog.recordNonFatal(context, "recap export", e)
             Result.failure(workDataOf(KEY_ERROR to RecapRenderer.describe(e)))
+        } finally {
+            planFile?.delete()
         }
     }
 
@@ -117,7 +122,10 @@ class RecapRenderWorker @AssistedInject constructor(
         const val WORK_NAME = "recap_render"
         const val CHANNEL_ID = "recap_render"
         const val NOTIFICATION_ID = 4201
+        /** Only read from work queued by older versions; the plan now travels in a file (WorkManager data is capped at 10 KB). */
         const val KEY_PLAN = "plan"
+        const val KEY_PLAN_FILE = "planFile"
+        const val KEY_REEL_ID = "reelId"
         const val KEY_TITLE = "title"
         const val KEY_MUSIC_KIND = "musicKind"
         const val KEY_MUSIC_RES = "musicRes"
@@ -135,8 +143,11 @@ class RecapRenderWorker @AssistedInject constructor(
         }
 
         fun enqueue(context: Context, plan: RecapPlan, music: MusicSource, title: String) {
+            // A reel with many photos does not fit in WorkManager's 10 KB input data, so the plan goes in a file.
+            val planFile = File(File(context.noBackupFilesDir, "reel-jobs").apply { mkdirs() }, "plan-${java.util.UUID.randomUUID()}.json")
+            planFile.writeText(Json.encodeToString(RecapPlan.serializer(), plan))
             val data = Data.Builder()
-                .putString(KEY_PLAN, Json.encodeToString(RecapPlan.serializer(), plan))
+                .putString(KEY_PLAN_FILE, planFile.path)
                 .putString(KEY_TITLE, title)
             when (music) {
                 is MusicSource.Bundled -> data.putString(KEY_MUSIC_KIND, MUSIC_BUNDLED).putInt(KEY_MUSIC_RES, music.rawResId)
@@ -144,6 +155,8 @@ class RecapRenderWorker @AssistedInject constructor(
                 MusicSource.None -> data.putString(KEY_MUSIC_KIND, MUSIC_NONE)
             }
             val request = OneTimeWorkRequestBuilder<RecapRenderWorker>().setInputData(data.build()).addTag(WORK_NAME).build()
+            // One export at a time: the user's reel goes first, the automatic ones are made again later.
+            AutoReelWorker.cancel(context)
             WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, request)
         }
 

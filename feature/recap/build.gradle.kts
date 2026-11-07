@@ -48,6 +48,9 @@ dependencies {
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.work.runtime)
     implementation(libs.media3.common)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.datasource)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

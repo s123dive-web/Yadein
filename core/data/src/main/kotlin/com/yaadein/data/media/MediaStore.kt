@@ -10,12 +10,15 @@ import java.util.UUID
  *
  * media/   full-size encrypted photos and videos
  * thumbs/  encrypted JPEG thumbnails
+ * reels/   the in-app reel library (encrypted MP4s + index, see ReelLibrary)
  * tmp/     in-flight imports (temp-file-then-rename keeps writes atomic)
  */
 class MediaStore(context: Context, val crypto: MediaCrypto) {
     private val root: File = File(context.filesDir, "vault").apply { mkdirs() }
     val mediaDir: File = File(root, "media").apply { mkdirs() }
     val thumbDir: File = File(root, "thumbs").apply { mkdirs() }
+    /** Not counted by [usedBytes] or touched by [pruneOrphans]; removed by [wipeAll] with the rest of the vault. */
+    val reelDir: File get() = File(root, "reels").apply { mkdirs() }
     val tmpDir: File = File(context.cacheDir, "import_tmp").apply { mkdirs() }
     val renderDir: File = File(context.cacheDir, "render").apply { mkdirs() }
 

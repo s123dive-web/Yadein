@@ -23,6 +23,7 @@ import com.yaadein.domain.repository.PersonRepository
 import com.yaadein.domain.repository.TimelineFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,7 +54,8 @@ sealed interface MusicChoice {
 sealed interface RenderStatus {
     data object Idle : RenderStatus
     data class Running(val progress: Int) : RenderStatus
-    data class Done(val uri: Uri) : RenderStatus
+    /** [reelId]: the copy kept in the app's reel library, for in-app playback (null if it could not be stored). */
+    data class Done(val uri: Uri, val reelId: String? = null) : RenderStatus
     data class Failed(val message: String) : RenderStatus
 }
 
@@ -73,10 +75,22 @@ data class RecapUiState(
     val includeVideos: Boolean = true,
     val music: MusicChoice = MusicChoice.Bundled("warm"),
     val memories: List<MemoryDetail> = emptyList(),
+    /** Photos and clips going into the reel (picked automatically until the user changes them). */
+    val selectedMediaIds: Set<Long> = emptySet(),
+    /** True once the user added or removed a photo; changing who/what or the length then starts over. */
+    val customSelection: Boolean = false,
+    /** Set when the user tried to go past [RecapPlanner.MAX_SELECTED_ITEMS]. */
+    val selectionLimitHit: Boolean = false,
     val plan: RecapPlan? = null,
     val title: String = "",
     val render: RenderStatus = RenderStatus.Idle,
-)
+) {
+    /** Every photo/clip the current scope could use, memory by memory (for the photo chooser). */
+    val candidates: List<Pair<MemoryDetail, List<com.yaadein.domain.model.Media>>>
+        get() = memories.sortedWith(compareBy({ it.memory.date.startEpochDay }, { it.memory.id }))
+            .map { it to RecapPlanner.usableMedia(it, includeVideos) }.filter { it.second.isNotEmpty() }
+    val candidateCount: Int get() = memories.sumOf { RecapPlanner.usableMedia(it, includeVideos).size }
+}
 
 @HiltViewModel
 class RecapViewModel @Inject constructor(
@@ -107,26 +121,79 @@ class RecapViewModel @Inject constructor(
             }
             _state.update { it.copy(loading = false, people = people, groups = groups, person = person, memory = memory, year = initialYear.takeIf { y -> y != 0 }, scope = scope) }
             observeWork()
-            rebuild()
+            reload()
         }
     }
 
-    fun setScope(scope: Scope) { _state.update { it.copy(scope = scope) }; rebuild() }
-    fun setPerson(p: Person?) { _state.update { it.copy(person = p, scope = if (p != null && it.scope != Scope.YEAR) Scope.PERSON else it.scope) }; rebuild() }
-    fun setGroup(g: Group?) { _state.update { it.copy(group = g, scope = Scope.GROUP) }; rebuild() }
-    fun setYear(y: Int?) { _state.update { it.copy(year = y, scope = if (y != null) Scope.YEAR else Scope.ALL) }; rebuild() }
-    fun setRange(from: Long?, to: Long?) { _state.update { it.copy(fromEpochDay = from, toEpochDay = to, scope = Scope.DATE_RANGE) }; rebuild() }
+    fun setScope(scope: Scope) { _state.update { it.copy(scope = scope) }; reload() }
+    fun setPerson(p: Person?) { _state.update { it.copy(person = p, scope = if (p != null && it.scope != Scope.YEAR) Scope.PERSON else it.scope) }; reload() }
+    fun setGroup(g: Group?) { _state.update { it.copy(group = g, scope = Scope.GROUP) }; reload() }
+    fun setYear(y: Int?) { _state.update { it.copy(year = y, scope = if (y != null) Scope.YEAR else Scope.ALL) }; reload() }
+    fun setRange(from: Long?, to: Long?) { _state.update { it.copy(fromEpochDay = from, toEpochDay = to, scope = Scope.DATE_RANGE) }; reload() }
     fun setTheme(t: RecapTheme) {
         _state.update { s -> s.copy(theme = t, music = if (s.music is MusicChoice.Bundled) MusicChoice.Bundled(bundledTracks.first { it.theme == t }.key) else s.music) }
-        rebuild()
+        replan()
     }
-    fun setLength(l: RecapLength) { _state.update { it.copy(length = l) }; rebuild() }
-    fun setIncludeVideos(v: Boolean) { _state.update { it.copy(includeVideos = v) }; rebuild() }
+    fun setLength(l: RecapLength) {
+        _state.update { s -> s.copy(length = l, selectedMediaIds = if (s.customSelection) s.selectedMediaIds else defaultSelection(s.memories, s.includeVideos, l)) }
+        replan()
+    }
+    fun setIncludeVideos(v: Boolean) {
+        _state.update { s ->
+            val kept = if (v) s.selectedMediaIds else s.selectedMediaIds - s.memories.flatMap { it.media }.filter { it.kind == com.yaadein.domain.model.MediaKind.VIDEO }.map { it.id }.toSet()
+            s.copy(includeVideos = v, selectedMediaIds = if (s.customSelection) kept else defaultSelection(s.memories, v, s.length))
+        }
+        replan()
+    }
     fun setMusic(m: MusicChoice) = _state.update { it.copy(music = m) }
-    fun setTitle(t: String) = _state.update { it.copy(title = t) }
+    fun setTitle(t: String) { _state.update { it.copy(title = t) }; replan() }
 
-    private fun rebuild() {
-        viewModelScope.launch {
+    /** Adds or removes one photo/clip (tap in the chooser or on the storyboard). */
+    fun toggleMedia(mediaId: Long) {
+        _state.update { s ->
+            when {
+                mediaId in s.selectedMediaIds -> s.copy(selectedMediaIds = s.selectedMediaIds - mediaId, customSelection = true, selectionLimitHit = false)
+                s.selectedMediaIds.size >= RecapPlanner.MAX_SELECTED_ITEMS -> s.copy(selectionLimitHit = true)
+                else -> s.copy(selectedMediaIds = s.selectedMediaIds + mediaId, customSelection = true, selectionLimitHit = false)
+            }
+        }
+        replan()
+    }
+
+    /** Selects or clears every photo/clip of one memory. */
+    fun setMemorySelected(memoryId: Long, selected: Boolean) {
+        _state.update { s ->
+            val ids = s.memories.firstOrNull { it.memory.id == memoryId }?.let { RecapPlanner.usableMedia(it, s.includeVideos) }?.map { it.id } ?: emptyList()
+            if (!selected) return@update s.copy(selectedMediaIds = s.selectedMediaIds - ids.toSet(), customSelection = true, selectionLimitHit = false)
+            val room = RecapPlanner.MAX_SELECTED_ITEMS - s.selectedMediaIds.size
+            val toAdd = ids.filter { it !in s.selectedMediaIds }
+            s.copy(selectedMediaIds = s.selectedMediaIds + toAdd.take(room.coerceAtLeast(0)), customSelection = true, selectionLimitHit = toAdd.size > room)
+        }
+        replan()
+    }
+
+    /** Selects everything the scope has (up to the limit), or nothing. */
+    fun selectAll(selected: Boolean) {
+        _state.update { s ->
+            if (!selected) return@update s.copy(selectedMediaIds = emptySet(), customSelection = true, selectionLimitHit = false)
+            val all = s.candidates.flatMap { it.second }.map { it.id }
+            s.copy(selectedMediaIds = all.take(RecapPlanner.MAX_SELECTED_ITEMS).toSet(), customSelection = true, selectionLimitHit = all.size > RecapPlanner.MAX_SELECTED_ITEMS)
+        }
+        replan()
+    }
+
+    /** Back to the automatic pick. */
+    fun resetSelection() {
+        _state.update { s -> s.copy(selectedMediaIds = defaultSelection(s.memories, s.includeVideos, s.length), customSelection = false, selectionLimitHit = false) }
+        replan()
+    }
+
+    private var loadJob: Job? = null
+
+    /** Loads the memories for the chosen scope and picks photos automatically. */
+    private fun reload() {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             val s = _state.value
             val ids: List<Long> = when (s.scope) {
                 Scope.ALL -> memoryRepository.idsFor(TimelineFilter())
@@ -137,15 +204,32 @@ class RecapViewModel @Inject constructor(
                 Scope.DATE_RANGE -> memoryRepository.idsFor(TimelineFilter(fromEpochDay = s.fromEpochDay, toEpochDay = s.toEpochDay))
             }
             val details = memoryRepository.details(ids)
-            val title = defaultTitle(s)
-            val plan = if (details.isEmpty()) null else RecapPlanner.plan(
-                memories = details, theme = s.theme, length = s.length, title = s.title.ifBlank { title },
-                subtitle = subtitleFor(details), outroText = context.getString(R.string.recap_outro), dateLabel = { Dates.label(it.memory.date, Locale.getDefault()).text },
-                includeVideos = s.includeVideos,
-            )
-            _state.update { it.copy(memories = details, plan = plan, title = it.title.ifBlank { title }) }
+            _state.update {
+                it.copy(
+                    memories = details, selectedMediaIds = defaultSelection(details, it.includeVideos, it.length),
+                    customSelection = false, selectionLimitHit = false, title = defaultTitle(it),
+                )
+            }
+            replan()
         }
     }
+
+    /** Rebuilds the storyboard from the current memories and selection (cheap: no database work). */
+    private fun replan() {
+        val s = _state.value
+        val title = defaultTitle(s)
+        val plan = if (s.memories.isEmpty()) null else RecapPlanner.plan(
+            memories = s.memories, theme = s.theme, length = s.length, title = s.title.ifBlank { title },
+            subtitle = subtitleFor(s.memories), outroText = context.getString(R.string.recap_outro),
+            outroSubtitle = context.getString(R.string.recap_outro_credit),
+            dateLabel = { Dates.label(it.memory.date, Locale.getDefault()).text },
+            includeVideos = s.includeVideos, selectedMediaIds = s.selectedMediaIds,
+        ).takeIf { p -> p.segments.size > 2 }
+        _state.update { it.copy(plan = plan) }
+    }
+
+    private fun defaultSelection(memories: List<MemoryDetail>, includeVideos: Boolean, length: RecapLength) =
+        RecapPlanner.defaultSelection(memories, includeVideos, RecapPlanner.defaultItemCount(length))
 
     private fun defaultTitle(s: RecapUiState): String = when (s.scope) {
         Scope.PERSON -> s.person?.let { context.getString(R.string.recap_title_person, it.displayName) } ?: context.getString(R.string.recap_title_all)
@@ -184,7 +268,8 @@ class RecapViewModel @Inject constructor(
                 val status = when (info.state) {
                     WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED -> RenderStatus.Running(0)
                     WorkInfo.State.RUNNING -> RenderStatus.Running(info.progress.getInt(RecapRenderWorker.KEY_PROGRESS, 0))
-                    WorkInfo.State.SUCCEEDED -> info.outputData.getString(RecapRenderWorker.KEY_OUTPUT_URI)?.let { RenderStatus.Done(Uri.parse(it)) } ?: RenderStatus.Idle
+                    WorkInfo.State.SUCCEEDED -> info.outputData.getString(RecapRenderWorker.KEY_OUTPUT_URI)
+                        ?.let { RenderStatus.Done(Uri.parse(it), info.outputData.getString(RecapRenderWorker.KEY_REEL_ID)) } ?: RenderStatus.Idle
                     WorkInfo.State.FAILED -> RenderStatus.Failed(info.outputData.getString(RecapRenderWorker.KEY_ERROR) ?: "")
                     WorkInfo.State.CANCELLED -> RenderStatus.Idle
                 }

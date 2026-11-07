@@ -27,4 +27,5 @@
     <string name="yearly_last">Last memory of the year</string>
     <string name="yearly_empty">No memories from %1$d yet.</string>
     <plurals name="notification_years_ago"><item quantity="one">%1$d year ago today</item><item quantity="other">%1$d years ago today</item></plurals>
+    <string name="relive_your_reels">Your reels</string>
 </resources>

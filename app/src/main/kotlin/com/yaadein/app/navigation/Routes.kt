@@ -23,6 +23,9 @@ sealed interface Route {
     @Serializable data object QuickCapture : Route
     @Serializable data object PastWizard : Route
     @Serializable data class RecapSetup(val personId: Long = 0L, val memoryId: Long = 0L, val year: Int = 0) : Route
+    /** Reels kept in the app: three made automatically plus the user's last ten. */
+    @Serializable data object Reels : Route
+    @Serializable data class ReelPlayer(val reelId: String) : Route
     @Serializable data class Settings(val page: String) : Route
 }
 

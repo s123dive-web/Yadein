@@ -3,6 +3,7 @@ package com.yaadein.feature.relive
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cake
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.Shuffle
+import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -53,6 +55,7 @@ fun ReliveRoute(
     onYear: (Int) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    onReels: () -> Unit = {},
     viewModel: ReliveViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -66,6 +69,7 @@ fun ReliveRoute(
         onYear = onYear,
         contentPadding = contentPadding,
         modifier = modifier,
+        onReels = onReels,
     )
 }
 
@@ -81,6 +85,7 @@ fun ReliveScreen(
     onYear: (Int) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    onReels: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
@@ -102,7 +107,7 @@ fun ReliveScreen(
                 verticalArrangement = Arrangement.spacedBy(spacing.md),
             ) {
                 item(key = "actions") {
-                    Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
                         FilledTonalButton(onClick = onSurprise) {
                             Icon(Icons.Rounded.Shuffle, contentDescription = null)
                             Spacer(Modifier.width(spacing.sm))
@@ -112,6 +117,11 @@ fun ReliveScreen(
                             Icon(Icons.Rounded.Movie, contentDescription = null)
                             Spacer(Modifier.width(spacing.sm))
                             Text(stringResource(R.string.relive_make_recap))
+                        }
+                        FilledTonalButton(onClick = onReels) {
+                            Icon(Icons.Rounded.VideoLibrary, contentDescription = null)
+                            Spacer(Modifier.width(spacing.sm))
+                            Text(stringResource(R.string.relive_your_reels))
                         }
                     }
                 }

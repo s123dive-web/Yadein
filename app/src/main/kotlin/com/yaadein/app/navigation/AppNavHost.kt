@@ -33,6 +33,8 @@ import com.yaadein.feature.people.RelationshipsRoute
 import com.yaadein.feature.people.TogetherRoute
 import com.yaadein.feature.relive.YearlySummaryRoute
 import com.yaadein.feature.recap.RecapRoute
+import com.yaadein.feature.recap.ReelPlayerRoute
+import com.yaadein.feature.recap.ReelsRoute
 import com.yaadein.feature.settings.NotificationsRoute
 import com.yaadein.feature.settings.BackupRoute
 import com.yaadein.feature.settings.FacesRoute
@@ -162,7 +164,21 @@ fun AppNavHost(
             )
         }
         composable<Route.RecapSetup> {
-            RecapRoute(onBack = { navController.popBackStack() })
+            RecapRoute(
+                onBack = { navController.popBackStack() },
+                onOpenLibrary = { navController.navigate(Route.Reels) { launchSingleTop = true } },
+                onPlayReel = { navController.navigate(Route.ReelPlayer(it)) },
+            )
+        }
+        composable<Route.Reels> {
+            ReelsRoute(
+                onBack = { navController.popBackStack() },
+                onPlay = { navController.navigate(Route.ReelPlayer(it)) },
+                onCreate = { navController.navigate(Route.RecapSetup()) },
+            )
+        }
+        composable<Route.ReelPlayer> {
+            ReelPlayerRoute(onBack = { navController.popBackStack() })
         }
         composable<Route.Settings> { entry ->
             val page = SettingsPage.valueOf(entry.toRoute<Route.Settings>().page)

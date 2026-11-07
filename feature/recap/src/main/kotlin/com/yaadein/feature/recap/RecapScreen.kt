@@ -29,12 +29,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Movie
+import androidx.compose.material.icons.rounded.PhotoLibrary
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -84,7 +89,13 @@ import kotlinx.coroutines.delay
 import com.yaadein.core.ui.R as CoreR
 
 @Composable
-fun RecapRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: RecapViewModel = hiltViewModel()) {
+fun RecapRoute(
+    onBack: () -> Unit,
+    onOpenLibrary: () -> Unit,
+    onPlayReel: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: RecapViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val shareTitle = stringResource(CoreR.string.action_share)
@@ -100,6 +111,8 @@ fun RecapRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: Rec
         onTheme = viewModel::setTheme, onLength = viewModel::setLength, onIncludeVideos = viewModel::setIncludeVideos,
         onMusic = viewModel::setMusic, onPickOwnMusic = { audioPicker.launch(arrayOf("audio/*")) }, onTitle = viewModel::setTitle,
         onRender = viewModel::startRender, onCancel = viewModel::cancelRender, onReset = viewModel::resetRender,
+        onToggleMedia = viewModel::toggleMedia, onMemorySelected = viewModel::setMemorySelected, onSelectAll = viewModel::selectAll,
+        onResetSelection = viewModel::resetSelection, onOpenLibrary = onOpenLibrary, onPlayReel = onPlayReel,
         onShare = { uri ->
             val share = Intent(Intent.ACTION_SEND).setType("video/mp4").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             context.startActivity(Intent.createChooser(share, shareTitle))
@@ -138,12 +151,32 @@ fun RecapScreen(
     onShare: (android.net.Uri) -> Unit,
     years: List<Int>,
     modifier: Modifier = Modifier,
+    onToggleMedia: (Long) -> Unit = {},
+    onMemorySelected: (Long, Boolean) -> Unit = { _, _ -> },
+    onSelectAll: (Boolean) -> Unit = {},
+    onResetSelection: () -> Unit = {},
+    onOpenLibrary: () -> Unit = {},
+    onPlayReel: (String) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
+    var choosing by remember { mutableStateOf(false) }
+    if (choosing) {
+        MediaChooser(
+            state = state, onToggle = onToggleMedia, onMemorySelected = onMemorySelected, onSelectAll = onSelectAll,
+            onReset = onResetSelection, onDone = { choosing = false },
+        )
+    }
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(stringResource(R.string.recap_title), modifier = Modifier.semantics { heading() }) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(CoreR.string.action_back)) } },
+            actions = {
+                TextButton(onClick = onOpenLibrary) {
+                    Icon(Icons.Rounded.VideoLibrary, contentDescription = null)
+                    Spacer(Modifier.width(spacing.xs))
+                    Text(stringResource(R.string.reels_library_short))
+                }
+            },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
         )
         if (state.loading) { Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }; return }
@@ -157,13 +190,18 @@ fun RecapScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth(PREVIEW_WIDTH_FRACTION)
                         .aspectRatio(plan.width.toFloat() / plan.height).clip(RoundedCornerShape(Yaadein.radius.lg)),
                 )
-                Storyboard(plan = plan)
+                Storyboard(plan = plan, onRemove = onToggleMedia)
                 Text(
                     text = stringResource(R.string.recap_summary, plan.mediaCount, formatDuration(plan.totalDurationMs)),
                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+            } else if (state.candidateCount > 0) {
+                EmptyState(illustration = IllustrationKind.FILM_REEL, title = stringResource(R.string.recap_none_selected_title), message = stringResource(R.string.recap_none_selected_message))
             } else {
                 EmptyState(illustration = IllustrationKind.FILM_REEL, title = stringResource(R.string.recap_empty_title), message = stringResource(R.string.recap_empty_message))
+            }
+            if (state.candidateCount > 0) {
+                PhotoSelectionBar(selected = state.selectedMediaIds.size, total = state.candidateCount, custom = state.customSelection, onChoose = { choosing = true }, onReset = onResetSelection)
             }
             // ---- render status ----
             when (val r = state.render) {
@@ -178,9 +216,12 @@ fun RecapScreen(
                 is RenderStatus.Done -> Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(spacing.lg), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
                         Text(stringResource(R.string.recap_done_title), style = MaterialTheme.typography.titleMedium)
-                        Text(stringResource(R.string.recap_done_text), style = MaterialTheme.typography.bodyMedium)
-                        Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                            Button(onClick = { onShare(r.uri) }) { Icon(Icons.Rounded.Share, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(CoreR.string.action_share)) }
+                        Text(stringResource(if (r.reelId != null) R.string.recap_done_text_kept else R.string.recap_done_text), style = MaterialTheme.typography.bodyMedium)
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+                            if (r.reelId != null) {
+                                Button(onClick = { onPlayReel(r.reelId) }) { Icon(Icons.Rounded.PlayArrow, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(R.string.reel_play)) }
+                            }
+                            FilledTonalButton(onClick = { onShare(r.uri) }) { Icon(Icons.Rounded.Share, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(CoreR.string.action_share)) }
                             TextButton(onClick = onReset) { Text(stringResource(R.string.recap_make_another)) }
                         }
                     }
@@ -278,15 +319,20 @@ private fun ThemeSwatch(theme: RecapTheme, selected: Boolean, onClick: () -> Uni
     }
 }
 
-/** Strip of thumbnails with durations. */
+/** Strip of thumbnails with durations. Tapping a photo or clip takes it out of the reel. */
 @Composable
-private fun Storyboard(plan: RecapPlan) {
+private fun Storyboard(plan: RecapPlan, onRemove: (Long) -> Unit) {
     val spacing = Yaadein.spacing
+    val removeLabel = stringResource(R.string.recap_remove_photo)
     LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.xs)) {
         items(plan.segments.size, key = { it }) { i ->
             val seg = plan.segments[i]
+            val mediaId = when (seg) { is RecapSegment.Photo -> seg.mediaId; is RecapSegment.Clip -> seg.mediaId; is RecapSegment.TitleCard -> null }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(Modifier.size(width = 72.dp, height = 44.dp).clip(RoundedCornerShape(Yaadein.radius.sm))) {
+                Box(
+                    Modifier.size(width = 72.dp, height = 44.dp).clip(RoundedCornerShape(Yaadein.radius.sm))
+                        .then(if (mediaId != null) Modifier.clickable(onClickLabel = removeLabel) { onRemove(mediaId) } else Modifier),
+                ) {
                     when (seg) {
                         is RecapSegment.TitleCard -> {
                             val (a, b) = themeColors(plan.theme)
@@ -297,8 +343,35 @@ private fun Storyboard(plan: RecapPlan) {
                         is RecapSegment.Photo -> ThumbnailImage(mediaId = seg.mediaId, contentDescription = seg.caption, modifier = Modifier.fillMaxSize())
                         is RecapSegment.Clip -> Box { ThumbnailImage(mediaId = seg.mediaId, contentDescription = seg.caption, modifier = Modifier.fillMaxSize()); Icon(Icons.Rounded.Movie, contentDescription = null, tint = Color.White, modifier = Modifier.align(Alignment.Center).size(Yaadein.sizes.iconSm)) }
                     }
+                    if (mediaId != null) {
+                        Icon(
+                            Icons.Rounded.Close, contentDescription = null, tint = Color.White,
+                            modifier = Modifier.align(Alignment.TopEnd).padding(Yaadein.spacing.xxs).size(16.dp)
+                                .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(Yaadein.radius.pill)),
+                        )
+                    }
                 }
                 Text("${seg.durationMs / 1000}s", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+}
+
+/** "24 of 130 photos and clips" with the button that opens the chooser. */
+@Composable
+private fun PhotoSelectionBar(selected: Int, total: Int, custom: Boolean, onChoose: () -> Unit, onReset: () -> Unit) {
+    val spacing = Yaadein.spacing
+    Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(spacing.md), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+            Text(stringResource(R.string.recap_photos_selected, selected, total), style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.recap_photos_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                FilledTonalButton(onClick = onChoose) {
+                    Icon(Icons.Rounded.PhotoLibrary, contentDescription = null)
+                    Spacer(Modifier.width(spacing.sm))
+                    Text(stringResource(R.string.recap_choose_photos))
+                }
+                if (custom) TextButton(onClick = onReset) { Text(stringResource(R.string.recap_auto_pick)) }
             }
         }
     }

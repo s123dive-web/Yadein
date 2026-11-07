@@ -54,14 +54,52 @@ class RecapPlannerTest {
     }
 
     @Test
-    fun `large albums are capped and text-only memories get a card`() {
+    fun `a big album is used whole when it fits and text-only memories get a card`() {
         val album = memory(1, LocalDate.of(2024, 1, 1), (1..30).map { media(it.toLong(), 1) })
         val text = memory(2, LocalDate.of(2024, 2, 1), emptyList(), "Just words")
         val p = plan(listOf(album, text))
-        assertEquals(RecapPlanner.MAX_ITEMS_PER_MEMORY, p.segments.filterIsInstance<RecapSegment.Photo>().size)
+        assertEquals((1L..30L).toList(), p.segments.filterIsInstance<RecapSegment.Photo>().map { it.mediaId })
         assertTrue(p.segments.any { it is RecapSegment.TitleCard && it.title == "Just words" })
+    }
+
+    @Test
+    fun `a huge album is sampled evenly up to the length's default count`() {
+        val album = memory(1, LocalDate.of(2024, 1, 1), (1..300).map { media(it.toLong(), 1) })
+        val ids = plan(listOf(album), RecapLength.LONG).segments.filterIsInstance<RecapSegment.Photo>().map { it.mediaId }
+        assertEquals(RecapPlanner.defaultItemCount(RecapLength.LONG), ids.size)
+        assertEquals(1L, ids.first()); assertEquals(300L, ids.last())
+        assertEquals(ids.sorted(), ids)
+    }
+
+    @Test
+    fun `default selection shares the budget fairly between albums`() {
+        val small = memory(1, LocalDate.of(2024, 1, 1), (1..3).map { media(it.toLong(), 1) })
+        val big = memory(2, LocalDate.of(2024, 2, 1), (101..200).map { media(it.toLong(), 2) })
+        val picked = RecapPlanner.defaultSelection(listOf(big, small), includeVideos = true, maxItems = 20)
+        assertEquals(20, picked.size)
+        assertTrue(picked.containsAll(listOf(1L, 2L, 3L)))
+        assertEquals(17, picked.count { it > 100 })
+    }
+
+    @Test
+    fun `an explicit selection is used as is, however long`() {
+        val album = memory(1, LocalDate.of(2024, 1, 1), (1..200).map { media(it.toLong(), 1) })
+        val other = memory(2, LocalDate.of(2024, 3, 1), listOf(media(500, 2)))
+        val chosen = (1L..120L).toSet()
+        val p = RecapPlanner.plan(listOf(album, other), RecapTheme.WARM, RecapLength.SHORT, "t", "s", "o", { "d" }, selectedMediaIds = chosen)
         val ids = p.segments.filterIsInstance<RecapSegment.Photo>().map { it.mediaId }
-        assertEquals(1L, ids.first()); assertEquals(30L, ids.last())
+        assertEquals(chosen.toList(), ids)
+        // The memory with photos but none chosen is left out entirely (no text card either).
+        assertTrue(p.segments.none { it is RecapSegment.TitleCard && it.title == "m2" })
+        assertTrue(p.totalDurationMs >= 120 * RecapPlanner.MIN_PHOTO_MS)
+    }
+
+    @Test
+    fun `outro carries the maker credit subtitle`() {
+        val m = memory(1, LocalDate.of(2024, 1, 1), listOf(media(1, 1)))
+        val p = RecapPlanner.plan(listOf(m), RecapTheme.WARM, RecapLength.SHORT, "t", "s", "Made with Yaadein", { "d" }, outroSubtitle = "credit")
+        val outro = p.segments.last() as RecapSegment.TitleCard
+        assertTrue(outro.isOutro); assertEquals("Made with Yaadein", outro.title); assertEquals("credit", outro.subtitle)
     }
 
     @Test
