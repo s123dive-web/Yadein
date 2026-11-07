@@ -209,11 +209,13 @@ def render_palettes():
 
 def outputs():
     files = {}
+    base_strings, base_plurals = collect("values")
     for qualifier, lang in LOCALES.items():
         strings, plurals = collect(qualifier)
-        if lang != "en":
-            # Android falls back to English for anything untranslated; iOS does the same through the en table.
-            pass
+        # Android falls back to English for anything untranslated (and for translatable="false" names); iOS would
+        # show the key instead, so every table starts from the English one.
+        strings = {**base_strings, **strings}
+        plurals = {**base_plurals, **plurals}
         files[os.path.join(IOS, "Resources", f"{lang}.lproj", "Localizable.strings")] = render_strings(strings)
         files[os.path.join(IOS, "Resources", f"{lang}.lproj", "Localizable.stringsdict")] = render_plurals(plurals)
     files[os.path.join(IOS, "DesignSystem", "Generated", "Palettes.generated.swift")] = render_palettes()

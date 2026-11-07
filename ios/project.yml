@@ -1,0 +1,93 @@
+# XcodeGen spec for the iPhone app. Generate the Xcode project with `xcodegen generate` (CI does this); the
+# .xcodeproj is not committed. Fonts and music are taken straight from the Android module folders so both apps
+# always ship the same files.
+name: Yaadein
+options:
+  bundleIdPrefix: com.yaadein
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+packages:
+  YaadeinKit:
+    path: YaadeinKit
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEAD_CODE_STRIPPING: YES
+targets:
+  Yaadein:
+    type: application
+    platform: iOS
+    sources:
+      - path: Yaadein
+      - path: ../core/ui/src/main/res/font
+        group: SharedWithAndroid/Fonts
+        buildPhase: resources
+      - path: ../feature/recap/src/main/res/raw
+        group: SharedWithAndroid/Music
+        buildPhase: resources
+    dependencies:
+      - package: YaadeinKit
+        product: YaadeinDomain
+      - package: YaadeinKit
+        product: YaadeinCrypto
+      - package: YaadeinKit
+        product: YaadeinData
+    info:
+      path: Yaadein/Info.plist
+      properties:
+        CFBundleDisplayName: Yaadein
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, hi, mr, gu, ta, te, bn, kn]
+        UILaunchScreen:
+          UIColorName: ""
+        UIApplicationSupportsIndirectInputEvents: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UIAppFonts:
+          - fraunces_regular.ttf
+          - fraunces_medium.ttf
+          - fraunces_semibold.ttf
+          - fraunces_semibold_italic.ttf
+          - fraunces_bold.ttf
+          - manrope_regular.ttf
+          - manrope_medium.ttf
+          - manrope_semibold.ttf
+          - manrope_bold.ttf
+        NSFaceIDUsageDescription: Face ID opens Yaadein instead of typing your PIN. Your face never leaves the phone.
+        NSCameraUsageDescription: Take a photo or video straight into a memory.
+        NSMicrophoneUsageDescription: Record a voice memory. Audio is recorded only while you hold record and stays on this phone.
+        # Standard encryption of the user's own data at rest only (exempt).
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.yaadein.app
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  YaadeinTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [YaadeinTests]
+    dependencies:
+      - target: Yaadein
+      - package: YaadeinKit
+        product: YaadeinCrypto
+      - package: YaadeinKit
+        product: YaadeinData
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  Yaadein:
+    build:
+      targets:
+        Yaadein: all
+        YaadeinTests: [test]
+    test:
+      targets: [YaadeinTests]

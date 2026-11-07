@@ -46,3 +46,69 @@ jobs:
         env:
           YAADEIN_SLOW_TESTS: '1'
         run: swift test -c release -Xswiftc -enable-testing --filter Argon2
+
+  # The app itself: generate the Xcode project, build for the simulator, run the app tests, launch it once and keep a
+  # screenshot. Unsigned (CODE_SIGNING_ALLOWED=NO): signing for real iPhones needs the owner's Apple account
+  # (see docs/IOS.md).
+  app:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode version
+        run: xcodebuild -version
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate the Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Pick an iPhone simulator
+        id: sim
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          devices = json.load(sys.stdin)['devices']
+          runtimes = sorted((k for k in devices if 'iOS' in k), reverse=True)
+          for r in runtimes:
+              for d in devices[r]:
+                  if d['name'].startswith('iPhone'):
+                      print(d['udid']); sys.exit(0)
+          ")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices | grep "$UDID"
+      - name: Build and test
+        working-directory: ios
+        run: |
+          set +e
+          mkdir -p build
+          xcodebuild test -project Yaadein.xcodeproj -scheme Yaadein \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO > build/xcodebuild.log 2>&1
+          status=$?
+          grep -E "error:|Test Case .*(passed|failed)|Executed|\*\* (BUILD|TEST)" build/xcodebuild.log | tail -150
+          exit $status
+      - name: Show compiler errors
+        if: failure()
+        working-directory: ios
+        run: grep -E "error:" -A3 build/xcodebuild.log | head -200 || true
+      - name: Launch screenshot
+        if: success()
+        run: |
+          UDID=${{ steps.sim.outputs.udid }}
+          APP=$(find ios/build/DerivedData/Build/Products -name "Yaadein.app" -path "*iphonesimulator*" | head -1)
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" com.yaadein.app
+          sleep 8
+          mkdir -p ios/build/screenshots
+          xcrun simctl io "$UDID" screenshot ios/build/screenshots/launch.png
+      - name: Upload simulator app and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yaadein-ios-simulator
+          path: |
+            ios/build/screenshots
+            ios/build/xcodebuild.log
+          if-no-files-found: ignore
