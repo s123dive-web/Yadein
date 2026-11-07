@@ -9,12 +9,15 @@ let package = Package(
     products: [
         .library(name: "YaadeinDomain", targets: ["YaadeinDomain"]),
         .library(name: "YaadeinCrypto", targets: ["YaadeinCrypto"]),
+        .library(name: "YaadeinData", targets: ["YaadeinData"]),
     ],
     targets: [
         .target(name: "YaadeinDomain"),
         .target(name: "YaadeinCrypto"),
+        .target(name: "YaadeinData", dependencies: ["YaadeinDomain", "YaadeinCrypto"]),
         .testTarget(name: "YaadeinDomainTests", dependencies: ["YaadeinDomain"]),
         .testTarget(name: "YaadeinCryptoTests", dependencies: ["YaadeinCrypto"]),
+        .testTarget(name: "YaadeinDataTests", dependencies: ["YaadeinData"], resources: [.copy("Fixtures")]),
     ],
     swiftLanguageVersions: [.v5]
 )

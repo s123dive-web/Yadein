@@ -22,6 +22,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Strings and palettes are generated from the Android sources; fail if someone edited one side only.
+  shared-resources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: iOS strings and colours match Android
+        run: python3 ios/scripts/sync_from_android.py --check
+
   # Pure Swift logic (ported from core:domain) and crypto, on Linux: fast and cheap, no Mac needed.
   kit-tests:
     runs-on: ubuntu-latest
