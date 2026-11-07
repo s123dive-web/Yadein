@@ -30,6 +30,14 @@ that was built. Use the commit/tag above (or the run's `head_sha`) to find the s
 
 To rebuild or roll back to it: `git checkout 189f6b2 && ./gradlew :app:assembleBeta`.
 
+## iPhone app
+
+A native SwiftUI iPhone version lives in `ios/` and follows this app screen by screen: same strings in all eight
+languages and same colours (generated from the Android sources), same fonts and music files, same rules (the domain
+logic is ported with its Kotlin tests), and the same `.yaadein` backup format, so a backup made on Android restores on
+an iPhone and the other way round. It is built and tested by `.github/workflows/ios.yml` and never touches the Android
+build. See [docs/IOS.md](docs/IOS.md) and the parity checklist [docs/IOS_PARITY.md](docs/IOS_PARITY.md).
+
 ## Features
 
 - **Voice memories**: record a grandparent telling the story in their own voice; weekly story prompts
