@@ -61,6 +61,7 @@ import coil3.compose.AsyncImage
 import com.yaadein.core.ui.components.EmptyState
 import com.yaadein.core.ui.illustrations.IllustrationKind
 import com.yaadein.core.ui.theme.Yaadein
+import com.yaadein.core.ui.util.currentLocale
 import com.yaadein.core.ui.util.memoryDateText
 import com.yaadein.data.media.ImportCoordinator
 import com.yaadein.data.media.ImportFailure
@@ -408,12 +409,13 @@ private fun SplitOptions(
                 }
             }
             Text(stringResource(R.string.bulk_filter_months), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
+            val locale = currentLocale()
             FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
                 Month.entries.forEach { month ->
                     FilterChip(
                         selected = month in state.filter.months,
                         onClick = { onToggleMonth(month) },
-                        label = { Text(month.getDisplayName(TextStyle.SHORT, Locale.getDefault())) },
+                        label = { Text(month.getDisplayName(TextStyle.SHORT, locale)) },
                     )
                 }
             }
