@@ -19,6 +19,10 @@ enum Route: Hashable {
     case pastWizard
     case settings(SettingsPage)
     case randomMemory
+    case recap(ReelScope)
+    case reels
+    case reelPlayer(String)
+    case voiceCapture(memoryId: Int64?, prompt: String?)
 }
 
 enum SettingsPage: String, Hashable, CaseIterable {
@@ -46,6 +50,10 @@ extension View {
             case .pastWizard: PastWizardView()
             case let .settings(page): SettingsPageView(page: page)
             case .randomMemory: RandomMemoryView()
+            case let .recap(scope): RecapView(initialScope: scope)
+            case .reels: ReelsView()
+            case let .reelPlayer(id): ReelPlayerView(reelId: id)
+            case let .voiceCapture(memoryId, prompt): VoiceCaptureView(memoryId: memoryId, prompt: prompt)
             }
         }
     }

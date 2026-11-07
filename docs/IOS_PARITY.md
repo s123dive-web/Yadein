@@ -32,7 +32,7 @@
 | Fill in the past | ✅ | ✅ | |
 | Import limits (20 MB photo, 200 MB video), optimised copies | ✅ | ✅ | |
 | Dictation in text capture | ✅ | 🟡 | iOS keyboard dictation (mic key) |
-| Voice memories | ✅ | ⬜ | |
+| Voice memories (new memory, or a note on a memory; story prompt opens the recorder) | ✅ | ✅ | AAC, encrypted, streamed back from the vault |
 | Share → Yaadein from other apps | ✅ | ⬜ | needs a share extension |
 | Google Photos Takeout / WhatsApp import | ✅ | ⬜ | parsing rules already ported (ExportParsing) |
 
@@ -51,7 +51,8 @@
 | Reminders (on this day, birthdays, prompts) | ✅ | 🟡 | iOS schedules 30 days ahead when the app is opened |
 | Home-screen widget | ✅ | ⬜ | WidgetKit |
 | Reels: planner (beat snap, Ken Burns, selection) | ✅ | ✅ | same RecapPlanner / AutoReelPicker |
-| Reels: rendering, library, player, automatic reels | ✅ | ⬜ | AVFoundation renderer to port |
+| Reels: rendering, library (newest 10), player, share, 3 automatic reels | ✅ | ✅ | AVFoundation renderer, same storyboard, music and 1080×1920 output; automatic reels refresh when Your reels opens |
+| Reels: choose exact photos, own music | ✅ | ⬜ | |
 | Face suggestions | ✅ | ⬜ | Vision framework |
 
 ## Trust
@@ -59,10 +60,11 @@
 | Feature | Android | iPhone | Notes |
 |---------|---------|--------|-------|
 | Backup / restore `.yaadein` | ✅ | ✅ | **cross-platform**: Android backups restore on iPhone and back |
-| Family packs | ✅ | 🟡 | importing a pack works; sending a pack from a memory is ⬜ |
+| Family packs (send from a memory, add from Backup) | ✅ | ✅ | same file format both ways |
 | Automatic weekly backup | ✅ | ⬜ | |
 | Check my memories | ✅ | ✅ | |
 | Erase everything | ✅ | ✅ | |
-| Picture card / PDF sharing | ✅ | ⬜ | |
+| Picture card sharing | ✅ | ✅ | |
+| PDF book | ✅ | ⬜ | |
 | Problem log | ✅ | ⬜ | iOS has its own crash reports |
 | Update app (sideload) | ✅ | n/a | iPhone apps update through TestFlight / App Store |

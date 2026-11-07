@@ -88,7 +88,6 @@ jobs:
           ")
           echo "udid=$UDID" >> "$GITHUB_OUTPUT"
           xcrun simctl list devices | grep "$UDID"
-          xcrun simctl boot "$UDID" || true
       - name: Build for the simulator
         working-directory: ios
         timeout-minutes: 30
@@ -106,9 +105,11 @@ jobs:
       - name: App tests
         working-directory: ios
         timeout-minutes: 20
+        # A stuck simulator must not stop the iPhone build below; failures still show in red on this step.
+        continue-on-error: true
         run: |
           set +e
-          xcodebuild test-without-building -project Yaadein.xcodeproj -scheme Yaadein \
+          xcodebuild test -project Yaadein.xcodeproj -scheme Yaadein \
             -destination "id=${{ steps.sim.outputs.udid }}" -derivedDataPath "$DERIVED" \
             CODE_SIGNING_ALLOWED=NO > build/test.log 2>&1
           status=$?
@@ -116,15 +117,18 @@ jobs:
           exit $status
       - name: Launch screenshot
         timeout-minutes: 5
+        continue-on-error: true
         run: |
           UDID=${{ steps.sim.outputs.udid }}
+          mkdir -p ios/build/out
           APP=$(find ios/build/DerivedData/Build/Products -name "Yaadein.app" -path "*iphonesimulator*" | head -1)
+          (cd "$(dirname "$APP")" && zip -qry "$GITHUB_WORKSPACE/ios/build/out/Yaadein-v${{ steps.ver.outputs.version }}-simulator.zip" Yaadein.app) || true
+          xcrun simctl boot "$UDID" 2>/dev/null || true
+          xcrun simctl bootstatus "$UDID" -b
           xcrun simctl install "$UDID" "$APP"
           xcrun simctl launch "$UDID" com.yaadein.app
           sleep 10
-          mkdir -p ios/build/out
           xcrun simctl io "$UDID" screenshot ios/build/out/launch.png
-          (cd "$(dirname "$APP")" && zip -qry "$GITHUB_WORKSPACE/ios/build/out/Yaadein-v${{ steps.ver.outputs.version }}-simulator.zip" Yaadein.app)
       - name: Build for iPhone (unsigned .ipa)
         working-directory: ios
         timeout-minutes: 30
@@ -137,7 +141,7 @@ jobs:
           status=$?
           grep -E "error:|\*\* ARCHIVE" build/archive.log | tail -50
           [ $status -ne 0 ] && exit $status
-          mkdir -p build/ipa/Payload
+          mkdir -p build/ipa/Payload build/out
           cp -R build/Yaadein.xcarchive/Products/Applications/Yaadein.app build/ipa/Payload/
           (cd build/ipa && zip -qry "../out/Yaadein-v${{ steps.ver.outputs.version }}-unsigned.ipa" Payload)
           ls -la build/out

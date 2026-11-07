@@ -10,14 +10,18 @@ import YaadeinData
 final class EncryptedVideoLoader: NSObject, AVAssetResourceLoaderDelegate {
     static let scheme = "yaadein-vault"
     private let reader: MediaRandomReader
+    private let contentType: String
     private let queue = DispatchQueue(label: "yaadein.video")
 
-    init(reader: MediaRandomReader) { self.reader = reader }
+    init(reader: MediaRandomReader, contentType: String) {
+        self.reader = reader
+        self.contentType = contentType
+    }
 
     func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        queue.async { [reader] in
+        queue.async { [reader, contentType] in
             if let info = loadingRequest.contentInformationRequest {
-                info.contentType = UTType.mpeg4Movie.identifier
+                info.contentType = contentType
                 info.contentLength = reader.plainLength
                 info.isByteRangeAccessSupported = true
             }
@@ -45,8 +49,9 @@ final class EncryptedVideoLoader: NSObject, AVAssetResourceLoaderDelegate {
     /// An AVPlayer for a vault path; keep the returned loader alive as long as the player.
     static func player(path: String, vault: MediaVault, aead: AEAD, key: [UInt8]) -> (AVPlayer, EncryptedVideoLoader)? {
         guard let reader = try? MediaRandomReader(url: vault.url(path), aead: aead, key: key),
-              let url = URL(string: "\(scheme)://video/\(UUID().uuidString).mp4") else { return nil }
-        let loader = EncryptedVideoLoader(reader: reader)
+              let url = URL(string: "\(scheme)://media/\(UUID().uuidString).\(path.hasSuffix(".m4a") ? "m4a" : "mp4")") else { return nil }
+        let type = path.hasSuffix(".m4a") ? UTType.mpeg4Audio.identifier : UTType.mpeg4Movie.identifier
+        let loader = EncryptedVideoLoader(reader: reader, contentType: type)
         let asset = AVURLAsset(url: url)
         asset.resourceLoader.setDelegate(loader, queue: loader.queue)
         return (AVPlayer(playerItem: AVPlayerItem(asset: asset)), loader)

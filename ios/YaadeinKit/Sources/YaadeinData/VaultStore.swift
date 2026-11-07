@@ -25,8 +25,48 @@ public struct VaultDatabase: Codable, Equatable, Sendable {
     public var media: [Media] = []
     public var memoryPersons: [Link] = []
     public var mediaPersons: [Link] = []
+    /// Reels kept in "Your reels" (ReelLibrary on Android). Not part of backups, as on Android.
+    public var reels: [ReelEntry] = []
 
     public init() {}
+
+    enum CodingKeys: String, CodingKey { case version, nextId, persons, groups, memories, media, memoryPersons, mediaPersons, reels }
+
+    // Fields added later default when absent, so a database written by an older build always opens.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        version = try c.decodeIfPresent(Int.self, forKey: .version) ?? 1
+        nextId = try c.decodeIfPresent(Int64.self, forKey: .nextId) ?? 1
+        persons = try c.decodeIfPresent([Person].self, forKey: .persons) ?? []
+        groups = try c.decodeIfPresent([Group].self, forKey: .groups) ?? []
+        memories = try c.decodeIfPresent([Memory].self, forKey: .memories) ?? []
+        media = try c.decodeIfPresent([Media].self, forKey: .media) ?? []
+        memoryPersons = try c.decodeIfPresent([Link].self, forKey: .memoryPersons) ?? []
+        mediaPersons = try c.decodeIfPresent([Link].self, forKey: .mediaPersons) ?? []
+        reels = try c.decodeIfPresent([ReelEntry].self, forKey: .reels) ?? []
+    }
+}
+
+/// A rendered reel: an encrypted MP4 in the vault (`reels/…`). `slot` is set for the automatic reels.
+public struct ReelEntry: Hashable, Codable, Identifiable, Sendable {
+    public var id: String
+    public var title: String
+    public var path: String
+    public var createdAt: Int64
+    public var durationMs: Int64
+    public var slot: String?
+    public var signature: String?
+
+    public init(id: String = UUID().uuidString, title: String, path: String, createdAt: Int64, durationMs: Int64,
+                slot: String? = nil, signature: String? = nil) {
+        self.id = id
+        self.title = title
+        self.path = path
+        self.createdAt = createdAt
+        self.durationMs = durationMs
+        self.slot = slot
+        self.signature = signature
+    }
 }
 
 /// Change notification payload: lets screens refresh only when something they show changed.
@@ -451,6 +491,42 @@ public final class VaultStore: @unchecked Sendable {
             }
             return counts.sorted { $0.value != $1.value ? $0.value > $1.value : ($0.key.first, $0.key.second) < ($1.key.first, $1.key.second) }
                 .map { ($0.key.first, $0.key.second, $0.value) }
+        }
+    }
+
+    // MARK: - Reels
+
+    /// Newest 10 reels made by the user are kept (MAX_USER_REELS); one per automatic slot.
+    public static let maxUserReels = 10
+
+    public func reels() -> [ReelEntry] { lock.withLock { db.reels.sorted { $0.createdAt > $1.createdAt } } }
+
+    /// Adds a reel and returns the vault paths of reels it pushed out (the caller deletes those files).
+    @discardableResult
+    public func addReel(_ reel: ReelEntry) throws -> [String] {
+        try transaction(.all) { d in
+            var dropped: [String] = []
+            if let slot = reel.slot {
+                dropped += d.reels.filter { $0.slot == slot }.map(\.path)
+                d.reels.removeAll { $0.slot == slot }
+            }
+            d.reels.append(reel)
+            let mine = d.reels.filter { $0.slot == nil }.sorted { $0.createdAt > $1.createdAt }
+            if mine.count > VaultStore.maxUserReels {
+                let old = Set(mine.dropFirst(VaultStore.maxUserReels).map(\.id))
+                dropped += d.reels.filter { old.contains($0.id) }.map(\.path)
+                d.reels.removeAll { old.contains($0.id) }
+            }
+            return dropped
+        }
+    }
+
+    @discardableResult
+    public func deleteReel(id: String) throws -> String? {
+        try transaction(.all) { d in
+            let path = d.reels.first { $0.id == id }?.path
+            d.reels.removeAll { $0.id == id }
+            return path
         }
     }
 

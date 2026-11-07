@@ -78,6 +78,10 @@ struct MemoryDetailView: View {
                         Spacer().frame(height: Spacing.lg)
                         Text(d.memory.description).font(look.type.bodyLarge)
                     }
+                    if let voice = d.memory.voiceNotePath {
+                        Spacer().frame(height: Spacing.lg)
+                        VoiceNoteCard(memoryId: memoryId, path: voice)
+                    }
                     if !d.people.isEmpty {
                         Spacer().frame(height: Spacing.xl)
                         Text(L("memory_who_was_there")).font(look.type.titleMedium).accessibilityAddTraits(.isHeader)
@@ -141,6 +145,11 @@ struct MemoryDetailView: View {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 NavigationLink(value: Route.eventCapture(memoryId: memoryId)) { Image(systemName: "pencil") }
                     .accessibilityLabel(L("action_edit"))
+                MemoryShareMenu(detail: d)
+                NavigationLink(value: Route.voiceCapture(memoryId: memoryId, prompt: nil)) { Image(systemName: "mic") }
+                    .accessibilityLabel(L(d.memory.voiceNotePath == nil ? "memory_record_voice" : "memory_rerecord_voice"))
+                NavigationLink(value: Route.recap(.memory(memoryId))) { Image(systemName: "film") }
+                    .accessibilityLabel(L("memory_make_recap"))
                 Menu {
                     Button(L("memory_add_photos"), systemImage: "photo.badge.plus") { showPicker = true }
                     Button(L("action_delete"), systemImage: "trash", role: .destructive) { confirmDelete = true }

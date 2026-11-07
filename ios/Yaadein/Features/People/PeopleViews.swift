@@ -179,6 +179,7 @@ struct PersonDetailView: View {
             FlowLayout(spacing: Spacing.sm) {
                 ForEach(story.groups) { g in ChipLabel(text: "\(g.emoji) \(g.name)") }
                 NavigationLink(value: Route.together([personId])) { ChipLabel(text: L("person_together"), icon: "person.2") }.buttonStyle(.plain)
+                NavigationLink(value: Route.recap(.person(personId))) { ChipLabel(text: L("person_recap"), icon: "film") }.buttonStyle(.plain)
             }
         }
         .padding(.top, Spacing.md)

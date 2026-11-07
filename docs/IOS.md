@@ -74,16 +74,28 @@ cd ios/YaadeinKit && swift test        # the shared logic, also works on Linux
 
 ## Installing on an iPhone
 
-Unlike an APK, an iPhone app must be signed with an Apple Developer account before it can be installed:
+Every push builds the app on GitHub Actions and attaches it to a release named **iOS build N** (tag `ios-build-N`):
 
-1. Join the Apple Developer Program (99 USD a year) with your Apple ID.
-2. In App Store Connect create the app with bundle id `com.yaadein.app`.
-3. For testers: archive in Xcode (Product → Archive) and upload to TestFlight; invite family by email. To do this from
-   CI instead, add the secrets `APPLE_TEAM_ID`, an App Store Connect API key (`ASC_KEY_ID`, `ASC_ISSUER_ID`,
-   `ASC_KEY_P8_BASE64`) and a distribution certificate; a signed `testflight` job can then be added to `ios.yml`.
-4. Without a paid account, Xcode can install a build on your own iPhone with a free Apple ID (re-install every 7 days).
+| File | What it is for |
+|------|----------------|
+| `Yaadein-v0.1.<n>-unsigned.ipa` | the iPhone app, not yet signed. Install it on your own iPhone with AltStore, Sideloadly or Xcode, which sign it with your (free) Apple ID; free signing must be renewed every 7 days. |
+| `Yaadein-v0.1.<n>-simulator.zip` | the same app for the Xcode iPhone simulator on a Mac. |
+| `launch.png` | the first screen as launched on the simulator. |
+
+An iPhone only runs apps signed by Apple's system, so for family and friends use **TestFlight**:
+
+1. Join the Apple Developer Program (99 USD a year).
+2. In [App Store Connect](https://appstoreconnect.apple.com) create an app with bundle id `com.yaadein.app`.
+3. Users and Access → Integrations → App Store Connect API → create a key with the *App Manager* role; download
+   the `.p8` file once.
+4. Add these repository secrets (GitHub → Settings → Secrets and variables → Actions):
+   - `APPLE_TEAM_ID`: your 10-character team id (Membership page)
+   - `ASC_KEY_ID`, `ASC_ISSUER_ID`: shown next to the key
+   - `ASC_KEY_P8_BASE64`: the key file encoded with `base64 -i AuthKey_XXXX.p8`
+5. The next push runs the `testflight` job: it archives, signs (Xcode cloud signing with the API key, no certificate
+   files needed) and uploads the build. Add testers in App Store Connect → TestFlight.
 
 ## Not yet on iPhone
 
-Tracked in [IOS_PARITY.md](IOS_PARITY.md): reel rendering (AVFoundation port of the Media3 pipeline), voice
-memories, the home-screen widget, face suggestions, Google Photos / WhatsApp import, picture card and PDF sharing.
+Tracked in [IOS_PARITY.md](IOS_PARITY.md): the home-screen widget, face suggestions, Google Photos / WhatsApp import,
+PDF book, choosing exact photos and your own music for a reel, automatic weekly backup, Share → Yaadein from other apps.

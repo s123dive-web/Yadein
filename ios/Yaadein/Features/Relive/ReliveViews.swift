@@ -27,6 +27,10 @@ struct ReliveView: View {
                     FlowLayout(spacing: Spacing.sm) {
                         NavigationLink(value: Route.randomMemory) { Label(L("relive_surprise"), systemImage: "dice") }
                             .buttonStyle(FilledButtonStyle(tonal: true))
+                        NavigationLink(value: Route.recap(.all)) { Label(L("relive_make_recap"), systemImage: "film") }
+                            .buttonStyle(FilledButtonStyle())
+                        NavigationLink(value: Route.reels) { Label(L("relive_your_reels"), systemImage: "film.stack") }
+                            .buttonStyle(FilledButtonStyle(tonal: true))
                     }
                     if !birthdays.isEmpty {
                         SectionHeader(title: L("relive_birthdays"))
@@ -109,7 +113,7 @@ struct ReliveView: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             Text(L("notification_prompt_title")).font(look.type.labelLarge).foregroundStyle(look.colors.onPrimaryContainer.opacity(0.8))
             Text(text).font(look.type.titleLarge).foregroundStyle(look.colors.onPrimaryContainer)
-            NavigationLink(value: Route.textOnly) { Text(L("relive_record_story")) }.buttonStyle(FilledButtonStyle())
+            NavigationLink(value: Route.voiceCapture(memoryId: nil, prompt: text)) { Text(L("relive_record_story")) }.buttonStyle(FilledButtonStyle())
         }
         .padding(Spacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -182,6 +186,8 @@ struct YearlySummaryView: View {
                             }
                         }
                     }
+                    NavigationLink(value: Route.recap(personId == 0 ? .year(year) : .person(personId))) { Text(L("relive_make_recap")) }
+                        .buttonStyle(FilledButtonStyle())
                     if let first = cards.first {
                         Text(L("yearly_first")).font(look.type.titleMedium)
                         NavigationLink(value: Route.memory(first.memory.id)) { MemoryCardView(card: first, compact: true) }.buttonStyle(.plain)

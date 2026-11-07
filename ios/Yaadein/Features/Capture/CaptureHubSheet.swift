@@ -18,6 +18,7 @@ struct CaptureHubSheet: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 option("square.stack.3d.up", L("hub_bulk"), L("hub_bulk_sub")) { open(.bulkUpload) }
+                option("mic", L("hub_voice"), L("hub_voice_sub")) { open(.voiceCapture(memoryId: nil, prompt: nil)) }
                 Button {
                     withAnimation(Motion.standard) { more.toggle() }
                 } label: {

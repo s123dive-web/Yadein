@@ -69,3 +69,21 @@ final class VaultStoreTests: XCTestCase {
         XCTAssertEqual(2, story.daysToBirthday)
     }
 }
+
+extension VaultStoreTests {
+    func testReelRetentionAndSlots() throws {
+        for i in 0..<12 { _ = try store.addReel(ReelEntry(title: "r\(i)", path: "reels/\(i)", createdAt: Int64(i), durationMs: 1)) }
+        XCTAssertEqual(VaultStore.maxUserReels, store.reels().count)
+        XCTAssertEqual("r11", store.reels().first?.title)
+        XCTAssertTrue(try store.addReel(ReelEntry(title: "a", path: "reels/r-slot", createdAt: 1, durationMs: 1, slot: "recent")).isEmpty)
+        XCTAssertEqual(["reels/r-slot"], try store.addReel(ReelEntry(title: "b", path: "reels/r2", createdAt: 2, durationMs: 1, slot: "recent")))
+        XCTAssertEqual(1, store.reels().filter { $0.slot == "recent" }.count)
+    }
+
+    func testOldDatabaseWithoutReelsStillDecodes() throws {
+        let json = #"{"version":1,"nextId":3,"persons":[],"groups":[],"memories":[],"media":[],"memoryPersons":[],"mediaPersons":[]}"#
+        let db = try JSONDecoder().decode(VaultDatabase.self, from: Data(json.utf8))
+        XCTAssertEqual(3, db.nextId)
+        XCTAssertTrue(db.reels.isEmpty)
+    }
+}
