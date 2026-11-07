@@ -60,8 +60,9 @@ jobs:
       - name: Print the generated baseline profile
         if: always()
         run: |
-          f=$(find benchmark/build/outputs -name '*BaselineProfileGenerator*baseline-prof*.txt' | head -1)
-          if [ -n "$f" ]; then echo "PROFILE-BEGIN $(wc -l < "$f") lines"; cat "$f"; echo "PROFILE-END"; else echo "no profile generated"; fi
+          echo "Benchmark outputs:"; find benchmark/build/outputs -type f | sed 's/^/  /' | head -50
+          f=$(find benchmark/build/outputs -type f -name '*.txt' \( -name '*baseline-prof*' -o -name '*-prof*' \) ! -name '*startup-prof*' | head -1)
+          if [ -n "$f" ]; then echo "PROFILE-BEGIN $f $(wc -l < "$f") lines"; cat "$f"; echo "PROFILE-END"; else echo "no profile generated"; fi
       - name: Check the startup budget
         run: |
           python3 - <<'PY'
