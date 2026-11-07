@@ -1,0 +1,39 @@
+name: iOS
+
+# The iPhone app lives in ios/. This workflow never touches the Android build: build.yml, device-tests.yml and
+# release.yml are unchanged and keep producing the APK on every push.
+on:
+  push:
+    branches: [main, 'ccr-*']
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
+      # Strings, fonts and music are shared with Android; a change there must still produce the same iOS files.
+      - '**/src/main/res/values*/strings.xml'
+      - 'core/ui/src/main/kotlin/com/yaadein/core/ui/theme/Color.kt'
+  pull_request:
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Pure Swift logic (ported from core:domain) and crypto, on Linux: fast and cheap, no Mac needed.
+  kit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container: swift:6.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - name: Domain and crypto tests (debug)
+        working-directory: ios/YaadeinKit
+        run: swift test
+      - name: Argon2id with Android's real parameters (release)
+        working-directory: ios/YaadeinKit
+        env:
+          YAADEIN_SLOW_TESTS: '1'
+        run: swift test -c release -Xswiftc -enable-testing --filter Argon2
