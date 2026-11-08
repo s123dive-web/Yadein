@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material3.AlertDialog
@@ -72,6 +73,7 @@ import com.yaadein.core.ui.media.EncryptedMediaImage
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.data.db.AppDatabase
 import com.yaadein.data.media.EncryptedDataSource
+import com.yaadein.data.media.MediaDownloader
 import com.yaadein.data.media.MediaStore
 import com.yaadein.domain.model.Media
 import com.yaadein.domain.model.MediaKind
@@ -103,7 +105,9 @@ class MediaViewerViewModel @Inject constructor(
     personRepository: PersonRepository,
     val db: AppDatabase,
     val mediaStore: MediaStore,
+    downloader: MediaDownloader,
 ) : ViewModel() {
+    val download = DownloadController(viewModelScope, downloader)
     val memoryId: Long = checkNotNull(savedStateHandle["memoryId"])
     val initialIndex: Int = savedStateHandle["index"] ?: 0
     private val tagged = MutableStateFlow<Map<Long, Set<Long>>>(emptyMap())
@@ -136,13 +140,17 @@ class MediaViewerViewModel @Inject constructor(
 @Composable
 fun MediaViewerRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: MediaViewerViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val downloadStatus by viewModel.download.status.collectAsStateWithLifecycle()
+    val download = rememberDownloadAction(viewModel.download)
     MediaViewerScreen(
         state = state, initialIndex = viewModel.initialIndex, onBack = onBack,
         dataSourceFactory = remember { EncryptedDataSource.Factory(viewModel.db, viewModel.mediaStore) },
         onLoadTags = viewModel::loadTags, onToggleTag = viewModel::toggleTag, onCaption = viewModel::setCaption,
         onRemove = { id -> viewModel.remove(id) { if (state.media.size <= 1) onBack() } },
+        onDownload = { id -> download(listOf(id)) },
         modifier = modifier,
     )
+    DownloadStatusDialog(downloadStatus, onDismiss = viewModel.download::reset)
 }
 
 @Composable
@@ -156,6 +164,7 @@ fun MediaViewerScreen(
     onCaption: (Long, String) -> Unit,
     onRemove: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    onDownload: (Long) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     if (state.media.isEmpty()) { Box(modifier.fillMaxSize().background(Color.Black)); return }
@@ -181,6 +190,7 @@ fun MediaViewerScreen(
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(CoreR.string.action_back), tint = Color.White) }
                 Text(stringResource(R.string.viewer_of, pager.currentPage + 1, state.media.size), color = Color.White, style = MaterialTheme.typography.labelLarge)
                 Spacer(Modifier.weight(1f))
+                IconButton(onClick = { onDownload(current.id) }) { Icon(Icons.Rounded.Download, contentDescription = stringResource(R.string.download_one), tint = Color.White) }
                 IconButton(onClick = { tagging = !tagging }) { Icon(Icons.Rounded.People, contentDescription = stringResource(R.string.viewer_tag_people), tint = Color.White) }
                 IconButton(onClick = { editingCaption = true }) { Icon(Icons.Rounded.Edit, contentDescription = stringResource(R.string.viewer_caption_hint), tint = Color.White) }
                 IconButton(onClick = { confirmRemove = true }) { Icon(Icons.Rounded.Delete, contentDescription = stringResource(R.string.viewer_remove), tint = Color.White) }

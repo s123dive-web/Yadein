@@ -131,6 +131,12 @@
 "date_sometime_in" = "%1$@-এ কোনো এক সময়";
 "date_when" = "এটা কবে হয়েছিল?";
 "date_year_only" = "শুধু বছর";
+"download_all" = "ছবি ও ভিডিও ডাউনলোড করুন";
+"download_none" = "এই স্মৃতিতে কোনো ছবি বা ভিডিও নেই।";
+"download_one" = "ফোনে সেভ করুন";
+"download_partial" = "%2$d-এর মধ্যে %1$d সেভ হয়েছে। বাকিগুলো সেভ করা যায়নি।";
+"download_saved_folder" = "আপনার বেছে নেওয়া ফোল্ডারে সেভ হয়েছে।";
+"download_saved_gallery" = "আপনার ফোনের ছবিতে সেভ হয়েছে।";
 "error_generic" = "কিছু একটা গোলমাল হয়েছে। আবার চেষ্টা করুন।";
 "event_add_media" = "ছবি বা ভিডিও যোগ করুন";
 "event_cover" = "কভার";

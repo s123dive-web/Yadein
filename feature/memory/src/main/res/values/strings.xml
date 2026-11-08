@@ -33,4 +33,10 @@
     <string name="share_saved">Saved.</string>
     <string name="share_failed">That didn\'t work. Please try again.</string>
     <string name="share_footer">Kept with Yaadein</string>
+    <string name="download_one">Save to phone</string>
+    <string name="download_all">Download photos and videos</string>
+    <string name="download_saved_gallery">Saved to your phone\'s photos.</string>
+    <string name="download_saved_folder">Saved to the folder you chose.</string>
+    <string name="download_partial">Saved %1$d of %2$d. The rest could not be saved.</string>
+    <string name="download_none">There are no photos or videos in this memory.</string>
 </resources>

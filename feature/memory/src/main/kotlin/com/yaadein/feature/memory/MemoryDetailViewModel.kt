@@ -3,6 +3,7 @@ package com.yaadein.feature.memory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yaadein.data.media.MediaDownloader
 import com.yaadein.data.media.VoiceNotes
 import com.yaadein.data.backup.BackupManager
 import com.yaadein.data.recap.RenderStyle
@@ -41,7 +42,11 @@ class MemoryDetailViewModel @Inject constructor(
     val voiceNotes: VoiceNotes,
     private val exporter: MemoryExporter,
     private val backup: BackupManager,
+    downloader: MediaDownloader,
 ) : ViewModel() {
+    /** Saves this memory's photos and videos to the phone (gallery, or a picked folder on Android 8–9). */
+    val download = DownloadController(viewModelScope, downloader)
+
     private val _share = MutableStateFlow<ShareStatus>(ShareStatus.Idle)
     val share: StateFlow<ShareStatus> = _share.asStateFlow()
 

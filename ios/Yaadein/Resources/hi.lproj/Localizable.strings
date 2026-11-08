@@ -131,6 +131,12 @@
 "date_sometime_in" = "%1$@ में कभी";
 "date_when" = "यह कब हुआ?";
 "date_year_only" = "सिर्फ़ साल";
+"download_all" = "फ़ोटो और वीडियो डाउनलोड करें";
+"download_none" = "इस याद में कोई फ़ोटो या वीडियो नहीं है।";
+"download_one" = "फ़ोन में सहेजें";
+"download_partial" = "%2$d में से %1$d सहेजे गए। बाकी सहेजे नहीं जा सके।";
+"download_saved_folder" = "आपके चुने हुए फ़ोल्डर में सहेज लिया गया।";
+"download_saved_gallery" = "आपके फ़ोन की फ़ोटो में सहेज लिया गया।";
 "error_generic" = "कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें।";
 "event_add_media" = "फ़ोटो या वीडियो जोड़ें";
 "event_cover" = "कवर";

@@ -33,4 +33,10 @@
     <string name="share_saved">சேமிக்கப்பட்டது.</string>
     <string name="share_failed">அது வேலை செய்யவில்லை. மீண்டும் முயலவும்.</string>
     <string name="share_footer">Yaadein-இல் பாதுகாக்கப்பட்டது</string>
+    <string name="download_one">தொலைபேசியில் சேமி</string>
+    <string name="download_all">படங்கள் மற்றும் வீடியோக்களைப் பதிவிறக்கு</string>
+    <string name="download_saved_gallery">உங்கள் தொலைபேசியின் படங்களில் சேமிக்கப்பட்டது.</string>
+    <string name="download_saved_folder">நீங்கள் தேர்ந்தெடுத்த கோப்புறையில் சேமிக்கப்பட்டது.</string>
+    <string name="download_partial">%2$d இல் %1$d சேமிக்கப்பட்டன. மீதியைச் சேமிக்க முடியவில்லை.</string>
+    <string name="download_none">இந்த நினைவில் படங்கள் அல்லது வீடியோக்கள் இல்லை.</string>
 </resources>

@@ -33,4 +33,10 @@
     <string name="share_saved">সেভ হয়েছে।</string>
     <string name="share_failed">হল না। আবার চেষ্টা করুন।</string>
     <string name="share_footer">Yaadein-এ সাজিয়ে রাখা</string>
+    <string name="download_one">ফোনে সেভ করুন</string>
+    <string name="download_all">ছবি ও ভিডিও ডাউনলোড করুন</string>
+    <string name="download_saved_gallery">আপনার ফোনের ছবিতে সেভ হয়েছে।</string>
+    <string name="download_saved_folder">আপনার বেছে নেওয়া ফোল্ডারে সেভ হয়েছে।</string>
+    <string name="download_partial">%2$d-এর মধ্যে %1$d সেভ হয়েছে। বাকিগুলো সেভ করা যায়নি।</string>
+    <string name="download_none">এই স্মৃতিতে কোনো ছবি বা ভিডিও নেই।</string>
 </resources>

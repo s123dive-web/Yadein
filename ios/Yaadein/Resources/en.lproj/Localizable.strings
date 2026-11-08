@@ -131,6 +131,12 @@
 "date_sometime_in" = "Sometime in %1$@";
 "date_when" = "When was this?";
 "date_year_only" = "Year only";
+"download_all" = "Download photos and videos";
+"download_none" = "There are no photos or videos in this memory.";
+"download_one" = "Save to phone";
+"download_partial" = "Saved %1$d of %2$d. The rest could not be saved.";
+"download_saved_folder" = "Saved to the folder you chose.";
+"download_saved_gallery" = "Saved to your phone's photos.";
 "error_generic" = "Something went wrong. Please try again.";
 "event_add_media" = "Add photos or videos";
 "event_cover" = "Cover";

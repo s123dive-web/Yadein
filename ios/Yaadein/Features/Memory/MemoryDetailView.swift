@@ -28,6 +28,8 @@ struct MemoryDetailView: View {
     @State private var showPicker = false
     @State private var importing = false
     @State private var rejected: [ImportRejection] = []
+    @State private var downloading = false
+    @State private var downloadMessage: String?
 
     var body: some View {
         let _ = model.revision
@@ -152,6 +154,9 @@ struct MemoryDetailView: View {
                     .accessibilityLabel(L("memory_make_recap"))
                 Menu {
                     Button(L("memory_add_photos"), systemImage: "photo.badge.plus") { showPicker = true }
+                    if !d.media.isEmpty {
+                        Button(L("download_all"), systemImage: "arrow.down.circle") { downloadAll(d.media) }
+                    }
                     Button(L("action_delete"), systemImage: "trash", role: .destructive) { confirmDelete = true }
                 } label: { Image(systemName: "ellipsis.circle") }
                     .accessibilityLabel(L("action_more"))
@@ -163,6 +168,10 @@ struct MemoryDetailView: View {
             picking = []
             Task { await addMedia(items) }
         }
+        .overlay { if downloading { ProgressView().controlSize(.large) } }
+        .alert(downloadMessage ?? "", isPresented: Binding(get: { downloadMessage != nil }, set: { if !$0 { downloadMessage = nil } })) {
+            Button(L("action_done")) { downloadMessage = nil }
+        }
         .alert(L("memory_delete_title"), isPresented: $confirmDelete) {
             Button(L("action_delete"), role: .destructive) { delete() }
             Button(L("action_cancel"), role: .cancel) {}
@@ -170,6 +179,17 @@ struct MemoryDetailView: View {
         .alert(L("reject_title"), isPresented: Binding(get: { !rejected.isEmpty }, set: { if !$0 { rejected = [] } })) {
             Button(L("action_done")) { rejected = [] }
         } message: { Text(rejected.map(\.message).joined(separator: "\n")) }
+    }
+
+    /// Saves every photo and video of this memory to the Photos library.
+    private func downloadAll(_ media: [Media]) {
+        guard let vault = model.vault, !downloading else { return }
+        downloading = true
+        Task {
+            let r = await MediaDownload.save(media, vault: vault)
+            downloading = false
+            downloadMessage = r.message
+        }
     }
 
     private func addMedia(_ items: [PhotosPickerItem]) async {
@@ -272,6 +292,8 @@ struct MediaViewerView: View {
                         .onSubmit { try? model.store?.updateCaption(mediaId: current.id, caption: caption) }
                     HStack {
                         Button(L("viewer_tag_people"), systemImage: "person.crop.circle.badge.plus") { tagging = true }
+                        Spacer()
+                        MediaDownloadButton(label: L("download_one")) { [current] }
                         Spacer()
                         Button(L("viewer_remove"), systemImage: "trash", role: .destructive) { confirmRemove = true }
                     }

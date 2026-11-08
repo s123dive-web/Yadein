@@ -66,6 +66,7 @@ targets:
         NSFaceIDUsageDescription: Face ID opens Yaadein instead of typing your PIN. Your face never leaves the phone.
         NSCameraUsageDescription: Take a photo or video straight into a memory.
         NSMicrophoneUsageDescription: Record a voice memory. Audio is recorded only while you hold record and stays on this phone.
+        NSPhotoLibraryAddUsageDescription: Save a photo or video from a memory to your Photos when you tap Save to phone.
         # Standard encryption of the user's own data at rest only (exempt).
         ITSAppUsesNonExemptEncryption: false
         # Widget links: yaadein://quick, yaadein://memory/<id>.

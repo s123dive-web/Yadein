@@ -33,4 +33,10 @@
     <string name="share_saved">जतन झाले.</string>
     <string name="share_failed">हे झाले नाही. कृपया पुन्हा प्रयत्न करा.</string>
     <string name="share_footer">Yaadein मध्ये जपलेली</string>
+    <string name="download_one">फोनमध्ये जतन करा</string>
+    <string name="download_all">फोटो आणि व्हिडिओ डाउनलोड करा</string>
+    <string name="download_saved_gallery">तुमच्या फोनमधील फोटोंमध्ये जतन झाले.</string>
+    <string name="download_saved_folder">तुम्ही निवडलेल्या फोल्डरमध्ये जतन झाले.</string>
+    <string name="download_partial">%2$d पैकी %1$d जतन झाले. बाकीचे जतन होऊ शकले नाहीत.</string>
+    <string name="download_none">या आठवणीत एकही फोटो किंवा व्हिडिओ नाही.</string>
 </resources>

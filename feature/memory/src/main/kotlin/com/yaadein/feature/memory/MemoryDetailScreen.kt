@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Mic
@@ -101,6 +102,8 @@ fun MemoryDetailRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val share by viewModel.share.collectAsStateWithLifecycle()
+    val downloadStatus by viewModel.download.status.collectAsStateWithLifecycle()
+    val download = rememberDownloadAction(viewModel.download)
     val context = LocalContext.current
     val footer = stringResource(R.string.share_footer)
     val chooser = stringResource(R.string.share_card_chooser)
@@ -131,7 +134,9 @@ fun MemoryDetailRoute(
         },
         onSavePdf = { state.detail?.let { pdfPicker.launch(safeName(it.memory.title) + ".pdf") } },
         onSendPack = { state.detail?.let { packPicker.launch(safeName(it.memory.title) + "." + BackupManager.EXTENSION) } },
+        onDownloadAll = { state.detail?.let { d -> download(d.media.map { it.id }) } },
     )
+    DownloadStatusDialog(downloadStatus, onDismiss = viewModel.download::reset)
     askPackPassword?.let { uri ->
         PasswordDialog(
             title = stringResource(R.string.share_pack_password_title),
@@ -175,6 +180,7 @@ fun MemoryDetailScreen(
     onShareCard: () -> Unit = {},
     onSavePdf: () -> Unit = {},
     onSendPack: () -> Unit = {},
+    onDownloadAll: () -> Unit = {},
 ) {
     val detail = state.detail
     if (state.loading || detail == null) {
@@ -185,7 +191,7 @@ fun MemoryDetailScreen(
     var confirmDelete by remember { mutableStateOf(false) }
     LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = spacing.xxxl)) {
         item(key = "hero") {
-            Hero(detail = detail, onBack = onBack, onEdit = onEdit, onDelete = { confirmDelete = true }, onRecap = onRecap, onOpenCover = { index -> onOpenMedia(index) }, onRecordVoice = onRecordVoice, onShareCard = onShareCard, onSavePdf = onSavePdf, onSendPack = onSendPack)
+            Hero(detail = detail, onBack = onBack, onEdit = onEdit, onDelete = { confirmDelete = true }, onRecap = onRecap, onOpenCover = { index -> onOpenMedia(index) }, onRecordVoice = onRecordVoice, onShareCard = onShareCard, onSavePdf = onSavePdf, onSendPack = onSendPack, onDownloadAll = onDownloadAll)
         }
         item(key = "body") {
             Column(modifier = Modifier.padding(horizontal = spacing.gutter)) {
@@ -293,6 +299,7 @@ private fun Hero(
     onShareCard: () -> Unit = {},
     onSavePdf: () -> Unit = {},
     onSendPack: () -> Unit = {},
+    onDownloadAll: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val cover = detail.media.firstOrNull { it.id == detail.memory.coverMediaId } ?: detail.media.firstOrNull()
@@ -337,6 +344,13 @@ private fun Hero(
                         leadingIcon = { Icon(Icons.Rounded.PictureAsPdf, contentDescription = null) },
                         onClick = { menu = false; onSavePdf() },
                     )
+                    if (detail.media.isNotEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.download_all)) },
+                            leadingIcon = { Icon(Icons.Rounded.Download, contentDescription = null) },
+                            onClick = { menu = false; onDownloadAll() },
+                        )
+                    }
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.share_pack)) },
                         leadingIcon = { Icon(Icons.Rounded.FamilyRestroom, contentDescription = null) },

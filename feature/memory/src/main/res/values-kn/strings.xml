@@ -33,4 +33,10 @@
     <string name="share_saved">ಉಳಿಸಲಾಗಿದೆ.</string>
     <string name="share_failed">ಅದು ಆಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
     <string name="share_footer">Yaadein ನಲ್ಲಿ ಜೋಪಾನ ಮಾಡಲಾಗಿದೆ</string>
+    <string name="download_one">ಫೋನ್‌ನಲ್ಲಿ ಉಳಿಸಿ</string>
+    <string name="download_all">ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</string>
+    <string name="download_saved_gallery">ನಿಮ್ಮ ಫೋನ್‌ನ ಫೋಟೋಗಳಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.</string>
+    <string name="download_saved_folder">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.</string>
+    <string name="download_partial">%2$d ರಲ್ಲಿ %1$d ಉಳಿಸಲಾಗಿದೆ. ಉಳಿದವನ್ನು ಉಳಿಸಲಾಗಲಿಲ್ಲ.</string>
+    <string name="download_none">ಈ ನೆನಪಿನಲ್ಲಿ ಫೋಟೋಗಳು ಅಥವಾ ವೀಡಿಯೊಗಳಿಲ್ಲ.</string>
 </resources>

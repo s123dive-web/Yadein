@@ -33,4 +33,10 @@
     <string name="share_saved">సేవ్ అయింది.</string>
     <string name="share_failed">అది పని చేయలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.</string>
     <string name="share_footer">Yaadeinలో దాచుకున్నది</string>
+    <string name="download_one">ఫోన్‌లో సేవ్ చేయండి</string>
+    <string name="download_all">ఫోటోలు, వీడియోలు డౌన్‌లోడ్ చేయండి</string>
+    <string name="download_saved_gallery">మీ ఫోన్ ఫోటోలలో సేవ్ అయింది.</string>
+    <string name="download_saved_folder">మీరు ఎంచుకున్న ఫోల్డర్‌లో సేవ్ అయింది.</string>
+    <string name="download_partial">%2$d లో %1$d సేవ్ అయ్యాయి. మిగతావి సేవ్ కాలేదు.</string>
+    <string name="download_none">ఈ జ్ఞాపకంలో ఫోటోలు లేదా వీడియోలు లేవు.</string>
 </resources>
