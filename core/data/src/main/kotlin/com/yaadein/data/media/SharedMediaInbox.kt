@@ -26,6 +26,9 @@ object SharedMediaInbox {
     val pending: StateFlow<List<Uri>> = _pending.asStateFlow()
 
     @Volatile private var pendingDir: File? = null
+    /** `SystemClock.elapsedRealtime()` when the share arrived; the start of the tap-to-saved clock for Share → Yaadein. */
+    @Volatile var receivedAtElapsed: Long = 0L
+        private set
 
     /** Hands the files to the Create memory screen once; marks the share as used so a restart does not repeat it. */
     fun take(): List<Uri> {
@@ -46,6 +49,7 @@ object SharedMediaInbox {
         if (File(latest, TAKEN_MARKER).exists() || System.currentTimeMillis() - latest.lastModified() > RESTORE_WINDOW_MS) return@withContext
         val files = latest.listFiles()?.filter { it.isFile && it.name != TAKEN_MARKER }?.sortedBy { it.name }.orEmpty()
         if (files.isEmpty()) return@withContext
+        receivedAtElapsed = android.os.SystemClock.elapsedRealtime()
         pendingDir = latest
         _pending.value = files.map { FileProvider.getUriForFile(context, context.packageName + ".files", it) }
     }
@@ -55,6 +59,7 @@ object SharedMediaInbox {
 
     /** Copies the intent's media into the cache; returns how many were accepted. */
     suspend fun receive(context: Context, intent: Intent): Int = withContext(Dispatchers.IO) {
+        receivedAtElapsed = android.os.SystemClock.elapsedRealtime()
         val dir = File(context.cacheDir, "$DIR/${System.currentTimeMillis()}").apply { mkdirs() }
         pruneOld(context, keep = dir)
         val copied = streams(intent).mapIndexedNotNull { i, source ->

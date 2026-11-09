@@ -48,4 +48,10 @@
     <string name="pw_hide">પાસવર્ડ છુપાવો</string>
     <string name="pw_too_short">ઓછામાં ઓછા %1$d અક્ષર</string>
     <string name="pw_mismatch">પાસવર્ડ મેળ ખાતા નથી</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="cd_import_progress">ફોટા ઉમેરાઈ રહ્યા છે, %1$d%% થયું</string>
+    <plurals name="cd_import_failed">
+        <item quantity="one">%1$d ફોટો ઉમેરી શકાયો નહીં. વિગત માટે ટૅપ કરો</item>
+        <item quantity="other">%1$d ફોટા ઉમેરી શકાયા નહીં. વિગત માટે ટૅપ કરો</item>
+    </plurals>
 </resources>

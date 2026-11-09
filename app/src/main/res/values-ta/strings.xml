@@ -34,4 +34,6 @@
         <item quantity="one">இதே நாளின் %1$d நினைவு</item>
         <item quantity="other">இதே நாளின் %1$d நினைவுகள்</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="nav_create_more_ways">நினைவைச் சேர்க்க மேலும் வழிகள்</string>
 </resources>

@@ -103,4 +103,17 @@ class PolishEngineTest {
     fun `is deterministic`() {
         assertEquals(polish("goa trip 2024"), polish("goa trip 2024"))
     }
+
+    @Test
+    fun `titleFor builds photo-first titles from date, people, festival and place`() {
+        val month = com.yaadein.domain.dates.Dates.month(java.time.YearMonth.of(2024, 10))
+        assertEquals("October 2024 with Aaji", PolishEngine.titleFor(month, peopleNames = listOf("Aaji"), locale = Locale.ENGLISH))
+        assertEquals("October 2024 with Aaji and Rahul", PolishEngine.titleFor(month, peopleNames = listOf("Aaji", "Rahul"), locale = Locale.ENGLISH))
+        assertEquals("October 2024 with Aaji, Rahul and others", PolishEngine.titleFor(month, peopleNames = listOf("Aaji", "Rahul", "Priya", "Neha"), locale = Locale.ENGLISH))
+        assertEquals("Diwali 2024 with Aaji", PolishEngine.titleFor(month, festival = "Diwali", peopleNames = listOf("Aaji"), locale = Locale.ENGLISH))
+        val day = com.yaadein.domain.dates.Dates.exact(LocalDate.of(2024, 12, 20))
+        assertEquals("20 Dec 2024 in Pune", PolishEngine.titleFor(day, place = "Pune", locale = Locale.ENGLISH))
+        assertEquals("20 Dec 2024 with Aaji", PolishEngine.titleFor(day, place = "Pune", peopleNames = listOf(" Aaji ", "Aaji"), locale = Locale.ENGLISH))
+        assertEquals("Summer 2018", PolishEngine.titleFor(com.yaadein.domain.dates.Dates.fuzzy("Summer 2018", 2018, 5), locale = Locale.ENGLISH))
+    }
 }

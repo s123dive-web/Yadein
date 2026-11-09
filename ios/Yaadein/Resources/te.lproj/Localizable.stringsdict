@@ -51,6 +51,22 @@
             <string>%1$d జ్ఞాపకాలు సృష్టించబడతాయి</string>
         </dict>
     </dict>
+    <key>cd_import_failed</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ఫోటోను జోడించలేకపోయాం. వివరాలకు నొక్కండి</string>
+            <key>other</key>
+            <string>%1$d ఫోటోలను జోడించలేకపోయాం. వివరాలకు నొక్కండి</string>
+        </dict>
+    </dict>
     <key>faces_pending</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -81,6 +97,86 @@
             <string>%1$d ఫోటోలో కనిపించారు</string>
             <key>other</key>
             <string>%1$d ఫోటోలలో కనిపించారు</string>
+        </dict>
+    </dict>
+    <key>import_failed_integrity</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ఫైల్ సేవ్ చేశాక ధృవీకరణలో నిలవలేదు, అందుకే తీసివేశాం.</string>
+            <key>other</key>
+            <string>%1$d ఫైళ్లు సేవ్ చేశాక ధృవీకరణలో నిలవలేదు, అందుకే తీసివేశాం.</string>
+        </dict>
+    </dict>
+    <key>import_failed_no_space</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d వీడియోకు ఫోన్‌లో మరింత ఖాళీ స్థలం కావాలి.</string>
+            <key>other</key>
+            <string>%1$d వీడియోలకు ఫోన్‌లో మరింత ఖాళీ స్థలం కావాలి.</string>
+        </dict>
+    </dict>
+    <key>import_failed_too_large</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ఫైల్ పరిమాణ పరిమితిని మించింది (ఫోటోలకు 20 MB, వీడియోలకు 200 MB).</string>
+            <key>other</key>
+            <string>%1$d ఫైళ్లు పరిమాణ పరిమితిని మించాయి (ఫోటోలకు 20 MB, వీడియోలకు 200 MB).</string>
+        </dict>
+    </dict>
+    <key>import_failed_unreadable</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ఫైల్‌ను గ్యాలరీ నుండి చదవలేకపోయాం.</string>
+            <key>other</key>
+            <string>%1$d ఫైళ్లను గ్యాలరీ నుండి చదవలేకపోయాం.</string>
+        </dict>
+    </dict>
+    <key>import_failed_unsupported</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ఫైల్ మేము చదవగలిగే ఫోటో లేదా వీడియో కాదు.</string>
+            <key>other</key>
+            <string>%1$d ఫైళ్లు మేము చదవగలిగే ఫోటోలు లేదా వీడియోలు కావు.</string>
         </dict>
     </dict>
     <key>lock_wrong_pin_wipe</key>

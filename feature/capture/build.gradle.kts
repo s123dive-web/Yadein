@@ -78,6 +78,7 @@ dependencies {
     testImplementation(libs.mockk)
 
     testImplementation(project(":core:testing"))
+    testImplementation(libs.exifinterface)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.androidx.test.core)

@@ -12,6 +12,8 @@ import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.longClick
 import androidx.test.core.app.ActivityScenario
 import com.yaadein.app.MainActivity
 import com.yaadein.data.crypto.PinManager
@@ -112,8 +114,44 @@ class AppSmokeTest {
     }
 
     @Test
+    fun `plus opens the system photo picker and long-press opens the hub`() {
+        // Tap: the Photo Picker (Quick Save's first and only choice before Save).
+        compose.onNodeWithContentDescription("Create").performClick()
+        compose.waitForIdle()
+        var started: android.content.Intent? = null
+        scenario.onActivity { started = org.robolectric.Shadows.shadowOf(it).nextStartedActivityForResult?.intent }
+        org.junit.Assert.assertNotNull("tapping + must open a picker", started)
+        val action = started!!.action
+        org.junit.Assert.assertTrue(
+            "unexpected picker intent $action",
+            action == android.provider.MediaStore.ACTION_PICK_IMAGES || action == android.content.Intent.ACTION_GET_CONTENT ||
+                action == android.content.Intent.ACTION_OPEN_DOCUMENT || action == "com.google.android.gms.provider.action.PICK_IMAGES",
+        )
+        // Long-press: the hub with every other way in.
+        compose.onNodeWithContentDescription("Create").performTouchInput { longClick() }
+        compose.waitForIdle()
+        compose.onNodeWithText("Start from photos").assertIsDisplayed()
+        compose.onNodeWithText("More ways").assertIsDisplayed()
+    }
+
+    @Test
+    fun `an empty picker result opens Quick Save in words-only mode`() {
+        compose.onNodeWithContentDescription("Create").performClick()
+        compose.waitForIdle()
+        scenario.onActivity { activity ->
+            val shadow = org.robolectric.Shadows.shadowOf(activity)
+            val request = shadow.nextStartedActivityForResult
+            org.junit.Assert.assertNotNull(request)
+            shadow.receiveResult(request!!.intent, android.app.Activity.RESULT_CANCELED, null)
+        }
+        compose.waitForIdle()
+        compose.onNodeWithText("No photos? Write it instead").assertIsDisplayed()
+        compose.onNodeWithText("Add photos").assertIsDisplayed()
+    }
+
+    @Test
     fun `capture hub opens and text-only flow saves a memory`() {
-        compose.onAllNodesWithText("Create")[0].performClick()
+        compose.onNodeWithContentDescription("Create").performTouchInput { longClick() }
         compose.waitForIdle()
         // The hub leads with photos and a line of text; the other ways sit under "More ways".
         compose.onNodeWithText("Start from photos").assertIsDisplayed()

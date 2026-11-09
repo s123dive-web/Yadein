@@ -48,4 +48,10 @@
     <string name="pw_hide">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</string>
     <string name="pw_too_short">ಕನಿಷ್ಠ %1$d ಅಕ್ಷರಗಳು</string>
     <string name="pw_mismatch">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹೊಂದುತ್ತಿಲ್ಲ</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="cd_import_progress">ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ, %1$d%% ಆಗಿದೆ</string>
+    <plurals name="cd_import_failed">
+        <item quantity="one">%1$d ಫೋಟೋ ಸೇರಿಸಲು ಆಗಲಿಲ್ಲ. ವಿವರಗಳಿಗೆ ಟ್ಯಾಪ್ ಮಾಡಿ</item>
+        <item quantity="other">%1$d ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು ಆಗಲಿಲ್ಲ. ವಿವರಗಳಿಗೆ ಟ್ಯಾಪ್ ಮಾಡಿ</item>
+    </plurals>
 </resources>

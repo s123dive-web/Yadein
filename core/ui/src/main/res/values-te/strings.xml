@@ -48,4 +48,10 @@
     <string name="pw_hide">పాస్‌వర్డ్ దాచండి</string>
     <string name="pw_too_short">కనీసం %1$d అక్షరాలు</string>
     <string name="pw_mismatch">పాస్‌వర్డ్‌లు సరిపోలలేదు</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="cd_import_progress">ఫోటోలు జోడిస్తున్నాం, %1$d%% పూర్తయింది</string>
+    <plurals name="cd_import_failed">
+        <item quantity="one">%1$d ఫోటోను జోడించలేకపోయాం. వివరాలకు నొక్కండి</item>
+        <item quantity="other">%1$d ఫోటోలను జోడించలేకపోయాం. వివరాలకు నొక్కండి</item>
+    </plurals>
 </resources>

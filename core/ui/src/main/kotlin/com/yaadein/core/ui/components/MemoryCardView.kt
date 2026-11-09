@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Notes
 import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material.icons.rounded.Place
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.yaadein.core.ui.R
 import com.yaadein.core.ui.media.ThumbnailImage
 import com.yaadein.core.ui.theme.Yaadein
@@ -52,6 +54,11 @@ fun MemoryCardView(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = false,
+    /** Photos of a just-saved memory still being encrypted: 0..1, or null when nothing is pending. */
+    importProgress: Float? = null,
+    /** Photos that could not be added; tapping the badge calls [onImportFailuresClick]. */
+    importFailed: Int = 0,
+    onImportFailuresClick: (() -> Unit)? = null,
 ) {
     val spacing = Yaadein.spacing
     val sizes = Yaadein.sizes
@@ -115,6 +122,12 @@ fun MemoryCardView(
                         .padding(spacing.md),
                 )
             }
+            ImportStatusBadge(
+                progress = importProgress,
+                failed = importFailed,
+                onFailuresClick = onImportFailuresClick,
+                modifier = Modifier.align(Alignment.TopEnd).padding(spacing.sm),
+            )
         }
         Column(modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md)) {
             Text(
@@ -175,5 +188,58 @@ private fun CoverBadge(icon: androidx.compose.ui.graphics.vector.ImageVector, te
         Icon(imageVector = icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(Yaadein.sizes.iconSm))
         Text(text = text, style = MaterialTheme.typography.labelMedium, color = Color.White)
         Spacer(Modifier.width(spacing.xxs))
+    }
+}
+
+/**
+ * Top-right corner of a card: a ring while a memory's photos are still being encrypted in the background, then a
+ * small badge when some could not be added. Nothing is shown once everything landed.
+ */
+@Composable
+fun ImportStatusBadge(progress: Float?, failed: Int, onFailuresClick: (() -> Unit)?, modifier: Modifier = Modifier) {
+    val sizes = Yaadein.sizes
+    val spacing = Yaadein.spacing
+    when {
+        progress != null && progress < 1f -> {
+            val percent = (progress * 100).toInt().coerceIn(0, 100)
+            val label = stringResource(R.string.cd_import_progress, percent)
+            Box(
+                modifier = modifier
+                    .size(sizes.touchTarget)
+                    .semantics { contentDescription = label },
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(sizes.iconLg)
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f), androidx.compose.foundation.shape.CircleShape),
+                )
+                androidx.compose.material3.CircularProgressIndicator(
+                    progress = { progress.coerceIn(0f, 1f) },
+                    modifier = Modifier.size(sizes.icon),
+                    strokeWidth = Yaadein.spacing.xxs + 1.dp,
+                )
+            }
+        }
+        failed > 0 -> {
+            val label = pluralStringResource(R.plurals.cd_import_failed, failed, failed)
+            androidx.compose.material3.Surface(
+                onClick = onFailuresClick ?: {},
+                enabled = onFailuresClick != null,
+                shape = RoundedCornerShape(Yaadein.radius.pill),
+                color = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = modifier.semantics { contentDescription = label },
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = spacing.sm, vertical = spacing.xs).height(sizes.icon),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+                ) {
+                    Icon(Icons.Rounded.ErrorOutline, contentDescription = null, modifier = Modifier.size(sizes.iconSm))
+                    Text(failed.toString(), style = MaterialTheme.typography.labelMedium)
+                }
+            }
+        }
     }
 }

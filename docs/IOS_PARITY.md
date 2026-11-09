@@ -33,6 +33,7 @@
 | Import limits (20 MB photo, 200 MB video), optimised copies | ✅ | ✅ | |
 | Dictation in text capture | ✅ | 🟡 | iOS keyboard dictation (mic key) |
 | Voice memories (new memory, or a note on a memory; story prompt opens the recorder) | ✅ | ✅ | AAC, encrypted, streamed back from the vault |
+| Quick Save: + opens the Photo Picker, pre-filled date/title/people/place, Save returns at once, progress ring on the card, copy-first import, `capture_stats` (Fast & Rich, Phase 1) | ✅ | ⬜ deferred | iOS keeps the hub; `QuickSavePrefill` / `CaptureTimer` rules to port later with their Kotlin tests |
 | Share → Yaadein from other apps | ✅ | 🟡 | share extension "Save to Yaadein" keeps the files in the App Group; the new memory opens with them the next time Yaadein is opened and unlocked (iOS does not let a share sheet open the app) |
 | Google Photos Takeout / WhatsApp import | ✅ | ✅ | same ExportParsing rules; zip streamed on the phone |
 

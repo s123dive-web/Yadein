@@ -30,4 +30,27 @@
     <string name="timeline_layout_cards">बड़े कार्ड</string>
     <string name="timeline_layout_compact">छोटी सूची</string>
     <string name="timeline_layout_grid">फ़ोटो ग्रिड</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="import_failed_title">कुछ फ़ोटो नहीं जुड़ पाईं</string>
+    <plurals name="import_failed_too_large">
+        <item quantity="one">%1$d फ़ाइल साइज़ की सीमा से बड़ी थी (फ़ोटो के लिए 20 MB, वीडियो के लिए 200 MB)।</item>
+        <item quantity="other">%1$d फ़ाइलें साइज़ की सीमा से बड़ी थीं (फ़ोटो के लिए 20 MB, वीडियो के लिए 200 MB)।</item>
+    </plurals>
+    <plurals name="import_failed_unsupported">
+        <item quantity="one">%1$d फ़ाइल ऐसी फ़ोटो या वीडियो नहीं है जिसे हम पढ़ सकें।</item>
+        <item quantity="other">%1$d फ़ाइलें ऐसी फ़ोटो या वीडियो नहीं हैं जिन्हें हम पढ़ सकें।</item>
+    </plurals>
+    <plurals name="import_failed_unreadable">
+        <item quantity="one">%1$d फ़ाइल गैलरी से पढ़ी नहीं जा सकी।</item>
+        <item quantity="other">%1$d फ़ाइलें गैलरी से पढ़ी नहीं जा सकीं।</item>
+    </plurals>
+    <plurals name="import_failed_integrity">
+        <item quantity="one">%1$d फ़ाइल सहेजने के बाद जाँच में खरी नहीं उतरी, इसलिए हटा दी गई।</item>
+        <item quantity="other">%1$d फ़ाइलें सहेजने के बाद जाँच में खरी नहीं उतरीं, इसलिए हटा दी गईं।</item>
+    </plurals>
+    <plurals name="import_failed_no_space">
+        <item quantity="one">%1$d वीडियो के लिए फ़ोन में और खाली जगह चाहिए।</item>
+        <item quantity="other">%1$d वीडियो के लिए फ़ोन में और खाली जगह चाहिए।</item>
+    </plurals>
+    <string name="import_failed_hint">याद खोलें और “फ़ोटो जोड़ें” से उन्हें फिर चुनें।</string>
 </resources>

@@ -11,6 +11,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
 import androidx.sqlite.db.SupportSQLiteQuery
+import com.yaadein.data.db.entity.CaptureStatEntity
 import com.yaadein.data.db.entity.FaceClusterEntity
 import com.yaadein.data.db.entity.GroupEntity
 import com.yaadein.data.db.entity.GroupMemberEntity
@@ -98,6 +99,15 @@ interface PersonDao {
 
     @Query("SELECT * FROM persons WHERE birthday_epoch_day IS NOT NULL")
     suspend fun withBirthdays(): List<PersonEntity>
+
+    /** People on the most recently created memories, most recent first (Quick Save's people chips). */
+    @Query(
+        """
+        SELECT p.* FROM persons p JOIN memory_persons mp ON mp.person_id = p.id JOIN memories m ON m.id = mp.memory_id
+        GROUP BY p.id ORDER BY MAX(m.created_at) DESC, p.name COLLATE NOCASE LIMIT :limit
+        """,
+    )
+    suspend fun recentlyTagged(limit: Int): List<PersonEntity>
 }
 
 @Dao
@@ -326,6 +336,30 @@ interface MediaDao {
 
     @Query("SELECT encrypted_path FROM media UNION SELECT thumb_path FROM media")
     suspend fun allPaths(): List<String>
+
+    /** Place names with the GPS position of one of their photos (for Quick Save's "nearest known place"). */
+    @Query(
+        """
+        SELECT m.place AS place, md.latitude AS latitude, md.longitude AS longitude FROM media md JOIN memories m ON m.id = md.memory_id
+        WHERE md.latitude IS NOT NULL AND md.longitude IS NOT NULL AND m.place != '' ORDER BY md.id DESC LIMIT :limit
+        """,
+    )
+    suspend fun locatedPlaces(limit: Int): List<PlacePoint>
+}
+
+@Dao
+interface CaptureStatDao {
+    @Insert
+    suspend fun insert(stat: CaptureStatEntity): Long
+
+    @Query("UPDATE capture_stats SET save_to_encrypted_ms = :ms WHERE id = :id")
+    suspend fun setEncrypted(id: Long, ms: Long)
+
+    @Query("SELECT * FROM capture_stats ORDER BY created_at DESC, id DESC LIMIT :limit")
+    suspend fun recent(limit: Int): List<CaptureStatEntity>
+
+    @Query("SELECT COUNT(*) FROM capture_stats")
+    suspend fun count(): Int
 }
 
 @Dao
@@ -360,6 +394,9 @@ interface ImportJobDao {
     @Query("SELECT * FROM import_jobs WHERE stage NOT IN ('DONE', 'FAILED')")
     suspend fun pending(): List<ImportJobEntity>
 
+    @Query("SELECT * FROM import_jobs WHERE id = :id")
+    suspend fun get(id: Long): ImportJobEntity?
+
     @Query("DELETE FROM import_jobs WHERE id = :id")
     suspend fun delete(id: Long)
 
@@ -372,3 +409,6 @@ data class CoverRow(val year: Int, val place: String, val memoryId: Long, val co
 
 /** Row of [MemoryDao.placeCounts]. */
 data class PlaceCount(val place: String, val n: Int)
+
+/** Row of [MediaDao.locatedPlaces]. */
+data class PlacePoint(val place: String, val latitude: Double, val longitude: Double)

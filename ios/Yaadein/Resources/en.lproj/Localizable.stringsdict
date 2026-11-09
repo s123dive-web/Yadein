@@ -51,6 +51,22 @@
             <string>%1$d memories will be created</string>
         </dict>
     </dict>
+    <key>cd_import_failed</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d photo could not be added. Tap for details</string>
+            <key>other</key>
+            <string>%1$d photos could not be added. Tap for details</string>
+        </dict>
+    </dict>
     <key>faces_pending</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -81,6 +97,86 @@
             <string>Seen in %1$d photo</string>
             <key>other</key>
             <string>Seen in %1$d photos</string>
+        </dict>
+    </dict>
+    <key>import_failed_integrity</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d file didn't verify after saving and was discarded.</string>
+            <key>other</key>
+            <string>%1$d files didn't verify after saving and were discarded.</string>
+        </dict>
+    </dict>
+    <key>import_failed_no_space</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d video needs more free space on the phone.</string>
+            <key>other</key>
+            <string>%1$d videos need more free space on the phone.</string>
+        </dict>
+    </dict>
+    <key>import_failed_too_large</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d file was over the size limit (20 MB for photos, 200 MB for videos).</string>
+            <key>other</key>
+            <string>%1$d files were over the size limit (20 MB for photos, 200 MB for videos).</string>
+        </dict>
+    </dict>
+    <key>import_failed_unreadable</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d file couldn't be read from the gallery.</string>
+            <key>other</key>
+            <string>%1$d files couldn't be read from the gallery.</string>
+        </dict>
+    </dict>
+    <key>import_failed_unsupported</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d file isn't a photo or video we can read.</string>
+            <key>other</key>
+            <string>%1$d files aren't photos or videos we can read.</string>
         </dict>
     </dict>
     <key>lock_wrong_pin_wipe</key>

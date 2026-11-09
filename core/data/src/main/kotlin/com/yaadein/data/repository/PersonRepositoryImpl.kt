@@ -64,6 +64,8 @@ class PersonRepositoryImpl @Inject constructor(
     override suspend fun coAppearances(): List<Triple<Long, Long, Int>> = dao.coAppearances().map { Triple(it.a, it.b, it.n) }
 
     override suspend fun memoryCounts(): Map<Long, Int> = dao.memoryCounts().associate { it.id to it.n }
+
+    override suspend fun recentlyTagged(limit: Int): List<Person> = dao.recentlyTagged(limit).map { it.toDomain() }
 }
 
 @Singleton

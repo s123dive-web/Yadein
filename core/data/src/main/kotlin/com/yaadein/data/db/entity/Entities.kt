@@ -109,6 +109,9 @@ data class MediaEntity(
     val sha256: String,
     @ColumnInfo(defaultValue = "0") val position: Int,
     @ColumnInfo(name = "created_at") val createdAt: Long,
+    /** EXIF GPS position (schema v2); null when the photo has none. */
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
 
 @Entity(
@@ -183,6 +186,19 @@ data class ImportJobEntity(
     @ColumnInfo(name = "thumb_path") val thumbPath: String?,
     val sha256: String?,
     val optimize: Boolean,
+    @ColumnInfo(name = "created_at") val createdAt: Long,
+    /** Everything known about the picked item (schema v2), so a job copied to temp can finish after a restart. */
+    @ColumnInfo(name = "picked_json") val pickedJson: String? = null,
+)
+
+/** One saved memory's timings (schema v2). Local only; see Settings → How I use Yaadein. */
+@Entity(tableName = "capture_stats", indices = [Index("created_at")])
+data class CaptureStatEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val entry: String,
+    @ColumnInfo(name = "item_count") val itemCount: Int,
+    @ColumnInfo(name = "tap_to_save_ms") val tapToSaveMs: Long,
+    @ColumnInfo(name = "save_to_encrypted_ms") val saveToEncryptedMs: Long?,
     @ColumnInfo(name = "created_at") val createdAt: Long,
 )
 

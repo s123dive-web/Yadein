@@ -30,4 +30,27 @@
     <string name="timeline_layout_cards">పెద్ద కార్డులు</string>
     <string name="timeline_layout_compact">చిన్న జాబితా</string>
     <string name="timeline_layout_grid">ఫోటో గ్రిడ్</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="import_failed_title">కొన్ని ఫోటోలను జోడించలేకపోయాం</string>
+    <plurals name="import_failed_too_large">
+        <item quantity="one">%1$d ఫైల్ పరిమాణ పరిమితిని మించింది (ఫోటోలకు 20 MB, వీడియోలకు 200 MB).</item>
+        <item quantity="other">%1$d ఫైళ్లు పరిమాణ పరిమితిని మించాయి (ఫోటోలకు 20 MB, వీడియోలకు 200 MB).</item>
+    </plurals>
+    <plurals name="import_failed_unsupported">
+        <item quantity="one">%1$d ఫైల్ మేము చదవగలిగే ఫోటో లేదా వీడియో కాదు.</item>
+        <item quantity="other">%1$d ఫైళ్లు మేము చదవగలిగే ఫోటోలు లేదా వీడియోలు కావు.</item>
+    </plurals>
+    <plurals name="import_failed_unreadable">
+        <item quantity="one">%1$d ఫైల్‌ను గ్యాలరీ నుండి చదవలేకపోయాం.</item>
+        <item quantity="other">%1$d ఫైళ్లను గ్యాలరీ నుండి చదవలేకపోయాం.</item>
+    </plurals>
+    <plurals name="import_failed_integrity">
+        <item quantity="one">%1$d ఫైల్ సేవ్ చేశాక ధృవీకరణలో నిలవలేదు, అందుకే తీసివేశాం.</item>
+        <item quantity="other">%1$d ఫైళ్లు సేవ్ చేశాక ధృవీకరణలో నిలవలేదు, అందుకే తీసివేశాం.</item>
+    </plurals>
+    <plurals name="import_failed_no_space">
+        <item quantity="one">%1$d వీడియోకు ఫోన్‌లో మరింత ఖాళీ స్థలం కావాలి.</item>
+        <item quantity="other">%1$d వీడియోలకు ఫోన్‌లో మరింత ఖాళీ స్థలం కావాలి.</item>
+    </plurals>
+    <string name="import_failed_hint">జ్ఞాపకం తెరిచి “ఫోటోలు జోడించండి” ద్వారా వాటిని మళ్లీ ఎంచుకోండి.</string>
 </resources>

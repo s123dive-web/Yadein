@@ -166,4 +166,28 @@
         <item quantity="one">%1$d ಫೋಟೋಗೆ ದಿನಾಂಕ ಇಲ್ಲ</item>
         <item quantity="other">%1$d ಫೋಟೋಗಳಿಗೆ ದಿನಾಂಕ ಇಲ್ಲ</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="quick_save_title">ಹೊಸ ನೆನಪು</string>
+    <string name="quick_save_words_title">ಫೋಟೋ ಇಲ್ಲವೇ? ಹಾಗಾದರೆ ಬರೆದಿಡಿ</string>
+    <string name="quick_save_words_help">ಒಂದು ಸಾಲು ಸಾಕು. “ಗೋವಾ ಟ್ರಿಪ್ 2024” ಅಥವಾ “ಅಜ್ಜಿಯ 80ನೇ” ಒಂದು ಅಂದವಾದ ಕಾರ್ಡ್ ಆಗುತ್ತದೆ, ಫೋಟೋಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಸೇರಿಸಬಹುದು.</string>
+    <string name="quick_save_add_photos">ಫೋಟೋ ಸೇರಿಸಿ</string>
+    <string name="quick_save_title_suggested">ನಿಮ್ಮ ಫೋಟೋಗಳಿಂದ ಸೂಚಿಸಲಾಗಿದೆ. ಬದಲಿಸಲು ಟೈಪ್ ಮಾಡಿ.</string>
+    <string name="quick_save_date_from_photos">ನಿಮ್ಮ ಫೋಟೋಗಳಿಂದ</string>
+    <string name="quick_save_date_guess">ಫೋಟೋಗಳಲ್ಲಿ ದಿನಾಂಕ ಇಲ್ಲ, ಹಾಗಾಗಿ ಇಂದು. ಬದಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</string>
+    <string name="quick_save_date_edited">ನೀವು ಬದಲಿಸಿದ್ದು</string>
+    <string name="quick_save_people">ಇವುಗಳಲ್ಲಿ ಯಾರ್ಯಾರು ಇದ್ದಾರೆ?</string>
+    <string name="quick_save_all_people">ಎಲ್ಲರೂ (ಇನ್ನೂ %1$d)</string>
+    <string name="quick_save_add_person">ವ್ಯಕ್ತಿ ಸೇರಿಸಿ</string>
+    <string name="quick_save_suggested">ಮುಖದಿಂದ ಸೂಚಿಸಲಾಗಿದೆ</string>
+    <string name="quick_save_place_add">ಸ್ಥಳ ಸೇರಿಸಿ</string>
+    <string name="quick_save_split_title">ಇವು %1$d ಬೇರೆ ಬೇರೆ ದಿನಗಳಂತೆ ಕಾಣುತ್ತಿವೆ</string>
+    <string name="quick_save_split_body">ಎಲ್ಲವನ್ನೂ ಒಂದೇ ನೆನಪಾಗಿ ಇಡಿ, ಅಥವಾ ಪ್ರತಿ ದಿನಕ್ಕೂ ಒಂದು ನೆನಪು ಮಾಡಿ.</string>
+    <string name="quick_save_split_action">%1$d ಆಗಿ ವಿಭಜಿಸಿ</string>
+    <string name="quick_save_keep_one">ಒಂದಾಗಿಯೇ ಇಡಿ</string>
+    <string name="quick_save_more_ways">ನೆನಪು ಸೇರಿಸಲು ಇನ್ನಷ್ಟು ದಾರಿಗಳು</string>
+    <string name="quick_save_cover_hint">ಫೋಟೋವನ್ನು ಮುಖಪುಟ ಮಾಡಲು ಅದನ್ನು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</string>
+    <string name="quick_save_cover_badge">ಮುಖಪುಟ</string>
+    <string name="quick_save_remove">ಈ ಫೋಟೋ ತೆಗೆಯಿರಿ</string>
+    <string name="quick_save_photo_cd">ಫೋಟೋ %1$d, ಒಟ್ಟು %2$d ರಲ್ಲಿ. ಮುಖಪುಟ ಮಾಡಲು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</string>
+    <string name="quick_save_capped">ಮೊದಲ %1$d ಫೋಟೋಗಳನ್ನು ಮಾತ್ರ ಇಡಲಾಗಿದೆ. ಉಳಿಸಿ, ನಂತರ ಉಳಿದವನ್ನು ನೆನಪಿನಿಂದ ಸೇರಿಸಿ.</string>
 </resources>

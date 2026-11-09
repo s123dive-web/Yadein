@@ -28,7 +28,9 @@ import com.yaadein.feature.capture.BulkUploadRoute
 import com.yaadein.feature.capture.EventCaptureRoute
 import com.yaadein.feature.capture.PastWizardRoute
 import com.yaadein.feature.capture.PhotoFirstRoute
+import com.yaadein.feature.capture.CaptureActions
 import com.yaadein.feature.capture.QuickCaptureRoute
+import com.yaadein.feature.capture.QuickSaveRoute
 import com.yaadein.feature.capture.TextOnlyRoute
 import com.yaadein.feature.capture.VoiceCaptureRoute
 import com.yaadein.feature.capture.ImportExportRoute
@@ -140,6 +142,27 @@ fun AppNavHost(
                 onBack = { navController.popBackStack() },
                 onSaved = { id -> navController.navigate(Route.MemoryDetail(id)) { popUpTo<Route.Home>() } },
                 onAddPerson = { navController.navigate(Route.PersonEdit()) },
+            )
+        }
+        composable<Route.QuickSave> {
+            // "More ways" from Quick Save: the hub's options replace Quick Save on the back stack.
+            fun go(route: Route) = navController.navigate(route) { popUpTo<Route.Home>() }
+            QuickSaveRoute(
+                onBack = { navController.popBackStack() },
+                // Home shows the new card with its progress ring; encryption carries on in the background.
+                onSaved = { navController.popBackStack<Route.Home>(inclusive = false) },
+                onAddPerson = { navController.navigate(Route.PersonEdit()) },
+                onSplit = { go(Route.PhotoFirst) },
+                hubActions = CaptureActions(
+                    onEvent = { go(Route.EventCapture()) },
+                    onPhotos = { go(Route.PhotoFirst) },
+                    onTextOnly = { go(Route.TextOnly) },
+                    onQuick = { go(Route.QuickCapture) },
+                    onPastWizard = { go(Route.PastWizard) },
+                    onVoice = { go(Route.VoiceCapture()) },
+                    onImport = { go(Route.ImportExport) },
+                    onBulk = { go(Route.BulkUpload) },
+                ),
             )
         }
         composable<Route.QuickCapture> {

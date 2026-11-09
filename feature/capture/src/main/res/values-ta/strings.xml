@@ -166,4 +166,28 @@
         <item quantity="one">%1$d புகைப்படத்துக்குத் தேதி இல்லை</item>
         <item quantity="other">%1$d புகைப்படங்களுக்குத் தேதி இல்லை</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="quick_save_title">புதிய நினைவு</string>
+    <string name="quick_save_words_title">படங்கள் இல்லையா? எழுதி வையுங்கள்</string>
+    <string name="quick_save_words_help">ஒரு வரி போதும். “கோவா பயணம் 2024” அல்லது “பாட்டியின் 80ஆவது” ஒரு அழகான அட்டையாக மாறும், படங்களை எப்போது வேண்டுமானாலும் சேர்க்கலாம்.</string>
+    <string name="quick_save_add_photos">படங்கள் சேர்</string>
+    <string name="quick_save_title_suggested">உங்கள் படங்களிலிருந்து பரிந்துரைக்கப்பட்டது. மாற்ற டைப் செய்யுங்கள்.</string>
+    <string name="quick_save_date_from_photos">உங்கள் படங்களிலிருந்து</string>
+    <string name="quick_save_date_guess">படங்களில் தேதி இல்லை, அதனால் இன்று. மாற்றத் தட்டவும்.</string>
+    <string name="quick_save_date_edited">நீங்கள் மாற்றியது</string>
+    <string name="quick_save_people">இவற்றில் யார் யார் இருக்கிறார்கள்?</string>
+    <string name="quick_save_all_people">எல்லோரும் (மேலும் %1$d)</string>
+    <string name="quick_save_add_person">நபரைச் சேர்</string>
+    <string name="quick_save_suggested">முகத்திலிருந்து பரிந்துரைக்கப்பட்டது</string>
+    <string name="quick_save_place_add">இடம் சேர்</string>
+    <string name="quick_save_split_title">இவை %1$d வெவ்வேறு நாட்கள் போல் தெரிகிறது</string>
+    <string name="quick_save_split_body">எல்லாவற்றையும் ஒரே நினைவாக வையுங்கள், அல்லது ஒவ்வொரு நாளுக்கும் ஒரு நினைவு உருவாக்குங்கள்.</string>
+    <string name="quick_save_split_action">%1$d ஆகப் பிரி</string>
+    <string name="quick_save_keep_one">ஒன்றாகவே வை</string>
+    <string name="quick_save_more_ways">நினைவைச் சேர்க்க மேலும் வழிகள்</string>
+    <string name="quick_save_cover_hint">ஒரு படத்தை அட்டைப் படமாக்க அதை அழுத்திப் பிடியுங்கள்.</string>
+    <string name="quick_save_cover_badge">அட்டைப் படம்</string>
+    <string name="quick_save_remove">இந்தப் படத்தை நீக்கு</string>
+    <string name="quick_save_photo_cd">படம் %1$d / %2$d. அட்டைப் படமாக்க அழுத்திப் பிடியுங்கள்.</string>
+    <string name="quick_save_capped">முதல் %1$d படங்கள் மட்டும் வைக்கப்பட்டன. சேமித்து, மீதியை நினைவிலிருந்து சேருங்கள்.</string>
 </resources>

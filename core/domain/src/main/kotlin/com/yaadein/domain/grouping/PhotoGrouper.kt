@@ -11,6 +11,9 @@ data class PickedItem(
     val isVideo: Boolean = false,
     /** Face-cluster ids present in the item when face suggestions are on; empty otherwise. */
     val faces: Set<Long> = emptySet(),
+    /** EXIF GPS position, when the photo has one (used by Quick Save's place suggestion). */
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
 
 data class SuggestedGroup(

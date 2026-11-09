@@ -30,4 +30,27 @@
     <string name="timeline_layout_cards">বড় কার্ড</string>
     <string name="timeline_layout_compact">ছোট তালিকা</string>
     <string name="timeline_layout_grid">ছবির গ্রিড</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="import_failed_title">কিছু ছবি যোগ করা যায়নি</string>
+    <plurals name="import_failed_too_large">
+        <item quantity="one">%1$dটি ফাইল সাইজের সীমা ছাড়িয়ে গেছে (ছবির জন্য 20 MB, ভিডিওর জন্য 200 MB)।</item>
+        <item quantity="other">%1$dটি ফাইল সাইজের সীমা ছাড়িয়ে গেছে (ছবির জন্য 20 MB, ভিডিওর জন্য 200 MB)।</item>
+    </plurals>
+    <plurals name="import_failed_unsupported">
+        <item quantity="one">%1$dটি ফাইল এমন ছবি বা ভিডিও নয় যা আমরা পড়তে পারি।</item>
+        <item quantity="other">%1$dটি ফাইল এমন ছবি বা ভিডিও নয় যা আমরা পড়তে পারি।</item>
+    </plurals>
+    <plurals name="import_failed_unreadable">
+        <item quantity="one">%1$dটি ফাইল গ্যালারি থেকে পড়া যায়নি।</item>
+        <item quantity="other">%1$dটি ফাইল গ্যালারি থেকে পড়া যায়নি।</item>
+    </plurals>
+    <plurals name="import_failed_integrity">
+        <item quantity="one">%1$dটি ফাইল সেভ করার পর যাচাইয়ে উতরোয়নি, তাই বাদ দেওয়া হয়েছে।</item>
+        <item quantity="other">%1$dটি ফাইল সেভ করার পর যাচাইয়ে উতরোয়নি, তাই বাদ দেওয়া হয়েছে।</item>
+    </plurals>
+    <plurals name="import_failed_no_space">
+        <item quantity="one">%1$dটি ভিডিওর জন্য ফোনে আরও খালি জায়গা দরকার।</item>
+        <item quantity="other">%1$dটি ভিডিওর জন্য ফোনে আরও খালি জায়গা দরকার।</item>
+    </plurals>
+    <string name="import_failed_hint">স্মৃতিটি খুলে “ছবি যোগ করুন” দিয়ে আবার বেছে নিন।</string>
 </resources>

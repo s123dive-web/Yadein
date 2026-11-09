@@ -36,6 +36,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +65,8 @@ import androidx.compose.material.icons.automirrored.rounded.ViewList
 import com.yaadein.core.ui.illustrations.IllustrationKind
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.dates.Dates
+import com.yaadein.domain.repository.MemoryImportProgress
+import com.yaadein.domain.repository.ImportFailureKind
 import com.yaadein.domain.repository.TimelineFilter
 import kotlinx.coroutines.launch
 import com.yaadein.core.ui.R as CoreR
@@ -87,6 +92,7 @@ fun TimelineRoute(
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val layout by viewModel.layout.collectAsStateWithLifecycle()
+    val imports by viewModel.imports.collectAsStateWithLifecycle()
     val items = viewModel.items.collectAsLazyPagingItems().asPagedItems()
     if (twoPane) {
         Row(modifier = modifier.fillMaxSize()) {
@@ -112,6 +118,8 @@ fun TimelineRoute(
                 modifier = Modifier.weight(1f),
                 layout = layout,
                 onCycleLayout = viewModel::cycleLayout,
+                imports = imports,
+                onDismissImportFailures = viewModel::dismissImportFailures,
             )
         }
         return
@@ -132,6 +140,8 @@ fun TimelineRoute(
         modifier = modifier,
         layout = layout,
         onCycleLayout = viewModel::cycleLayout,
+        imports = imports,
+        onDismissImportFailures = viewModel::dismissImportFailures,
     )
 }
 
@@ -154,9 +164,17 @@ fun TimelineScreen(
     onAbout: () -> Unit = {},
     layout: TimelineLayout = TimelineLayout.CARDS,
     onCycleLayout: () -> Unit = {},
+    /** Background import state per memory (ring while encrypting, badge when photos failed). */
+    imports: Map<Long, MemoryImportProgress> = emptyMap(),
+    onDismissImportFailures: (Long) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val scope = rememberCoroutineScope()
+    var failuresFor by remember { mutableStateOf<Long?>(null) }
+    failuresFor?.let { memoryId ->
+        val failures = imports[memoryId]?.failures.orEmpty()
+        ImportFailuresDialog(failures = failures, onDismiss = { onDismissImportFailures(memoryId); failuresFor = null })
+    }
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
             title = {
@@ -232,7 +250,10 @@ fun TimelineScreen(
             )
             else -> when (layout) {
                 TimelineLayout.GRID -> TimelineGrid(items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding)
-                else -> TimelineList(items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding, listState = listState, dense = layout == TimelineLayout.COMPACT)
+                else -> TimelineList(
+                    items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding, listState = listState, dense = layout == TimelineLayout.COMPACT,
+                    imports = imports, onImportFailures = { failuresFor = it },
+                )
             }
         }
     }
@@ -296,6 +317,8 @@ fun TimelineList(
     compact: Boolean = false,
     /** One line per memory with a small thumbnail: about four times as many memories per screen as cards. */
     dense: Boolean = false,
+    imports: Map<Long, MemoryImportProgress> = emptyMap(),
+    onImportFailures: (Long) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val sizes = Yaadein.sizes
@@ -322,9 +345,16 @@ fun TimelineList(
                 is TimelineItem.Card -> if (dense) {
                     CompactMemoryRow(card = item.card, onClick = { onOpenMemory(item.card.memory.id) })
                 } else {
+                    val memoryId = item.card.memory.id
+                    val progress = imports[memoryId]
                     Row(modifier = Modifier.fillMaxWidth()) {
                         TimelineRail(color = railColor)
-                        MemoryCardView(card = item.card, onClick = { onOpenMemory(item.card.memory.id) }, compact = compact)
+                        MemoryCardView(
+                            card = item.card, onClick = { onOpenMemory(memoryId) }, compact = compact,
+                            importProgress = progress?.takeIf { it.running }?.fraction,
+                            importFailed = progress?.failures?.size ?: 0,
+                            onImportFailuresClick = { onImportFailures(memoryId) },
+                        )
                     }
                 }
                 null -> Unit
@@ -387,5 +417,35 @@ private fun MonthHeader(item: TimelineItem.MonthHeader) {
         modifier = Modifier
             .padding(top = spacing.sm)
             .semantics { heading() },
+    )
+}
+
+/** Why some photos of a saved memory could not be added (the capture screens show the same reasons before saving). */
+@Composable
+fun ImportFailuresDialog(failures: List<ImportFailureKind>, onDismiss: () -> Unit) {
+    val counts = failures.groupingBy { it }.eachCount()
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.import_failed_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(Yaadein.spacing.sm)) {
+                counts.forEach { (kind, n) ->
+                    Text(
+                        pluralStringResource(
+                            when (kind) {
+                                ImportFailureKind.TOO_LARGE -> R.plurals.import_failed_too_large
+                                ImportFailureKind.UNSUPPORTED -> R.plurals.import_failed_unsupported
+                                ImportFailureKind.UNREADABLE -> R.plurals.import_failed_unreadable
+                                ImportFailureKind.INTEGRITY_CHECK_FAILED -> R.plurals.import_failed_integrity
+                                ImportFailureKind.NOT_ENOUGH_SPACE -> R.plurals.import_failed_no_space
+                            },
+                            n, n,
+                        ),
+                    )
+                }
+                Text(stringResource(R.string.import_failed_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        },
+        confirmButton = { androidx.compose.material3.TextButton(onClick = onDismiss) { Text(stringResource(com.yaadein.core.ui.R.string.action_done)) } },
     )
 }

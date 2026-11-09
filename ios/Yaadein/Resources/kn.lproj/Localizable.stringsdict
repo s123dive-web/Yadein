@@ -51,6 +51,22 @@
             <string>%1$d ನೆನಪುಗಳು ರಚನೆಯಾಗುತ್ತವೆ</string>
         </dict>
     </dict>
+    <key>cd_import_failed</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ಫೋಟೋ ಸೇರಿಸಲು ಆಗಲಿಲ್ಲ. ವಿವರಗಳಿಗೆ ಟ್ಯಾಪ್ ಮಾಡಿ</string>
+            <key>other</key>
+            <string>%1$d ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು ಆಗಲಿಲ್ಲ. ವಿವರಗಳಿಗೆ ಟ್ಯಾಪ್ ಮಾಡಿ</string>
+        </dict>
+    </dict>
     <key>faces_pending</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -81,6 +97,86 @@
             <string>%1$d ಫೋಟೋದಲ್ಲಿ ಕಾಣಿಸಿದೆ</string>
             <key>other</key>
             <string>%1$d ಫೋಟೋಗಳಲ್ಲಿ ಕಾಣಿಸಿದೆ</string>
+        </dict>
+    </dict>
+    <key>import_failed_integrity</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ಫೈಲ್ ಉಳಿಸಿದ ನಂತರ ಪರಿಶೀಲನೆಯಲ್ಲಿ ಸರಿ ಬರಲಿಲ್ಲ, ಹಾಗಾಗಿ ತೆಗೆದುಹಾಕಲಾಯಿತು.</string>
+            <key>other</key>
+            <string>%1$d ಫೈಲ್‌ಗಳು ಉಳಿಸಿದ ನಂತರ ಪರಿಶೀಲನೆಯಲ್ಲಿ ಸರಿ ಬರಲಿಲ್ಲ, ಹಾಗಾಗಿ ತೆಗೆದುಹಾಕಲಾಯಿತು.</string>
+        </dict>
+    </dict>
+    <key>import_failed_no_space</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ವೀಡಿಯೊಗೆ ಫೋನ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಖಾಲಿ ಜಾಗ ಬೇಕು.</string>
+            <key>other</key>
+            <string>%1$d ವೀಡಿಯೊಗಳಿಗೆ ಫೋನ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಖಾಲಿ ಜಾಗ ಬೇಕು.</string>
+        </dict>
+    </dict>
+    <key>import_failed_too_large</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ಫೈಲ್ ಗಾತ್ರದ ಮಿತಿ ಮೀರಿತ್ತು (ಫೋಟೋಗಳಿಗೆ 20 MB, ವೀಡಿಯೊಗಳಿಗೆ 200 MB).</string>
+            <key>other</key>
+            <string>%1$d ಫೈಲ್‌ಗಳು ಗಾತ್ರದ ಮಿತಿ ಮೀರಿದ್ದವು (ಫೋಟೋಗಳಿಗೆ 20 MB, ವೀಡಿಯೊಗಳಿಗೆ 200 MB).</string>
+        </dict>
+    </dict>
+    <key>import_failed_unreadable</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ಫೈಲ್ ಅನ್ನು ಗ್ಯಾಲರಿಯಿಂದ ಓದಲು ಆಗಲಿಲ್ಲ.</string>
+            <key>other</key>
+            <string>%1$d ಫೈಲ್‌ಗಳನ್ನು ಗ್ಯಾಲರಿಯಿಂದ ಓದಲು ಆಗಲಿಲ್ಲ.</string>
+        </dict>
+    </dict>
+    <key>import_failed_unsupported</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ಫೈಲ್ ನಾವು ಓದಬಹುದಾದ ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊ ಅಲ್ಲ.</string>
+            <key>other</key>
+            <string>%1$d ಫೈಲ್‌ಗಳು ನಾವು ಓದಬಹುದಾದ ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊಗಳಲ್ಲ.</string>
         </dict>
     </dict>
     <key>lock_wrong_pin_wipe</key>

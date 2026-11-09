@@ -43,6 +43,15 @@ jobs:
       # (v0.1.69 crashed on Settings). A clean build takes a few minutes longer and is always complete.
       - name: Unit tests
         run: ./gradlew testDebugUnitTest :core:domain:test --no-daemon --no-build-cache --stacktrace
+      - name: Exported Room schema is committed
+        if: always()
+        run: |
+          if ! git diff --quiet -- core/data/schemas; then
+            echo "::warning::core/data/schemas changed during the build: commit the regenerated file(s) below"
+            for f in $(git diff --name-only -- core/data/schemas); do echo "SCHEMA-BEGIN $f"; cat "$f"; echo "SCHEMA-END"; done
+          else
+            echo "Exported Room schemas match the committed files."
+          fi
       # Diagnostics for the intermittent "Cannot create an instance of PeopleViewModel" smoke-test failure:
       # shows whether Hilt generated (and aggregated) the ViewModel modules for feature:people in this run.
       - name: Hilt ViewModel diagnostics

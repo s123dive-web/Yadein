@@ -51,6 +51,22 @@
             <string>%1$d યાદો બનશે</string>
         </dict>
     </dict>
+    <key>cd_import_failed</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ફોટો ઉમેરી શકાયો નહીં. વિગત માટે ટૅપ કરો</string>
+            <key>other</key>
+            <string>%1$d ફોટા ઉમેરી શકાયા નહીં. વિગત માટે ટૅપ કરો</string>
+        </dict>
+    </dict>
     <key>faces_pending</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -81,6 +97,86 @@
             <string>%1$d ફોટામાં દેખાયા</string>
             <key>other</key>
             <string>%1$d ફોટામાં દેખાયા</string>
+        </dict>
+    </dict>
+    <key>import_failed_integrity</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ફાઇલ સાચવ્યા પછી ચકાસણીમાં પાર ન ઊતરી, એટલે કાઢી નાખી.</string>
+            <key>other</key>
+            <string>%1$d ફાઇલો સાચવ્યા પછી ચકાસણીમાં પાર ન ઊતરી, એટલે કાઢી નાખી.</string>
+        </dict>
+    </dict>
+    <key>import_failed_no_space</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d વીડિયો માટે ફોનમાં વધુ ખાલી જગ્યા જોઈએ.</string>
+            <key>other</key>
+            <string>%1$d વીડિયો માટે ફોનમાં વધુ ખાલી જગ્યા જોઈએ.</string>
+        </dict>
+    </dict>
+    <key>import_failed_too_large</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ફાઇલ સાઇઝની મર્યાદા કરતાં મોટી હતી (ફોટા માટે 20 MB, વીડિયો માટે 200 MB).</string>
+            <key>other</key>
+            <string>%1$d ફાઇલો સાઇઝની મર્યાદા કરતાં મોટી હતી (ફોટા માટે 20 MB, વીડિયો માટે 200 MB).</string>
+        </dict>
+    </dict>
+    <key>import_failed_unreadable</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ફાઇલ ગૅલેરીમાંથી વાંચી શકાઈ નહીં.</string>
+            <key>other</key>
+            <string>%1$d ફાઇલો ગૅલેરીમાંથી વાંચી શકાઈ નહીં.</string>
+        </dict>
+    </dict>
+    <key>import_failed_unsupported</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ફાઇલ એવો ફોટો કે વીડિયો નથી જે અમે વાંચી શકીએ.</string>
+            <key>other</key>
+            <string>%1$d ફાઇલો એવા ફોટા કે વીડિયો નથી જે અમે વાંચી શકીએ.</string>
         </dict>
     </dict>
     <key>lock_wrong_pin_wipe</key>

@@ -132,4 +132,52 @@ class MediaImporterTest {
         assertFalse(orphan.exists())
         assertTrue(db.importJobDao().pending().isEmpty())
     }
+
+    private fun jpegWithExif(name: String, lat: Double, lon: Double, dateTime: String): Pair<Uri, ByteArray> {
+        val bmp = Bitmap.createBitmap(320, 240, Bitmap.Config.ARGB_8888).apply { eraseColor(0xFF996633.toInt()) }
+        val file = File(context.cacheDir, name).apply { outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 90, it) } }
+        androidx.exifinterface.media.ExifInterface(file).apply {
+            setLatLong(lat, lon)
+            setAttribute(androidx.exifinterface.media.ExifInterface.TAG_DATETIME_ORIGINAL, dateTime)
+            saveAttributes()
+        }
+        val bytes = file.readBytes()
+        val uri = Uri.parse("content://test/$name")
+        Shadows.shadowOf(context.contentResolver).registerInputStream(uri, bytes.inputStream())
+        return uri to bytes
+    }
+
+    @Test
+    fun `inspect reads the EXIF date and GPS position`() = runTest {
+        val (uri, bytes) = jpegWithExif("gps.jpg", 18.5204, 73.8567, "2024:12:20 10:30:00")
+        Shadows.shadowOf(context.contentResolver).registerInputStream(uri, bytes.inputStream())
+        val picked = importer.inspect(uri)
+        assertNotNull(picked)
+        assertNotNull(picked!!.takenAtMillis)
+        assertEquals(18.5204, picked.latitude!!, 0.001)
+        assertEquals(73.8567, picked.longitude!!, 0.001)
+    }
+
+    @Test
+    fun `a staged copy finishes after a restart and keeps the GPS position`() = runTest {
+        val (uri, bytes) = jpegUri("staged.jpg", 400, 300)
+        val picked = PickedMedia(uri, isVideo = false, mimeType = "image/jpeg", sizeBytes = bytes.size.toLong(), takenAtMillis = 5L, displayName = "staged.jpg", latitude = 18.5, longitude = 73.8)
+        val staged = importer.stage(picked, memoryId, optimize = true, position = 2)
+        assertTrue(staged is StageOutcome.Staged)
+        val job = db.importJobDao().pending().single()
+        assertEquals(MediaImporter.STAGE_COPIED, job.stage)
+        assertNotNull(job.pickedJson)
+        assertTrue(File(job.tempPath!!).exists())
+        // The source grant is gone (a restart): recovery must not need it.
+        Shadows.shadowOf(context.contentResolver).registerInputStream(uri, ByteArray(0).inputStream())
+        importer.recoverPending()
+        val media = db.mediaDao().forMemory(memoryId).single()
+        assertEquals(400, media.width)
+        assertEquals(2, media.position)
+        assertEquals(18.5, media.latitude!!, 1e-9)
+        assertEquals(73.8, media.longitude!!, 1e-9)
+        assertEquals(5L, media.takenAt)
+        assertTrue(db.importJobDao().pending().isEmpty())
+        assertTrue(store.tmpDir.listFiles().isNullOrEmpty())
+    }
 }

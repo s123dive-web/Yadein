@@ -166,4 +166,28 @@
         <item quantity="one">%1$d फ़ोटो की कोई तारीख नहीं है</item>
         <item quantity="other">%1$d फ़ोटो की कोई तारीख नहीं है</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="quick_save_title">नई याद</string>
+    <string name="quick_save_words_title">फ़ोटो नहीं? तो लिख दें</string>
+    <string name="quick_save_words_help">एक पंक्ति काफ़ी है। “गोवा ट्रिप 2024” या “आजी का 80वाँ” एक सुंदर कार्ड बन जाता है, और फ़ोटो आप कभी भी जोड़ सकते हैं।</string>
+    <string name="quick_save_add_photos">फ़ोटो जोड़ें</string>
+    <string name="quick_save_title_suggested">आपकी फ़ोटो से सुझाया गया। बदलने के लिए टाइप करें।</string>
+    <string name="quick_save_date_from_photos">आपकी फ़ोटो से</string>
+    <string name="quick_save_date_guess">फ़ोटो में तारीख नहीं थी, इसलिए आज की। बदलने के लिए टैप करें।</string>
+    <string name="quick_save_date_edited">आपने बदली</string>
+    <string name="quick_save_people">इनमें कौन-कौन है?</string>
+    <string name="quick_save_all_people">सभी लोग (%1$d और)</string>
+    <string name="quick_save_add_person">व्यक्ति जोड़ें</string>
+    <string name="quick_save_suggested">चेहरे से सुझाया गया</string>
+    <string name="quick_save_place_add">जगह जोड़ें</string>
+    <string name="quick_save_split_title">लगता है ये %1$d अलग-अलग दिन हैं</string>
+    <string name="quick_save_split_body">सब कुछ एक ही याद में रखें, या हर दिन की अलग याद बनाएँ।</string>
+    <string name="quick_save_split_action">%1$d में बाँटें</string>
+    <string name="quick_save_keep_one">एक ही रखें</string>
+    <string name="quick_save_more_ways">याद जोड़ने के और तरीके</string>
+    <string name="quick_save_cover_hint">किसी फ़ोटो को कवर बनाने के लिए उसे देर तक दबाएँ।</string>
+    <string name="quick_save_cover_badge">कवर</string>
+    <string name="quick_save_remove">यह फ़ोटो हटाएँ</string>
+    <string name="quick_save_photo_cd">फ़ोटो %1$d, कुल %2$d में से। कवर बनाने के लिए देर तक दबाएँ।</string>
+    <string name="quick_save_capped">सिर्फ़ पहली %1$d फ़ोटो रखी गईं। सहेजें, फिर बाकी याद से जोड़ें।</string>
 </resources>

@@ -1,6 +1,12 @@
 package com.yaadein.app.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,15 +22,14 @@ import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.ViewTimeline
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -37,6 +42,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowSizeClass
 import com.yaadein.app.R
@@ -46,6 +58,7 @@ import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.settings.UserSettings
 import com.yaadein.feature.capture.CaptureActions
 import com.yaadein.feature.capture.CaptureHubSheet
+import com.yaadein.feature.capture.QuickSaveLaunchViewModel
 import com.yaadein.feature.people.PeopleRoute
 import com.yaadein.feature.relive.ReliveRoute
 import com.yaadein.feature.settings.SettingsPage
@@ -66,6 +79,18 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
     val easy = settings.easyMode
     val tabs = if (easy) listOf(HomeTab.TIMELINE, HomeTab.SETTINGS) else listOf(HomeTab.TIMELINE, HomeTab.PEOPLE, HomeTab.CREATE, HomeTab.RELIVE, HomeTab.SETTINGS)
     if (easy && tab !in tabs) tab = HomeTab.TIMELINE
+
+    // Tap + → the system Photo Picker → Quick Save (3 taps to a saved memory). Long-press + → the hub with every other way.
+    val quickSave: QuickSaveLaunchViewModel = hiltViewModel()
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+        val hasPhotos = quickSave.onPicked(uris)
+        navController.navigate(Route.QuickSave(wordsOnly = !hasPhotos))
+    }
+    val openQuickSave: () -> Unit = {
+        quickSave.beforePicker()
+        picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+    }
+    val openHub: () -> Unit = { hubOpen = true }
 
     val captureActions = CaptureActions(
         onEvent = { hubOpen = false; navController.navigate(Route.EventCapture()) },
@@ -128,9 +153,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
             NavigationRail(
                 header = {
                     Spacer(Modifier.height(Yaadein.spacing.sm))
-                    FloatingActionButton(onClick = { hubOpen = true }, containerColor = MaterialTheme.colorScheme.primary) {
-                        Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.nav_create))
-                    }
+                    CreateButton(onClick = openQuickSave, onLongClick = openHub, size = Yaadein.sizes.fabSize - Yaadein.spacing.sm)
                 },
             ) {
                 Spacer(Modifier.height(Yaadein.spacing.lg))
@@ -154,7 +177,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                         if (t == HomeTab.CREATE) {
                             NavigationBarItem(
                                 selected = false,
-                                onClick = { hubOpen = true },
+                                onClick = openQuickSave,
                                 icon = {
                                     Box(
                                         modifier = Modifier
@@ -162,12 +185,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                                             .padding(Yaadein.spacing.xxs),
                                         contentAlignment = Alignment.Center,
                                     ) {
-                                        FloatingActionButton(
-                                            onClick = { hubOpen = true },
-                                            containerColor = MaterialTheme.colorScheme.primary,
-                                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                                            modifier = Modifier.size(Yaadein.sizes.touchTarget),
-                                        ) { Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.nav_create)) }
+                                        CreateButton(onClick = openQuickSave, onLongClick = openHub, size = Yaadein.sizes.touchTarget)
                                     }
                                 },
                                 label = { Text(stringResource(R.string.nav_create)) },
@@ -185,9 +203,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
             },
             floatingActionButton = {
                 if (easy) {
-                    LargeFloatingActionButton(onClick = { hubOpen = true }, containerColor = MaterialTheme.colorScheme.primary) {
-                        Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.nav_create), modifier = Modifier.size(Yaadein.sizes.iconLg))
-                    }
+                    CreateButton(onClick = openQuickSave, onLongClick = openHub, size = Yaadein.sizes.fabSize + Yaadein.spacing.xxl, iconSize = Yaadein.sizes.iconLg)
                 }
             },
         ) { padding -> Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) { content(PaddingValues(bottom = padding.calculateBottomPadding())) } }
@@ -195,6 +211,34 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
 
     if (hubOpen) {
         CaptureHubSheet(actions = captureActions, onDismiss = { hubOpen = false })
+    }
+}
+
+/**
+ * The one + button. Tap: Quick Save (Photo Picker first). Long-press, or the TalkBack action "More ways to add a
+ * memory": the hub with every other way in. Always at least 48 dp.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CreateButton(onClick: () -> Unit, onLongClick: () -> Unit, size: Dp, iconSize: Dp = Yaadein.sizes.icon) {
+    val create = stringResource(R.string.nav_create)
+    val moreWays = stringResource(R.string.nav_create_more_ways)
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        shadowElevation = Yaadein.elevation.raised,
+        modifier = Modifier
+            .size(size.coerceAtLeast(Yaadein.sizes.touchTarget))
+            .semantics {
+                contentDescription = create
+                customActions = listOf(CustomAccessibilityAction(moreWays) { onLongClick(); true })
+            }
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick, role = Role.Button),
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(iconSize))
+        }
     }
 }
 

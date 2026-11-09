@@ -64,13 +64,13 @@ internal fun MediaEntity.toDomain() = Media(
     kind = MediaKind.entries.firstOrNull { it.name == kind } ?: MediaKind.PHOTO,
     encryptedPath = encryptedPath, thumbPath = thumbPath, takenAt = takenAt, durationMs = durationMs,
     sizeBytes = sizeBytes, caption = caption, width = width, height = height, sha256 = sha256,
-    position = position, createdAt = createdAt,
+    position = position, createdAt = createdAt, latitude = latitude, longitude = longitude,
 )
 
 internal fun Media.toEntity() = MediaEntity(
     id = id, memoryId = memoryId, kind = kind.name, encryptedPath = encryptedPath, thumbPath = thumbPath,
     takenAt = takenAt, durationMs = durationMs, sizeBytes = sizeBytes, caption = caption, width = width,
-    height = height, sha256 = sha256, position = position, createdAt = createdAt,
+    height = height, sha256 = sha256, position = position, createdAt = createdAt, latitude = latitude, longitude = longitude,
 )
 
 internal fun MemoryWithRelations.toCard(): MemoryCard {

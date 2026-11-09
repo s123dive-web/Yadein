@@ -48,4 +48,10 @@
     <string name="pw_hide">পাসওয়ার্ড লুকান</string>
     <string name="pw_too_short">অন্তত %1$dটি অক্ষর</string>
     <string name="pw_mismatch">পাসওয়ার্ড দুটো মেলেনি</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="cd_import_progress">ছবি যোগ হচ্ছে, %1$d%% হয়েছে</string>
+    <plurals name="cd_import_failed">
+        <item quantity="one">%1$dটি ছবি যোগ করা যায়নি। বিস্তারিত জানতে ট্যাপ করুন</item>
+        <item quantity="other">%1$dটি ছবি যোগ করা যায়নি। বিস্তারিত জানতে ট্যাপ করুন</item>
+    </plurals>
 </resources>

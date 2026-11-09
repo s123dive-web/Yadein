@@ -15,6 +15,7 @@ import com.yaadein.domain.model.MemoryDetail
 import com.yaadein.domain.relive.CoverPick
 import com.yaadein.domain.relive.Covers
 import com.yaadein.data.db.dao.CoverRow
+import com.yaadein.domain.capture.KnownPlace
 import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.TimelineFilter
 import kotlinx.coroutines.flow.Flow
@@ -121,6 +122,9 @@ class MemoryRepositoryImpl @Inject constructor(
 
     override suspend fun idsFor(filter: TimelineFilter): List<Long> = memoryDao.raw(buildQuery(filter)).map { it.memory.id }
 
+    override suspend fun knownPlaces(): List<KnownPlace> =
+        mediaDao.locatedPlaces(KNOWN_PLACES_LIMIT).map { KnownPlace(it.place.trim(), it.latitude, it.longitude) }.distinct()
+
     /** Rebuilds the FTS row for a memory from title, description, place, captions and tagged names. */
     suspend fun reindex(memoryId: Long) {
         val row = memoryDao.getWithRelations(memoryId) ?: return
@@ -175,6 +179,9 @@ class MemoryRepositoryImpl @Inject constructor(
     }
 
     companion object {
+        /** Most located photos considered for "nearest known place" (one row per photo with GPS). */
+        const val KNOWN_PLACES_LIMIT = 2000
+
         /** Turns free text into an FTS prefix query: "goa tr" → "goa* tr*". Returns null for blank input. */
         fun ftsQuery(text: String): String? {
             val all = text.lowercase().split(Regex("[^\\p{L}\\p{N}]+")).filter { it.isNotBlank() }

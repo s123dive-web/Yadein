@@ -72,10 +72,10 @@ fun YaadeinApp(
                 onPendingConsumed()
             }
         }
-        // Photos/videos shared from a gallery app: open Create memory with them, but only once unlocked and set up.
+        // Photos/videos shared from a gallery app: open Quick Save with them, but only once unlocked and set up.
         LaunchedEffect(hasSharedMedia, unlocked, settings.onboardingDone, settings.pinConfigured) {
             if (hasSharedMedia && unlocked && settings.onboardingDone && settings.pinConfigured) {
-                navController.navigate(Route.EventCapture(fromShare = true))
+                navController.navigate(Route.QuickSave(fromShare = true))
             }
         }
         // Keep the three automatic reels ready (queues background work only when they are missing or a day old).
