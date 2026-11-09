@@ -830,3 +830,14 @@ Play Billing for Plus is planned, not built.
   memory of the day (SplitMix64 of the epoch day over sorted ids, pinned to the same picks on both platforms). Photos
   are decrypted at full size for sharpness; videos use their thumbnail. Strings `relive_story_*` in all eight locales.
 
+### Settings crash in v0.1.69 ("Cannot create an instance of class lv4")
+
+- Cause: that CI build left out the Hilt bindings of seven `@HiltViewModel` classes (Settings among them). R8 then saw
+  no `new` for them, made them abstract, and `hiltViewModel()` fell back to the default factory (`NoSuchMethodException
+  <init> []`). Builds before and after (v0.1.70, local v0.1.71) are fine, so it is intermittent, like the earlier
+  "Cannot create an instance of PeopleViewModel" unit-test failure.
+- Guard: `scripts/verify-hilt-viewmodels.sh <apk> <mapping.txt>` checks every `@HiltViewModel` in the sources is in the
+  APK, not abstract, and has its `@HiltViewModelMap` key (obfuscated binary name as a string constant). Build APK runs
+  it after `assembleBeta`; on a miss it rebuilds once with `--no-build-cache --rerun-tasks` and fails if still broken,
+  so a crashing APK is never attached to a release. Verified against the real v0.1.69 APK (flags `lv4` as ABSTRACT).
+

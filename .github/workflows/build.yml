@@ -60,6 +60,16 @@ jobs:
       # The APK people install: R8-optimised, not debuggable, same app id as earlier builds so it updates in place.
       - name: Assemble beta APK
         run: ./gradlew :app:assembleBeta --no-daemon --stacktrace
+      # v0.1.69 shipped with seven ViewModels missing their Hilt bindings (Settings crashed on open). Check the APK
+      # itself; on a miss rebuild once without the Gradle cache, and never publish an APK that still fails.
+      - name: Every screen's ViewModel is wired by Hilt
+        run: |
+          check() { scripts/verify-hilt-viewmodels.sh app/build/outputs/apk/beta/Yaadein-*-beta.apk app/build/outputs/mapping/beta/mapping.txt; }
+          if ! check; then
+            echo "::warning::Hilt bindings missing; rebuilding the beta APK without the build cache"
+            ./gradlew clean :app:assembleBeta --no-daemon --no-build-cache --rerun-tasks --stacktrace
+            check
+          fi
       # With the private key present, sign with it plus a rotation proof from the old public debug key. Android 9+
       # then accepts it as an update over existing installs and refuses any later APK signed only with the public key.
       - name: Sign with the private release key (key rotation)
