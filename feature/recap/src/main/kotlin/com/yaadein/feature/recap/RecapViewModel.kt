@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.yaadein.data.recap.MusicLibrary
 import com.yaadein.data.recap.MusicSource
+import com.yaadein.data.recap.OwnSong
 import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.model.Group
 import com.yaadein.domain.model.Memory
@@ -54,8 +56,21 @@ val bundledTracks = listOf(
 
 sealed interface MusicChoice {
     data class Bundled(val key: String) : MusicChoice
+    /** A song from the phone ([MusicLibrary]); [name] is shown on the chip. */
     data class Own(val uri: Uri, val name: String?) : MusicChoice
     data object None : MusicChoice
+}
+
+/** The "Your songs" sheet: every song added from the phone, filtered by [query]. */
+data class OwnMusicState(
+    val songs: List<OwnSong> = emptyList(),
+    val query: String = "",
+    /** True while picked files are being read (title, artist, length). */
+    val adding: Boolean = false,
+    /** Title of a song that could no longer be opened and was dropped from the list; shown once. */
+    val missingTitle: String? = null,
+) {
+    val filtered: List<OwnSong> get() = MusicLibrary.search(songs, query)
 }
 
 sealed interface RenderStatus {
@@ -82,6 +97,7 @@ data class RecapUiState(
     val length: RecapLength = RecapLength.MEDIUM,
     val includeVideos: Boolean = true,
     val music: MusicChoice = MusicChoice.Bundled("warm"),
+    val ownMusic: OwnMusicState = OwnMusicState(),
     val memories: List<MemoryDetail> = emptyList(),
     /** Photos and clips going into the reel (picked automatically until the user changes them). */
     val selectedMediaIds: Set<Long> = emptySet(),
@@ -107,6 +123,7 @@ class RecapViewModel @Inject constructor(
     private val memoryRepository: MemoryRepository,
     private val personRepository: PersonRepository,
     private val groupRepository: GroupRepository,
+    private val musicLibrary: MusicLibrary,
 ) : ViewModel() {
     private val initialPerson: Long = savedStateHandle["personId"] ?: 0L
     private val initialMemory: Long = savedStateHandle["memoryId"] ?: 0L
@@ -130,6 +147,10 @@ class RecapViewModel @Inject constructor(
             _state.update { it.copy(loading = false, people = people, groups = groups, person = person, memory = memory, year = initialYear.takeIf { y -> y != 0 }, scope = scope) }
             observeWork()
             reload()
+        }
+        viewModelScope.launch {
+            musicLibrary.load()
+            musicLibrary.songs.collect { songs -> _state.update { it.copy(ownMusic = it.ownMusic.copy(songs = songs)) } }
         }
     }
 
@@ -158,6 +179,48 @@ class RecapViewModel @Inject constructor(
         replan()
     }
     fun setMusic(m: MusicChoice) { _state.update { it.copy(music = m) }; replan() }
+
+    fun setSongQuery(q: String) = _state.update { it.copy(ownMusic = it.ownMusic.copy(query = q)) }
+
+    /** Songs picked from the phone: remembered in [MusicLibrary], and the first one becomes the reel's music. */
+    fun addOwnSongs(uris: List<Uri>) {
+        if (uris.isEmpty()) return
+        _state.update { it.copy(ownMusic = it.ownMusic.copy(adding = true)) }
+        viewModelScope.launch {
+            val added = runCatching { musicLibrary.add(uris) }.getOrDefault(emptyList())
+            _state.update { it.copy(ownMusic = it.ownMusic.copy(adding = false, query = "")) }
+            added.firstOrNull()?.let { selectOwnSong(it) }
+        }
+    }
+
+    /** Uses [song] for the reel; a song that can no longer be opened is dropped and reported instead. */
+    fun selectOwnSong(song: OwnSong) {
+        viewModelScope.launch {
+            if (musicLibrary.isReadable(song.uri)) {
+                _state.update { it.copy(ownMusic = it.ownMusic.copy(missingTitle = null)) }
+                setMusic(MusicChoice.Own(Uri.parse(song.uri), song.title))
+            } else {
+                musicLibrary.remove(song.uri)
+                _state.update { s ->
+                    val music = if ((s.music as? MusicChoice.Own)?.uri?.toString() == song.uri) MusicChoice.Bundled(bundledTracks.first { it.theme == s.theme }.key) else s.music
+                    s.copy(music = music, ownMusic = s.ownMusic.copy(missingTitle = song.title))
+                }
+                replan()
+            }
+        }
+    }
+
+    fun removeOwnSong(song: OwnSong) {
+        viewModelScope.launch {
+            musicLibrary.remove(song.uri)
+            _state.update { s ->
+                if ((s.music as? MusicChoice.Own)?.uri?.toString() == song.uri) s.copy(music = MusicChoice.Bundled(bundledTracks.first { it.theme == s.theme }.key)) else s
+            }
+            replan()
+        }
+    }
+
+    fun dismissMissingSong() = _state.update { it.copy(ownMusic = it.ownMusic.copy(missingTitle = null)) }
     fun setTitle(t: String) { _state.update { it.copy(title = t) }; replan() }
 
     /** Adds or removes one photo/clip (tap in the chooser or on the storyboard). */

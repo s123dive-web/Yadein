@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -99,17 +100,19 @@ fun RecapRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val shareTitle = stringResource(CoreR.string.action_share)
-    val audioPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) {
-            runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
-            viewModel.setMusic(MusicChoice.Own(uri, uri.lastPathSegment))
-        }
+    // The system picker lists every song on the phone without any audio/storage permission; several can be picked at
+    // once, each is remembered (MusicLibrary) with a persisted read grant so it can be chosen again for later reels.
+    val audioPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+        uris.forEach { uri -> runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) } }
+        viewModel.addOwnSongs(uris)
     }
     RecapScreen(
         state = state, onBack = onBack,
         onScope = viewModel::setScope, onPerson = viewModel::setPerson, onGroup = viewModel::setGroup, onYear = viewModel::setYear,
         onTheme = viewModel::setTheme, onLength = viewModel::setLength, onIncludeVideos = viewModel::setIncludeVideos,
         onMusic = viewModel::setMusic, onPickOwnMusic = { audioPicker.launch(arrayOf("audio/*")) }, onTitle = viewModel::setTitle,
+        onSongQuery = viewModel::setSongQuery, onSelectOwnSong = viewModel::selectOwnSong, onRemoveOwnSong = viewModel::removeOwnSong,
+        onDismissMissingSong = viewModel::dismissMissingSong,
         onRender = viewModel::startRender, onCancel = viewModel::cancelRender, onReset = viewModel::resetRender,
         onToggleMedia = viewModel::toggleMedia, onMemorySelected = viewModel::setMemorySelected, onSelectAll = viewModel::selectAll,
         onResetSelection = viewModel::resetSelection, onOpenLibrary = onOpenLibrary, onPlayReel = onPlayReel,
@@ -157,9 +160,21 @@ fun RecapScreen(
     onResetSelection: () -> Unit = {},
     onOpenLibrary: () -> Unit = {},
     onPlayReel: (String) -> Unit = {},
+    onSongQuery: (String) -> Unit = {},
+    onSelectOwnSong: (com.yaadein.data.recap.OwnSong) -> Unit = {},
+    onRemoveOwnSong: (com.yaadein.data.recap.OwnSong) -> Unit = {},
+    onDismissMissingSong: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     var choosing by remember { mutableStateOf(false) }
+    var choosingMusic by remember { mutableStateOf(false) }
+    if (choosingMusic) {
+        OwnMusicSheet(
+            state = state.ownMusic, selectedUri = (state.music as? MusicChoice.Own)?.uri?.toString(),
+            onQuery = onSongQuery, onSelect = { onSelectOwnSong(it); choosingMusic = false }, onRemove = onRemoveOwnSong,
+            onAddFromPhone = onPickOwnMusic, onDismissMissing = onDismissMissingSong, onDismiss = { choosingMusic = false },
+        )
+    }
     if (choosing) {
         MediaChooser(
             state = state, onToggle = onToggleMedia, onMemorySelected = onMemorySelected, onSelectAll = onSelectAll,
@@ -269,7 +284,11 @@ fun RecapScreen(
                         leadingIcon = { Icon(Icons.Rounded.MusicNote, contentDescription = null) },
                     )
                 }
-                FilterChip(selected = state.music is MusicChoice.Own, onClick = onPickOwnMusic, label = { Text((state.music as? MusicChoice.Own)?.name?.take(24) ?: stringResource(R.string.music_own)) })
+                FilterChip(
+                    selected = state.music is MusicChoice.Own, onClick = { choosingMusic = true },
+                    label = { Text((state.music as? MusicChoice.Own)?.name?.take(24) ?: stringResource(R.string.music_library_chip, state.ownMusic.songs.size)) },
+                    leadingIcon = { Icon(Icons.Rounded.PhoneAndroid, contentDescription = null) },
+                )
                 FilterChip(selected = state.music is MusicChoice.None, onClick = { onMusic(MusicChoice.None) }, label = { Text(stringResource(R.string.music_none)) })
             }
             Text(stringResource(R.string.music_licence), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

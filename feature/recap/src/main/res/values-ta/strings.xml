@@ -86,4 +86,22 @@
     <string name="track_celebration">மேளக் கொண்டாட்டம்</string>
     <string name="track_acoustic">அக்கௌஸ்டிக்</string>
     <string name="track_upbeat">உற்சாகமான</string>
+
+    <!-- Your songs: music from the phone for reels -->
+    <string name="music_library_chip">உங்கள் பாடல்கள் (%1$d)</string>
+    <string name="music_library_title">உங்கள் பாடல்கள்</string>
+    <string name="music_add_from_phone">ஃபோனிலிருந்து சேர்</string>
+    <string name="music_adding">படிக்கிறது…</string>
+    <string name="music_search_hint">உங்கள் பாடல்களைத் தேடுங்கள்</string>
+    <string name="music_clear_search">தேடலை அழி</string>
+    <string name="music_library_empty">ஃபோனில் உள்ள பாடல்களை ஒருமுறை சேர்த்தால் ஒவ்வொரு ரீலுக்கும் இங்கேயே இருக்கும் — இந்தி, மராத்தி, நீங்கள் பதிவிறக்கிய எதுவும். எதுவும் நகலெடுக்கவோ பதிவேற்றவோ படாது.</string>
+    <string name="music_not_on_phone">உங்கள் பாடல்களில் “%1$s” இன்னும் இல்லை. உங்கள் இசை ஆப்பில் பதிவிறக்கி, பின் “ஃபோனிலிருந்து சேர்” தட்டவும்.</string>
+    <string name="music_suggested">ரீல்களில் பிரபலமான பாடல்கள்</string>
+    <string name="music_suggested_hide">பரிந்துரைகளை மறை</string>
+    <string name="music_suggested_hint">ரீல்களில் அடிக்கடி பயன்படும் பாடல்கள். ஒன்றைத் தட்டி உங்கள் பாடல்களில் தேடுங்கள்.</string>
+    <string name="music_suggested_hindi">இந்தி</string>
+    <string name="music_suggested_marathi">மராத்தி</string>
+    <string name="music_song_missing">“%1$s” இனி திறக்க முடியவில்லை, எனவே உங்கள் பாடல்களிலிருந்து நீக்கப்பட்டது.</string>
+    <string name="music_dismiss">சரி</string>
+    <string name="music_remove_named">%1$s ஐ உங்கள் பாடல்களிலிருந்து நீக்கு</string>
 </resources>

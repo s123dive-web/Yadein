@@ -86,4 +86,47 @@
     <string name="track_celebration">Dhol celebration</string>
     <string name="track_acoustic">Acoustic</string>
     <string name="track_upbeat">Upbeat</string>
+
+    <!-- Your songs: music from the phone for reels -->
+    <string name="music_library_chip">Your songs (%1$d)</string>
+    <string name="music_library_title">Your songs</string>
+    <string name="music_add_from_phone">Add from phone</string>
+    <string name="music_adding">Reading…</string>
+    <string name="music_search_hint">Search your songs</string>
+    <string name="music_clear_search">Clear search</string>
+    <string name="music_library_empty">Add songs from your phone once and they stay here for every reel — Hindi, Marathi, anything you have downloaded. Nothing is copied or uploaded.</string>
+    <string name="music_not_on_phone">Nothing called “%1$s” in your songs yet. Download it in your music app, then tap Add from phone.</string>
+    <string name="music_suggested">Popular reel songs</string>
+    <string name="music_suggested_hide">Hide suggestions</string>
+    <string name="music_suggested_hint">Songs often used in reels. Tap one to look for it in your songs.</string>
+    <string name="music_suggested_hindi">Hindi</string>
+    <string name="music_suggested_marathi">Marathi</string>
+    <string name="music_song_missing">“%1$s” can’t be opened any more and was removed from your songs.</string>
+    <string name="music_dismiss">OK</string>
+    <string name="music_remove_named">Remove %1$s from your songs</string>
+    <!-- Song titles are names, not copy: shown as-is in every language. "Title — Artist". -->
+    <string-array name="suggested_songs_hindi" translatable="false">
+        <item>Kesariya — Arijit Singh</item>
+        <item>Chaleya — Arijit Singh</item>
+        <item>Apna Bana Le — Arijit Singh</item>
+        <item>Raataan Lambiyan — Jubin Nautiyal</item>
+        <item>Satranga — Arijit Singh</item>
+        <item>Tere Vaaste — Varun Jain</item>
+        <item>Sajni — Arijit Singh</item>
+        <item>Husn — Anuv Jain</item>
+        <item>Ilahi — Arijit Singh</item>
+        <item>Phir Se Ud Chala — Mohit Chauhan</item>
+        <item>Tauba Tauba — Karan Aujla</item>
+        <item>Aaj Ki Raat — Madhubanti Bagchi</item>
+    </string-array>
+    <string-array name="suggested_songs_marathi" translatable="false">
+        <item>Zingaat — Ajay-Atul</item>
+        <item>Yad Lagla — Ajay Gogavale</item>
+        <item>Sairat Zaala Ji — Ajay Gogavale</item>
+        <item>Baharla Ha Madhumas — Shreya Ghoshal</item>
+        <item>Chandra — Shreya Ghoshal</item>
+        <item>Apsara Aali — Bela Shende</item>
+        <item>Gulabi Sadi — Sanju Rathod</item>
+        <item>Mann Udhan Varyache — Shankar Mahadevan</item>
+    </string-array>
 </resources>

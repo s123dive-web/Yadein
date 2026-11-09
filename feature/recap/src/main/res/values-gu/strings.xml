@@ -86,4 +86,22 @@
     <string name="track_celebration">ઢોલની ઉજવણી</string>
     <string name="track_acoustic">એકોસ્ટિક</string>
     <string name="track_upbeat">ઉત્સાહભર્યું</string>
+
+    <!-- Your songs: music from the phone for reels -->
+    <string name="music_library_chip">તમારાં ગીતો (%1$d)</string>
+    <string name="music_library_title">તમારાં ગીતો</string>
+    <string name="music_add_from_phone">ફોનમાંથી ઉમેરો</string>
+    <string name="music_adding">વાંચી રહ્યાં છીએ…</string>
+    <string name="music_search_hint">તમારાં ગીતો શોધો</string>
+    <string name="music_clear_search">શોધ સાફ કરો</string>
+    <string name="music_library_empty">ફોનનાં ગીતો એક વાર ઉમેરો, તે દરેક રીલ માટે અહીં જ રહેશે — હિન્દી, મરાઠી, તમે ડાઉનલોડ કરેલું કંઈ પણ. કંઈ કોપી કે અપલોડ થતું નથી.</string>
+    <string name="music_not_on_phone">તમારાં ગીતોમાં “%1$s” હજી નથી. તમારી મ્યુઝિક એપમાં ડાઉનલોડ કરો, પછી “ફોનમાંથી ઉમેરો” દબાવો.</string>
+    <string name="music_suggested">રીલ્સનાં લોકપ્રિય ગીતો</string>
+    <string name="music_suggested_hide">સૂચનો છુપાવો</string>
+    <string name="music_suggested_hint">રીલ્સમાં વારંવાર વપરાતાં ગીતો. એક પર ટેપ કરી તમારાં ગીતોમાં શોધો.</string>
+    <string name="music_suggested_hindi">હિન્દી</string>
+    <string name="music_suggested_marathi">મરાઠી</string>
+    <string name="music_song_missing">“%1$s” હવે ખૂલી શકતું નથી, તેથી તમારાં ગીતોમાંથી કાઢી નાખ્યું.</string>
+    <string name="music_dismiss">બરાબર</string>
+    <string name="music_remove_named">%1$s ને તમારાં ગીતોમાંથી કાઢો</string>
 </resources>

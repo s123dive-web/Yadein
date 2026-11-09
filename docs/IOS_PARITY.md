@@ -53,6 +53,7 @@
 | Reels: planner (beat snap, Ken Burns, selection) | ✅ | ✅ | same RecapPlanner / AutoReelPicker |
 | Reels: rendering, library (newest 10), player, share, 3 automatic reels | ✅ | ✅ | AVFoundation renderer, same storyboard, music and 1080×1920 output; automatic reels refresh when Your reels opens |
 | Reels: choose exact photos, own music | ✅ | ✅ | own music from Files |
+| Reels: Your songs (songs from the phone remembered for every reel, search, Hindi/Marathi suggestions) | ✅ | ⬜ | Android: `MusicLibrary` + `OwnMusicSheet`, system picker only (no audio permission). iOS still picks one file from Files per reel |
 | Face suggestions | ✅ | ✅ | Vision face boxes + the same 64×64 LBP descriptor and clustering; nothing tagged until confirmed |
 
 ## Trust

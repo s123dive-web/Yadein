@@ -86,4 +86,22 @@
     <string name="track_celebration">ঢাকের উৎসব</string>
     <string name="track_acoustic">অ্যাকুস্টিক</string>
     <string name="track_upbeat">চনমনে</string>
+
+    <!-- Your songs: music from the phone for reels -->
+    <string name="music_library_chip">আপনার গান (%1$d)</string>
+    <string name="music_library_title">আপনার গান</string>
+    <string name="music_add_from_phone">ফোন থেকে যোগ করুন</string>
+    <string name="music_adding">পড়া হচ্ছে…</string>
+    <string name="music_search_hint">আপনার গান খুঁজুন</string>
+    <string name="music_clear_search">খোঁজ মুছুন</string>
+    <string name="music_library_empty">ফোনের গান একবার যোগ করুন, প্রতিটি রিলের জন্য এখানেই থাকবে — হিন্দি, মারাঠি, যা কিছু ডাউনলোড করেছেন। কিছুই কপি বা আপলোড হয় না।</string>
+    <string name="music_not_on_phone">আপনার গানে “%1$s” এখনও নেই। মিউজিক অ্যাপে ডাউনলোড করে “ফোন থেকে যোগ করুন” চাপুন।</string>
+    <string name="music_suggested">রিলের জনপ্রিয় গান</string>
+    <string name="music_suggested_hide">পরামর্শ লুকান</string>
+    <string name="music_suggested_hint">রিলে প্রায়ই ব্যবহৃত গান। একটিতে ট্যাপ করে আপনার গানে খুঁজুন।</string>
+    <string name="music_suggested_hindi">হিন্দি</string>
+    <string name="music_suggested_marathi">মারাঠি</string>
+    <string name="music_song_missing">“%1$s” আর খোলা যাচ্ছে না, তাই আপনার গান থেকে সরানো হয়েছে।</string>
+    <string name="music_dismiss">ঠিক আছে</string>
+    <string name="music_remove_named">%1$s আপনার গান থেকে সরান</string>
 </resources>

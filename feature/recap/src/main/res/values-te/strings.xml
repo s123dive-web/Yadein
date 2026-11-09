@@ -86,4 +86,22 @@
     <string name="track_celebration">డోలు సంబరం</string>
     <string name="track_acoustic">అకౌస్టిక్</string>
     <string name="track_upbeat">హుషారు</string>
+
+    <!-- Your songs: music from the phone for reels -->
+    <string name="music_library_chip">మీ పాటలు (%1$d)</string>
+    <string name="music_library_title">మీ పాటలు</string>
+    <string name="music_add_from_phone">ఫోన్ నుండి జోడించు</string>
+    <string name="music_adding">చదువుతోంది…</string>
+    <string name="music_search_hint">మీ పాటలను వెతకండి</string>
+    <string name="music_clear_search">శోధనను తీసివేయి</string>
+    <string name="music_library_empty">ఫోన్‌లోని పాటలను ఒకసారి జోడిస్తే ప్రతి రీల్‌కు ఇక్కడే ఉంటాయి — హిందీ, మరాఠీ, మీరు డౌన్‌లోడ్ చేసినవి ఏవైనా. ఏదీ కాపీ లేదా అప్‌లోడ్ కాదు.</string>
+    <string name="music_not_on_phone">మీ పాటల్లో “%1$s” ఇంకా లేదు. మీ మ్యూజిక్ యాప్‌లో డౌన్‌లోడ్ చేసి, “ఫోన్ నుండి జోడించు” నొక్కండి.</string>
+    <string name="music_suggested">రీల్స్‌లో పాపులర్ పాటలు</string>
+    <string name="music_suggested_hide">సూచనలు దాచు</string>
+    <string name="music_suggested_hint">రీల్స్‌లో తరచుగా వాడే పాటలు. ఒకదాన్ని నొక్కి మీ పాటల్లో వెతకండి.</string>
+    <string name="music_suggested_hindi">హిందీ</string>
+    <string name="music_suggested_marathi">మరాఠీ</string>
+    <string name="music_song_missing">“%1$s” ఇక తెరవలేము, అందుకే మీ పాటల నుండి తీసివేశాం.</string>
+    <string name="music_dismiss">సరే</string>
+    <string name="music_remove_named">%1$s ను మీ పాటల నుండి తీసివేయి</string>
 </resources>

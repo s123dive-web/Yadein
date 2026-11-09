@@ -30,6 +30,16 @@ that was built. Use the commit/tag above (or the run's `head_sha`) to find the s
 
 To rebuild or roll back to it: `git checkout 189f6b2 && ./gradlew :app:assembleBeta`.
 
+## Reels music explorer (web)
+
+A small companion web page in [`web/`](web/) (published with GitHub Pages at the repo root) to find Hindi and Marathi
+songs for reels: search the full Apple Music / iTunes catalogue (Deezer fallback), play 30-second previews, keep a
+list, and open the full song on YouTube / Spotify / JioSaavn. The 20 most-used reel songs are listed in
+[docs/REELS_MUSIC.md](docs/REELS_MUSIC.md). Songs for a reel are still added from Instagram's own audio library; the
+Android app itself stays fully offline and uses the songs already on the phone (Create a reel → Music → Your songs).
+
+Tests: `node web/tests/data.test.js` and `node web/tests/e2e.test.js` (Playwright).
+
 ## iPhone app
 
 A native SwiftUI iPhone version lives in `ios/` and follows this app screen by screen: same strings in all eight
@@ -56,6 +66,8 @@ build. See [docs/IOS.md](docs/IOS.md) and the parity checklist [docs/IOS_PARITY.
 - **People**: a face grid, each person's own story (count, first and last memory, upcoming birthday,
   groups), *Together* view, relationships map.
 - **Relive**: "On this day", shake for a random memory, yearly summaries, recap videos.
+- **Reels with your music**: pick songs already on your phone (Hindi, Marathi, anything downloaded) once; they stay in
+  *Your songs* for every reel, with popular reel songs suggested. No audio permission, nothing uploaded.
 - **Security**: the vault keys are sealed with the PIN (Argon2id + Android Keystore) or a biometric-bound Keystore key;
   optional phone screen lock mode; SQLCipher database; chunked AES-256-GCM media; tamper-proof lockout clock;
   optional screenshot blocking (`FLAG_SECURE`); encrypted backups.

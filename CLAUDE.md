@@ -782,3 +782,24 @@ Play Billing for Plus is planned, not built.
   on every created memory. Saving creates each memory then `ImportCoordinator.enqueue`s its media; lands on Home.
 - Pure logic: `core/domain/grouping/PeriodGrouper` (`SplitBy`, `PeriodFilter`, `PeriodBucket`, `PeriodSplit`), tested in
   `PeriodGrouperTest`. Strings in all eight locales (`hub_bulk*`, `bulk_*`; non-English ones machine-assisted).
+
+### Your songs: Hindi and Marathi music for reels (owner: "best music usually used in reels, all songs, no regression")
+
+- Real film songs cannot ship in the app (copyright) or be streamed (no INTERNET permission), so the reel music picker
+  now uses the songs already on the phone. Create a reel → Music → **Your songs (N)** chip opens `OwnMusicSheet`
+  (`feature/recap/OwnMusicSheet.kt`): search box, **Add from phone** (system `OpenMultipleDocuments("audio/*")`: every
+  song on the phone, several at once, no audio/storage permission), the list with title · artist · length, tap to use,
+  × to forget. **Popular reel songs** (Hindi 12 / Marathi 8, `suggested_songs_*` string-arrays, titles not translated)
+  are chips that put the title in the search; a miss says to download it in a music app first.
+- `core/data/recap/MusicLibrary`: remembers picked songs (`OwnSong`: document URI with persisted read grant, title,
+  artist, duration from `MediaMetadataRetriever`, file name fallback) in `vault/reels/music.enc`, encrypted and written
+  atomically like the reel index; `search` (every word, title or artist), `merge` (first add wins), `isReadable`
+  (a deleted/revoked song is dropped on tap and reported once). Tests in `MusicLibraryTest` (Robolectric).
+- `RecapViewModel`: `ownMusic: OwnMusicState`, `addOwnSongs` (first added song becomes the reel music), `selectOwnSong`,
+  `removeOwnSong`, `setSongQuery`. `MusicChoice.Own`, `RecapRenderWorker` and the renderer are unchanged, so rendering
+  with a phone song works exactly as "Your own audio…" did; bundled tracks and beat sync are untouched.
+- Strings `music_library_*`, `music_add_from_phone`, `music_suggested*`, `music_song_missing`… in all eight locales
+  (non-English machine-assisted); iOS `Localizable.strings` regenerated. iOS keeps the single-file picker for now
+  (parity row added). Companion web page in `web/` + `docs/REELS_MUSIC.md` (GitHub Pages, `.nojekyll`): searches the
+  Apple Music / Deezer catalogues with previews; it is separate from the app and needs no app change.
+

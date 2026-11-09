@@ -86,4 +86,22 @@
     <string name="track_celebration">ಢೋಲ್ ಸಂಭ್ರಮ</string>
     <string name="track_acoustic">ಅಕೌಸ್ಟಿಕ್</string>
     <string name="track_upbeat">ಉತ್ಸಾಹಭರಿತ</string>
+
+    <!-- Your songs: music from the phone for reels -->
+    <string name="music_library_chip">ನಿಮ್ಮ ಹಾಡುಗಳು (%1$d)</string>
+    <string name="music_library_title">ನಿಮ್ಮ ಹಾಡುಗಳು</string>
+    <string name="music_add_from_phone">ಫೋನ್‌ನಿಂದ ಸೇರಿಸಿ</string>
+    <string name="music_adding">ಓದಲಾಗುತ್ತಿದೆ…</string>
+    <string name="music_search_hint">ನಿಮ್ಮ ಹಾಡುಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="music_clear_search">ಹುಡುಕಾಟ ಅಳಿಸಿ</string>
+    <string name="music_library_empty">ಫೋನ್‌ನ ಹಾಡುಗಳನ್ನು ಒಮ್ಮೆ ಸೇರಿಸಿ, ಅವು ಪ್ರತಿ ರೀಲ್‌ಗೂ ಇಲ್ಲೇ ಇರುತ್ತವೆ — ಹಿಂದಿ, ಮರಾಠಿ, ನೀವು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಯಾವುದೇ. ಏನೂ ನಕಲು ಅಥವಾ ಅಪ್‌ಲೋಡ್ ಆಗುವುದಿಲ್ಲ.</string>
+    <string name="music_not_on_phone">ನಿಮ್ಮ ಹಾಡುಗಳಲ್ಲಿ “%1$s” ಇನ್ನೂ ಇಲ್ಲ. ನಿಮ್ಮ ಮ್ಯೂಸಿಕ್ ಆ್ಯಪ್‌ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನಂತರ “ಫೋನ್‌ನಿಂದ ಸೇರಿಸಿ” ಒತ್ತಿ.</string>
+    <string name="music_suggested">ರೀಲ್‌ಗಳ ಜನಪ್ರಿಯ ಹಾಡುಗಳು</string>
+    <string name="music_suggested_hide">ಸಲಹೆಗಳನ್ನು ಮರೆಮಾಡಿ</string>
+    <string name="music_suggested_hint">ರೀಲ್‌ಗಳಲ್ಲಿ ಹೆಚ್ಚಾಗಿ ಬಳಸುವ ಹಾಡುಗಳು. ಒಂದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನಿಮ್ಮ ಹಾಡುಗಳಲ್ಲಿ ಹುಡುಕಿ.</string>
+    <string name="music_suggested_hindi">ಹಿಂದಿ</string>
+    <string name="music_suggested_marathi">ಮರಾಠಿ</string>
+    <string name="music_song_missing">“%1$s” ಇನ್ನು ತೆರೆಯಲಾಗುತ್ತಿಲ್ಲ, ಹಾಗಾಗಿ ನಿಮ್ಮ ಹಾಡುಗಳಿಂದ ತೆಗೆಯಲಾಗಿದೆ.</string>
+    <string name="music_dismiss">ಸರಿ</string>
+    <string name="music_remove_named">%1$s ಅನ್ನು ನಿಮ್ಮ ಹಾಡುಗಳಿಂದ ತೆಗೆಯಿರಿ</string>
 </resources>

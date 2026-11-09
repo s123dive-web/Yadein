@@ -86,4 +86,22 @@
     <string name="track_celebration">ढोल उत्सव</string>
     <string name="track_acoustic">गिटार</string>
     <string name="track_upbeat">उत्साही</string>
+
+    <!-- Your songs: music from the phone for reels -->
+    <string name="music_library_chip">तुमची गाणी (%1$d)</string>
+    <string name="music_library_title">तुमची गाणी</string>
+    <string name="music_add_from_phone">फोनमधून जोडा</string>
+    <string name="music_adding">वाचत आहे…</string>
+    <string name="music_search_hint">तुमची गाणी शोधा</string>
+    <string name="music_clear_search">शोध साफ करा</string>
+    <string name="music_library_empty">फोनमधील गाणी एकदा जोडा, ती प्रत्येक रीलसाठी इथेच राहतील — हिंदी, मराठी, तुम्ही डाउनलोड केलेले काहीही. काहीही कॉपी किंवा अपलोड होत नाही.</string>
+    <string name="music_not_on_phone">तुमच्या गाण्यांत “%1$s” अजून नाही. ते तुमच्या म्युझिक अ‍ॅपमध्ये डाउनलोड करा, मग “फोनमधून जोडा” दाबा.</string>
+    <string name="music_suggested">रील्ससाठी लोकप्रिय गाणी</string>
+    <string name="music_suggested_hide">सूचना लपवा</string>
+    <string name="music_suggested_hint">रील्समध्ये नेहमी वापरली जाणारी गाणी. एखाद्यावर टॅप करून ते तुमच्या गाण्यांत शोधा.</string>
+    <string name="music_suggested_hindi">हिंदी</string>
+    <string name="music_suggested_marathi">मराठी</string>
+    <string name="music_song_missing">“%1$s” आता उघडता येत नाही, म्हणून ते तुमच्या गाण्यांतून काढले.</string>
+    <string name="music_dismiss">ठीक आहे</string>
+    <string name="music_remove_named">%1$s तुमच्या गाण्यांतून काढा</string>
 </resources>
