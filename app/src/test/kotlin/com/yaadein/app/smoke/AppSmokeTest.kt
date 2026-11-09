@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
@@ -65,6 +66,9 @@ class AppSmokeTest {
         compose.waitForIdle()
     }
 
+    /** The + button inside the bottom bar's Create item (its own node: a long-press target with a TalkBack action). */
+    private fun createButton() = compose.onAllNodes(hasContentDescription("Create"), useUnmergedTree = true)[0]
+
     private fun tab(name: String) {
         compose.onAllNodesWithText(name)[0].performClick()
         compose.waitForIdle()
@@ -116,7 +120,7 @@ class AppSmokeTest {
     @Test
     fun `plus opens the system photo picker and long-press opens the hub`() {
         // Tap: the Photo Picker (Quick Save's first and only choice before Save).
-        compose.onNodeWithContentDescription("Create").performClick()
+        createButton().performClick()
         compose.waitForIdle()
         var started: android.content.Intent? = null
         scenario.onActivity { started = org.robolectric.Shadows.shadowOf(it).nextStartedActivityForResult?.intent }
@@ -128,7 +132,7 @@ class AppSmokeTest {
                 action == android.content.Intent.ACTION_OPEN_DOCUMENT || action == "com.google.android.gms.provider.action.PICK_IMAGES",
         )
         // Long-press: the hub with every other way in.
-        compose.onNodeWithContentDescription("Create").performTouchInput { longClick() }
+        createButton().performTouchInput { longClick() }
         compose.waitForIdle()
         compose.onNodeWithText("Start from photos").assertIsDisplayed()
         compose.onNodeWithText("More ways").assertIsDisplayed()
@@ -136,7 +140,7 @@ class AppSmokeTest {
 
     @Test
     fun `an empty picker result opens Quick Save in words-only mode`() {
-        compose.onNodeWithContentDescription("Create").performClick()
+        createButton().performClick()
         compose.waitForIdle()
         scenario.onActivity { activity ->
             val shadow = org.robolectric.Shadows.shadowOf(activity)
@@ -151,7 +155,7 @@ class AppSmokeTest {
 
     @Test
     fun `capture hub opens and text-only flow saves a memory`() {
-        compose.onNodeWithContentDescription("Create").performTouchInput { longClick() }
+        createButton().performTouchInput { longClick() }
         compose.waitForIdle()
         // The hub leads with photos and a line of text; the other ways sit under "More ways".
         compose.onNodeWithText("Start from photos").assertIsDisplayed()
