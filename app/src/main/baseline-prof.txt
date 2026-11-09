@@ -1,0 +1,44 @@
+# Baseline profile for Yaadein (startup + timeline scroll).
+# Hand-authored class rules so ProfileInstaller pre-compiles the hot path on install; replace with a
+# device-generated profile from the Macrobenchmark module once a device run is available.
+Lcom/yaadein/app/YaadeinApplication;
+Lcom/yaadein/app/MainActivity;
+Lcom/yaadein/app/ui/YaadeinAppKt;
+Lcom/yaadein/app/ui/HomeScaffoldKt;
+Lcom/yaadein/app/navigation/AppNavHostKt;
+Lcom/yaadein/app/media/EncryptedImageFetcher;
+Lcom/yaadein/app/media/EncryptedImageKeyer;
+Lcom/yaadein/core/ui/theme/YaadeinThemeKt;
+Lcom/yaadein/core/ui/theme/ColorKt;
+Lcom/yaadein/core/ui/theme/TypeKt;
+Lcom/yaadein/core/ui/theme/Tokens;
+Lcom/yaadein/core/ui/components/MemoryCardViewKt;
+Lcom/yaadein/core/ui/components/CoverArtKt;
+Lcom/yaadein/core/ui/components/PersonAvatarKt;
+Lcom/yaadein/core/ui/media/EncryptedImagesKt;
+Lcom/yaadein/core/ui/util/DateTextKt;
+Lcom/yaadein/feature/timeline/TimelineScreenKt;
+Lcom/yaadein/feature/timeline/TimelineViewModel;
+Lcom/yaadein/feature/timeline/TimelineItem$Card;
+Lcom/yaadein/feature/timeline/TimelineItem$YearHeader;
+Lcom/yaadein/feature/timeline/TimelineItem$MonthHeader;
+Lcom/yaadein/feature/lock/LockScreenKt;
+Lcom/yaadein/feature/lock/LockViewModel;
+Lcom/yaadein/data/db/AppDatabase;
+Lcom/yaadein/data/db/AppDatabase_Impl;
+Lcom/yaadein/data/db/dao/MemoryDao_Impl;
+Lcom/yaadein/data/db/dao/PersonDao_Impl;
+Lcom/yaadein/data/db/dao/MediaDao_Impl;
+Lcom/yaadein/data/db/DatabaseFactory;
+Lcom/yaadein/data/crypto/KeystoreKeyWrapper;
+Lcom/yaadein/data/crypto/VaultKeys;
+Lcom/yaadein/data/crypto/MediaCrypto;
+Lcom/yaadein/data/crypto/EncryptedPrefsSecretStore;
+Lcom/yaadein/data/repository/MemoryRepositoryImpl;
+Lcom/yaadein/data/repository/MappersKt;
+Lcom/yaadein/data/settings/EncryptedSettingsSerializer;
+Lcom/yaadein/data/settings/DataStoreSettingsRepository;
+Lcom/yaadein/domain/dates/Dates;
+Lcom/yaadein/domain/model/Memory;
+Lcom/yaadein/domain/model/MemoryCard;
+Lcom/yaadein/domain/model/Person;

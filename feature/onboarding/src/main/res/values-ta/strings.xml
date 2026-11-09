@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_1_title">நினைவில் வைக்க வேண்டிய நாட்களைச் சேமியுங்கள்</string>
+    <string name="onboarding_1_body">படங்கள், வீடியோக்கள், அல்லது “கோவா பயணம் 2024” போன்ற ஒரு வரி போதும். Yaadein அவற்றை நீங்கள் உலவக்கூடிய ஒரு காலவரிசையாக மாற்றும்.</string>
+    <string name="onboarding_2_title">டைரி போலத் தனிப்பட்டது</string>
+    <string name="onboarding_2_body">அனைத்தும் இந்த ஃபோனிலேயே இருக்கும், மறையாக்கம் செய்யப்பட்டு உங்கள் PIN அல்லது கைரேகையால் பூட்டப்பட்டிருக்கும். கணக்கு இல்லை, இணையம் இல்லை, விளம்பரங்கள் இல்லை.</string>
+    <string name="onboarding_3_title">நீங்கள் நேசிப்பவர்களைப் பற்றிய கதைகள்</string>
+    <string name="onboarding_3_body">குடும்பத்தினரையும் நண்பர்களையும் குறியிடுங்கள், ஒவ்வொருவருடனான உங்கள் கதையைப் பாருங்கள், பிறந்தநாளில் பகிர ரீல்களை உருவாக்குங்கள்.</string>
+    <string name="onboarding_add_first_person">உங்கள் முதல் நபரைச் சேர்க்கவும்</string>
+</resources>

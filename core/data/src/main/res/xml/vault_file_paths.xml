@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Rendered recap videos on Android 8–9 (no MediaStore write without a permission there). -->
+    <external-files-path name="movies" path="Movies/" />
+    <cache-path name="exports" path="exports/" />
+    <!-- Photos/videos shared into Yaadein, copied while the sender's grant is valid (SharedMediaInbox). -->
+    <cache-path name="shared" path="shared/" />
+</paths>

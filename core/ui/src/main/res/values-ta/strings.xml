@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_avatar_of">%1$s-இன் படம்</string>
+    <string name="cd_people_in_memory">இந்த நினைவில் உள்ளவர்கள்: %1$s</string>
+    <string name="cd_memory_card">நினைவு: %1$s, %2$s</string>
+    <string name="date_sometime_in">%1$s-இல் எப்போதோ</string>
+    <string name="badge_story">கதை</string>
+    <plurals name="media_count">
+        <item quantity="one">%1$d படம்</item>
+        <item quantity="other">%1$d படங்கள்</item>
+    </plurals>
+    <plurals name="memory_count">
+        <item quantity="one">%1$d நினைவு</item>
+        <item quantity="other">%1$d நினைவுகள்</item>
+    </plurals>
+    <string name="action_back">பின்செல்</string>
+    <string name="action_close">மூடு</string>
+    <string name="action_save">சேமி</string>
+    <string name="action_cancel">ரத்துசெய்</string>
+    <string name="action_delete">நீக்கு</string>
+    <string name="action_edit">திருத்து</string>
+    <string name="action_done">முடிந்தது</string>
+    <string name="action_next">அடுத்து</string>
+    <string name="action_skip">தவிர்</string>
+    <string name="action_retry">மீண்டும் முயல்க</string>
+    <string name="action_share">பகிர்</string>
+    <string name="action_more">மேலும் விருப்பங்கள்</string>
+    <string name="action_add">சேர்</string>
+    <string name="relation_family">குடும்பம்</string>
+    <string name="relation_friend">நண்பர்</string>
+    <string name="relation_colleague">சக ஊழியர்</string>
+    <string name="relation_other">மற்றவை</string>
+    <string name="mood_joyful">மகிழ்ச்சி</string>
+    <string name="mood_calm">அமைதி</string>
+    <string name="mood_nostalgic">பழைய நினைவு</string>
+    <string name="mood_proud">பெருமை</string>
+    <string name="mood_funny">வேடிக்கை</string>
+    <string name="mood_sad">சோகம்</string>
+    <string name="mood_celebration">கொண்டாட்டம்</string>
+    <string name="loading">ஏற்றுகிறது…</string>
+    <string name="error_generic">ஏதோ தவறு நடந்தது. மீண்டும் முயலவும்.</string>
+    <string name="today">இன்று</string>
+    <string name="yesterday">நேற்று</string>
+    <string name="app_credit">AI உதவியுடன் வடிவமைத்து உருவாக்கியவர் சுரேஷ் டோங்கர்டிவே</string>
+    <string name="pw_password">கடவுச்சொல்</string>
+    <string name="pw_again">கடவுச்சொல் மீண்டும்</string>
+    <string name="pw_show">கடவுச்சொல்லைக் காட்டு</string>
+    <string name="pw_hide">கடவுச்சொல்லை மறை</string>
+    <string name="pw_too_short">குறைந்தது %1$d எழுத்துகள்</string>
+    <string name="pw_mismatch">கடவுச்சொற்கள் பொருந்தவில்லை</string>
+</resources>

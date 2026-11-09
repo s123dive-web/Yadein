@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_1_title">सँजोने लायक दिन सँजोएँ</string>
+    <string name="onboarding_1_body">फ़ोटो, वीडियो, या बस एक पंक्ति जैसे “गोवा ट्रिप 2024”। Yaadein इन्हें एक समयरेखा बना देता है जिसमें आप घूम सकते हैं।</string>
+    <string name="onboarding_2_title">निजी, एक डायरी की तरह</string>
+    <string name="onboarding_2_body">सब कुछ इसी फ़ोन पर रहता है, एन्क्रिप्टेड और आपके पिन या फ़िंगरप्रिंट से लॉक। न खाता, न इंटरनेट, न विज्ञापन।</string>
+    <string name="onboarding_3_title">अपने प्यारे लोगों की कहानियाँ</string>
+    <string name="onboarding_3_body">परिवार और दोस्तों को टैग करें, हर किसी के साथ अपनी कहानी देखें, और जन्मदिन पर साझा करने के लिए रील बनाएँ।</string>
+    <string name="onboarding_add_first_person">पहला व्यक्ति जोड़ें</string>
+</resources>

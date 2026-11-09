@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relive_title">पुन्हा जगा</string>
+    <string name="relive_surprise">सरप्राइज द्या</string>
+    <string name="relive_make_recap">रील बनवा</string>
+    <string name="relive_birthdays">येणारे</string>
+    <string name="relive_birthday_today">आज %1$s चा वाढदिवस</string>
+    <string name="relive_birthday_in">%1$s · %2$d दिवस</string>
+    <string name="relive_on_this_day">आजच्या दिवशी</string>
+    <string name="relive_on_this_day_empty">मागच्या वर्षांत या दिवसाची आठवण नाही. आजचा क्षण जोडा, पुढच्या वर्षी तो इथे दिसेल.</string>
+    <string name="relive_years">तुमची वर्षे</string>
+    <string name="relive_random_title">एक आठवण, यादृच्छिक निवडलेली</string>
+    <string name="relive_another">अजून एक</string>
+    <string name="relive_empty_title">अजून पुन्हा जगण्यासारखं काही नाही</string>
+    <string name="relive_empty_message">काही आठवणी झाल्यावर इथे “आजच्या दिवशी”, सरप्राइज आणि वार्षिक गोष्टी असतील.</string>
+    <string name="notification_channel_on_this_day">आजच्या दिवशी</string>
+    <string name="notification_on_this_day_title">आजच्या दिवशी: %1$s</string>
+    <string name="notification_on_this_day_text">%1$s · %2$s</string>
+    <string name="shake_hint">कुठल्याही स्क्रीनवर फोन हलवा आणि एक आठवण मिळवा.</string>
+    <string name="yearly_title">%2$s सोबत %1$d</string>
+    <string name="yearly_all_title">तुमचं %1$d</string>
+    <string name="yearly_memories">%1$d आठवणी</string>
+    <string name="yearly_photos">%1$d फोटो</string>
+    <string name="yearly_places">%1$d ठिकाणे</string>
+    <string name="yearly_top_people">सर्वाधिक वेळ</string>
+    <string name="yearly_first">वर्षातली पहिली आठवण</string>
+    <string name="yearly_last">वर्षातली शेवटची आठवण</string>
+    <string name="yearly_empty">%1$d ची अजून आठवण नाही.</string>
+    <plurals name="notification_years_ago"><item quantity="one">आजपासून %1$d वर्षापूर्वी</item><item quantity="other">आजपासून %1$d वर्षांपूर्वी</item></plurals>
+    <string name="relive_your_reels">तुमच्या रील्स</string>
+    <string name="notification_birthday_today">आज %1$s यांचा वाढदिवस आहे 🎂</string>
+    <string name="notification_birthday_tomorrow">उद्या %1$s यांचा वाढदिवस आहे</string>
+    <string name="notification_birthday_text">एकत्र घालवलेल्या आठवणींची रील बनवा आणि पाठवा.</string>
+    <string name="notification_prompt_title">या आठवड्यात जपून ठेवण्यासारखी एक गोष्ट</string>
+    <string name="relive_made_for_you">तुमच्यासाठी बनवलेली</string>
+    <string name="relive_play_reel">रील पाहा</string>
+    <string name="relive_record_story">रेकॉर्ड करा</string>
+    <string name="relive_places">ठिकाणे</string>
+    <string name="relive_this_week">या आठवड्यात, मागील वर्षी</string>
+    <string name="relive_this_month">या महिन्यात, मागील वर्षी</string>
+    <plurals name="relive_years_ago"><item quantity="one">%1$d वर्षापूर्वी</item><item quantity="other">%1$d वर्षांपूर्वी</item></plurals>
+    <string name="relive_shake_hint_title">फोन हलवा, सरप्राइज मिळवा</string>
+    <string name="relive_got_it">ठीक आहे</string>
+    <string name="relive_birthday_reel">रील बनवा</string>
+    <string name="relive_story_memory_of_day">आजची आठवण</string>
+    <string name="relive_story_spotlight">%1$s सोबतचे हे क्षण आठवतात?</string>
+    <string name="relive_story_open">उघडा</string>
+    <string name="relive_story_see_person">त्यांची गोष्ट पाहा</string>
+    <string name="relive_story_page">गोष्ट, पान %1$d / %2$d</string>
+</resources>

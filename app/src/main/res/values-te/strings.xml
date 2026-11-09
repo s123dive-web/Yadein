@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_timeline">కాలక్రమం</string>
+    <string name="nav_people">మనుషులు</string>
+    <string name="nav_create">సృష్టించండి</string>
+    <string name="nav_relive">మళ్ళీ గుర్తుచేసుకోండి</string>
+    <string name="nav_settings">సెట్టింగ్‌లు</string>
+    <string name="crash_notice_title">పోయిన సారి Yaadein అనుకోకుండా మూసుకుపోయింది</string>
+    <string name="crash_notice_body">ఒక చిన్న సాంకేతిక నోట్ ఈ ఫోన్‌లో మాత్రమే సేవ్ అయింది. దాన్ని డెవలపర్‌తో షేర్ చేస్తే సమస్యను సరిచేయడానికి సహాయపడుతుంది; ఇంకేదీ మీ ఫోన్ నుండి బయటకు వెళ్ళదు.</string>
+    <string name="crash_notice_share">రిపోర్ట్ షేర్ చేయండి</string>
+    <string name="crash_notice_dismiss">తీసివేయండి</string>
+    <string name="share_target_label">Yaadeinలో సేవ్ చేయండి</string>
+    <string name="backup_nudge_title">మీ జ్ఞాపకాలను సురక్షితంగా ఉంచండి</string>
+    <string name="backup_nudge_text">అవి ఈ ఫోన్‌లో మాత్రమే ఉన్నాయి. ఫోన్ పోయినా అవి పోకుండా ఉండేలా వారానికోసారి బ్యాకప్ ఆన్ చేయండి.</string>
+    <string name="backup_nudge_action">బ్యాకప్ సెటప్ చేయండి</string>
+    <string name="backup_nudge_later">తర్వాత</string>
+    <string name="widget_name">Yaadein: ఈ రోజున</string>
+    <string name="widget_description">ఈ రోజు నాటి జ్ఞాపకాలు, పుట్టినరోజులు, కథల ప్రశ్నలు, త్వరగా జోడించే బటన్‌తో.</string>
+    <string name="widget_add">జ్ఞాపకాన్ని జోడించండి</string>
+    <string name="widget_title_default">Yaadein</string>
+    <string name="widget_open_app">ఇది నిండాలంటే Yaadeinను ఒక్కసారి తెరవండి</string>
+    <string name="widget_title_on_this_day">ఈ రోజున</string>
+    <string name="widget_title_birthday">పుట్టినరోజు</string>
+    <string name="widget_birthday_today">ఈ రోజు %1$s పుట్టినరోజు</string>
+    <string name="widget_birthday_tomorrow">రేపు %1$s పుట్టినరోజు</string>
+    <string name="widget_birthday_hidden">ఎవరిదో పుట్టినరోజు దగ్గర్లో ఉంది</string>
+    <string name="widget_title_prompt">దాచుకోవలసిన ఒక కథ</string>
+    <string name="widget_prompt_hidden">ఒక కథ చెప్పబడడానికి ఎదురుచూస్తోంది</string>
+    <plurals name="widget_years_ago">
+        <item quantity="one">%1$d సంవత్సరం క్రితం: %2$s</item>
+        <item quantity="other">%1$d సంవత్సరాల క్రితం: %2$s</item>
+    </plurals>
+    <plurals name="widget_memories_waiting">
+        <item quantity="one">ఈ రోజు నాటి %1$d జ్ఞాపకం</item>
+        <item quantity="other">ఈ రోజు నాటి %1$d జ్ఞాపకాలు</item>
+    </plurals>
+</resources>

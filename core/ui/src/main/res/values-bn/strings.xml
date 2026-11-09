@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_avatar_of">%1$s-এর ছবি</string>
+    <string name="cd_people_in_memory">এই স্মৃতিতে যাঁরা আছেন: %1$s</string>
+    <string name="cd_memory_card">স্মৃতি: %1$s, %2$s</string>
+    <string name="date_sometime_in">%1$s-এ কোনো এক সময়</string>
+    <string name="badge_story">গল্প</string>
+    <plurals name="media_count">
+        <item quantity="one">%1$dটি ছবি</item>
+        <item quantity="other">%1$dটি ছবি</item>
+    </plurals>
+    <plurals name="memory_count">
+        <item quantity="one">%1$dটি স্মৃতি</item>
+        <item quantity="other">%1$dটি স্মৃতি</item>
+    </plurals>
+    <string name="action_back">ফিরে যান</string>
+    <string name="action_close">বন্ধ করুন</string>
+    <string name="action_save">সেভ করুন</string>
+    <string name="action_cancel">বাতিল</string>
+    <string name="action_delete">মুছুন</string>
+    <string name="action_edit">বদলান</string>
+    <string name="action_done">হয়ে গেছে</string>
+    <string name="action_next">পরের ধাপ</string>
+    <string name="action_skip">এড়িয়ে যান</string>
+    <string name="action_retry">আবার চেষ্টা করুন</string>
+    <string name="action_share">শেয়ার করুন</string>
+    <string name="action_more">আরও বিকল্প</string>
+    <string name="action_add">যোগ করুন</string>
+    <string name="relation_family">পরিবার</string>
+    <string name="relation_friend">বন্ধু</string>
+    <string name="relation_colleague">সহকর্মী</string>
+    <string name="relation_other">অন্যান্য</string>
+    <string name="mood_joyful">আনন্দের</string>
+    <string name="mood_calm">শান্ত</string>
+    <string name="mood_nostalgic">পুরনো দিনের টান</string>
+    <string name="mood_proud">গর্বের</string>
+    <string name="mood_funny">মজার</string>
+    <string name="mood_sad">মন খারাপ</string>
+    <string name="mood_celebration">উৎসব</string>
+    <string name="loading">লোড হচ্ছে…</string>
+    <string name="error_generic">কিছু একটা গোলমাল হয়েছে। আবার চেষ্টা করুন।</string>
+    <string name="today">আজ</string>
+    <string name="yesterday">গতকাল</string>
+    <string name="app_credit">AI-এর সাহায্যে ডিজাইন ও তৈরি করেছেন Suresh Dongardive</string>
+    <string name="pw_password">পাসওয়ার্ড</string>
+    <string name="pw_again">আবার পাসওয়ার্ড দিন</string>
+    <string name="pw_show">পাসওয়ার্ড দেখান</string>
+    <string name="pw_hide">পাসওয়ার্ড লুকান</string>
+    <string name="pw_too_short">অন্তত %1$dটি অক্ষর</string>
+    <string name="pw_mismatch">পাসওয়ার্ড দুটো মেলেনি</string>
+</resources>

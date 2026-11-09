@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relive_title">మళ్ళీ గుర్తుచేసుకోండి</string>
+    <string name="relive_surprise">ఆశ్చర్యపరచండి</string>
+    <string name="relive_make_recap">రీల్ తయారు చేయండి</string>
+    <string name="relive_birthdays">రాబోయేవి</string>
+    <string name="relive_birthday_today">ఈ రోజు %1$s పుట్టినరోజు</string>
+    <string name="relive_birthday_in">%1$s · %2$d రోజులు</string>
+    <string name="relive_on_this_day">ఈ రోజున</string>
+    <string name="relive_on_this_day_empty">గత సంవత్సరాల్లో ఈ రోజు నాటిది ఇంకా ఏదీ లేదు. ఈ రోజు క్షణాన్ని జోడించండి, వచ్చే సంవత్సరం అది ఇక్కడ కనిపిస్తుంది.</string>
+    <string name="relive_years">మీ సంవత్సరాలు</string>
+    <string name="relive_random_title">యాదృచ్ఛికంగా ఎంచుకున్న ఒక జ్ఞాపకం</string>
+    <string name="relive_another">ఇంకొకటి</string>
+    <string name="relive_empty_title">గుర్తుచేసుకోవడానికి ఇంకా ఏమీ లేదు</string>
+    <string name="relive_empty_message">మీ దగ్గర కొన్ని జ్ఞాపకాలు చేరాక, “ఈ రోజున”, ఆశ్చర్యాలు, సంవత్సరపు కథలు ఇక్కడే ఉంటాయి.</string>
+    <string name="notification_channel_on_this_day">ఈ రోజున</string>
+    <string name="notification_on_this_day_title">ఈ రోజున: %1$s</string>
+    <string name="notification_on_this_day_text">%1$s · %2$s</string>
+    <string name="shake_hint">యాదృచ్ఛిక జ్ఞాపకం కోసం యాప్‌లో ఎక్కడైనా మీ ఫోన్‌ను ఊపండి.</string>
+    <string name="yearly_title">%2$sతో %1$d</string>
+    <string name="yearly_all_title">మీ %1$d</string>
+    <string name="yearly_memories">%1$d జ్ఞాపకాలు</string>
+    <string name="yearly_photos">%1$d ఫోటోలు</string>
+    <string name="yearly_places">%1$d ప్రదేశాలు</string>
+    <string name="yearly_top_people">ఎక్కువ సమయం గడిపింది వీరితో</string>
+    <string name="yearly_first">ఈ సంవత్సరపు మొదటి జ్ఞాపకం</string>
+    <string name="yearly_last">ఈ సంవత్సరపు చివరి జ్ఞాపకం</string>
+    <string name="yearly_empty">%1$d నుండి ఇంకా జ్ఞాపకాలు లేవు.</string>
+    <plurals name="notification_years_ago"><item quantity="one">%1$d సంవత్సరం క్రితం ఈ రోజు</item><item quantity="other">%1$d సంవత్సరాల క్రితం ఈ రోజు</item></plurals>
+    <string name="relive_your_reels">మీ రీల్స్</string>
+    <string name="notification_birthday_today">ఈ రోజు %1$s పుట్టినరోజు 🎂</string>
+    <string name="notification_birthday_tomorrow">రేపు %1$s పుట్టినరోజు</string>
+    <string name="notification_birthday_text">మీరు కలిసి గడిపిన జ్ఞాపకాలతో ఒక రీల్ తయారు చేసి షేర్ చేయండి.</string>
+    <string name="notification_prompt_title">ఈ వారం దాచుకోవలసిన ఒక కథ</string>
+    <string name="relive_made_for_you">మీ కోసం తయారైనవి</string>
+    <string name="relive_play_reel">రీల్ ప్లే చేయండి</string>
+    <string name="relive_record_story">రికార్డ్ చేయండి</string>
+    <string name="relive_places">ప్రదేశాలు</string>
+    <string name="relive_this_week">ఈ వారం, గత సంవత్సరాల్లో</string>
+    <string name="relive_this_month">ఈ నెల, గత సంవత్సరాల్లో</string>
+    <plurals name="relive_years_ago"><item quantity="one">%1$d సంవత్సరం క్రితం</item><item quantity="other">%1$d సంవత్సరాల క్రితం</item></plurals>
+    <string name="relive_shake_hint_title">ఫోన్ ఊపండి, సర్‌ప్రైజ్ పొందండి</string>
+    <string name="relive_got_it">సరే</string>
+    <string name="relive_birthday_reel">రీల్ చేయండి</string>
+    <string name="relive_story_memory_of_day">ఈరోజు జ్ఞాపకం</string>
+    <string name="relive_story_spotlight">%1$s తో ఈ క్షణాలు గుర్తున్నాయా?</string>
+    <string name="relive_story_open">తెరవండి</string>
+    <string name="relive_story_see_person">వారి కథ చూడండి</string>
+    <string name="relive_story_page">కథ, పేజీ %1$d / %2$d</string>
+</resources>

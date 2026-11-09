@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_1_title">યાદ રાખવા જેવા દિવસો સાચવો</string>
+    <string name="onboarding_1_body">ફોટા, વીડિયો, અથવા ફક્ત “ગોવા ટ્રીપ 2024” જેવી એક લાઇન. Yaadein તેમને એવી ટાઈમલાઈનમાં ફેરવે છે જેમાં તમે આરામથી ફરી શકો.</string>
+    <string name="onboarding_2_title">ડાયરી જેવું ખાનગી</string>
+    <string name="onboarding_2_body">બધું આ ફોનમાં જ રહે છે, એન્ક્રિપ્ટ કરેલું અને તમારા PIN કે ફિંગરપ્રિન્ટથી લૉક કરેલું. કોઈ એકાઉન્ટ નહીં, ઇન્ટરનેટ નહીં, જાહેરાતો નહીં.</string>
+    <string name="onboarding_3_title">તમારા પ્રિયજનોની વાર્તાઓ</string>
+    <string name="onboarding_3_body">પરિવાર અને મિત્રોને ટેગ કરો, દરેક સાથેની તમારી વાર્તા જુઓ, અને જન્મદિવસે શેર કરવા માટે રીલ્સ બનાવો.</string>
+    <string name="onboarding_add_first_person">તમારી પહેલી વ્યક્તિ ઉમેરો</string>
+</resources>

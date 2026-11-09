@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lock_title">மீண்டும் வருக</string>
+    <string name="lock_subtitle">உங்கள் 6 இலக்க PIN-ஐ உள்ளிடுங்கள் அல்லது கைரேகையைப் பயன்படுத்துங்கள்</string>
+    <string name="lock_wrong_pin">அந்த PIN சரியில்லை. மீண்டும் முயலுங்கள்.</string>
+    <plurals name="lock_wrong_pin_wipe">
+        <item quantity="one">தவறான PIN. அனைத்தும் அழிக்கப்படுவதற்கு முன் இன்னும் %1$d முயற்சி மட்டுமே உள்ளது.</item>
+        <item quantity="other">தவறான PIN. அனைத்தும் அழிக்கப்படுவதற்கு முன் இன்னும் %1$d முயற்சிகள் உள்ளன.</item>
+    </plurals>
+    <string name="lock_wait_seconds">பல முறை முயன்றுவிட்டீர்கள். %1$d விநாடிகள் காத்திருங்கள்.</string>
+    <string name="lock_wait_minutes">பல முறை முயன்றுவிட்டீர்கள். %1$d நிமிடங்கள் காத்திருங்கள்.</string>
+    <string name="lock_wiped">பல முறை தவறான PIN உள்ளிட்டதால் அனைத்து நினைவுகளும் அழிக்கப்பட்டன.</string>
+    <string name="lock_use_biometric">கைரேகை அல்லது முகத்தைப் பயன்படுத்து</string>
+    <string name="lock_backspace">கடைசி இலக்கத்தை நீக்கு</string>
+    <string name="lock_pin_entered">%2$d இலக்கங்களில் %1$d உள்ளிடப்பட்டன</string>
+    <string name="lock_biometric_title">Yaadein-ஐத் திற</string>
+    <string name="lock_biometric_subtitle">உங்கள் நினைவுகள் உங்களுக்கு மட்டுமே</string>
+    <string name="lock_biometric_negative">PIN-ஐப் பயன்படுத்து</string>
+    <string name="setup_choose_title">6 இலக்க PIN-ஐத் தேர்ந்தெடுங்கள்</string>
+    <string name="setup_confirm_title">மீண்டும் ஒருமுறை உள்ளிடுங்கள்</string>
+    <string name="setup_pin_help">உங்கள் PIN தான் Yaadein-ஐத் திறக்கும். எதுவும் எங்கும் அனுப்பப்படுவதில்லை, அதனால் அதை மீட்டமைக்க வழியில்லை — அதைப் பத்திரமான இடத்தில் வையுங்கள்.</string>
+    <string name="setup_mismatch">PIN-கள் பொருந்தவில்லை. மீண்டும் தொடங்குவோம்.</string>
+    <string name="setup_biometric_title">விரைவாகத் திறக்க</string>
+    <string name="setup_biometric_help">ஆப்பைத் திறக்க கைரேகை அல்லது முகத்தைப் பயன்படுத்துங்கள். மாற்று வழியாக உங்கள் PIN எப்போதும் வேலை செய்யும்.</string>
+    <string name="setup_biometric_unavailable">இந்த ஃபோனில் கைரேகை அல்லது முகத் திறப்பு அமைக்கப்படவில்லை. பின்னர் அமைப்புகளில் இயக்கலாம்.</string>
+    <string name="setup_biometric_switch">கைரேகை அல்லது முகத்தைப் பயன்படுத்து</string>
+    <string name="setup_finish">நினைவுகளைச் சேமிக்கத் தொடங்கு</string>
+    <string name="lock_migration_note">வலுவான பாதுகாப்பை இயக்க உங்கள் PIN-ஐ ஒருமுறை உள்ளிடுங்கள். இதன் பிறகு, உங்கள் PIN அல்லது கைரேகையால் மட்டுமே நினைவுகளைத் திறக்க முடியும்.</string>
+    <string name="lock_biometric_changed">உங்கள் கைரேகைகள் அல்லது முகம் மாறியுள்ளது. உங்கள் PIN-ஐ உள்ளிட்டு, பிறகு அமைப்புகளில் கைரேகையை மீண்டும் இயக்குங்கள்.</string>
+    <string name="lock_device_subtitle">உங்கள் ஃபோனின் திரைப் பூட்டால் திறக்கவும்</string>
+    <string name="lock_device_button">திற</string>
+    <string name="lock_device_unavailable">இந்த ஃபோனில் திரைப் பூட்டு இல்லை, அதனால் Yaadein பூட்டியே இருக்க முடியாது. அமைப்புகள், பாதுகாப்பு என்பதில் Yaadein PIN-ஐ அமையுங்கள்.</string>
+    <string name="lock_device_open_anyway">Yaadein-ஐத் திற</string>
+    <string name="lock_biometric_enroll_title">உங்கள் கைரேகையை உறுதிசெய்யுங்கள்</string>
+    <string name="lock_biometric_enroll_subtitle">அடுத்த முறை உங்கள் நினைவுகளைத் திறக்க</string>
+    <string name="lock_biometric_cancel">ரத்துசெய்</string>
+    <string name="setup_use_device_lock">பதிலாக என் ஃபோனின் திரைப் பூட்டைப் பயன்படுத்து</string>
+    <string name="setup_device_lock_help">எளிதானது: புதிய PIN நினைவில் வைக்கத் தேவையில்லை. Yaadein PIN இன்னும் வலுவானது, ஏனெனில் அது உங்கள் நினைவுகளை மறையாக்கமும் செய்கிறது.</string>
+</resources>

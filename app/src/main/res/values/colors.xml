@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only used before Compose takes over (splash + launcher icon). Mirrors Tokens.kt Warm Album. -->
+    <color name="splash_background">#FBF5EC</color>
+    <color name="ic_launcher_background">#5B2A86</color>
+    <!-- Home-screen widget (RemoteViews cannot use the Compose theme). Warm Album palette. -->
+    <color name="widget_background">#FBF5EC</color>
+    <color name="widget_title">#5B2A86</color>
+    <color name="widget_text">#2B2230</color>
+    <color name="widget_button">#E8A33D</color>
+</resources>

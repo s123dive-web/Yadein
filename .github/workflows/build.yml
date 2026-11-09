@@ -1,0 +1,120 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main, 'ccr-*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      # True once the owner has added the private release key (docs/RELEASE_SIGNING.md).
+      HAS_RELEASE_KEY: ${{ secrets.KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history: versionCode is the commit count
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools platforms;android-37.0 build-tools;36.0.0
+          accept-android-sdk-licenses: true
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+      # --no-build-cache everywhere: outputs restored from the cache sometimes left KSP unable to resolve types from
+      # other modules ("PersonRepository could not be resolved", run 66) or silently without Hilt ViewModel bindings
+      # (v0.1.69 crashed on Settings). A clean build takes a few minutes longer and is always complete.
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest :core:domain:test --no-daemon --no-build-cache --stacktrace
+      # Diagnostics for the intermittent "Cannot create an instance of PeopleViewModel" smoke-test failure:
+      # shows whether Hilt generated (and aggregated) the ViewModel modules for feature:people in this run.
+      - name: Hilt ViewModel diagnostics
+        if: failure()
+        run: |
+          echo "--- KSP output for PeopleViewModel / ReliveViewModel"
+          find feature -path '*/build/generated/ksp/*' \( -name 'PeopleViewModel*' -o -name 'ReliveViewModel*' \) | sort
+          echo "--- hilt_aggregated_deps mentioning PeopleViewModel"
+          grep -rl "PeopleViewModel" --include='*.java' feature/people/build/generated/ksp || echo "none"
+          echo "--- compiled key/binds module classes for PeopleViewModel"
+          find feature/people/build -name 'PeopleViewModel_HiltModules*.class' | sort || true
+          echo "--- PeopleViewModel / ReliveViewModel references in the app unit-test Hilt component"
+          for vm in PeopleViewModel ReliveViewModel TimelineViewModel; do
+            n=$(grep -rho "$vm" app/build/generated/hilt/component_sources/debugUnitTest 2>/dev/null | wc -l)
+            echo "$vm: $n"
+          done
+          echo "--- feature:people KSP log lines"
+          ls -la feature/people/build/generated/ksp/debug/java/hilt_aggregated_deps 2>/dev/null || echo "no hilt_aggregated_deps dir"
+      - name: Zero-network guard
+        run: ./gradlew :app:verifyNoNetworkPermissionDebug :app:verifyNoNetworkPermissionBeta --no-daemon --no-build-cache --stacktrace
+      - name: Lint
+        run: ./gradlew :app:lintDebug --no-daemon --no-build-cache --stacktrace
+      # The APK people install: R8-optimised, not debuggable, same app id as earlier builds so it updates in place.
+      - name: Assemble beta APK
+        run: ./gradlew :app:assembleBeta --no-daemon --no-build-cache --stacktrace
+      # v0.1.69 shipped with seven ViewModels missing their Hilt bindings (Settings crashed on open). Check the APK
+      # itself; on a miss rebuild once without the Gradle cache, and never publish an APK that still fails.
+      - name: Every screen's ViewModel is wired by Hilt
+        run: |
+          check() { scripts/verify-hilt-viewmodels.sh app/build/outputs/apk/beta/Yaadein-*-beta.apk app/build/outputs/mapping/beta/mapping.txt; }
+          if ! check; then
+            echo "::warning::Hilt bindings missing; rebuilding the beta APK without the build cache"
+            ./gradlew clean :app:assembleBeta --no-daemon --no-build-cache --rerun-tasks --stacktrace
+            check
+          fi
+      # With the private key present, sign with it plus a rotation proof from the old public debug key. Android 9+
+      # then accepts it as an update over existing installs and refuses any later APK signed only with the public key.
+      - name: Sign with the private release key (key rotation)
+        if: env.HAS_RELEASE_KEY == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          BT="$ANDROID_HOME/build-tools/36.0.0"
+          APK=$(ls app/build/outputs/apk/beta/Yaadein-*.apk)
+          OLD=(--ks app/debug.keystore --ks-pass pass:android --ks-key-alias androiddebugkey --key-pass pass:android)
+          NEW=(--ks "$RUNNER_TEMP/release.jks" --ks-pass env:KEYSTORE_PASSWORD --ks-key-alias "$KEY_ALIAS" --key-pass env:KEY_PASSWORD)
+          "$BT/apksigner" rotate --out "$RUNNER_TEMP/lineage" --old-signer "${OLD[@]}" --new-signer "${NEW[@]}"
+          "$BT/apksigner" sign "${OLD[@]}" --next-signer "${NEW[@]}" --lineage "$RUNNER_TEMP/lineage" --rotation-min-sdk-version 28 "$APK"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" > "$RUNNER_TEMP/verify.txt"
+          grep -E "Verified|DN" "$RUNNER_TEMP/verify.txt" || true
+          rm -f "$RUNNER_TEMP/release.jks"
+      - name: Warn when still signed with the public debug key
+        if: env.HAS_RELEASE_KEY != 'true'
+        run: echo "::warning::APK is signed with the public debug key. Add the KEYSTORE_* secrets (docs/RELEASE_SIGNING.md) to finish securing updates."
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yaadein-apk
+          path: app/build/outputs/apk/beta/Yaadein-*.apk
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: '**/build/reports/tests/**'
+          if-no-files-found: ignore
+      - name: Attach APK to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          body: |
+            Install **Yaadein-v*-beta.apk**. It updates an existing install in place and keeps every memory.
+            Signed with: ${{ env.HAS_RELEASE_KEY == 'true' && 'the private release key (rotated from the old debug key)' || 'the public debug key (add the release key secrets, see docs/RELEASE_SIGNING.md)' }}.
+          files: app/build/outputs/apk/beta/Yaadein-*.apk

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timeline_title">కాలక్రమం</string>
+    <string name="timeline_search">జ్ఞాపకాలను వెతకండి</string>
+    <string name="timeline_search_hint">మనుషులు, ప్రదేశాలు, పదాలు వెతకండి…</string>
+    <string name="timeline_filters">ఫిల్టర్లు</string>
+    <string name="timeline_clear_filters">ఫిల్టర్లు తీసివేయండి</string>
+    <string name="timeline_empty_title">మీ కథ ఇక్కడ మొదలవుతుంది</string>
+    <string name="timeline_empty_message">మీరు దాచుకోవాలనుకునే రోజు గురించి ఒక ఫోటో, వీడియో లేదా ఒక్క వాక్యం జోడించండి. అంతా ఈ ఫోన్‌లోనే ఉంటుంది.</string>
+    <string name="timeline_empty_action">మీ మొదటి జ్ఞాపకాన్ని జోడించండి</string>
+    <string name="timeline_no_results_title">ఇంకా ఏదీ సరిపోలలేదు</string>
+    <string name="timeline_no_results_message">వేరే పదం, వ్యక్తి లేదా ప్రదేశంతో ప్రయత్నించండి.</string>
+    <string name="sidebar_show">చూపించు</string>
+    <string name="sidebar_all">అన్నీ</string>
+    <string name="sidebar_photos">ఫోటోలతో</string>
+    <string name="sidebar_stories">కథలు</string>
+    <string name="sidebar_people">మనుషులు</string>
+    <string name="filter_people">మనుషులు</string>
+    <string name="filter_all_together">వీరందరూ కలిసి ఉన్న జ్ఞాపకాలు మాత్రమే</string>
+    <string name="filter_groups">గ్రూపులు</string>
+    <string name="filter_places">ప్రదేశాలు</string>
+    <string name="filter_type">రకం</string>
+    <string name="filter_quick">చిన్న నోట్స్</string>
+    <string name="filter_dates">తేదీలు</string>
+    <string name="filter_from">నుండి</string>
+    <string name="filter_to">వరకు</string>
+    <string name="filter_apply">జ్ఞాపకాలు చూపించు</string>
+    <string name="timeline_about">Yaadein గురించి</string>
+    <string name="timeline_layout">లేఅవుట్: %1$s. మార్చడానికి నొక్కండి</string>
+    <string name="timeline_layout_cards">పెద్ద కార్డులు</string>
+    <string name="timeline_layout_compact">చిన్న జాబితా</string>
+    <string name="timeline_layout_grid">ఫోటో గ్రిడ్</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_1_title">जपण्यासारखे दिवस जपा</string>
+    <string name="onboarding_1_body">फोटो, व्हिडिओ, किंवा फक्त एक ओळ जसं “गोवा ट्रिप 2024”. Yaadein त्यांची एक काळरेषा बनवतं जिच्यातून तुम्ही फिरू शकता.</string>
+    <string name="onboarding_2_title">खासगी, डायरीसारखं</string>
+    <string name="onboarding_2_body">सगळं याच फोनवर राहतं, एन्क्रिप्टेड आणि तुमच्या पिन किंवा फिंगरप्रिंटने लॉक. खातं नाही, इंटरनेट नाही, जाहिराती नाहीत.</string>
+    <string name="onboarding_3_title">तुमच्या प्रिय माणसांच्या गोष्टी</string>
+    <string name="onboarding_3_body">कुटुंब आणि मित्रांना टॅग करा, प्रत्येकासोबतची तुमची गोष्ट पाहा, आणि वाढदिवसाला शेअर करण्यासाठी रील बनवा.</string>
+    <string name="onboarding_add_first_person">पहिली व्यक्ती जोडा</string>
+</resources>

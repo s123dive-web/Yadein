@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relive_title">Relive</string>
+    <string name="relive_surprise">Surprise me</string>
+    <string name="relive_make_recap">Create a reel</string>
+    <string name="relive_birthdays">Coming up</string>
+    <string name="relive_birthday_today">%1$s\'s birthday is today</string>
+    <string name="relive_birthday_in">%1$s · %2$d days</string>
+    <string name="relive_on_this_day">On this day</string>
+    <string name="relive_on_this_day_empty">Nothing from this day in earlier years yet. Add today\'s moment and next year it will show up here.</string>
+    <string name="relive_years">Your years</string>
+    <string name="relive_random_title">A memory, picked at random</string>
+    <string name="relive_another">Another one</string>
+    <string name="relive_empty_title">Nothing to relive yet</string>
+    <string name="relive_empty_message">Once you have a few memories, this is where “On this day”, surprises and yearly stories live.</string>
+    <string name="notification_channel_on_this_day">On this day</string>
+    <string name="notification_on_this_day_title">On this day: %1$s</string>
+    <string name="notification_on_this_day_text">%1$s · %2$s</string>
+    <string name="shake_hint">Shake your phone anywhere in the app for a random memory.</string>
+    <string name="yearly_title">%1$d with %2$s</string>
+    <string name="yearly_all_title">Your %1$d</string>
+    <string name="yearly_memories">%1$d memories</string>
+    <string name="yearly_photos">%1$d photos</string>
+    <string name="yearly_places">%1$d places</string>
+    <string name="yearly_top_people">Most time with</string>
+    <string name="yearly_first">First memory of the year</string>
+    <string name="yearly_last">Last memory of the year</string>
+    <string name="yearly_empty">No memories from %1$d yet.</string>
+    <plurals name="notification_years_ago"><item quantity="one">%1$d year ago today</item><item quantity="other">%1$d years ago today</item></plurals>
+    <string name="relive_your_reels">Your reels</string>
+    <string name="notification_birthday_today">Today is %1$s\'s birthday 🎂</string>
+    <string name="notification_birthday_tomorrow">%1$s\'s birthday is tomorrow</string>
+    <string name="notification_birthday_text">Make a reel of your memories together and share it.</string>
+    <string name="notification_prompt_title">A story to save this week</string>
+    <string name="relive_made_for_you">Made for you</string>
+    <string name="relive_play_reel">Play reel</string>
+    <string name="relive_record_story">Record it</string>
+    <string name="relive_places">Places</string>
+    <string name="relive_this_week">This week, years ago</string>
+    <string name="relive_this_month">This month, years ago</string>
+    <plurals name="relive_years_ago"><item quantity="one">%1$d year ago</item><item quantity="other">%1$d years ago</item></plurals>
+    <string name="relive_shake_hint_title">Shake for a surprise</string>
+    <string name="relive_got_it">Got it</string>
+    <string name="relive_birthday_reel">Make a reel</string>
+    <string name="relive_story_memory_of_day">Memory of the day</string>
+    <string name="relive_story_spotlight">Remember these with %1$s?</string>
+    <string name="relive_story_open">Open</string>
+    <string name="relive_story_see_person">See their story</string>
+    <string name="relive_story_page">Story, page %1$d of %2$d</string>
+</resources>

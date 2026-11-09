@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lock_title">ಮತ್ತೆ ಸ್ವಾಗತ</string>
+    <string name="lock_subtitle">ನಿಮ್ಮ 6 ಅಂಕಿಯ PIN ನಮೂದಿಸಿ ಅಥವಾ ಬೆರಳಚ್ಚು ಬಳಸಿ</string>
+    <string name="lock_wrong_pin">ಆ PIN ಸರಿಯಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <plurals name="lock_wrong_pin_wipe">
+        <item quantity="one">ತಪ್ಪು PIN. ಎಲ್ಲವೂ ಅಳಿಸಿಹೋಗುವ ಮೊದಲು ಇನ್ನು %1$d ಪ್ರಯತ್ನ ಉಳಿದಿದೆ.</item>
+        <item quantity="other">ತಪ್ಪು PIN. ಎಲ್ಲವೂ ಅಳಿಸಿಹೋಗುವ ಮೊದಲು ಇನ್ನು %1$d ಪ್ರಯತ್ನಗಳು ಉಳಿದಿವೆ.</item>
+    </plurals>
+    <string name="lock_wait_seconds">ತುಂಬಾ ಪ್ರಯತ್ನಗಳಾದವು. %1$d ಸೆಕೆಂಡ್ ಕಾಯಿರಿ.</string>
+    <string name="lock_wait_minutes">ತುಂಬಾ ಪ್ರಯತ್ನಗಳಾದವು. %1$d ನಿಮಿಷ ಕಾಯಿರಿ.</string>
+    <string name="lock_wiped">ತುಂಬಾ ಬಾರಿ ತಪ್ಪು PIN ಹಾಕಿದ್ದರಿಂದ ಎಲ್ಲಾ ನೆನಪುಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ.</string>
+    <string name="lock_use_biometric">ಬೆರಳಚ್ಚು ಅಥವಾ ಮುಖ ಬಳಸಿ</string>
+    <string name="lock_backspace">ಕೊನೆಯ ಅಂಕಿ ಅಳಿಸಿ</string>
+    <string name="lock_pin_entered">%2$d ರಲ್ಲಿ %1$d ಅಂಕಿಗಳನ್ನು ನಮೂದಿಸಲಾಗಿದೆ</string>
+    <string name="lock_biometric_title">Yaadein ಅನ್‌ಲಾಕ್ ಮಾಡಿ</string>
+    <string name="lock_biometric_subtitle">ನಿಮ್ಮ ನೆನಪುಗಳು ನಿಮಗೆ ಮಾತ್ರ</string>
+    <string name="lock_biometric_negative">PIN ಬಳಸಿ</string>
+    <string name="setup_choose_title">6 ಅಂಕಿಯ PIN ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="setup_confirm_title">ಅದನ್ನು ಮತ್ತೊಮ್ಮೆ ನಮೂದಿಸಿ</string>
+    <string name="setup_pin_help">ನಿಮ್ಮ PIN Yaadein ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡುತ್ತದೆ. ಏನೂ ಎಲ್ಲಿಗೂ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ, ಹಾಗಾಗಿ ಅದನ್ನು ರೀಸೆಟ್ ಮಾಡಲು ದಾರಿಯೇ ಇಲ್ಲ — ಅದನ್ನು ಸುರಕ್ಷಿತ ಜಾಗದಲ್ಲಿ ಬರೆದಿಡಿ.</string>
+    <string name="setup_mismatch">PIN ಗಳು ಹೊಂದಲಿಲ್ಲ. ಮತ್ತೆ ಮೊದಲಿನಿಂದ ಶುರು ಮಾಡೋಣ.</string>
+    <string name="setup_biometric_title">ಇನ್ನೂ ಬೇಗ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</string>
+    <string name="setup_biometric_help">ಆ್ಯಪ್ ತೆರೆಯಲು ನಿಮ್ಮ ಬೆರಳಚ್ಚು ಅಥವಾ ಮುಖ ಬಳಸಿ. ನಿಮ್ಮ PIN ಯಾವಾಗಲೂ ಬದಲಿ ದಾರಿಯಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ.</string>
+    <string name="setup_biometric_unavailable">ಈ ಫೋನ್‌ನಲ್ಲಿ ಬೆರಳಚ್ಚು ಅಥವಾ ಮುಖ ಅನ್‌ಲಾಕ್ ಹೊಂದಿಸಿಲ್ಲ. ನಂತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಇದನ್ನು ಆನ್ ಮಾಡಬಹುದು.</string>
+    <string name="setup_biometric_switch">ಬೆರಳಚ್ಚು ಅಥವಾ ಮುಖ ಬಳಸಿ</string>
+    <string name="setup_finish">ನೆನಪಿಡಲು ಶುರು ಮಾಡಿ</string>
+    <string name="lock_migration_note">ಇನ್ನಷ್ಟು ಬಲವಾದ ರಕ್ಷಣೆ ಆನ್ ಮಾಡಲು ನಿಮ್ಮ PIN ಅನ್ನು ಒಮ್ಮೆ ನಮೂದಿಸಿ. ಇದರ ನಂತರ, ನಿಮ್ಮ PIN ಅಥವಾ ಬೆರಳಚ್ಚು ಮಾತ್ರ ನಿಮ್ಮ ನೆನಪುಗಳನ್ನು ತೆರೆಯಬಲ್ಲದು.</string>
+    <string name="lock_biometric_changed">ನಿಮ್ಮ ಬೆರಳಚ್ಚು ಅಥವಾ ಮುಖದ ವಿವರ ಬದಲಾಗಿದೆ. ನಿಮ್ಮ PIN ನಮೂದಿಸಿ, ನಂತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಬೆರಳಚ್ಚನ್ನು ಮತ್ತೆ ಆನ್ ಮಾಡಿ.</string>
+    <string name="lock_device_subtitle">ನಿಮ್ಮ ಫೋನ್‌ನ ಸ್ಕ್ರೀನ್ ಲಾಕ್‌ನಿಂದ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</string>
+    <string name="lock_device_button">ಅನ್‌ಲಾಕ್ ಮಾಡಿ</string>
+    <string name="lock_device_unavailable">ಈ ಫೋನ್‌ಗೆ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಇಲ್ಲ, ಹಾಗಾಗಿ Yaadein ಲಾಕ್ ಆಗಿ ಇರಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸೆಟ್ಟಿಂಗ್‌ಗಳು, ಸುರಕ್ಷತೆ ಯಲ್ಲಿ Yaadein PIN ಹೊಂದಿಸಿ.</string>
+    <string name="lock_device_open_anyway">Yaadein ತೆರೆಯಿರಿ</string>
+    <string name="lock_biometric_enroll_title">ನಿಮ್ಮ ಬೆರಳಚ್ಚು ಖಚಿತಪಡಿಸಿ</string>
+    <string name="lock_biometric_enroll_subtitle">ಮುಂದಿನ ಬಾರಿ ಅದು ನಿಮ್ಮ ನೆನಪುಗಳನ್ನು ತೆರೆಯಲೆಂದು</string>
+    <string name="lock_biometric_cancel">ರದ್ದುಮಾಡಿ</string>
+    <string name="setup_use_device_lock">ಬದಲಿಗೆ ನನ್ನ ಫೋನ್‌ನ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಬಳಸಿ</string>
+    <string name="setup_device_lock_help">ಸುಲಭ: ಹೊಸ PIN ನೆನಪಿಡಬೇಕಿಲ್ಲ. Yaadein PIN ಇನ್ನಷ್ಟು ಬಲವಾದದ್ದು, ಏಕೆಂದರೆ ಅದು ನಿಮ್ಮ ನೆನಪುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಕೂಡ ಮಾಡುತ್ತದೆ.</string>
+</resources>

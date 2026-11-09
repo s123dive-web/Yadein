@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_avatar_of">%1$s चा फोटो</string>
+    <string name="cd_people_in_memory">या आठवणीतील माणसे: %1$s</string>
+    <string name="cd_memory_card">आठवण: %1$s, %2$s</string>
+    <string name="date_sometime_in">%1$s मध्ये कधीतरी</string>
+    <string name="badge_story">गोष्ट</string>
+    <plurals name="media_count">
+        <item quantity="one">%1$d फोटो</item>
+        <item quantity="other">%1$d फोटो</item>
+    </plurals>
+    <plurals name="memory_count">
+        <item quantity="one">%1$d आठवण</item>
+        <item quantity="other">%1$d आठवणी</item>
+    </plurals>
+    <string name="action_back">मागे</string>
+    <string name="action_close">बंद करा</string>
+    <string name="action_save">जतन करा</string>
+    <string name="action_cancel">रद्द करा</string>
+    <string name="action_delete">हटवा</string>
+    <string name="action_edit">बदला</string>
+    <string name="action_done">झाले</string>
+    <string name="action_next">पुढे</string>
+    <string name="action_skip">वगळा</string>
+    <string name="action_retry">पुन्हा प्रयत्न करा</string>
+    <string name="action_share">शेअर करा</string>
+    <string name="action_more">अधिक पर्याय</string>
+    <string name="action_add">जोडा</string>
+    <string name="relation_family">कुटुंब</string>
+    <string name="relation_friend">मित्र</string>
+    <string name="relation_colleague">सहकारी</string>
+    <string name="relation_other">इतर</string>
+    <string name="mood_joyful">आनंदी</string>
+    <string name="mood_calm">शांत</string>
+    <string name="mood_nostalgic">जुन्या आठवणी</string>
+    <string name="mood_proud">अभिमान</string>
+    <string name="mood_funny">मजेशीर</string>
+    <string name="mood_sad">उदास</string>
+    <string name="mood_celebration">उत्सव</string>
+    <string name="loading">लोड होत आहे…</string>
+    <string name="error_generic">काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="today">आज</string>
+    <string name="yesterday">काल</string>
+    <string name="app_credit">Suresh Dongardive यांनी AI च्या साहाय्याने डिझाइन करून घडवले</string>
+    <string name="pw_password">पासवर्ड</string>
+    <string name="pw_again">पासवर्ड पुन्हा</string>
+    <string name="pw_show">पासवर्ड दाखवा</string>
+    <string name="pw_hide">पासवर्ड लपवा</string>
+    <string name="pw_too_short">किमान %1$d अक्षरे</string>
+    <string name="pw_mismatch">पासवर्ड जुळत नाहीत</string>
+</resources>

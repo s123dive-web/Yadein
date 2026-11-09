@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Weekly story prompts. %1$s is the person's name. Counts must match Reminders.FAMILY_PROMPTS / FRIEND_PROMPTS / SELF_PROMPTS. -->
+    <string-array name="prompts_family">
+        <item>Ask %1$s how they met their partner.</item>
+        <item>Ask %1$s about the house they grew up in.</item>
+        <item>Ask %1$s what a normal day looked like when they were ten.</item>
+        <item>Ask %1$s about their first job and their first salary.</item>
+        <item>Ask %1$s which festival they remember best from childhood, and why.</item>
+        <item>Ask %1$s about the bravest thing they ever did.</item>
+        <item>Ask %1$s what their parents were like.</item>
+        <item>Ask %1$s about a trip they will never forget.</item>
+        <item>Ask %1$s which song takes them straight back to their youth.</item>
+        <item>Ask %1$s about the dish they miss most, and who made it.</item>
+        <item>Ask %1$s what they wish they had known at your age.</item>
+        <item>Ask %1$s about the day you were born.</item>
+    </string-array>
+    <string-array name="prompts_friend">
+        <item>How did you and %1$s first meet?</item>
+        <item>What is the funniest thing that happened with %1$s?</item>
+        <item>Write down a trip or night out with %1$s before the details fade.</item>
+        <item>When did %1$s show up for you when it mattered?</item>
+        <item>What inside joke do you share with %1$s, and where did it start?</item>
+        <item>What would you tell %1$s if you wrote them a letter today?</item>
+    </string-array>
+    <string-array name="prompts_self">
+        <item>What made you smile this week?</item>
+        <item>Describe your childhood home, room by room.</item>
+        <item>Who was your favourite teacher, and what did they teach you?</item>
+        <item>What is a small family tradition you want to keep alive?</item>
+        <item>Write about a festival morning you still remember.</item>
+        <item>What was the best day of this year so far?</item>
+        <item>Which smell takes you straight back to your childhood?</item>
+        <item>What would you like your grandchildren to know about you?</item>
+    </string-array>
+</resources>

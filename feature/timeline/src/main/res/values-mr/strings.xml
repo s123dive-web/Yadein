@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timeline_title">काळरेषा</string>
+    <string name="timeline_search">आठवणी शोधा</string>
+    <string name="timeline_search_hint">माणसे, ठिकाणे, शब्द शोधा…</string>
+    <string name="timeline_filters">फिल्टर</string>
+    <string name="timeline_clear_filters">फिल्टर काढा</string>
+    <string name="timeline_empty_title">तुमची गोष्ट इथून सुरू होते</string>
+    <string name="timeline_empty_message">एखादा फोटो, व्हिडिओ किंवा जपून ठेवायच्या दिवसाबद्दल फक्त एक ओळ जोडा. सगळं याच फोनवर राहतं.</string>
+    <string name="timeline_empty_action">पहिली आठवण जोडा</string>
+    <string name="timeline_no_results_title">अजून काही जुळलं नाही</string>
+    <string name="timeline_no_results_message">दुसरा शब्द, व्यक्ती किंवा ठिकाण वापरून पाहा.</string>
+    <string name="sidebar_show">दाखवा</string>
+    <string name="sidebar_all">सर्व</string>
+    <string name="sidebar_photos">फोटोसह</string>
+    <string name="sidebar_stories">गोष्टी</string>
+    <string name="sidebar_people">माणसे</string>
+    <string name="filter_people">माणसे</string>
+    <string name="filter_all_together">फक्त ज्यात हे सगळे आहेत त्या आठवणी</string>
+    <string name="filter_groups">गट</string>
+    <string name="filter_places">ठिकाणे</string>
+    <string name="filter_type">प्रकार</string>
+    <string name="filter_quick">छोट्या नोंदी</string>
+    <string name="filter_dates">तारखा</string>
+    <string name="filter_from">पासून</string>
+    <string name="filter_to">पर्यंत</string>
+    <string name="filter_apply">आठवणी दाखवा</string>
+    <string name="timeline_about">Yaadein बद्दल</string>
+    <string name="timeline_layout">मांडणी: %1$s. बदलण्यासाठी टॅप करा</string>
+    <string name="timeline_layout_cards">मोठी कार्डे</string>
+    <string name="timeline_layout_compact">छोटी यादी</string>
+    <string name="timeline_layout_grid">फोटो ग्रिड</string>
+</resources>

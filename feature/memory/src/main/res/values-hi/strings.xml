@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_who_was_there">कौन-कौन था</string>
+    <string name="memory_photos">फ़ोटो और वीडियो</string>
+    <string name="memory_add_photos">जोड़ें</string>
+    <string name="memory_no_photos_hint">अभी कोई फ़ोटो नहीं। फ़ोटो या वीडियो जोड़ने के लिए टैप करें — यह कहानी खुद निखर जाएगी।</string>
+    <string name="memory_cover_cd">%1$s की कवर फ़ोटो</string>
+    <string name="memory_cover_badge">कवर</string>
+    <string name="memory_set_cover">कवर बनाएँ</string>
+    <string name="memory_make_recap">रील बनाएँ</string>
+    <string name="memory_play_video">वीडियो चलाएँ</string>
+    <string name="memory_delete_title">यह याद हटाएँ?</string>
+    <string name="memory_delete_message">यह याद और इसकी फ़ोटो इस फ़ोन से हट जाएँगी। इसे वापस नहीं लाया जा सकता।</string>
+    <string name="viewer_caption_hint">कैप्शन जोड़ें</string>
+    <string name="viewer_of">%2$d में से %1$d</string>
+    <string name="viewer_remove">याद से हटाएँ</string>
+    <string name="viewer_tag_people">लोगों को टैग करें</string>
+    <string name="viewer_previous">पिछला</string>
+    <string name="memory_record_voice">आवाज़ में नोट रिकॉर्ड करें</string>
+    <string name="memory_rerecord_voice">आवाज़ वाला नोट फिर से रिकॉर्ड करें</string>
+    <string name="memory_voice_title">आवाज़ वाला नोट</string>
+    <string name="memory_voice_play">आवाज़ वाला नोट चलाएँ</string>
+    <string name="memory_voice_pause">आवाज़ वाला नोट रोकें</string>
+    <string name="memory_voice_remove">हटाएँ</string>
+    <string name="share_card">तस्वीर बनाकर भेजें</string>
+    <string name="share_card_chooser">यह याद भेजें</string>
+    <string name="share_pdf">PDF के रूप में सहेजें</string>
+    <string name="share_pack">परिवार को भेजें (एन्क्रिप्टेड)</string>
+    <string name="share_pack_password_title">परिवार के लिए पासवर्ड चुनें</string>
+    <string name="share_pack_password_help">फ़ाइल किसी भी तरह भेजें और पासवर्ड अलग से बताएँ। वे इसे Yaadein में सेटिंग, बैकअप और रीस्टोर से जोड़ेंगे।</string>
+    <string name="share_pack_save">सहेजें</string>
+    <string name="share_working">तैयार हो रहा है…</string>
+    <string name="share_saved">सहेज लिया गया।</string>
+    <string name="share_failed">यह नहीं हो पाया। कृपया दोबारा कोशिश करें।</string>
+    <string name="share_footer">Yaadein में सहेजी गई</string>
+    <string name="download_one">फ़ोन में सहेजें</string>
+    <string name="download_all">फ़ोटो और वीडियो डाउनलोड करें</string>
+    <string name="download_saved_gallery">आपके फ़ोन की फ़ोटो में सहेज लिया गया।</string>
+    <string name="download_saved_folder">आपके चुने हुए फ़ोल्डर में सहेज लिया गया।</string>
+    <string name="download_partial">%2$d में से %1$d सहेजे गए। बाकी सहेजे नहीं जा सके।</string>
+    <string name="download_none">इस याद में कोई फ़ोटो या वीडियो नहीं है।</string>
+</resources>

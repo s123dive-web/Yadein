@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_who_was_there">Who was there</string>
+    <string name="memory_photos">Photos and videos</string>
+    <string name="memory_add_photos">Add</string>
+    <string name="memory_no_photos_hint">No photos yet. Tap to add photos or videos — this story will upgrade itself.</string>
+    <string name="memory_cover_cd">Cover photo for %1$s</string>
+    <string name="memory_cover_badge">Cover</string>
+    <string name="memory_set_cover">Use as cover</string>
+    <string name="memory_make_recap">Make a reel</string>
+    <string name="memory_play_video">Play video</string>
+    <string name="memory_delete_title">Delete this memory?</string>
+    <string name="memory_delete_message">The memory and its photos will be removed from this phone. This cannot be undone.</string>
+    <string name="viewer_caption_hint">Add a caption</string>
+    <string name="viewer_of">%1$d of %2$d</string>
+    <string name="viewer_remove">Remove from memory</string>
+    <string name="viewer_tag_people">Tag people</string>
+    <string name="viewer_previous">Previous</string>
+    <string name="memory_record_voice">Record a voice note</string>
+    <string name="memory_rerecord_voice">Record the voice note again</string>
+    <string name="memory_voice_title">Voice note</string>
+    <string name="memory_voice_play">Play voice note</string>
+    <string name="memory_voice_pause">Pause voice note</string>
+    <string name="memory_voice_remove">Remove</string>
+    <string name="share_card">Share as a picture</string>
+    <string name="share_card_chooser">Share this memory</string>
+    <string name="share_pdf">Save as PDF</string>
+    <string name="share_pack">Send to family (encrypted)</string>
+    <string name="share_pack_password_title">Choose a password for the family</string>
+    <string name="share_pack_password_help">Send the file any way you like and tell them the password separately. They add it in Yaadein, Settings, Backup and restore.</string>
+    <string name="share_pack_save">Save</string>
+    <string name="share_working">Preparing…</string>
+    <string name="share_saved">Saved.</string>
+    <string name="share_failed">That didn\'t work. Please try again.</string>
+    <string name="share_footer">Kept with Yaadein</string>
+    <string name="download_one">Save to phone</string>
+    <string name="download_all">Download photos and videos</string>
+    <string name="download_saved_gallery">Saved to your phone\'s photos.</string>
+    <string name="download_saved_folder">Saved to the folder you chose.</string>
+    <string name="download_partial">Saved %1$d of %2$d. The rest could not be saved.</string>
+    <string name="download_none">There are no photos or videos in this memory.</string>
+</resources>

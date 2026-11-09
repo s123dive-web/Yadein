@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_who_was_there">யார் யார் இருந்தார்கள்</string>
+    <string name="memory_photos">படங்களும் வீடியோக்களும்</string>
+    <string name="memory_add_photos">சேர்</string>
+    <string name="memory_no_photos_hint">இன்னும் படங்கள் இல்லை. படங்கள் அல்லது வீடியோக்களைச் சேர்க்க தட்டவும் — இந்தக் கதை தானாகவே மேம்படும்.</string>
+    <string name="memory_cover_cd">%1$s-க்கான அட்டைப் படம்</string>
+    <string name="memory_cover_badge">அட்டைப் படம்</string>
+    <string name="memory_set_cover">அட்டைப் படமாக வை</string>
+    <string name="memory_make_recap">ரீல் உருவாக்கு</string>
+    <string name="memory_play_video">வீடியோவை இயக்கு</string>
+    <string name="memory_delete_title">இந்த நினைவை நீக்கவா?</string>
+    <string name="memory_delete_message">இந்த நினைவும் அதன் படங்களும் இந்த ஃபோனிலிருந்து நீக்கப்படும். இதைத் திரும்பப் பெற முடியாது.</string>
+    <string name="viewer_caption_hint">தலைப்புக் குறிப்பைச் சேர்</string>
+    <string name="viewer_of">%2$d-இல் %1$d</string>
+    <string name="viewer_remove">நினைவிலிருந்து நீக்கு</string>
+    <string name="viewer_tag_people">நபர்களைக் குறியிடு</string>
+    <string name="viewer_previous">முந்தையது</string>
+    <string name="memory_record_voice">குரல் குறிப்பைப் பதிவுசெய்</string>
+    <string name="memory_rerecord_voice">குரல் குறிப்பை மீண்டும் பதிவுசெய்</string>
+    <string name="memory_voice_title">குரல் குறிப்பு</string>
+    <string name="memory_voice_play">குரல் குறிப்பை இயக்கு</string>
+    <string name="memory_voice_pause">குரல் குறிப்பை இடைநிறுத்து</string>
+    <string name="memory_voice_remove">நீக்கு</string>
+    <string name="share_card">படமாகப் பகிர்</string>
+    <string name="share_card_chooser">இந்த நினைவைப் பகிர்</string>
+    <string name="share_pdf">PDF-ஆகச் சேமி</string>
+    <string name="share_pack">குடும்பத்திற்கு அனுப்பு (மறையாக்கம்)</string>
+    <string name="share_pack_password_title">குடும்பத்திற்கான கடவுச்சொல்லைத் தேர்ந்தெடுங்கள்</string>
+    <string name="share_pack_password_help">கோப்பை எப்படி வேண்டுமானாலும் அனுப்புங்கள், கடவுச்சொல்லைத் தனியாகச் சொல்லுங்கள். அவர்கள் அதை Yaadein-இல் அமைப்புகள், காப்புப்பிரதி மற்றும் மீட்டமைப்பு என்பதில் சேர்ப்பார்கள்.</string>
+    <string name="share_pack_save">சேமி</string>
+    <string name="share_working">தயாராகிறது…</string>
+    <string name="share_saved">சேமிக்கப்பட்டது.</string>
+    <string name="share_failed">அது வேலை செய்யவில்லை. மீண்டும் முயலவும்.</string>
+    <string name="share_footer">Yaadein-இல் பாதுகாக்கப்பட்டது</string>
+    <string name="download_one">தொலைபேசியில் சேமி</string>
+    <string name="download_all">படங்கள் மற்றும் வீடியோக்களைப் பதிவிறக்கு</string>
+    <string name="download_saved_gallery">உங்கள் தொலைபேசியின் படங்களில் சேமிக்கப்பட்டது.</string>
+    <string name="download_saved_folder">நீங்கள் தேர்ந்தெடுத்த கோப்புறையில் சேமிக்கப்பட்டது.</string>
+    <string name="download_partial">%2$d இல் %1$d சேமிக்கப்பட்டன. மீதியைச் சேமிக்க முடியவில்லை.</string>
+    <string name="download_none">இந்த நினைவில் படங்கள் அல்லது வீடியோக்கள் இல்லை.</string>
+</resources>

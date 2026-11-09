@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_who_was_there">কে কে ছিলেন</string>
+    <string name="memory_photos">ছবি ও ভিডিও</string>
+    <string name="memory_add_photos">যোগ করুন</string>
+    <string name="memory_no_photos_hint">এখনও কোনো ছবি নেই। ছবি বা ভিডিও যোগ করতে ট্যাপ করুন — গল্পটা নিজেই আরও সুন্দর হয়ে উঠবে।</string>
+    <string name="memory_cover_cd">%1$s-এর কভার ছবি</string>
+    <string name="memory_cover_badge">কভার</string>
+    <string name="memory_set_cover">কভার হিসেবে রাখুন</string>
+    <string name="memory_make_recap">রিল বানান</string>
+    <string name="memory_play_video">ভিডিও চালান</string>
+    <string name="memory_delete_title">এই স্মৃতিটি মুছবেন?</string>
+    <string name="memory_delete_message">স্মৃতি আর তার ছবিগুলো এই ফোন থেকে মুছে যাবে। এটা আর ফেরানো যাবে না।</string>
+    <string name="viewer_caption_hint">একটা ক্যাপশন লিখুন</string>
+    <string name="viewer_of">%2$d-এর মধ্যে %1$d</string>
+    <string name="viewer_remove">স্মৃতি থেকে সরান</string>
+    <string name="viewer_tag_people">মানুষদের ট্যাগ করুন</string>
+    <string name="viewer_previous">আগেরটা</string>
+    <string name="memory_record_voice">ভয়েস নোট রেকর্ড করুন</string>
+    <string name="memory_rerecord_voice">ভয়েস নোট আবার রেকর্ড করুন</string>
+    <string name="memory_voice_title">ভয়েস নোট</string>
+    <string name="memory_voice_play">ভয়েস নোট চালান</string>
+    <string name="memory_voice_pause">ভয়েস নোট থামান</string>
+    <string name="memory_voice_remove">সরান</string>
+    <string name="share_card">ছবি হিসেবে শেয়ার করুন</string>
+    <string name="share_card_chooser">এই স্মৃতিটি শেয়ার করুন</string>
+    <string name="share_pdf">PDF হিসেবে সেভ করুন</string>
+    <string name="share_pack">পরিবারকে পাঠান (এনক্রিপ্ট করা)</string>
+    <string name="share_pack_password_title">পরিবারের জন্য একটা পাসওয়ার্ড বেছে নিন</string>
+    <string name="share_pack_password_help">ফাইলটা যেভাবে খুশি পাঠান, আর পাসওয়ার্ডটা আলাদা করে জানিয়ে দিন। ওঁরা Yaadein-এ সেটিংস, ব্যাকআপ ও রিস্টোর-এ গিয়ে এটা যোগ করবেন।</string>
+    <string name="share_pack_save">সেভ করুন</string>
+    <string name="share_working">তৈরি হচ্ছে…</string>
+    <string name="share_saved">সেভ হয়েছে।</string>
+    <string name="share_failed">হল না। আবার চেষ্টা করুন।</string>
+    <string name="share_footer">Yaadein-এ সাজিয়ে রাখা</string>
+    <string name="download_one">ফোনে সেভ করুন</string>
+    <string name="download_all">ছবি ও ভিডিও ডাউনলোড করুন</string>
+    <string name="download_saved_gallery">আপনার ফোনের ছবিতে সেভ হয়েছে।</string>
+    <string name="download_saved_folder">আপনার বেছে নেওয়া ফোল্ডারে সেভ হয়েছে।</string>
+    <string name="download_partial">%2$d-এর মধ্যে %1$d সেভ হয়েছে। বাকিগুলো সেভ করা যায়নি।</string>
+    <string name="download_none">এই স্মৃতিতে কোনো ছবি বা ভিডিও নেই।</string>
+</resources>

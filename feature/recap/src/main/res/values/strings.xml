@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recap_title">Create a reel</string>
+    <string name="recap_outro">Made with Yaadein</string>
+    <string name="recap_title_person">Moments with %1$s</string>
+    <string name="recap_title_all">Our memories</string>
+    <string name="recap_title_year">Our %1$d</string>
+    <string name="recap_title_year_person">%1$d with %2$s</string>
+    <string name="recap_summary">%1$d photos and clips · about %2$s</string>
+    <string name="recap_empty_title">Nothing to show yet</string>
+    <string name="recap_empty_message">Pick a person, a group or a year that has memories with photos or words.</string>
+    <string name="recap_rendering">Rendering… %1$d%%</string>
+    <string name="recap_rendering_help">You can close the app; a notification shows progress and we\'ll tell you when it\'s ready.</string>
+    <string name="recap_done_title">Your reel is ready</string>
+    <string name="recap_done_text">Saved to Movies / Yaadein.</string>
+    <string name="recap_make_another">Make another</string>
+    <string name="recap_failed_title">Couldn\'t finish the reel</string>
+    <string name="recap_failed_text">%1$s. Try again, or leave out video clips.</string>
+    <string name="recap_render">Create reel</string>
+    <string name="recap_scope">Who or what</string>
+    <string name="scope_all">Everything</string>
+    <string name="recap_year">Year</string>
+    <string name="scope_any_year">Any year</string>
+    <string name="recap_video_title">Title on the first card</string>
+    <string name="recap_theme">Theme</string>
+    <string name="theme_warm">Warm</string>
+    <string name="theme_minimal">Minimal</string>
+    <string name="theme_festive">Festive</string>
+    <string name="theme_classic">Classic Film</string>
+    <string name="recap_music">Music</string>
+    <string name="music_own">Your own audio…</string>
+    <string name="music_none">No music</string>
+    <string name="music_licence">Bundled tracks are original and free to use in your reels.</string>
+    <string name="recap_length">Length</string>
+    <string name="recap_length_seconds">~%1$d s</string>
+    <string name="recap_include_videos">Include video clips</string>
+    <string name="recap_paused">Paused — tap to play</string>
+    <string name="render_channel">Reel creation</string>
+    <string name="render_notification_title">Rendering “%1$s”</string>
+    <string name="render_notification_text">%1$d%% done</string>
+    <string name="render_done_title">“%1$s” is ready</string>
+    <string name="render_done_text">Saved to Movies / Yaadein. Tap to watch.</string>
+    <string name="recap_outro_credit">App designed and built with AI by Suresh Dongardive</string>
+    <string name="recap_done_text_kept">Saved to Movies / Yaadein and kept in Your reels.</string>
+    <string name="reel_play">Play</string>
+    <string name="reels_library_short">Your reels</string>
+    <string name="reels_library_title">Your reels</string>
+    <string name="reels_made_for_you">Made for you</string>
+    <string name="reels_made_for_you_hint">Yaadein keeps three reels ready from your memories and refreshes them as you add more.</string>
+    <string name="reels_auto_empty">They appear here once you have a few memories with photos.</string>
+    <string name="reels_made_by_you">Made by you</string>
+    <string name="reels_made_by_you_hint">The last %1$d reels you create are kept here.</string>
+    <string name="reels_mine_empty">Reels you create will appear here, ready to play and share.</string>
+    <string name="reel_play_named">Play %1$s</string>
+    <string name="reel_share_named">Share %1$s</string>
+    <string name="reel_delete_named">Delete %1$s</string>
+    <string name="reel_delete_title">Delete “%1$s”?</string>
+    <string name="reel_delete_text">It is removed from Yaadein. A copy saved in Movies / Yaadein stays there.</string>
+    <string name="reel_delete">Delete</string>
+    <string name="reel_missing_title">This reel is no longer here</string>
+    <string name="reel_missing_text">It may have been deleted, or replaced by a newer reel.</string>
+    <string name="auto_reel_recent">Recent moments</string>
+    <string name="auto_reel_latest">Latest memories</string>
+    <string name="auto_reel_everything">Best of our memories</string>
+    <string name="auto_reel_this_month">This month, years ago</string>
+    <string name="auto_reel_years">Through the years</string>
+    <string name="auto_reel_notification">Preparing reels for you…</string>
+    <string name="recap_none_selected_title">No photos chosen</string>
+    <string name="recap_none_selected_message">Choose at least one photo or clip for the reel.</string>
+    <string name="recap_photos_selected">%1$d of %2$d photos and clips</string>
+    <string name="recap_photos_hint">Tap a photo in the strip above to take it out, or choose exactly which ones to use.</string>
+    <string name="recap_choose_photos">Choose photos</string>
+    <string name="recap_choose_done">Done</string>
+    <string name="recap_auto_pick">Auto-pick</string>
+    <string name="recap_select_all">Select all</string>
+    <string name="recap_clear_all">Clear</string>
+    <string name="recap_limit">A reel can hold up to %1$d photos and clips.</string>
+    <string name="recap_remove_photo">Remove from reel</string>
+    <string name="recap_eta_minutes">About %1$d min left</string>
+    <string name="recap_eta_seconds">About %1$d s left</string>
+    <string name="track_warm">Warm</string>
+    <string name="track_minimal">Minimal</string>
+    <string name="track_festive">Festive</string>
+    <string name="track_classic">Classic film</string>
+    <string name="track_lullaby">Lullaby</string>
+    <string name="track_celebration">Dhol celebration</string>
+    <string name="track_acoustic">Acoustic</string>
+    <string name="track_upbeat">Upbeat</string>
+
+    <!-- Your songs: music from the phone for reels -->
+    <string name="music_library_chip">Your songs (%1$d)</string>
+    <string name="music_library_title">Your songs</string>
+    <string name="music_add_from_phone">Add from phone</string>
+    <string name="music_adding">Reading…</string>
+    <string name="music_search_hint">Search your songs</string>
+    <string name="music_clear_search">Clear search</string>
+    <string name="music_library_empty">Add songs from your phone once and they stay here for every reel — Hindi, Marathi, anything you have downloaded. Nothing is copied or uploaded.</string>
+    <string name="music_not_on_phone">Nothing called “%1$s” in your songs yet. Download it in your music app, then tap Add from phone.</string>
+    <string name="music_suggested">Popular reel songs</string>
+    <string name="music_suggested_hide">Hide suggestions</string>
+    <string name="music_suggested_hint">Songs often used in reels. Tap one to look for it in your songs.</string>
+    <string name="music_suggested_hindi">Hindi</string>
+    <string name="music_suggested_marathi">Marathi</string>
+    <string name="music_song_missing">“%1$s” can’t be opened any more and was removed from your songs.</string>
+    <string name="music_dismiss">OK</string>
+    <string name="music_remove_named">Remove %1$s from your songs</string>
+    <!-- Song titles are names, not copy: shown as-is in every language. "Title — Artist". -->
+    <string-array name="suggested_songs_hindi" translatable="false">
+        <item>Kesariya — Arijit Singh</item>
+        <item>Chaleya — Arijit Singh</item>
+        <item>Apna Bana Le — Arijit Singh</item>
+        <item>Raataan Lambiyan — Jubin Nautiyal</item>
+        <item>Satranga — Arijit Singh</item>
+        <item>Tere Vaaste — Varun Jain</item>
+        <item>Sajni — Arijit Singh</item>
+        <item>Husn — Anuv Jain</item>
+        <item>Ilahi — Arijit Singh</item>
+        <item>Phir Se Ud Chala — Mohit Chauhan</item>
+        <item>Tauba Tauba — Karan Aujla</item>
+        <item>Aaj Ki Raat — Madhubanti Bagchi</item>
+    </string-array>
+    <string-array name="suggested_songs_marathi" translatable="false">
+        <item>Zingaat — Ajay-Atul</item>
+        <item>Yad Lagla — Ajay Gogavale</item>
+        <item>Sairat Zaala Ji — Ajay Gogavale</item>
+        <item>Baharla Ha Madhumas — Shreya Ghoshal</item>
+        <item>Chandra — Shreya Ghoshal</item>
+        <item>Apsara Aali — Bela Shende</item>
+        <item>Gulabi Sadi — Sanju Rathod</item>
+        <item>Mann Udhan Varyache — Shankar Mahadevan</item>
+    </string-array>
+</resources>

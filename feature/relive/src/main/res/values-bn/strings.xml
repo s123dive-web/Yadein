@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relive_title">ফিরে দেখা</string>
+    <string name="relive_surprise">একটা চমক দিন</string>
+    <string name="relive_make_recap">রিল বানান</string>
+    <string name="relive_birthdays">সামনে আসছে</string>
+    <string name="relive_birthday_today">আজ %1$s-এর জন্মদিন</string>
+    <string name="relive_birthday_in">%1$s · %2$d দিন</string>
+    <string name="relive_on_this_day">আজকের দিনে</string>
+    <string name="relive_on_this_day_empty">আগের বছরগুলোর এই দিনের কিছু এখনও নেই। আজকের মুহূর্তটা যোগ করুন, পরের বছর এখানে দেখা যাবে।</string>
+    <string name="relive_years">আপনার বছরগুলো</string>
+    <string name="relive_random_title">এলোমেলোভাবে বাছা একটি স্মৃতি</string>
+    <string name="relive_another">আরেকটা</string>
+    <string name="relive_empty_title">ফিরে দেখার মতো এখনও কিছু নেই</string>
+    <string name="relive_empty_message">কয়েকটা স্মৃতি জমলে এখানেই থাকবে “আজকের দিনে”, চমক আর বছরের গল্প।</string>
+    <string name="notification_channel_on_this_day">আজকের দিনে</string>
+    <string name="notification_on_this_day_title">আজকের দিনে: %1$s</string>
+    <string name="notification_on_this_day_text">%1$s · %2$s</string>
+    <string name="shake_hint">অ্যাপের যেকোনো জায়গায় ফোন ঝাঁকালেই পাবেন একটি এলোমেলো স্মৃতি।</string>
+    <string name="yearly_title">%2$s-এর সঙ্গে %1$d</string>
+    <string name="yearly_all_title">আপনার %1$d</string>
+    <string name="yearly_memories">%1$dটি স্মৃতি</string>
+    <string name="yearly_photos">%1$dটি ছবি</string>
+    <string name="yearly_places">%1$dটি জায়গা</string>
+    <string name="yearly_top_people">সবচেয়ে বেশি সময় কাটিয়েছেন</string>
+    <string name="yearly_first">বছরের প্রথম স্মৃতি</string>
+    <string name="yearly_last">বছরের শেষ স্মৃতি</string>
+    <string name="yearly_empty">%1$d সালের কোনো স্মৃতি এখনও নেই।</string>
+    <plurals name="notification_years_ago"><item quantity="one">%1$d বছর আগে আজকের দিনে</item><item quantity="other">%1$d বছর আগে আজকের দিনে</item></plurals>
+    <string name="relive_your_reels">আপনার রিল</string>
+    <string name="notification_birthday_today">আজ %1$s-এর জন্মদিন 🎂</string>
+    <string name="notification_birthday_tomorrow">কাল %1$s-এর জন্মদিন</string>
+    <string name="notification_birthday_text">একসঙ্গে কাটানো স্মৃতি দিয়ে একটা রিল বানিয়ে শেয়ার করুন।</string>
+    <string name="notification_prompt_title">এই সপ্তাহে সাজিয়ে রাখার মতো একটি গল্প</string>
+    <string name="relive_made_for_you">আপনার জন্য বানানো</string>
+    <string name="relive_play_reel">রিল চালান</string>
+    <string name="relive_record_story">রেকর্ড করুন</string>
+    <string name="relive_places">জায়গা</string>
+    <string name="relive_this_week">এই সপ্তাহে, আগের বছরগুলোতে</string>
+    <string name="relive_this_month">এই মাসে, আগের বছরগুলোতে</string>
+    <plurals name="relive_years_ago"><item quantity="one">%1$d বছর আগে</item><item quantity="other">%1$d বছর আগে</item></plurals>
+    <string name="relive_shake_hint_title">ফোন ঝাঁকান, সারপ্রাইজ পান</string>
+    <string name="relive_got_it">ঠিক আছে</string>
+    <string name="relive_birthday_reel">রিল বানান</string>
+    <string name="relive_story_memory_of_day">আজকের স্মৃতি</string>
+    <string name="relive_story_spotlight">%1$s-এর সঙ্গে এই মুহূর্তগুলো মনে পড়ে?</string>
+    <string name="relive_story_open">খুলুন</string>
+    <string name="relive_story_see_person">ওঁর গল্প দেখুন</string>
+    <string name="relive_story_page">গল্প, পাতা %1$d / %2$d</string>
+</resources>

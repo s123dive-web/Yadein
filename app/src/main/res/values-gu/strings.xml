@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_timeline">ટાઈમલાઈન</string>
+    <string name="nav_people">લોકો</string>
+    <string name="nav_create">બનાવો</string>
+    <string name="nav_relive">ફરી જીવો</string>
+    <string name="nav_settings">સેટિંગ્સ</string>
+    <string name="crash_notice_title">ગયા વખતે Yaadein અચાનક બંધ થઈ ગયું હતું</string>
+    <string name="crash_notice_body">એક નાની ટેકનિકલ નોંધ ફક્ત આ ફોનમાં જ સાચવવામાં આવી છે. તેને ડેવલપર સાથે શેર કરવાથી સમસ્યા સુધારવામાં મદદ મળે છે; બીજું કંઈ પણ તમારા ફોનની બહાર જતું નથી.</string>
+    <string name="crash_notice_share">રિપોર્ટ શેર કરો</string>
+    <string name="crash_notice_dismiss">બંધ કરો</string>
+    <string name="share_target_label">Yaadein માં સાચવો</string>
+    <string name="backup_nudge_title">તમારી યાદો સુરક્ષિત રાખો</string>
+    <string name="backup_nudge_text">તે ફક્ત આ ફોનમાં જ છે. સાપ્તાહિક બેકઅપ ચાલુ કરો જેથી ફોન ખોવાય તો પણ યાદો ન ખોવાય.</string>
+    <string name="backup_nudge_action">બેકઅપ સેટ કરો</string>
+    <string name="backup_nudge_later">પછી</string>
+    <string name="widget_name">Yaadein: આજના દિવસે</string>
+    <string name="widget_description">આજના દિવસની યાદો, જન્મદિવસ અને વાર્તાના સવાલો, ઝડપથી ઉમેરવાના બટન સાથે.</string>
+    <string name="widget_add">યાદ ઉમેરો</string>
+    <string name="widget_title_default">Yaadein</string>
+    <string name="widget_open_app">આ ભરવા માટે એક વાર Yaadein ખોલો</string>
+    <string name="widget_title_on_this_day">આજના દિવસે</string>
+    <string name="widget_title_birthday">જન્મદિવસ</string>
+    <string name="widget_birthday_today">આજે %1$s નો જન્મદિવસ છે</string>
+    <string name="widget_birthday_tomorrow">કાલે %1$s નો જન્મદિવસ છે</string>
+    <string name="widget_birthday_hidden">કોઈનો જન્મદિવસ આવી રહ્યો છે</string>
+    <string name="widget_title_prompt">સાચવવા જેવી વાર્તા</string>
+    <string name="widget_prompt_hidden">એક વાર્તા કહેવાની રાહ જોઈ રહી છે</string>
+    <plurals name="widget_years_ago">
+        <item quantity="one">%1$d વર્ષ પહેલાં: %2$s</item>
+        <item quantity="other">%1$d વર્ષ પહેલાં: %2$s</item>
+    </plurals>
+    <plurals name="widget_memories_waiting">
+        <item quantity="one">આજના દિવસની %1$d યાદ</item>
+        <item quantity="other">આજના દિવસની %1$d યાદો</item>
+    </plurals>
+</resources>

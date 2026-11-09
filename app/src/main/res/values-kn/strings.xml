@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_timeline">ಕಾಲರೇಖೆ</string>
+    <string name="nav_people">ಜನರು</string>
+    <string name="nav_create">ರಚಿಸಿ</string>
+    <string name="nav_relive">ಮತ್ತೆ ನೆನಪಿಸಿ</string>
+    <string name="nav_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="crash_notice_title">ಕಳೆದ ಬಾರಿ Yaadein ಅನಿರೀಕ್ಷಿತವಾಗಿ ಮುಚ್ಚಿಹೋಯಿತು</string>
+    <string name="crash_notice_body">ಒಂದು ಚಿಕ್ಕ ತಾಂತ್ರಿಕ ಟಿಪ್ಪಣಿ ಈ ಫೋನ್‌ನಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗಿದೆ. ಅದನ್ನು ಡೆವಲಪರ್ ಜೊತೆ ಹಂಚಿಕೊಂಡರೆ ಸಮಸ್ಯೆ ಸರಿಪಡಿಸಲು ಸಹಾಯವಾಗುತ್ತದೆ; ಬೇರೆ ಏನೂ ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಹೊರಗೆ ಹೋಗುವುದಿಲ್ಲ.</string>
+    <string name="crash_notice_share">ವರದಿ ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="crash_notice_dismiss">ಬೇಡ</string>
+    <string name="share_target_label">Yaadein ನಲ್ಲಿ ಉಳಿಸಿ</string>
+    <string name="backup_nudge_title">ನಿಮ್ಮ ನೆನಪುಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿಡಿ</string>
+    <string name="backup_nudge_text">ಅವು ಈ ಫೋನ್‌ನಲ್ಲಿ ಮಾತ್ರ ಇವೆ. ಫೋನ್ ಕಳೆದುಹೋದರೂ ನೆನಪುಗಳು ಕಳೆದುಹೋಗದಂತೆ ವಾರದ ಬ್ಯಾಕಪ್ ಆನ್ ಮಾಡಿ.</string>
+    <string name="backup_nudge_action">ಬ್ಯಾಕಪ್ ಹೊಂದಿಸಿ</string>
+    <string name="backup_nudge_later">ನಂತರ</string>
+    <string name="widget_name">Yaadein: ಈ ದಿನ</string>
+    <string name="widget_description">ಈ ದಿನದ ನೆನಪುಗಳು, ಹುಟ್ಟುಹಬ್ಬಗಳು ಮತ್ತು ಕಥೆಯ ಸುಳಿವುಗಳು, ಬೇಗ ಸೇರಿಸುವ ಬಟನ್ ಜೊತೆಗೆ.</string>
+    <string name="widget_add">ನೆನಪು ಸೇರಿಸಿ</string>
+    <string name="widget_title_default">Yaadein</string>
+    <string name="widget_open_app">ಇದನ್ನು ತುಂಬಲು Yaadein ಅನ್ನು ಒಮ್ಮೆ ತೆರೆಯಿರಿ</string>
+    <string name="widget_title_on_this_day">ಈ ದಿನ</string>
+    <string name="widget_title_birthday">ಹುಟ್ಟುಹಬ್ಬ</string>
+    <string name="widget_birthday_today">ಇಂದು %1$s ಅವರ ಹುಟ್ಟುಹಬ್ಬ</string>
+    <string name="widget_birthday_tomorrow">ನಾಳೆ %1$s ಅವರ ಹುಟ್ಟುಹಬ್ಬ</string>
+    <string name="widget_birthday_hidden">ಯಾರದೋ ಹುಟ್ಟುಹಬ್ಬ ಹತ್ತಿರ ಬರುತ್ತಿದೆ</string>
+    <string name="widget_title_prompt">ಉಳಿಸಬೇಕಾದ ಒಂದು ಕಥೆ</string>
+    <string name="widget_prompt_hidden">ಒಂದು ಕಥೆ ಹೇಳಲು ಕಾಯುತ್ತಿದೆ</string>
+    <plurals name="widget_years_ago">
+        <item quantity="one">%1$d ವರ್ಷದ ಹಿಂದೆ: %2$s</item>
+        <item quantity="other">%1$d ವರ್ಷಗಳ ಹಿಂದೆ: %2$s</item>
+    </plurals>
+    <plurals name="widget_memories_waiting">
+        <item quantity="one">ಈ ದಿನದ %1$d ನೆನಪು</item>
+        <item quantity="other">ಈ ದಿನದ %1$d ನೆನಪುಗಳು</item>
+    </plurals>
+</resources>

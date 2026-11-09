@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lock_title">ફરી સ્વાગત છે</string>
+    <string name="lock_subtitle">તમારો 6 અંકનો PIN નાખો અથવા ફિંગરપ્રિન્ટ વાપરો</string>
+    <string name="lock_wrong_pin">આ PIN ખોટો છે. ફરી પ્રયાસ કરો.</string>
+    <plurals name="lock_wrong_pin_wipe">
+        <item quantity="one">ખોટો PIN. બધું ભૂંસાઈ જાય તે પહેલાં %1$d પ્રયાસ બાકી છે.</item>
+        <item quantity="other">ખોટો PIN. બધું ભૂંસાઈ જાય તે પહેલાં %1$d પ્રયાસ બાકી છે.</item>
+    </plurals>
+    <string name="lock_wait_seconds">ઘણા બધા પ્રયાસો થયા. %1$d સેકન્ડ રાહ જુઓ.</string>
+    <string name="lock_wait_minutes">ઘણા બધા પ્રયાસો થયા. %1$d મિનિટ રાહ જુઓ.</string>
+    <string name="lock_wiped">ઘણી વાર ખોટો PIN નાખવાથી બધી યાદો ભૂંસાઈ ગઈ.</string>
+    <string name="lock_use_biometric">ફિંગરપ્રિન્ટ કે ચહેરો વાપરો</string>
+    <string name="lock_backspace">છેલ્લો અંક કાઢો</string>
+    <string name="lock_pin_entered">%2$d માંથી %1$d અંક નાખ્યા</string>
+    <string name="lock_biometric_title">Yaadein અનલૉક કરો</string>
+    <string name="lock_biometric_subtitle">તમારી યાદો ફક્ત તમારી છે</string>
+    <string name="lock_biometric_negative">PIN વાપરો</string>
+    <string name="setup_choose_title">6 અંકનો PIN પસંદ કરો</string>
+    <string name="setup_confirm_title">ફરી એક વાર નાખો</string>
+    <string name="setup_pin_help">તમારો PIN Yaadein ખોલે છે. કંઈ પણ ક્યાંય મોકલાતું નથી, તેથી તેને રીસેટ કરવાનો કોઈ રસ્તો નથી — તેને સુરક્ષિત જગ્યાએ લખી રાખો.</string>
+    <string name="setup_mismatch">PIN મેળ ખાતા નથી. ચાલો ફરીથી શરૂ કરીએ.</string>
+    <string name="setup_biometric_title">ઝડપથી અનલૉક કરો</string>
+    <string name="setup_biometric_help">એપ ખોલવા માટે ફિંગરપ્રિન્ટ કે ચહેરો વાપરો. તમારો PIN હંમેશા બેકઅપ તરીકે ચાલશે.</string>
+    <string name="setup_biometric_unavailable">આ ફોનમાં ફિંગરપ્રિન્ટ કે ફેસ અનલૉક સેટ કરેલું નથી. તમે પછીથી સેટિંગ્સમાં તેને ચાલુ કરી શકો છો.</string>
+    <string name="setup_biometric_switch">ફિંગરપ્રિન્ટ કે ચહેરો વાપરો</string>
+    <string name="setup_finish">યાદો સાચવવાનું શરૂ કરો</string>
+    <string name="lock_migration_note">વધુ મજબૂત સુરક્ષા ચાલુ કરવા માટે એક વાર તમારો PIN નાખો. આ પછી ફક્ત તમારો PIN કે ફિંગરપ્રિન્ટ જ તમારી યાદો ખોલી શકશે.</string>
+    <string name="lock_biometric_changed">તમારી ફિંગરપ્રિન્ટ કે ચહેરો બદલાયો છે. તમારો PIN નાખો, પછી સેટિંગ્સમાં ફિંગરપ્રિન્ટ ફરી ચાલુ કરો.</string>
+    <string name="lock_device_subtitle">તમારા ફોનના સ્ક્રીન લૉકથી અનલૉક કરો</string>
+    <string name="lock_device_button">અનલૉક કરો</string>
+    <string name="lock_device_unavailable">આ ફોનમાં સ્ક્રીન લૉક નથી, તેથી Yaadein લૉક રહી શકતું નથી. સેટિંગ્સ, સુરક્ષામાં Yaadein PIN સેટ કરો.</string>
+    <string name="lock_device_open_anyway">Yaadein ખોલો</string>
+    <string name="lock_biometric_enroll_title">તમારી ફિંગરપ્રિન્ટની પુષ્ટિ કરો</string>
+    <string name="lock_biometric_enroll_subtitle">જેથી આગલી વખતે તે તમારી યાદો ખોલી શકે</string>
+    <string name="lock_biometric_cancel">રદ કરો</string>
+    <string name="setup_use_device_lock">તેના બદલે મારા ફોનનું સ્ક્રીન લૉક વાપરો</string>
+    <string name="setup_device_lock_help">સહેલું: યાદ રાખવા માટે નવો PIN નહીં. Yaadein PIN વધુ મજબૂત છે, કારણ કે તે તમારી યાદોને એન્ક્રિપ્ટ પણ કરે છે.</string>
+</resources>

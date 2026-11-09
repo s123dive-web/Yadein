@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_1_title">Keep the days worth keeping</string>
+    <string name="onboarding_1_body">Photos, videos, or just a line like “Goa trip 2024”. Yaadein turns them into a timeline you can wander through.</string>
+    <string name="onboarding_2_title">Private, like a diary</string>
+    <string name="onboarding_2_body">Everything stays on this phone, encrypted and locked with your PIN or fingerprint. No account, no internet, no ads.</string>
+    <string name="onboarding_3_title">Stories about the people you love</string>
+    <string name="onboarding_3_body">Tag family and friends, see your story with each of them, and make reels to share on birthdays.</string>
+    <string name="onboarding_add_first_person">Add your first person</string>
+</resources>

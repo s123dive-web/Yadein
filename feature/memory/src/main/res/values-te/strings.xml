@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="memory_who_was_there">ఎవరెవరు ఉన్నారు</string>
+    <string name="memory_photos">ఫోటోలు, వీడియోలు</string>
+    <string name="memory_add_photos">జోడించండి</string>
+    <string name="memory_no_photos_hint">ఇంకా ఫోటోలు లేవు. ఫోటోలు లేదా వీడియోలు జోడించడానికి నొక్కండి — ఈ కథ దానంతట అదే మెరుగవుతుంది.</string>
+    <string name="memory_cover_cd">%1$s కవర్ ఫోటో</string>
+    <string name="memory_cover_badge">కవర్</string>
+    <string name="memory_set_cover">కవర్‌గా పెట్టండి</string>
+    <string name="memory_make_recap">రీల్ తయారు చేయండి</string>
+    <string name="memory_play_video">వీడియో ప్లే చేయండి</string>
+    <string name="memory_delete_title">ఈ జ్ఞాపకాన్ని తొలగించాలా?</string>
+    <string name="memory_delete_message">ఈ జ్ఞాపకం, దాని ఫోటోలు ఈ ఫోన్ నుండి తీసివేయబడతాయి. దీన్ని తిరిగి తీసుకురాలేము.</string>
+    <string name="viewer_caption_hint">క్యాప్షన్ జోడించండి</string>
+    <string name="viewer_of">%2$dలో %1$d</string>
+    <string name="viewer_remove">జ్ఞాపకం నుండి తీసివేయండి</string>
+    <string name="viewer_tag_people">మనుషులను ట్యాగ్ చేయండి</string>
+    <string name="viewer_previous">మునుపటిది</string>
+    <string name="memory_record_voice">వాయిస్ నోట్ రికార్డ్ చేయండి</string>
+    <string name="memory_rerecord_voice">వాయిస్ నోట్ మళ్ళీ రికార్డ్ చేయండి</string>
+    <string name="memory_voice_title">వాయిస్ నోట్</string>
+    <string name="memory_voice_play">వాయిస్ నోట్ ప్లే చేయండి</string>
+    <string name="memory_voice_pause">వాయిస్ నోట్ ఆపండి</string>
+    <string name="memory_voice_remove">తీసివేయండి</string>
+    <string name="share_card">చిత్రంగా షేర్ చేయండి</string>
+    <string name="share_card_chooser">ఈ జ్ఞాపకాన్ని షేర్ చేయండి</string>
+    <string name="share_pdf">PDFగా సేవ్ చేయండి</string>
+    <string name="share_pack">కుటుంబానికి పంపండి (ఎన్‌క్రిప్ట్ చేసి)</string>
+    <string name="share_pack_password_title">కుటుంబం కోసం ఒక పాస్‌వర్డ్ ఎంచుకోండి</string>
+    <string name="share_pack_password_help">ఫైల్‌ను మీకు నచ్చిన విధంగా పంపండి, పాస్‌వర్డ్‌ను విడిగా చెప్పండి. వారు దాన్ని Yaadein, సెట్టింగ్‌లు, బ్యాకప్ మరియు రీస్టోర్‌లో జోడిస్తారు.</string>
+    <string name="share_pack_save">సేవ్ చేయండి</string>
+    <string name="share_working">సిద్ధం చేస్తోంది…</string>
+    <string name="share_saved">సేవ్ అయింది.</string>
+    <string name="share_failed">అది పని చేయలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.</string>
+    <string name="share_footer">Yaadeinలో దాచుకున్నది</string>
+    <string name="download_one">ఫోన్‌లో సేవ్ చేయండి</string>
+    <string name="download_all">ఫోటోలు, వీడియోలు డౌన్‌లోడ్ చేయండి</string>
+    <string name="download_saved_gallery">మీ ఫోన్ ఫోటోలలో సేవ్ అయింది.</string>
+    <string name="download_saved_folder">మీరు ఎంచుకున్న ఫోల్డర్‌లో సేవ్ అయింది.</string>
+    <string name="download_partial">%2$d లో %1$d సేవ్ అయ్యాయి. మిగతావి సేవ్ కాలేదు.</string>
+    <string name="download_none">ఈ జ్ఞాపకంలో ఫోటోలు లేదా వీడియోలు లేవు.</string>
+</resources>

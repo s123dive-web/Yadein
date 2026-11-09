@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_avatar_of">%1$s ఫోటో</string>
+    <string name="cd_people_in_memory">ఈ జ్ఞాపకంలో ఉన్నవారు: %1$s</string>
+    <string name="cd_memory_card">జ్ఞాపకం: %1$s, %2$s</string>
+    <string name="date_sometime_in">%1$sలో ఎప్పుడో</string>
+    <string name="badge_story">కథ</string>
+    <plurals name="media_count">
+        <item quantity="one">%1$d ఫోటో</item>
+        <item quantity="other">%1$d ఫోటోలు</item>
+    </plurals>
+    <plurals name="memory_count">
+        <item quantity="one">%1$d జ్ఞాపకం</item>
+        <item quantity="other">%1$d జ్ఞాపకాలు</item>
+    </plurals>
+    <string name="action_back">వెనక్కి</string>
+    <string name="action_close">మూసివేయండి</string>
+    <string name="action_save">సేవ్ చేయండి</string>
+    <string name="action_cancel">రద్దు చేయండి</string>
+    <string name="action_delete">తొలగించండి</string>
+    <string name="action_edit">మార్చండి</string>
+    <string name="action_done">అయిపోయింది</string>
+    <string name="action_next">తర్వాత</string>
+    <string name="action_skip">దాటవేయండి</string>
+    <string name="action_retry">మళ్ళీ ప్రయత్నించండి</string>
+    <string name="action_share">షేర్ చేయండి</string>
+    <string name="action_more">మరిన్ని ఎంపికలు</string>
+    <string name="action_add">జోడించండి</string>
+    <string name="relation_family">కుటుంబం</string>
+    <string name="relation_friend">స్నేహితులు</string>
+    <string name="relation_colleague">సహోద్యోగి</string>
+    <string name="relation_other">ఇతర</string>
+    <string name="mood_joyful">ఆనందం</string>
+    <string name="mood_calm">ప్రశాంతం</string>
+    <string name="mood_nostalgic">పాత జ్ఞాపకాలు</string>
+    <string name="mood_proud">గర్వం</string>
+    <string name="mood_funny">సరదా</string>
+    <string name="mood_sad">బాధ</string>
+    <string name="mood_celebration">వేడుక</string>
+    <string name="loading">లోడ్ అవుతోంది…</string>
+    <string name="error_generic">ఏదో పొరపాటు జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి.</string>
+    <string name="today">ఈ రోజు</string>
+    <string name="yesterday">నిన్న</string>
+    <string name="app_credit">Suresh Dongardive AI సహాయంతో రూపొందించి నిర్మించారు</string>
+    <string name="pw_password">పాస్‌వర్డ్</string>
+    <string name="pw_again">పాస్‌వర్డ్ మళ్ళీ</string>
+    <string name="pw_show">పాస్‌వర్డ్ చూపించండి</string>
+    <string name="pw_hide">పాస్‌వర్డ్ దాచండి</string>
+    <string name="pw_too_short">కనీసం %1$d అక్షరాలు</string>
+    <string name="pw_mismatch">పాస్‌వర్డ్‌లు సరిపోలలేదు</string>
+</resources>

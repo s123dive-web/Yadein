@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_avatar_of">%1$s નો ફોટો</string>
+    <string name="cd_people_in_memory">આ યાદમાંના લોકો: %1$s</string>
+    <string name="cd_memory_card">યાદ: %1$s, %2$s</string>
+    <string name="date_sometime_in">%1$s માં ક્યારેક</string>
+    <string name="badge_story">વાર્તા</string>
+    <plurals name="media_count">
+        <item quantity="one">%1$d ફોટો</item>
+        <item quantity="other">%1$d ફોટા</item>
+    </plurals>
+    <plurals name="memory_count">
+        <item quantity="one">%1$d યાદ</item>
+        <item quantity="other">%1$d યાદો</item>
+    </plurals>
+    <string name="action_back">પાછળ</string>
+    <string name="action_close">બંધ કરો</string>
+    <string name="action_save">સાચવો</string>
+    <string name="action_cancel">રદ કરો</string>
+    <string name="action_delete">ડિલીટ કરો</string>
+    <string name="action_edit">ફેરફાર કરો</string>
+    <string name="action_done">થઈ ગયું</string>
+    <string name="action_next">આગળ</string>
+    <string name="action_skip">છોડો</string>
+    <string name="action_retry">ફરી પ્રયાસ કરો</string>
+    <string name="action_share">શેર કરો</string>
+    <string name="action_more">વધુ વિકલ્પો</string>
+    <string name="action_add">ઉમેરો</string>
+    <string name="relation_family">પરિવાર</string>
+    <string name="relation_friend">મિત્ર</string>
+    <string name="relation_colleague">સહકર્મી</string>
+    <string name="relation_other">અન્ય</string>
+    <string name="mood_joyful">આનંદિત</string>
+    <string name="mood_calm">શાંત</string>
+    <string name="mood_nostalgic">જૂની યાદોમાં</string>
+    <string name="mood_proud">ગર્વ</string>
+    <string name="mood_funny">મજેદાર</string>
+    <string name="mood_sad">ઉદાસ</string>
+    <string name="mood_celebration">ઉજવણી</string>
+    <string name="loading">લોડ થઈ રહ્યું છે…</string>
+    <string name="error_generic">કંઈક ખોટું થયું. કૃપા કરીને ફરી પ્રયાસ કરો.</string>
+    <string name="today">આજે</string>
+    <string name="yesterday">ગઈકાલે</string>
+    <string name="app_credit">સુરેશ ડોંગરદિવે દ્વારા AI ની મદદથી ડિઝાઇન અને તૈયાર કરેલ</string>
+    <string name="pw_password">પાસવર્ડ</string>
+    <string name="pw_again">પાસવર્ડ ફરીથી</string>
+    <string name="pw_show">પાસવર્ડ બતાવો</string>
+    <string name="pw_hide">પાસવર્ડ છુપાવો</string>
+    <string name="pw_too_short">ઓછામાં ઓછા %1$d અક્ષર</string>
+    <string name="pw_mismatch">પાસવર્ડ મેળ ખાતા નથી</string>
+</resources>

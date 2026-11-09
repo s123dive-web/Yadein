@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug (sideloaded) builds only: Settings → Update app installs a newer Yaadein APK over this one, keeping all data.
+  Never in release: apps distributed through Google Play may not update themselves, and the release permission list
+  stays USE_BIOMETRIC / POST_NOTIFICATIONS / CAMERA / VIBRATE.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Android 13+: lets later self-updates skip the confirmation screen (Yaadein is then the installer of record). -->
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
+
+    <application>
+        <receiver
+            android:name="com.yaadein.feature.settings.UpdateStatusReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.yaadein.app.UPDATE_STATUS" />
+            </intent-filter>
+        </receiver>
+        <!-- Runs in the new version right after an update: reopen Yaadein (or post a tap-to-open notification). -->
+        <receiver
+            android:name="com.yaadein.feature.settings.UpdatedReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
