@@ -7,6 +7,18 @@ auto-generated recap videos with music. It is built as a sellable Play Store pro
 This file is the single source of truth for architecture, decisions, conventions and phase status.
 Update it at the end of every phase.
 
+## Standing instruction from the owner: always ship to main
+
+The owner has asked, once and for all, that every session finishes like this without being asked again:
+
+1. Commit the work on the session branch and push it.
+2. **Open a pull request into `main`** (this counts as the owner's explicit request for a PR).
+3. **Merge it into `main`** (merge commit, not squash), then confirm the Build APK / iOS runs on `main` started.
+
+Do this whenever a session changes any file in the repo. Skip it only if the owner says not to in that session, or if
+the change is unfinished or its tests fail (then say so instead of merging). Sessions that only answer questions and
+change nothing need no PR. If the session branch's earlier PR is already merged, restart the branch from `main` first.
+
 ---
 
 ## Phase status
