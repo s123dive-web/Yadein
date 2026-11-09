@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yadein — Hindi &amp; Marathi Reels Music</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="top">
+    <h1>🎵 Yadein</h1>
+    <p class="sub">Find Hindi &amp; Marathi music for reels: search the full catalogue, play 30-second previews, and save your picks.</p>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="search" role="tab">🔎 All songs</button>
+      <button class="tab" data-tab="curated" role="tab">⭐ Top 20 reel picks</button>
+      <button class="tab" data-tab="saved" role="tab">❤️ My list <span id="savedCount" class="count">0</span></button>
+      <button class="tab" data-tab="youtube" role="tab">▶️ Full song (YouTube)</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="tab-search" class="panel active">
+      <form id="searchForm" class="searchbar">
+        <input id="q" type="search" placeholder="Search any song, singer or film, e.g. Kesariya, Ajay-Atul, Sairat" autocomplete="off" aria-label="Search songs">
+        <select id="source" aria-label="Music source">
+          <option value="auto">Auto (Apple → Deezer)</option>
+          <option value="itunes">Apple Music</option>
+          <option value="deezer">Deezer</option>
+        </select>
+        <button type="submit">Search</button>
+      </form>
+      <label class="toggle"><input type="checkbox" id="indianOnly" checked> Indian music only (hides English results; Apple only)</label>
+      <div id="quickChips"></div>
+      <p id="status" class="status" aria-live="polite">Search above or tap a singer to explore.</p>
+      <div id="results" class="grid"></div>
+    </section>
+
+    <section id="tab-curated" class="panel">
+      <div class="chips" id="curatedFilter">
+        <button class="chip active" data-lang="All">All</button>
+        <button class="chip" data-lang="Hindi">Hindi</button>
+        <button class="chip" data-lang="Marathi">Marathi</button>
+      </div>
+      <div id="curated" class="grid"></div>
+      <p class="hint">More detail in <a href="REELS_MUSIC.md">REELS_MUSIC.md</a>.</p>
+    </section>
+
+    <section id="tab-saved" class="panel">
+      <div class="row">
+        <button id="copySaved" type="button">📋 Copy list</button>
+        <button id="clearSaved" type="button" class="ghost">Clear</button>
+      </div>
+      <p id="savedEmpty" class="status">Nothing saved yet. Tap ♡ on any song.</p>
+      <div id="saved" class="grid"></div>
+    </section>
+
+    <section id="tab-youtube" class="panel">
+      <p>Paste a YouTube link to play the full song here, using YouTube's official embed player.</p>
+      <form id="ytForm" class="searchbar">
+        <input id="ytUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." aria-label="YouTube link">
+        <button type="submit">Play</button>
+      </form>
+      <p id="ytStatus" class="status"></p>
+      <div id="ytPlayer" class="yt"></div>
+    </section>
+  </main>
+
+  <footer>
+    Previews come from the Apple Music / iTunes and Deezer public APIs. To use a song in a reel, add it from Instagram's own audio library (Reels ▸ 🎵 Audio) so your reel isn't muted.
+  </footer>
+
+  <audio id="player" preload="none"></audio>
+  <script src="assets/songs.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
