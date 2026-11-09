@@ -42,7 +42,9 @@ jobs:
       # other modules ("PersonRepository could not be resolved", run 66) or silently without Hilt ViewModel bindings
       # (v0.1.69 crashed on Settings). A clean build takes a few minutes longer and is always complete.
       - name: Unit tests
-        run: ./gradlew testDebugUnitTest :core:domain:test --no-daemon --no-build-cache --stacktrace
+        # --no-parallel: with parallel module builds the app's Hilt test component intermittently missed a feature
+        # module's @HiltViewModel bindings ("Cannot create an instance of PeopleViewModel"), even with the build cache off.
+        run: ./gradlew testDebugUnitTest :core:domain:test --no-daemon --no-build-cache --no-parallel --stacktrace
       - name: Exported Room schema is committed
         if: always()
         run: |

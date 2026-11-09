@@ -885,6 +885,9 @@ Play Billing for Plus is planned, not built.
 - Root cause is the same flakiness as "PersonRepository could not be resolved" (KSP in `feature:people`, run 66):
   builds that restore outputs from the Gradle build cache. `build.yml` now passes `--no-build-cache` to every Gradle
   call; the APK check stays as a backstop.
+- November 2026 (Fast & Rich, Phase 1 PR): the unit-test step still hit "Cannot create an instance of
+  AutoReelsViewModel / PeopleViewModel" in 2 of 5 clean runs with the cache off, so the step also runs with
+  `--no-parallel` (module tasks one at a time; the Hilt aggregating task then never reads a half-written feature module).
 
 ---
 
