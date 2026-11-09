@@ -140,6 +140,30 @@ object PolishEngine {
         )
     }
 
+    /**
+     * A title for a memory that starts from photos rather than words: the date phrase, then the festival (Phase 3),
+     * the people ("with Aaji", "with Aaji and Rahul", "with Aaji, Rahul and others") or, failing people, the place.
+     * Examples: "October 2024 with Aaji", "Diwali 2024 with Aaji", "20 Dec 2024 in Pune", "Summer 2018".
+     */
+    fun titleFor(
+        date: MemoryDate,
+        place: String = "",
+        peopleNames: List<String> = emptyList(),
+        festival: String? = null,
+        locale: Locale = Locale.getDefault(),
+    ): String {
+        val names = peopleNames.map { it.trim() }.filter { it.isNotEmpty() }.distinct()
+        val head = if (!festival.isNullOrBlank()) "${festival.trim()} ${Dates.start(date).year}" else datePhrase(date, locale)
+        val withWhom = when (names.size) {
+            0 -> null
+            1 -> "with ${names[0]}"
+            2 -> "with ${names[0]} and ${names[1]}"
+            else -> "with ${names[0]}, ${names[1]} and others"
+        }
+        val tail = withWhom ?: place.trim().takeIf { it.isNotEmpty() }?.let { "in $it" }
+        return if (tail == null) head else "$head $tail"
+    }
+
     private fun datePhrase(date: MemoryDate, locale: Locale): String = when (date.kind) {
         DateKind.EXACT -> Dates.label(date, locale).text
         DateKind.MONTH -> Dates.label(date, locale).text

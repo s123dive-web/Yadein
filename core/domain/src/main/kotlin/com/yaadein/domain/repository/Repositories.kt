@@ -1,5 +1,7 @@
 package com.yaadein.domain.repository
 
+import com.yaadein.domain.capture.CaptureStat
+import com.yaadein.domain.capture.KnownPlace
 import com.yaadein.domain.model.DateKind
 import com.yaadein.domain.model.Group
 import com.yaadein.domain.model.Media
@@ -41,6 +43,8 @@ interface PersonRepository {
     /** Pairs of person ids with the number of memories they share; for the relationships map. */
     suspend fun coAppearances(): List<Triple<Long, Long, Int>>
     suspend fun memoryCounts(): Map<Long, Int>
+    /** People tagged on the most recently created memories, most recent first; Quick Save offers them as chips. */
+    suspend fun recentlyTagged(limit: Int): List<Person>
 }
 
 interface GroupRepository {
@@ -82,6 +86,8 @@ interface MemoryRepository {
     suspend fun search(query: String, limit: Int = 50): List<MemoryCard>
     suspend fun details(ids: List<Long>): List<MemoryDetail>
     suspend fun idsFor(filter: TimelineFilter): List<Long>
+    /** Every place name in the vault with a GPS position from one of its photos (for Quick Save's place suggestion). */
+    suspend fun knownPlaces(): List<KnownPlace>
 }
 
 interface MediaRepository {
@@ -93,6 +99,35 @@ interface MediaRepository {
     suspend fun delete(id: Long)
     suspend fun totalBytes(): Long
     suspend fun reorder(memoryId: Long, orderedMediaIds: List<Long>)
+}
+
+/** Capture timings kept on the phone only (see [CaptureStat]). */
+interface CaptureStatsRepository {
+    suspend fun record(stat: CaptureStat): Long
+    /** Sets the Save → last item encrypted duration once the background import of a capture finishes. */
+    suspend fun markEncrypted(id: Long, saveToEncryptedMs: Long)
+    /** Newest first. */
+    suspend fun recent(limit: Int): List<CaptureStat>
+}
+
+/** How many photos of a just-saved memory are still being encrypted, and how many failed; drives the card's progress ring. */
+data class MemoryImportProgress(
+    val total: Int,
+    val done: Int,
+    val failures: List<ImportFailureKind> = emptyList(),
+) {
+    val running: Boolean get() = done < total
+    val fraction: Float get() = if (total == 0) 1f else done.toFloat() / total
+}
+
+/** Why a photo or video could not be added, in domain terms so every screen can explain it. */
+enum class ImportFailureKind { TOO_LARGE, UNSUPPORTED, UNREADABLE, INTEGRITY_CHECK_FAILED, NOT_ENOUGH_SPACE }
+
+/** Background import progress per memory, observable by the timeline. */
+interface ImportProgressSource {
+    fun observeAll(): Flow<Map<Long, MemoryImportProgress>>
+    /** Forgets the failures recorded for [memoryId] (the user has seen them). */
+    fun dismissFailures(memoryId: Long)
 }
 
 interface SettingsRepository {

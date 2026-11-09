@@ -166,4 +166,28 @@
         <item quantity="one">%1$d ఫోటోకు తేదీ లేదు</item>
         <item quantity="other">%1$d ఫోటోలకు తేదీ లేదు</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="quick_save_title">కొత్త జ్ఞాపకం</string>
+    <string name="quick_save_words_title">ఫోటోలు లేవా? అయితే రాసేయండి</string>
+    <string name="quick_save_words_help">ఒక వాక్యం చాలు. “గోవా ట్రిప్ 2024” లేదా “అమ్మమ్మ 80వ పుట్టినరోజు” చక్కటి కార్డ్ అవుతుంది, ఫోటోలు ఎప్పుడైనా జోడించవచ్చు.</string>
+    <string name="quick_save_add_photos">ఫోటోలు జోడించండి</string>
+    <string name="quick_save_title_suggested">మీ ఫోటోల నుండి సూచించాం. మార్చడానికి టైప్ చేయండి.</string>
+    <string name="quick_save_date_from_photos">మీ ఫోటోల నుండి</string>
+    <string name="quick_save_date_guess">ఫోటోల్లో తేదీ లేదు, అందుకే ఈరోజు. మార్చడానికి నొక్కండి.</string>
+    <string name="quick_save_date_edited">మీరు మార్చారు</string>
+    <string name="quick_save_people">వీటిలో ఎవరెవరు ఉన్నారు?</string>
+    <string name="quick_save_all_people">అందరూ (మరో %1$d)</string>
+    <string name="quick_save_add_person">వ్యక్తిని జోడించండి</string>
+    <string name="quick_save_suggested">ముఖం నుండి సూచించాం</string>
+    <string name="quick_save_place_add">ప్రదేశం జోడించండి</string>
+    <string name="quick_save_split_title">ఇవి %1$d వేర్వేరు రోజులు అనిపిస్తోంది</string>
+    <string name="quick_save_split_body">అన్నింటినీ ఒకే జ్ఞాపకంగా ఉంచండి, లేదా ప్రతి రోజుకూ ఒక జ్ఞాపకం చేయండి.</string>
+    <string name="quick_save_split_action">%1$dగా విభజించండి</string>
+    <string name="quick_save_keep_one">ఒకటిగానే ఉంచండి</string>
+    <string name="quick_save_more_ways">జ్ఞాపకం జోడించడానికి మరిన్ని మార్గాలు</string>
+    <string name="quick_save_cover_hint">ఫోటోను కవర్‌గా పెట్టడానికి దాన్ని నొక్కి పట్టుకోండి.</string>
+    <string name="quick_save_cover_badge">కవర్</string>
+    <string name="quick_save_remove">ఈ ఫోటోను తీసివేయండి</string>
+    <string name="quick_save_photo_cd">ఫోటో %1$d, మొత్తం %2$dలో. కవర్‌గా పెట్టడానికి నొక్కి పట్టుకోండి.</string>
+    <string name="quick_save_capped">మొదటి %1$d ఫోటోలు మాత్రమే ఉంచాం. సేవ్ చేసి, మిగతావి జ్ఞాపకం నుండి జోడించండి.</string>
 </resources>

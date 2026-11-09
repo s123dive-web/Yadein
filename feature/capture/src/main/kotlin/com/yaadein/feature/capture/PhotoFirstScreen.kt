@@ -121,6 +121,8 @@ class PhotoFirstViewModel @Inject constructor(
 
     init {
         viewModelScope.launch { personRepository.observeAll().collect { people -> _state.update { it.copy(people = people) } } }
+        // Quick Save's "Looks like N events, split?" hands its photos over instead of opening the picker again.
+        QuickSaveInbox.takeForSplit()?.let { uris -> _state.update { it.copy(picking = false) }; onPicked(uris) }
     }
 
     fun onPicked(uris: List<Uri>) {

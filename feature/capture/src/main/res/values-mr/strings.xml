@@ -166,4 +166,28 @@
         <item quantity="one">%1$d फोटोला तारीख नाही</item>
         <item quantity="other">%1$d फोटोंना तारीख नाही</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="quick_save_title">नवी आठवण</string>
+    <string name="quick_save_words_title">फोटो नाहीत? मग लिहून ठेवा</string>
+    <string name="quick_save_words_help">एक ओळ पुरे. “गोवा ट्रिप 2024” किंवा “आजीचा 80वा” याचं छान कार्ड बनतं, आणि फोटो तुम्ही केव्हाही जोडू शकता.</string>
+    <string name="quick_save_add_photos">फोटो जोडा</string>
+    <string name="quick_save_title_suggested">तुमच्या फोटोंवरून सुचवलं. बदलण्यासाठी टाइप करा.</string>
+    <string name="quick_save_date_from_photos">तुमच्या फोटोंवरून</string>
+    <string name="quick_save_date_guess">फोटोंमध्ये तारीख नव्हती, म्हणून आजची. बदलण्यासाठी टॅप करा.</string>
+    <string name="quick_save_date_edited">तुम्ही बदलली</string>
+    <string name="quick_save_people">यात कोण कोण आहे?</string>
+    <string name="quick_save_all_people">सर्व माणसे (आणखी %1$d)</string>
+    <string name="quick_save_add_person">व्यक्ती जोडा</string>
+    <string name="quick_save_suggested">चेहऱ्यावरून सुचवलं</string>
+    <string name="quick_save_place_add">ठिकाण जोडा</string>
+    <string name="quick_save_split_title">हे %1$d वेगवेगळे दिवस दिसताहेत</string>
+    <string name="quick_save_split_body">सगळं एकाच आठवणीत ठेवा, किंवा प्रत्येक दिवसाची वेगळी आठवण बनवा.</string>
+    <string name="quick_save_split_action">%1$d मध्ये विभागा</string>
+    <string name="quick_save_keep_one">एकच ठेवा</string>
+    <string name="quick_save_more_ways">आठवण जोडण्याचे आणखी मार्ग</string>
+    <string name="quick_save_cover_hint">फोटो कव्हर करण्यासाठी तो दाबून धरा.</string>
+    <string name="quick_save_cover_badge">कव्हर</string>
+    <string name="quick_save_remove">हा फोटो काढा</string>
+    <string name="quick_save_photo_cd">फोटो %1$d, एकूण %2$d पैकी. कव्हर करण्यासाठी दाबून धरा.</string>
+    <string name="quick_save_capped">फक्त पहिले %1$d फोटो ठेवले. जतन करा, मग उरलेले आठवणीतून जोडा.</string>
 </resources>

@@ -49,4 +49,9 @@
     <string name="pw_hide">Hide password</string>
     <string name="pw_too_short">At least %1$d characters</string>
     <string name="pw_mismatch">The passwords don\'t match</string>
+    <string name="cd_import_progress">Adding photos, %1$d%% done</string>
+    <plurals name="cd_import_failed">
+        <item quantity="one">%1$d photo could not be added. Tap for details</item>
+        <item quantity="other">%1$d photos could not be added. Tap for details</item>
+    </plurals>
 </resources>

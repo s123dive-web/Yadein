@@ -34,4 +34,6 @@
         <item quantity="one">ఈ రోజు నాటి %1$d జ్ఞాపకం</item>
         <item quantity="other">ఈ రోజు నాటి %1$d జ్ఞాపకాలు</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="nav_create_more_ways">జ్ఞాపకం జోడించడానికి మరిన్ని మార్గాలు</string>
 </resources>

@@ -30,4 +30,27 @@
     <string name="timeline_layout_cards">ದೊಡ್ಡ ಕಾರ್ಡ್‌ಗಳು</string>
     <string name="timeline_layout_compact">ಚಿಕ್ಕ ಪಟ್ಟಿ</string>
     <string name="timeline_layout_grid">ಫೋಟೋ ಗ್ರಿಡ್</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="import_failed_title">ಕೆಲವು ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು ಆಗಲಿಲ್ಲ</string>
+    <plurals name="import_failed_too_large">
+        <item quantity="one">%1$d ಫೈಲ್ ಗಾತ್ರದ ಮಿತಿ ಮೀರಿತ್ತು (ಫೋಟೋಗಳಿಗೆ 20 MB, ವೀಡಿಯೊಗಳಿಗೆ 200 MB).</item>
+        <item quantity="other">%1$d ಫೈಲ್‌ಗಳು ಗಾತ್ರದ ಮಿತಿ ಮೀರಿದ್ದವು (ಫೋಟೋಗಳಿಗೆ 20 MB, ವೀಡಿಯೊಗಳಿಗೆ 200 MB).</item>
+    </plurals>
+    <plurals name="import_failed_unsupported">
+        <item quantity="one">%1$d ಫೈಲ್ ನಾವು ಓದಬಹುದಾದ ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊ ಅಲ್ಲ.</item>
+        <item quantity="other">%1$d ಫೈಲ್‌ಗಳು ನಾವು ಓದಬಹುದಾದ ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊಗಳಲ್ಲ.</item>
+    </plurals>
+    <plurals name="import_failed_unreadable">
+        <item quantity="one">%1$d ಫೈಲ್ ಅನ್ನು ಗ್ಯಾಲರಿಯಿಂದ ಓದಲು ಆಗಲಿಲ್ಲ.</item>
+        <item quantity="other">%1$d ಫೈಲ್‌ಗಳನ್ನು ಗ್ಯಾಲರಿಯಿಂದ ಓದಲು ಆಗಲಿಲ್ಲ.</item>
+    </plurals>
+    <plurals name="import_failed_integrity">
+        <item quantity="one">%1$d ಫೈಲ್ ಉಳಿಸಿದ ನಂತರ ಪರಿಶೀಲನೆಯಲ್ಲಿ ಸರಿ ಬರಲಿಲ್ಲ, ಹಾಗಾಗಿ ತೆಗೆದುಹಾಕಲಾಯಿತು.</item>
+        <item quantity="other">%1$d ಫೈಲ್‌ಗಳು ಉಳಿಸಿದ ನಂತರ ಪರಿಶೀಲನೆಯಲ್ಲಿ ಸರಿ ಬರಲಿಲ್ಲ, ಹಾಗಾಗಿ ತೆಗೆದುಹಾಕಲಾಯಿತು.</item>
+    </plurals>
+    <plurals name="import_failed_no_space">
+        <item quantity="one">%1$d ವೀಡಿಯೊಗೆ ಫೋನ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಖಾಲಿ ಜಾಗ ಬೇಕು.</item>
+        <item quantity="other">%1$d ವೀಡಿಯೊಗಳಿಗೆ ಫೋನ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಖಾಲಿ ಜಾಗ ಬೇಕು.</item>
+    </plurals>
+    <string name="import_failed_hint">ನೆನಪನ್ನು ತೆರೆದು “ಫೋಟೋ ಸೇರಿಸಿ” ಬಳಸಿ ಅವನ್ನು ಮತ್ತೆ ಆರಿಸಿ.</string>
 </resources>

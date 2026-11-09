@@ -34,4 +34,6 @@
         <item quantity="one">આજના દિવસની %1$d યાદ</item>
         <item quantity="other">આજના દિવસની %1$d યાદો</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="nav_create_more_ways">યાદ ઉમેરવાની વધુ રીતો</string>
 </resources>

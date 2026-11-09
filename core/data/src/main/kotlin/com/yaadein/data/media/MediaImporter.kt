@@ -35,7 +35,34 @@ data class PickedMedia(
     val sizeBytes: Long,
     val takenAtMillis: Long?,
     val displayName: String?,
+    /** EXIF GPS position, when the photo has one. */
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
+
+/** A picked item copied into the app's temp dir, with its `import_jobs` row; the source grant is no longer needed. */
+class StagedMedia(val picked: PickedMedia, val jobId: Long, val temp: File, val memoryId: Long?, val optimize: Boolean, val position: Int)
+
+sealed interface StageOutcome {
+    data class Staged(val media: StagedMedia) : StageOutcome
+    data class Failed(val failure: ImportFailure) : StageOutcome
+}
+
+/** What `import_jobs.picked_json` holds, so a copied file can finish importing after a restart. */
+@kotlinx.serialization.Serializable
+internal data class PickedJson(
+    val uri: String, val isVideo: Boolean, val mimeType: String?, val sizeBytes: Long, val takenAtMillis: Long?,
+    val displayName: String?, val latitude: Double? = null, val longitude: Double? = null, val position: Int = 0,
+) {
+    fun toPicked() = PickedMedia(Uri.parse(uri), isVideo, mimeType, sizeBytes, takenAtMillis, displayName, latitude, longitude)
+
+    companion object {
+        private val json = kotlinx.serialization.json.Json { ignoreUnknownKeys = true; encodeDefaults = true }
+        fun of(p: PickedMedia, position: Int) = PickedJson(p.uri.toString(), p.isVideo, p.mimeType, p.sizeBytes, p.takenAtMillis, p.displayName, p.latitude, p.longitude, position)
+        fun encode(p: PickedMedia, position: Int): String = json.encodeToString(serializer(), of(p, position))
+        fun decode(text: String): PickedJson? = runCatching { json.decodeFromString(serializer(), text) }.getOrNull()
+    }
+}
 
 sealed interface ImportFailure {
     data class TooLarge(val isVideo: Boolean, val sizeBytes: Long, val limitBytes: Long) : ImportFailure
@@ -74,7 +101,8 @@ class MediaImporter @Inject constructor(
     private val resolver get() = context.contentResolver
 
     suspend fun inspect(uri: Uri): PickedMedia? = withContext(Dispatchers.IO) {
-        val mime = resolver.getType(uri)
+        // Some providers answer getType with null; fall back to the file name, then to the first bytes.
+        val mime = resolver.getType(uri) ?: mimeFromName(uri.lastPathSegment) ?: sniffMime(uri)
         var size = -1L
         var name: String? = null
         runCatching {
@@ -97,8 +125,13 @@ class MediaImporter @Inject constructor(
         val isVideo = mime?.startsWith("video/") == true
         val isImage = mime?.startsWith("image/") == true
         if (!isVideo && !isImage) return@withContext null
-        val takenAt = if (isVideo) videoTakenAt(uri) else exifTakenAt(uri)
-        PickedMedia(uri = uri, isVideo = isVideo, mimeType = mime, sizeBytes = size, takenAtMillis = takenAt, displayName = name)
+        val exif = if (isVideo) null else exifOf(uri)
+        val takenAt = if (isVideo) videoTakenAt(uri) else exif?.let(::takenAtOf)
+        val latLong = exif?.latLong
+        PickedMedia(
+            uri = uri, isVideo = isVideo, mimeType = mime, sizeBytes = size, takenAtMillis = takenAt, displayName = name,
+            latitude = latLong?.getOrNull(0), longitude = latLong?.getOrNull(1),
+        )
     }
 
     /**
@@ -121,22 +154,49 @@ class MediaImporter @Inject constructor(
         return null
     }
 
+    /** Stage 1 of an import: copies the source into the temp dir while its grant is valid; nothing heavy happens here. */
+    suspend fun stage(picked: PickedMedia, memoryId: Long?, optimize: Boolean, position: Int): StageOutcome = withContext(Dispatchers.IO) {
+        checkLimit(picked, optimize)?.let { return@withContext StageOutcome.Failed(it) }
+        var job = ImportJobEntity(
+            sourceUri = picked.uri.toString(), memoryId = memoryId, stage = STAGE_COPYING,
+            tempPath = null, targetPath = null, thumbPath = null, sha256 = null, optimize = optimize, createdAt = clock(),
+            pickedJson = PickedJson.encode(picked, position),
+        )
+        job = job.copy(id = db.importJobDao().insert(job))
+        val temp = mediaStore.newTempFile()
+        try {
+            resolver.openInputStream(picked.uri)?.use { input -> FileOutputStream(temp).use { out -> input.copyTo(out) } }
+                ?: return@withContext StageOutcome.Failed(fail(job, ImportFailure.Unreadable("openInputStream returned null"), temp).failure)
+            db.importJobDao().update(job.copy(tempPath = temp.path, stage = STAGE_COPIED))
+            StageOutcome.Staged(StagedMedia(picked, job.id, temp, memoryId, optimize, position))
+        } catch (e: Exception) {
+            StageOutcome.Failed(fail(job, ImportFailure.Unreadable(e.message), temp).failure)
+        }
+    }
+
+    /** Stage 1 and 2 together: the simple call used by profile photos, exports and tests. */
     suspend fun import(picked: PickedMedia, memoryId: Long?, optimize: Boolean, position: Int, caption: String = ""): ImportOutcome =
+        when (val s = stage(picked, memoryId, optimize, position)) {
+            is StageOutcome.Failed -> ImportOutcome.Failed(s.failure)
+            is StageOutcome.Staged -> finish(s.media, caption)
+        }
+
+    /** Stage 2: optimise, thumbnail, encrypt, verify and write the row for a copied file. */
+    suspend fun finish(staged: StagedMedia, caption: String = ""): ImportOutcome =
         withContext(Dispatchers.IO) {
-            checkLimit(picked, optimize)?.let { return@withContext ImportOutcome.Failed(it) }
-            val now = clock()
-            var job = ImportJobEntity(
-                sourceUri = picked.uri.toString(), memoryId = memoryId, stage = STAGE_COPYING,
-                tempPath = null, targetPath = null, thumbPath = null, sha256 = null, optimize = optimize, createdAt = now,
+            val picked = staged.picked
+            val memoryId = staged.memoryId
+            val optimize = staged.optimize
+            val position = staged.position
+            var job = db.importJobDao().get(staged.jobId) ?: ImportJobEntity(
+                id = staged.jobId, sourceUri = picked.uri.toString(), memoryId = memoryId, stage = STAGE_COPIED,
+                tempPath = staged.temp.path, targetPath = null, thumbPath = null, sha256 = null, optimize = optimize, createdAt = clock(),
             )
-            job = job.copy(id = db.importJobDao().insert(job))
-            val temp = mediaStore.newTempFile()
+            val temp = staged.temp
             val targetFile = mediaStore.newMediaFile(if (picked.isVideo) "mp4" else "jpg")
             val thumbFile = mediaStore.newThumbFile()
             try {
-                // 1. copy source to temp
-                resolver.openInputStream(picked.uri)?.use { input -> FileOutputStream(temp).use { out -> input.copyTo(out) } }
-                    ?: return@withContext fail(job, ImportFailure.Unreadable("openInputStream returned null"), temp, targetFile, thumbFile)
+                if (!temp.exists()) return@withContext fail(job, ImportFailure.Unreadable("copy missing"), temp, targetFile, thumbFile)
                 job = job.copy(tempPath = temp.path, targetPath = mediaStore.relativize(targetFile), thumbPath = mediaStore.relativize(thumbFile), stage = STAGE_ENCRYPTING)
                 db.importJobDao().update(job)
 
@@ -169,7 +229,7 @@ class MediaImporter @Inject constructor(
                             encryptedPath = mediaStore.relativize(targetFile), thumbPath = mediaStore.relativize(thumbFile),
                             takenAt = picked.takenAtMillis, durationMs = prepared.durationMs, sizeBytes = sizeBytes,
                             caption = caption, width = prepared.width, height = prepared.height, sha256 = sha,
-                            position = position, createdAt = clock(),
+                            position = position, createdAt = clock(), latitude = picked.latitude, longitude = picked.longitude,
                         ),
                     )
                     if (memoryId != null) {
@@ -197,7 +257,7 @@ class MediaImporter @Inject constructor(
             }
         }
 
-    private suspend fun fail(job: ImportJobEntity, failure: ImportFailure, vararg files: File): ImportOutcome {
+    private suspend fun fail(job: ImportJobEntity, failure: ImportFailure, vararg files: File): ImportOutcome.Failed {
         files.forEach { runCatching { it.delete() } }
         db.importJobDao().update(job.copy(stage = STAGE_FAILED))
         db.importJobDao().delete(job.id)
@@ -208,6 +268,13 @@ class MediaImporter @Inject constructor(
     suspend fun recoverPending() = withContext(Dispatchers.IO) {
         val pending = db.importJobDao().pending()
         for (job in pending) {
+            // A copied file whose heavy work never ran (the app was closed) is finished now: the copy is ours, no grant needed.
+            val copied = job.tempPath?.let(::File)
+            val pickedJson = job.pickedJson?.let { PickedJson.decode(it) }
+            if (job.stage == STAGE_COPIED && copied?.exists() == true && pickedJson != null && job.memoryId != null) {
+                finish(StagedMedia(pickedJson.toPicked(), job.id, copied, job.memoryId, job.optimize, pickedJson.position))
+                continue
+            }
             // A job that reached VERIFYING has a complete encrypted file; finish it if it checks out.
             val target = job.targetPath?.let { mediaStore.file(it) }
             val thumb = job.thumbPath?.let { mediaStore.file(it) }
@@ -358,13 +425,39 @@ class MediaImporter @Inject constructor(
         return thumbnailOf(bmp).also { bmp.recycle() }
     }
 
-    private fun exifTakenAt(uri: Uri): Long? = runCatching {
-        resolver.openInputStream(uri)?.use { input ->
-            val exif = ExifInterface(input)
-            val raw = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL) ?: exif.getAttribute(ExifInterface.TAG_DATETIME) ?: return@use null
-            val dt = LocalDateTime.parse(raw, EXIF_FORMAT)
-            dt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    private fun mimeFromName(name: String?): String? {
+        val ext = name?.substringAfterLast('.', "")?.lowercase().orEmpty()
+        return when (ext) {
+            "jpg", "jpeg" -> "image/jpeg"; "png" -> "image/png"; "webp" -> "image/webp"; "heic", "heif" -> "image/heic"; "gif" -> "image/gif"
+            "mp4", "m4v" -> "video/mp4"; "mov" -> "video/quicktime"; "3gp" -> "video/3gpp"; "webm" -> "video/webm"; "mkv" -> "video/x-matroska"
+            else -> null
         }
+    }
+
+    private fun sniffMime(uri: Uri): String? = runCatching {
+        resolver.openInputStream(uri)?.use { input ->
+            val head = ByteArray(16)
+            val n = input.read(head)
+            if (n < 4) return@use null
+            when {
+                head[0] == 0xFF.toByte() && head[1] == 0xD8.toByte() && head[2] == 0xFF.toByte() -> "image/jpeg"
+                head[0] == 0x89.toByte() && head[1] == 'P'.code.toByte() && head[2] == 'N'.code.toByte() -> "image/png"
+                head[0] == 'G'.code.toByte() && head[1] == 'I'.code.toByte() && head[2] == 'F'.code.toByte() -> "image/gif"
+                n >= 12 && String(head, 0, 4, Charsets.US_ASCII) == "RIFF" && String(head, 8, 4, Charsets.US_ASCII) == "WEBP" -> "image/webp"
+                n >= 12 && String(head, 4, 4, Charsets.US_ASCII) == "ftyp" -> {
+                    val brand = String(head, 8, 4, Charsets.US_ASCII)
+                    if (brand.startsWith("hei") || brand == "mif1" || brand == "msf1") "image/heic" else "video/mp4"
+                }
+                else -> null
+            }
+        }
+    }.getOrNull()
+
+    private fun exifOf(uri: Uri): ExifInterface? = runCatching { resolver.openInputStream(uri)?.use { ExifInterface(it) } }.getOrNull()
+
+    private fun takenAtOf(exif: ExifInterface): Long? = runCatching {
+        val raw = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL) ?: exif.getAttribute(ExifInterface.TAG_DATETIME) ?: return null
+        LocalDateTime.parse(raw, EXIF_FORMAT).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }.getOrNull()
 
     private fun videoTakenAt(uri: Uri): Long? = runCatching {
@@ -390,6 +483,8 @@ class MediaImporter @Inject constructor(
         private const val PHOTO_QUALITY = 90
         private const val THUMB_QUALITY = 82
         const val STAGE_COPYING = "COPYING"
+        /** Copied into the temp dir; the heavy work has not started (schema v2 jobs). */
+        const val STAGE_COPIED = "COPIED"
         const val STAGE_ENCRYPTING = "ENCRYPTING"
         const val STAGE_VERIFYING = "VERIFYING"
         const val STAGE_FAILED = "FAILED"

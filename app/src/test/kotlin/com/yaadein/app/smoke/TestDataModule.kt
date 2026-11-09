@@ -61,6 +61,7 @@ object TestDataModule {
     @Provides @Singleton fun mediaImporter(@ApplicationContext context: Context, db: AppDatabase, mediaStore: MediaStore, memoryRepository: MemoryRepositoryImpl, optimizer: VideoOptimizer, clock: () -> Long): MediaImporter =
         MediaImporter(context, db, mediaStore, memoryRepository, optimizer, clock)
     @Provides @Singleton fun smartPolish(): SmartPolishProvider = NoSmartPolish
+    @Provides @Singleton fun faceIndexer(): com.yaadein.data.media.FaceIndexer = com.yaadein.data.media.FaceIndexer { }
     @Provides @Singleton fun backupManager(@ApplicationContext context: Context, db: AppDatabase, mediaStore: MediaStore, memoryRepository: MemoryRepositoryImpl): BackupManager =
         BackupManager(context, db, mediaStore, memoryRepository)
     @Provides @Singleton fun settingsDataStore(@ApplicationContext context: Context, wrapper: KeyWrapper): DataStore<UserSettings> =

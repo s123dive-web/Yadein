@@ -34,4 +34,6 @@
         <item quantity="one">আজকের দিনের %1$dটি স্মৃতি</item>
         <item quantity="other">আজকের দিনের %1$dটি স্মৃতি</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="nav_create_more_ways">স্মৃতি যোগ করার আরও উপায়</string>
 </resources>

@@ -113,6 +113,11 @@ object DataModule {
     @Singleton
     fun smartPolish(): SmartPolishProvider = GeminiNanoPolish()
 
+    /** Face scan after each import (Settings → Face suggestions); the suggester itself is constructor-injected. */
+    @Provides
+    @Singleton
+    fun faceIndexer(suggester: com.yaadein.data.faces.FaceSuggester): com.yaadein.data.media.FaceIndexer = com.yaadein.data.media.FaceIndexer { suggester.scan(it) }
+
     @Provides
     @Singleton
     fun backupManager(@ApplicationContext context: Context, db: AppDatabase, mediaStore: MediaStore, memoryRepository: MemoryRepositoryImpl): BackupManager =
@@ -138,4 +143,6 @@ abstract class RepositoryModule {
     @Binds abstract fun personRepository(impl: PersonRepositoryImpl): PersonRepository
     @Binds abstract fun groupRepository(impl: GroupRepositoryImpl): GroupRepository
     @Binds abstract fun mediaRepository(impl: MediaRepositoryImpl): MediaRepository
+    @Binds abstract fun captureStatsRepository(impl: com.yaadein.data.repository.CaptureStatsRepositoryImpl): com.yaadein.domain.repository.CaptureStatsRepository
+    @Binds abstract fun importProgress(impl: com.yaadein.data.media.ImportCoordinator): com.yaadein.domain.repository.ImportProgressSource
 }

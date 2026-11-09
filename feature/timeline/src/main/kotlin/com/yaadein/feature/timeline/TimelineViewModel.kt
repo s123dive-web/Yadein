@@ -11,6 +11,8 @@ import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.Group
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.repository.GroupRepository
+import com.yaadein.domain.repository.ImportProgressSource
+import com.yaadein.domain.repository.MemoryImportProgress
 import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.PersonRepository
 import com.yaadein.domain.repository.TimelineFilter
@@ -65,7 +67,14 @@ class TimelineViewModel @Inject constructor(
     personRepository: PersonRepository,
     groupRepository: GroupRepository,
     private val settingsRepository: SettingsRepository,
+    private val importProgress: ImportProgressSource,
 ) : ViewModel() {
+
+    /** Photos still being encrypted (or failed) per memory, for the card's ring and badge. */
+    val imports: StateFlow<Map<Long, MemoryImportProgress>> = importProgress.observeAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    fun dismissImportFailures(memoryId: Long) = importProgress.dismissFailures(memoryId)
 
     /** Cards, compact list or photo grid; remembered across launches. */
     val layout: StateFlow<TimelineLayout> = settingsRepository.settings.map { it.timelineLayout }

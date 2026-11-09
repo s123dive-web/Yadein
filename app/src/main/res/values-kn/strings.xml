@@ -34,4 +34,6 @@
         <item quantity="one">ಈ ದಿನದ %1$d ನೆನಪು</item>
         <item quantity="other">ಈ ದಿನದ %1$d ನೆನಪುಗಳು</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="nav_create_more_ways">ನೆನಪು ಸೇರಿಸಲು ಇನ್ನಷ್ಟು ದಾರಿಗಳು</string>
 </resources>

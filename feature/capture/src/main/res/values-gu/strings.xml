@@ -166,4 +166,28 @@
         <item quantity="one">%1$d ફોટાની કોઈ તારીખ નથી</item>
         <item quantity="other">%1$d ફોટાની કોઈ તારીખ નથી</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="quick_save_title">નવી યાદ</string>
+    <string name="quick_save_words_title">ફોટા નથી? તો લખી નાખો</string>
+    <string name="quick_save_words_help">એક લાઇન બસ છે. “ગોવા ટ્રિપ 2024” કે “બાનો 80મો” સરસ કાર્ડ બની જાય છે, અને ફોટા તમે ગમે ત્યારે ઉમેરી શકો છો.</string>
+    <string name="quick_save_add_photos">ફોટા ઉમેરો</string>
+    <string name="quick_save_title_suggested">તમારા ફોટા પરથી સૂચવ્યું. બદલવા માટે ટાઇપ કરો.</string>
+    <string name="quick_save_date_from_photos">તમારા ફોટા પરથી</string>
+    <string name="quick_save_date_guess">ફોટામાં તારીખ નહોતી, એટલે આજની. બદલવા માટે ટૅપ કરો.</string>
+    <string name="quick_save_date_edited">તમે બદલી</string>
+    <string name="quick_save_people">આમાં કોણ કોણ છે?</string>
+    <string name="quick_save_all_people">બધા લોકો (વધુ %1$d)</string>
+    <string name="quick_save_add_person">વ્યક્તિ ઉમેરો</string>
+    <string name="quick_save_suggested">ચહેરા પરથી સૂચવ્યું</string>
+    <string name="quick_save_place_add">જગ્યા ઉમેરો</string>
+    <string name="quick_save_split_title">લાગે છે કે આ %1$d જુદા જુદા દિવસો છે</string>
+    <string name="quick_save_split_body">બધું એક જ યાદમાં રાખો, કે દરેક દિવસની અલગ યાદ બનાવો.</string>
+    <string name="quick_save_split_action">%1$d માં વહેંચો</string>
+    <string name="quick_save_keep_one">એક જ રાખો</string>
+    <string name="quick_save_more_ways">યાદ ઉમેરવાની વધુ રીતો</string>
+    <string name="quick_save_cover_hint">ફોટાને કવર બનાવવા માટે તેને દબાવી રાખો.</string>
+    <string name="quick_save_cover_badge">કવર</string>
+    <string name="quick_save_remove">આ ફોટો કાઢો</string>
+    <string name="quick_save_photo_cd">ફોટો %1$d, કુલ %2$d માંથી. કવર બનાવવા દબાવી રાખો.</string>
+    <string name="quick_save_capped">ફક્ત પહેલા %1$d ફોટા રાખ્યા. સાચવો, પછી બાકીના યાદમાંથી ઉમેરો.</string>
 </resources>

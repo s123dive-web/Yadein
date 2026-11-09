@@ -30,4 +30,27 @@
     <string name="timeline_layout_cards">मोठी कार्डे</string>
     <string name="timeline_layout_compact">छोटी यादी</string>
     <string name="timeline_layout_grid">फोटो ग्रिड</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="import_failed_title">काही फोटो जोडता आले नाहीत</string>
+    <plurals name="import_failed_too_large">
+        <item quantity="one">%1$d फाइल आकाराच्या मर्यादेपेक्षा मोठी होती (फोटोसाठी 20 MB, व्हिडिओसाठी 200 MB).</item>
+        <item quantity="other">%1$d फाइली आकाराच्या मर्यादेपेक्षा मोठ्या होत्या (फोटोसाठी 20 MB, व्हिडिओसाठी 200 MB).</item>
+    </plurals>
+    <plurals name="import_failed_unsupported">
+        <item quantity="one">%1$d फाइल आम्हाला वाचता येईल असा फोटो किंवा व्हिडिओ नाही.</item>
+        <item quantity="other">%1$d फाइली आम्हाला वाचता येतील असे फोटो किंवा व्हिडिओ नाहीत.</item>
+    </plurals>
+    <plurals name="import_failed_unreadable">
+        <item quantity="one">%1$d फाइल गॅलरीतून वाचता आली नाही.</item>
+        <item quantity="other">%1$d फाइली गॅलरीतून वाचता आल्या नाहीत.</item>
+    </plurals>
+    <plurals name="import_failed_integrity">
+        <item quantity="one">%1$d फाइल जतन केल्यानंतर तपासणीत उतरली नाही, म्हणून काढून टाकली.</item>
+        <item quantity="other">%1$d फाइली जतन केल्यानंतर तपासणीत उतरल्या नाहीत, म्हणून काढून टाकल्या.</item>
+    </plurals>
+    <plurals name="import_failed_no_space">
+        <item quantity="one">%1$d व्हिडिओसाठी फोनमध्ये आणखी मोकळी जागा हवी.</item>
+        <item quantity="other">%1$d व्हिडिओंसाठी फोनमध्ये आणखी मोकळी जागा हवी.</item>
+    </plurals>
+    <string name="import_failed_hint">आठवण उघडा आणि “फोटो जोडा” वापरून ते पुन्हा निवडा.</string>
 </resources>

@@ -163,4 +163,23 @@ class MemoryRepositoryTest {
     fun `random memory is null when the library is empty`() = runTest {
         assertNull(memories.random())
     }
+
+    @Test
+    fun `recently tagged people follow the newest memories and known places come from located photos`() = runTest {
+        val a = people.upsert(Person(name = "Aai"))
+        val b = people.upsert(Person(name = "Baba"))
+        val c = people.upsert(Person(name = "Neha", relation = Relation.FRIEND))
+        now = 1_000L; val first = memories.create(memory("Old", LocalDate.of(2023, 1, 1)), listOf(c))
+        now = 2_000L; memories.create(memory("Middle", LocalDate.of(2024, 1, 1), place = "Pune"), listOf(a, b))
+        now = 3_000L; val newest = memories.create(memory("New", LocalDate.of(2024, 6, 1), place = "Lonavala"), listOf(b))
+        assertEquals(listOf("Baba", "Aai", "Neha"), people.recentlyTagged(6).map { it.name })
+        assertEquals(listOf("Baba", "Aai"), people.recentlyTagged(2).map { it.name })
+        assertTrue(memories.knownPlaces().isEmpty())
+        db.mediaDao().insert(com.yaadein.data.db.entity.MediaEntity(memoryId = newest, kind = "PHOTO", encryptedPath = "m1", thumbPath = "t1", takenAt = null, durationMs = null, sizeBytes = 1, caption = "", width = 1, height = 1, sha256 = "x", position = 0, createdAt = 1, latitude = 18.75, longitude = 73.41))
+        db.mediaDao().insert(com.yaadein.data.db.entity.MediaEntity(memoryId = first, kind = "PHOTO", encryptedPath = "m2", thumbPath = "t2", takenAt = null, durationMs = null, sizeBytes = 1, caption = "", width = 1, height = 1, sha256 = "y", position = 0, createdAt = 1, latitude = 10.0, longitude = 10.0))
+        val places = memories.knownPlaces()
+        assertEquals(1, places.size) // "Old" has no place name, so its located photo does not count
+        assertEquals("Lonavala", places.single().name)
+        assertEquals(18.75, places.single().latitude, 1e-9)
+    }
 }

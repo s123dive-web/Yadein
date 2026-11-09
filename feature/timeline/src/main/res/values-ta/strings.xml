@@ -30,4 +30,27 @@
     <string name="timeline_layout_cards">பெரிய அட்டைகள்</string>
     <string name="timeline_layout_compact">சுருக்கமான பட்டியல்</string>
     <string name="timeline_layout_grid">படக் கட்டம்</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="import_failed_title">சில படங்களைச் சேர்க்க முடியவில்லை</string>
+    <plurals name="import_failed_too_large">
+        <item quantity="one">%1$d கோப்பு அளவு வரம்பை மீறியது (படங்களுக்கு 20 MB, வீடியோக்களுக்கு 200 MB).</item>
+        <item quantity="other">%1$d கோப்புகள் அளவு வரம்பை மீறின (படங்களுக்கு 20 MB, வீடியோக்களுக்கு 200 MB).</item>
+    </plurals>
+    <plurals name="import_failed_unsupported">
+        <item quantity="one">%1$d கோப்பு நாங்கள் படிக்கக்கூடிய படமோ வீடியோவோ அல்ல.</item>
+        <item quantity="other">%1$d கோப்புகள் நாங்கள் படிக்கக்கூடிய படங்களோ வீடியோக்களோ அல்ல.</item>
+    </plurals>
+    <plurals name="import_failed_unreadable">
+        <item quantity="one">%1$d கோப்பை கேலரியிலிருந்து படிக்க முடியவில்லை.</item>
+        <item quantity="other">%1$d கோப்புகளை கேலரியிலிருந்து படிக்க முடியவில்லை.</item>
+    </plurals>
+    <plurals name="import_failed_integrity">
+        <item quantity="one">%1$d கோப்பு சேமித்த பிறகு சரிபார்ப்பில் தேறவில்லை, அதனால் நீக்கப்பட்டது.</item>
+        <item quantity="other">%1$d கோப்புகள் சேமித்த பிறகு சரிபார்ப்பில் தேறவில்லை, அதனால் நீக்கப்பட்டன.</item>
+    </plurals>
+    <plurals name="import_failed_no_space">
+        <item quantity="one">%1$d வீடியோவுக்கு போனில் மேலும் காலி இடம் தேவை.</item>
+        <item quantity="other">%1$d வீடியோக்களுக்கு போனில் மேலும் காலி இடம் தேவை.</item>
+    </plurals>
+    <string name="import_failed_hint">நினைவைத் திறந்து “படங்கள் சேர்” மூலம் அவற்றை மீண்டும் தேர்ந்தெடுங்கள்.</string>
 </resources>

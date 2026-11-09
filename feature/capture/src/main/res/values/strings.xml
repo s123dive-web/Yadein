@@ -166,4 +166,29 @@
         <item quantity="one">%1$d photo has no date</item>
         <item quantity="other">%1$d photos have no date</item>
     </plurals>
+
+    <!-- Quick Save: tap +, pick photos, Save -->
+    <string name="quick_save_title">New memory</string>
+    <string name="quick_save_words_title">No photos? Write it instead</string>
+    <string name="quick_save_words_help">One line is enough. “Goa trip 2024” or “Aaji\'s 80th” becomes a proper card, and you can add photos any time.</string>
+    <string name="quick_save_add_photos">Add photos</string>
+    <string name="quick_save_title_suggested">Suggested from your photos. Type to change it.</string>
+    <string name="quick_save_date_from_photos">From your photos</string>
+    <string name="quick_save_date_guess">No date in the photos, so today. Tap to change.</string>
+    <string name="quick_save_date_edited">Changed by you</string>
+    <string name="quick_save_people">Who is in these?</string>
+    <string name="quick_save_all_people">All people (%1$d more)</string>
+    <string name="quick_save_add_person">Add person</string>
+    <string name="quick_save_suggested">Suggested from a face</string>
+    <string name="quick_save_place_add">Add a place</string>
+    <string name="quick_save_split_title">Looks like %1$d different days</string>
+    <string name="quick_save_split_body">Keep everything as one memory, or make one memory per day.</string>
+    <string name="quick_save_split_action">Split into %1$d</string>
+    <string name="quick_save_keep_one">Keep as one</string>
+    <string name="quick_save_more_ways">More ways to add a memory</string>
+    <string name="quick_save_cover_hint">Long-press a photo to make it the cover.</string>
+    <string name="quick_save_cover_badge">Cover</string>
+    <string name="quick_save_remove">Remove this photo</string>
+    <string name="quick_save_photo_cd">Photo %1$d of %2$d. Long-press to make it the cover.</string>
+    <string name="quick_save_capped">Only the first %1$d photos were kept. Save, then add the rest from the memory.</string>
 </resources>

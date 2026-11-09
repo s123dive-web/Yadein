@@ -51,6 +51,22 @@
             <string>%1$d நினைவுகள் உருவாக்கப்படும்</string>
         </dict>
     </dict>
+    <key>cd_import_failed</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d படத்தைச் சேர்க்க முடியவில்லை. விவரங்களுக்குத் தட்டவும்</string>
+            <key>other</key>
+            <string>%1$d படங்களைச் சேர்க்க முடியவில்லை. விவரங்களுக்குத் தட்டவும்</string>
+        </dict>
+    </dict>
     <key>faces_pending</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -81,6 +97,86 @@
             <string>%1$d படத்தில் காணப்பட்டது</string>
             <key>other</key>
             <string>%1$d படங்களில் காணப்பட்டது</string>
+        </dict>
+    </dict>
+    <key>import_failed_integrity</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d கோப்பு சேமித்த பிறகு சரிபார்ப்பில் தேறவில்லை, அதனால் நீக்கப்பட்டது.</string>
+            <key>other</key>
+            <string>%1$d கோப்புகள் சேமித்த பிறகு சரிபார்ப்பில் தேறவில்லை, அதனால் நீக்கப்பட்டன.</string>
+        </dict>
+    </dict>
+    <key>import_failed_no_space</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d வீடியோவுக்கு போனில் மேலும் காலி இடம் தேவை.</string>
+            <key>other</key>
+            <string>%1$d வீடியோக்களுக்கு போனில் மேலும் காலி இடம் தேவை.</string>
+        </dict>
+    </dict>
+    <key>import_failed_too_large</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d கோப்பு அளவு வரம்பை மீறியது (படங்களுக்கு 20 MB, வீடியோக்களுக்கு 200 MB).</string>
+            <key>other</key>
+            <string>%1$d கோப்புகள் அளவு வரம்பை மீறின (படங்களுக்கு 20 MB, வீடியோக்களுக்கு 200 MB).</string>
+        </dict>
+    </dict>
+    <key>import_failed_unreadable</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d கோப்பை கேலரியிலிருந்து படிக்க முடியவில்லை.</string>
+            <key>other</key>
+            <string>%1$d கோப்புகளை கேலரியிலிருந்து படிக்க முடியவில்லை.</string>
+        </dict>
+    </dict>
+    <key>import_failed_unsupported</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d கோப்பு நாங்கள் படிக்கக்கூடிய படமோ வீடியோவோ அல்ல.</string>
+            <key>other</key>
+            <string>%1$d கோப்புகள் நாங்கள் படிக்கக்கூடிய படங்களோ வீடியோக்களோ அல்ல.</string>
         </dict>
     </dict>
     <key>lock_wrong_pin_wipe</key>

@@ -91,6 +91,9 @@ data class Media(
     val sha256: String,
     val position: Int = 0,
     val createdAt: Long = 0,
+    /** EXIF GPS position when the photo had one. */
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
 
 /** A memory together with everything the timeline card needs. */

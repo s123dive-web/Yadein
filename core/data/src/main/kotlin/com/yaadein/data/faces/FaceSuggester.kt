@@ -77,6 +77,38 @@ class FaceSuggester @Inject constructor(private val db: AppDatabase, private val
     }
 
     /**
+     * People whose confirmed face cluster matches a face in a photo that is not in the vault yet (Quick Save's chips).
+     * [open] gives the photo's bytes (a content URI the user just picked). Nothing is stored; the user still taps to tag.
+     */
+    suspend fun suggestPeople(open: () -> java.io.InputStream?): Set<Long> = withContext(Dispatchers.Default) {
+        val known = db.faceDao().all().filter { it.confirmed && it.suggestedPersonId != null && it.embedding.size == FaceFeatures.DIMENSIONS * 4 }
+        if (known.isEmpty()) return@withContext emptySet()
+        val bytes = runCatching { open()?.use { it.readBytes() } }.getOrNull() ?: return@withContext emptySet()
+        val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
+        var sample = 1
+        while (maxOf(opts.outWidth, opts.outHeight) / sample > 1024) sample *= 2
+        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = sample }) ?: return@withContext emptySet()
+        try {
+            val faces = runCatching { detector.process(InputImage.fromBitmap(bmp, 0)).await() }.getOrNull() ?: return@withContext emptySet()
+            val found = HashSet<Long>()
+            for (face in faces) {
+                val box = face.boundingBox
+                if (box.width() < 24 || box.height() < 24) continue
+                val leftEye = face.getLandmark(FaceLandmark.LEFT_EYE)?.position
+                val rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE)?.position
+                val emb = if (leftEye != null && rightEye != null) alignedEmbedding(bmp, leftEye.x, leftEye.y, rightEye.x, rightEye.y)
+                else embed(bmp, box.left, box.top, box.right, box.bottom)
+                val best = known.minByOrNull { FaceClustering.cosineDistance(it.embedding.toFloats(), emb) } ?: continue
+                if (FaceClustering.cosineDistance(best.embedding.toFloats(), emb) <= FaceFeatures.THRESHOLD) best.suggestedPersonId?.let(found::add)
+            }
+            found
+        } finally {
+            bmp.recycle()
+        }
+    }
+
+    /**
      * Rotates and scales the face so the eyes are level and a fixed distance apart, then describes the 64×64 grey crop
      * with [FaceFeatures]. Alignment matters more than anything else for telling people apart.
      */

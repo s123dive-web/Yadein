@@ -48,4 +48,10 @@
     <string name="pw_hide">கடவுச்சொல்லை மறை</string>
     <string name="pw_too_short">குறைந்தது %1$d எழுத்துகள்</string>
     <string name="pw_mismatch">கடவுச்சொற்கள் பொருந்தவில்லை</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="cd_import_progress">படங்கள் சேர்க்கப்படுகின்றன, %1$d%% முடிந்தது</string>
+    <plurals name="cd_import_failed">
+        <item quantity="one">%1$d படத்தைச் சேர்க்க முடியவில்லை. விவரங்களுக்குத் தட்டவும்</item>
+        <item quantity="other">%1$d படங்களைச் சேர்க்க முடியவில்லை. விவரங்களுக்குத் தட்டவும்</item>
+    </plurals>
 </resources>

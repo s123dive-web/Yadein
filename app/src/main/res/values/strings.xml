@@ -35,4 +35,5 @@
         <item quantity="one">%1$d memory from this day</item>
         <item quantity="other">%1$d memories from this day</item>
     </plurals>
+    <string name="nav_create_more_ways">More ways to add a memory</string>
 </resources>

@@ -34,4 +34,6 @@
         <item quantity="one">आजच्या दिवसाची %1$d आठवण</item>
         <item quantity="other">आजच्या दिवसाच्या %1$d आठवणी</item>
     </plurals>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="nav_create_more_ways">आठवण जोडण्याचे आणखी मार्ग</string>
 </resources>

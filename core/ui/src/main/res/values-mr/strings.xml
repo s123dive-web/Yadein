@@ -48,4 +48,10 @@
     <string name="pw_hide">पासवर्ड लपवा</string>
     <string name="pw_too_short">किमान %1$d अक्षरे</string>
     <string name="pw_mismatch">पासवर्ड जुळत नाहीत</string>
+    <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
+    <string name="cd_import_progress">फोटो जोडत आहोत, %1$d%% झाले</string>
+    <plurals name="cd_import_failed">
+        <item quantity="one">%1$d फोटो जोडता आला नाही. तपशिलासाठी टॅप करा</item>
+        <item quantity="other">%1$d फोटो जोडता आले नाहीत. तपशिलासाठी टॅप करा</item>
+    </plurals>
 </resources>

@@ -20,6 +20,10 @@ import com.yaadein.feature.capture.PhotoFirstScreen
 import com.yaadein.feature.capture.PhotoFirstUiState
 import com.yaadein.feature.capture.QuickCaptureScreen
 import com.yaadein.feature.capture.QuickCaptureUiState
+import com.yaadein.feature.capture.QuickSaveScreen
+import com.yaadein.feature.capture.QuickSaveUiState
+import com.yaadein.domain.capture.DateSource
+import com.yaadein.domain.polish.PolishEngine as Polish
 import com.yaadein.feature.capture.TextOnlyScreen
 import com.yaadein.feature.capture.TextOnlyUiState
 import com.yaadein.feature.people.GroupEditScreen
@@ -123,4 +127,54 @@ fun Storage() = ScreenshotTheme {
     Surface {
         StorageScreen(state = StorageUiState(mediaBytes = 1_340_000_000, databaseBytes = 12_000_000, photoCount = 412, videoCount = 23, freeBytes = 48_000_000_000, loading = false), onBack = {}, onOptimize = {}, onErase = {})
     }
+}
+
+private fun quickSaveState(): QuickSaveUiState {
+    val items = (1..6).map { PickedMedia(Uri.parse("content://preview/q$it"), it == 6, if (it == 6) "video/mp4" else "image/jpeg", 1000, null, null) }
+    return QuickSaveUiState(
+        items = items,
+        coverIndex = 1,
+        date = Dates.exact(LocalDate.of(2024, 10, 31)),
+        dateSource = DateSource.PHOTOS,
+        suggestedTitle = "31 Oct 2024 with Aai and Baba",
+        people = Fixtures.people,
+        shortlist = listOf(Fixtures.aai, Fixtures.baba, Fixtures.aaji, Fixtures.priya),
+        selectedPeople = setOf(1, 2),
+        suggestedPeople = setOf(5),
+        place = "Pune",
+        splitInto = 3,
+    )
+}
+
+@Composable
+private fun QuickSavePreviewContent(state: QuickSaveUiState = quickSaveState()) = Surface {
+    QuickSaveScreen(
+        state = state,
+        onBack = {}, onTitle = {}, onDate = {}, onTogglePerson = {}, onAddPerson = {}, onPlace = {}, onOpenPlace = {}, onSetCover = {}, onRemove = {},
+        onSplit = {}, onDismissSplit = {}, onWords = {}, onAddPhotos = {}, onMoreWays = {}, onDismissRejected = {}, onSave = {},
+    )
+}
+
+@PreviewTest
+@Preview(name = "Quick Save", device = PHONE, showBackground = true)
+@Composable
+fun QuickSave() = ScreenshotTheme { QuickSavePreviewContent() }
+
+@PreviewTest
+@Preview(name = "Quick Save dark", device = PHONE, showBackground = true)
+@Composable
+fun QuickSaveDark() = ScreenshotTheme(dark = true) { QuickSavePreviewContent() }
+
+@PreviewTest
+@Preview(name = "Quick Save Easy mode", device = PHONE, showBackground = true)
+@Composable
+fun QuickSaveEasy() = ScreenshotTheme(easy = true) { QuickSavePreviewContent() }
+
+@PreviewTest
+@Preview(name = "Quick Save words only", device = PHONE, showBackground = true)
+@Composable
+fun QuickSaveWordsOnly() = ScreenshotTheme {
+    QuickSavePreviewContent(
+        QuickSaveUiState(words = "aaji ka 80th birthday, pune", polished = Polish.polish("aaji ka 80th birthday, pune", LocalDate.of(2026, 11, 5)), people = Fixtures.people),
+    )
 }
