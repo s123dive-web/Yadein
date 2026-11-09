@@ -85,6 +85,7 @@ class QuickSaveFlowTest {
         coordinator = ImportCoordinator(importer, settings, FaceIndexer { })
         stats = CaptureStatsRepositoryImpl(db)
         QuickSaveInbox.take(); QuickSaveInbox.takeForSplit()
+        serve = FakeMediaProvider.install(context)
         // FileProvider caches its roots per authority while every Robolectric test gets a fresh cache dir.
         runCatching { androidx.core.content.FileProvider::class.java.getDeclaredField("sCache").apply { isAccessible = true }.get(null).let { (it as HashMap<*, *>).clear() } }
     }
@@ -108,16 +109,25 @@ class QuickSaveFlowTest {
         lockState = AppLockState(),
     )
 
-    /** A small JPEG with an EXIF date, registered on the shadow content resolver. */
+    private lateinit var serve: (String, ByteArray) -> Uri
+
+    /** A small JPEG with an EXIF date, served by a gallery-like content provider. */
     private fun photo(name: String, date: String): Uri {
         val bmp = Bitmap.createBitmap(160, 120, Bitmap.Config.ARGB_8888).apply { eraseColor(0xFF4466AA.toInt()) }
         val file = File(context.cacheDir, name).apply { outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 85, it) } }
         ExifInterface(file).apply { setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL, date); saveAttributes() }
-        val uri = Uri.parse("content://test/$name")
-        val bytes = file.readBytes()
-        // Inspect and import each open the stream once; register enough copies.
-        repeat(4) { Shadows.shadowOf(context.contentResolver).registerInputStream(uri, bytes.inputStream()) }
-        return uri
+        return serve(name, file.readBytes())
+    }
+
+    /** Waits for [condition], pumping both Compose and the main looper (Room resumes coroutines there). */
+    private fun await(timeoutMs: Long, condition: () -> Boolean) {
+        val deadline = System.currentTimeMillis() + timeoutMs
+        while (!condition()) {
+            if (System.currentTimeMillis() > deadline) throw AssertionError("condition not met within $timeoutMs ms")
+            Shadows.shadowOf(android.os.Looper.getMainLooper()).idle()
+            compose.waitForIdle()
+            Thread.sleep(10)
+        }
     }
 
     private fun tenPhotosOverTwoDays(): List<Uri> =
@@ -136,7 +146,7 @@ class QuickSaveFlowTest {
                 QuickSaveRoute(onBack = {}, onSaved = { savedId = it }, onAddPerson = {}, onSplit = {}, hubActions = CaptureActions({}, {}, {}, {}, {}), viewModel = vm)
             }
         }
-        compose.waitUntil(10_000) { vm.state.value.items.size == 10 && !vm.state.value.inspecting }
+        await(10_000) { vm.state.value.items.size == 10 && !vm.state.value.inspecting }
         val state = vm.state.value
         assertEquals(DateSource.PHOTOS, state.dateSource)
         assertEquals(Dates.exact(LocalDate.of(2024, 12, 20)), state.date)
@@ -146,7 +156,7 @@ class QuickSaveFlowTest {
 
         val started = System.nanoTime()
         compose.onAllNodesWithText("Save")[0].performClick()
-        compose.waitUntil(5_000) { savedId != null }
+        await(5_000) { savedId != null }
         val elapsedMs = (System.nanoTime() - started) / 1_000_000
         assertTrue("Save took $elapsedMs ms", elapsedMs < 500)
 
@@ -160,8 +170,8 @@ class QuickSaveFlowTest {
         assertTrue(stat.tapToSaveMs >= 4_000)
 
         // Encryption finishes in the background and marks the capture complete.
-        compose.waitUntil(30_000) { runBlocking { db.mediaDao().forMemory(savedId!!).size == 10 } }
-        compose.waitUntil(10_000) { runBlocking { stats.recent(1).single().saveToEncryptedMs != null } }
+        await(30_000) { runBlocking { db.mediaDao().forMemory(savedId!!).size == 10 } }
+        await(10_000) { runBlocking { stats.recent(1).single().saveToEncryptedMs != null } }
         assertEquals(savedId, runBlocking { memories.observeCards(TimelineFilter()).first() }.first().memory.id)
     }
 
@@ -169,11 +179,10 @@ class QuickSaveFlowTest {
     fun `photos shared from another app land in Quick Save without a picker`() {
         val uris = listOf(photo("share_1.jpg", "2024:10:31 18:00:00"), photo("share_2.jpg", "2024:10:31 19:00:00"))
         val intent = Intent(Intent.ACTION_SEND_MULTIPLE).setType("image/*").putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
-        uris.forEach { Shadows.shadowOf(context.contentResolver).registerInputStream(it, File(context.cacheDir, it.lastPathSegment!!).readBytes().inputStream()) }
         runBlocking { assertEquals(2, SharedMediaInbox.receive(context, intent)) }
         val vm = viewModel(fromShare = true)
         compose.setContent { YaadeinTheme { QuickSaveRoute(onBack = {}, onSaved = {}, onAddPerson = {}, onSplit = {}, hubActions = CaptureActions({}, {}, {}, {}, {}), viewModel = vm) } }
-        compose.waitUntil(10_000) { vm.state.value.items.size == 2 && !vm.state.value.inspecting }
+        await(10_000) { vm.state.value.items.size == 2 && !vm.state.value.inspecting }
         assertEquals(CaptureEntry.SHARE, vm.state.value.entry)
         assertEquals(Dates.exact(LocalDate.of(2024, 10, 31)), vm.state.value.date)
         assertTrue(SharedMediaInbox.pending.value.isEmpty())
@@ -191,7 +200,7 @@ class QuickSaveFlowTest {
         compose.waitForIdle()
         compose.onNodeWithText("Goa Getaway, 2024").assertIsDisplayed()
         vm.save { savedId = it }
-        compose.waitUntil(5_000) { savedId != null }
+        await(5_000) { savedId != null }
         val saved = runBlocking { memories.get(savedId!!) }!!
         assertEquals("Goa Getaway, 2024", saved.title)
         assertEquals(MemoryType.TEXT_ONLY, saved.type)

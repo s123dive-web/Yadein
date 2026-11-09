@@ -101,7 +101,8 @@ class MediaImporter @Inject constructor(
     private val resolver get() = context.contentResolver
 
     suspend fun inspect(uri: Uri): PickedMedia? = withContext(Dispatchers.IO) {
-        val mime = resolver.getType(uri)
+        // Some providers answer getType with null; fall back to the file name, then to the first bytes.
+        val mime = resolver.getType(uri) ?: mimeFromName(uri.lastPathSegment) ?: sniffMime(uri)
         var size = -1L
         var name: String? = null
         runCatching {
@@ -423,6 +424,34 @@ class MediaImporter @Inject constructor(
         val bmp = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888).apply { eraseColor(0xFF334155.toInt()) }
         return thumbnailOf(bmp).also { bmp.recycle() }
     }
+
+    private fun mimeFromName(name: String?): String? {
+        val ext = name?.substringAfterLast('.', "")?.lowercase().orEmpty()
+        return when (ext) {
+            "jpg", "jpeg" -> "image/jpeg"; "png" -> "image/png"; "webp" -> "image/webp"; "heic", "heif" -> "image/heic"; "gif" -> "image/gif"
+            "mp4", "m4v" -> "video/mp4"; "mov" -> "video/quicktime"; "3gp" -> "video/3gpp"; "webm" -> "video/webm"; "mkv" -> "video/x-matroska"
+            else -> null
+        }
+    }
+
+    private fun sniffMime(uri: Uri): String? = runCatching {
+        resolver.openInputStream(uri)?.use { input ->
+            val head = ByteArray(16)
+            val n = input.read(head)
+            if (n < 4) return@use null
+            when {
+                head[0] == 0xFF.toByte() && head[1] == 0xD8.toByte() && head[2] == 0xFF.toByte() -> "image/jpeg"
+                head[0] == 0x89.toByte() && head[1] == 'P'.code.toByte() && head[2] == 'N'.code.toByte() -> "image/png"
+                head[0] == 'G'.code.toByte() && head[1] == 'I'.code.toByte() && head[2] == 'F'.code.toByte() -> "image/gif"
+                n >= 12 && String(head, 0, 4, Charsets.US_ASCII) == "RIFF" && String(head, 8, 4, Charsets.US_ASCII) == "WEBP" -> "image/webp"
+                n >= 12 && String(head, 4, 4, Charsets.US_ASCII) == "ftyp" -> {
+                    val brand = String(head, 8, 4, Charsets.US_ASCII)
+                    if (brand.startsWith("hei") || brand == "mif1" || brand == "msf1") "image/heic" else "video/mp4"
+                }
+                else -> null
+            }
+        }
+    }.getOrNull()
 
     private fun exifOf(uri: Uri): ExifInterface? = runCatching { resolver.openInputStream(uri)?.use { ExifInterface(it) } }.getOrNull()
 

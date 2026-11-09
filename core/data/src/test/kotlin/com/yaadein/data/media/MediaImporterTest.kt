@@ -149,8 +149,9 @@ class MediaImporterTest {
 
     @Test
     fun `inspect reads the EXIF date and GPS position`() = runTest {
-        val (uri, bytes) = jpegWithExif("gps.jpg", 18.5204, 73.8567, "2024:12:20 10:30:00")
-        Shadows.shadowOf(context.contentResolver).registerInputStream(uri, bytes.inputStream())
+        val (_, bytes) = jpegWithExif("gps.jpg", 18.5204, 73.8567, "2024:12:20 10:30:00")
+        // A real provider: mime type, size and a fresh stream per open, like a gallery app.
+        val uri = FakeMediaProvider.install(context)("gps.jpg", bytes)
         val picked = importer.inspect(uri)
         assertNotNull(picked)
         assertNotNull(picked!!.takenAtMillis)
