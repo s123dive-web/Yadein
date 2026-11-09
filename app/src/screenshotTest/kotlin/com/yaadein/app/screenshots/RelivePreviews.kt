@@ -13,6 +13,10 @@ import com.yaadein.feature.people.RelationshipsUiState
 import com.yaadein.feature.people.RelationshipsViewModel
 import com.yaadein.feature.people.TogetherScreen
 import com.yaadein.feature.people.TogetherUiState
+import com.yaadein.domain.relive.RewindItem
+import com.yaadein.domain.relive.RewindResult
+import com.yaadein.domain.relive.RewindScope
+import com.yaadein.feature.relive.PlaceHighlight
 import com.yaadein.feature.relive.ReliveScreen
 import com.yaadein.feature.relive.ReliveUiState
 import com.yaadein.feature.relive.YearHighlight
@@ -29,7 +33,15 @@ private const val PHONE = "spec:width=411dp,height=891dp"
 fun Relive() = ScreenshotTheme {
     Surface {
         ReliveScreen(
-            state = ReliveUiState(loading = false, onThisDay = Fixtures.cards.take(1), years = listOf(YearHighlight(2026, 8), YearHighlight(2025, 14), YearHighlight(2024, 11)), upcomingBirthdays = listOf(Fixtures.rahul to 12, Fixtures.aai to 25), totalMemories = 33),
+            state = ReliveUiState(
+                loading = false,
+                rewind = RewindResult(RewindScope.WEEK, Fixtures.cards.take(1).map { RewindItem(it, 2) }),
+                years = listOf(YearHighlight(2026, 8), YearHighlight(2025, 14), YearHighlight(2024, 11)),
+                places = listOf(PlaceHighlight("Pune", 12), PlaceHighlight("Goa", 5)),
+                upcomingBirthdays = listOf(Fixtures.rahul to 3, Fixtures.aai to 25),
+                totalMemories = 33,
+                showShakeHint = true,
+            ),
             onOpenMemory = {}, onOpenPerson = {}, onSurprise = {}, onDismissRandom = {}, onRecap = {}, onYear = {}, contentPadding = PaddingValues(),
         )
     }

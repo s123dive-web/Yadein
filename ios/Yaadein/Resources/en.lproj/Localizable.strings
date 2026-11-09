@@ -500,10 +500,12 @@
 "relationships_title" = "Who appears together";
 "relive_another" = "Another one";
 "relive_birthday_in" = "%1$@ · %2$d days";
+"relive_birthday_reel" = "Make a reel";
 "relive_birthday_today" = "%1$@'s birthday is today";
 "relive_birthdays" = "Coming up";
 "relive_empty_message" = "Once you have a few memories, this is where “On this day”, surprises and yearly stories live.";
 "relive_empty_title" = "Nothing to relive yet";
+"relive_got_it" = "Got it";
 "relive_made_for_you" = "Made for you";
 "relive_make_recap" = "Create a reel";
 "relive_on_this_day" = "On this day";
@@ -512,7 +514,10 @@
 "relive_play_reel" = "Play reel";
 "relive_random_title" = "A memory, picked at random";
 "relive_record_story" = "Record it";
+"relive_shake_hint_title" = "Shake for a surprise";
 "relive_surprise" = "Surprise me";
+"relive_this_month" = "This month, years ago";
+"relive_this_week" = "This week, years ago";
 "relive_title" = "Relive";
 "relive_years" = "Your years";
 "relive_your_reels" = "Your reels";

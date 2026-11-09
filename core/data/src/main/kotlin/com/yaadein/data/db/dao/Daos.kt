@@ -188,6 +188,24 @@ interface MemoryDao {
     @Query("SELECT place, COUNT(*) AS n FROM memories WHERE place <> '' GROUP BY place COLLATE NOCASE ORDER BY n DESC, place COLLATE NOCASE LIMIT :limit")
     suspend fun placeCounts(limit: Int): List<PlaceCount>
 
+    /**
+     * Every memory's year, place and cover media (the chosen cover if it still belongs to the memory, else its first
+     * media by position), newest first. Relive picks one per year and per place from these rows.
+     */
+    @Query(
+        """
+        SELECT CAST(strftime('%Y', m.start_epoch_day * 86400, 'unixepoch') AS INTEGER) AS year,
+               m.place AS place, m.id AS memoryId, m.cover_style AS coverStyle,
+               COALESCE(
+                   (SELECT md.id FROM media md WHERE md.id = m.cover_media_id AND md.memory_id = m.id),
+                   (SELECT md.id FROM media md WHERE md.memory_id = m.id ORDER BY md.position, COALESCE(md.taken_at, 9223372036854775807), md.id LIMIT 1)
+               ) AS mediaId
+        FROM memories m
+        ORDER BY m.start_epoch_day DESC, m.id DESC
+        """,
+    )
+    suspend fun coverRows(): List<CoverRow>
+
     @Query("SELECT CAST(strftime('%Y', start_epoch_day * 86400, 'unixepoch') AS INTEGER) AS year, COUNT(*) AS n FROM memories GROUP BY year ORDER BY year DESC")
     suspend fun countsByYear(): List<YearCount>
 
@@ -348,6 +366,9 @@ interface ImportJobDao {
     @Query("DELETE FROM import_jobs WHERE stage IN ('DONE', 'FAILED')")
     suspend fun clearFinished()
 }
+
+/** Row of [MemoryDao.coverRows]. */
+data class CoverRow(val year: Int, val place: String, val memoryId: Long, val coverStyle: String, val mediaId: Long?)
 
 /** Row of [MemoryDao.placeCounts]. */
 data class PlaceCount(val place: String, val n: Int)

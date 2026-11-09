@@ -230,6 +230,36 @@ public final class VaultStore: @unchecked Sendable {
         }
     }
 
+    /// Memories whose start day is in any of `ranges`, newest first; feeds `Rewind.pick` (inDayRanges on Android).
+    public func inDayRanges(_ ranges: [ClosedRange<Int64>]) -> [MemoryCard] {
+        guard !ranges.isEmpty else { return [] }
+        return lock.withLock {
+            db.memories.filter { m in ranges.contains { $0.contains(m.date.startEpochDay) } }
+                .sorted(by: VaultStore.newestFirst).map { card(db, $0) }
+        }
+    }
+
+    /// One cover per year: the newest memory with media, else the newest memory (yearCovers on Android).
+    public func yearCovers() -> [Int: CoverPick] {
+        lock.withLock { Covers.pick(coverRows(db).map { (LocalDate(epochDay: $0.memory.date.startEpochDay).year, $0.pick) }) }
+    }
+
+    /// One cover per place, keyed by the place lower-cased and trimmed (placeCovers on Android).
+    public func placeCovers() -> [String: CoverPick] {
+        lock.withLock {
+            Covers.pick(coverRows(db).filter { !$0.memory.place.trimmingCharacters(in: .whitespaces).isEmpty }
+                .map { ($0.memory.place.trimmingCharacters(in: .whitespaces).lowercased(), $0.pick) })
+        }
+    }
+
+    private func coverRows(_ d: VaultDatabase) -> [(memory: Memory, pick: CoverPick)] {
+        d.memories.sorted(by: VaultStore.newestFirst).map { m in
+            let media = sortedMedia(d, memoryId: m.id)
+            let cover = media.first { $0.id == m.coverMediaId } ?? media.first
+            return (m, CoverPick(memoryId: m.id, mediaId: cover?.id, coverStyle: m.coverStyle))
+        }
+    }
+
     public func random() -> MemoryCard? {
         lock.withLock { db.memories.randomElement().map { card(db, $0) } }
     }

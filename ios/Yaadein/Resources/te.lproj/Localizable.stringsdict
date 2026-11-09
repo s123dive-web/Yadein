@@ -195,6 +195,22 @@
             <string>మీ ఫోటోలను %1$d జ్ఞాపకాలుగా విభజించాము. పేరు మార్చండి, కలపండి లేదా విడదీయండి, తర్వాత సేవ్ చేయండి.</string>
         </dict>
     </dict>
+    <key>relive_years_ago</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d సంవత్సరం క్రితం</string>
+            <key>other</key>
+            <string>%1$d సంవత్సరాల క్రితం</string>
+        </dict>
+    </dict>
     <key>storage_check_ok</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

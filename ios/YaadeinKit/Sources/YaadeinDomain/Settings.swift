@@ -54,6 +54,7 @@ public struct UserSettings: Hashable, Codable, Sendable {
     public var lastBackupAtMillis: Int64 = 0
     public var backupNudgeDismissedAtMillis: Int64 = 0
     public var autoBackupFailed = false
+    public var shakeHintDismissed = false
 
     public init() {}
 
@@ -86,6 +87,7 @@ public struct UserSettings: Hashable, Codable, Sendable {
         lastBackupAtMillis = try c.decodeIfPresent(Int64.self, forKey: .lastBackupAtMillis) ?? d.lastBackupAtMillis
         backupNudgeDismissedAtMillis = try c.decodeIfPresent(Int64.self, forKey: .backupNudgeDismissedAtMillis) ?? d.backupNudgeDismissedAtMillis
         autoBackupFailed = try c.decodeIfPresent(Bool.self, forKey: .autoBackupFailed) ?? d.autoBackupFailed
+        shakeHintDismissed = try c.decodeIfPresent(Bool.self, forKey: .shakeHintDismissed) ?? d.shakeHintDismissed
     }
 }
 

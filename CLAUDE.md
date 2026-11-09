@@ -803,3 +803,23 @@ Play Billing for Plus is planned, not built.
   (parity row added). Companion web page in `web/` + `docs/REELS_MUSIC.md` (GitHub Pages, `.nojekyll`): searches the
   Apple Music / Deezer catalogues with previews; it is separate from the app and needs no app change.
 
+### Livelier Relive (owner: "make the Relive section more lively and engaging")
+
+- **On this day is rarely empty**: `core/domain/relive/Rewind` picks the exact day in earlier years, else the same week
+  (±3 days, across the new year), else the same month (EXACT and MONTH dates; YEAR/FUZZY never match), newest first,
+  capped at 12. `Rewind.windows` gives one epoch-day range per earlier year; `MemoryRepository.inDayRanges` loads them
+  with one raw query. The heading follows the scope ("On this day" / "This week, years ago" / "This month, years ago")
+  and every card has an "N years ago" label. Tests: `RewindTest` (Kotlin) / `RewindTests` (Swift).
+- **Photo tiles**: Years and Places are tiles with a cover (`MemoryDao.coverRows` → `Covers.pick`: newest memory with
+  media, else its cover art), via `MemoryRepository.yearCovers()` / `placeCovers()` (places keyed lower-cased, trimmed).
+- **Refreshes on return**: `ReliveRoute` calls `refresh()` from `LifecycleResumeEffect` (the ViewModel no longer loads in
+  `init`), so new memories, people and reels show up after switching tabs or coming back.
+- **Shake tip**: one-time card (`UserSettings.shakeHintDismissed`, shown with shake on and ≥ 3 memories) using the
+  previously unused `shake_hint` string, with "Surprise me" and a close button.
+- **Birthdays**: cards instead of chips; within 7 days a **Make a reel** button opens `Route.RecapSetup(personId)`; a
+  birthday today or tomorrow moves to the top of Relive.
+- **Surprise me**: the card pops in (fade + bouncy scale) with a haptic on every pick; avoids repeating the same memory.
+- Strings `relive_this_week`, `relive_this_month`, `relive_years_ago`, `relive_shake_hint_title`, `relive_got_it`,
+  `relive_birthday_reel` in all eight locales (non-English machine-assisted); iOS strings regenerated, iOS Relive
+  updated to match (parity row added).
+

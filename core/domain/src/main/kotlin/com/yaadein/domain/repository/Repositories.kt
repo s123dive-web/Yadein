@@ -66,6 +66,12 @@ interface MemoryRepository {
     /** Memories whose month/day matches today (any year), for "On this day". */
     suspend fun onThisDay(monthDay: Int, excludeYear: Int? = null): List<MemoryCard>
     suspend fun random(): MemoryCard?
+    /** Memories whose start day falls in any of [ranges] (epoch days), newest first; feeds [com.yaadein.domain.relive.Rewind]. */
+    suspend fun inDayRanges(ranges: List<LongRange>): List<MemoryCard>
+    /** One cover per year (newest memory with a photo or video, else the newest memory), for Relive's year tiles. */
+    suspend fun yearCovers(): Map<Int, com.yaadein.domain.relive.CoverPick>
+    /** One cover per place, keyed by the place lower-cased and trimmed, for Relive's place tiles. */
+    suspend fun placeCovers(): Map<String, com.yaadein.domain.relive.CoverPick>
     /** Year → number of memories, for the "Fill in the past" wizard and yearly summaries. */
     suspend fun countsByYear(): Map<Int, Int>
     suspend fun cardsForYear(year: Int, personId: Long? = null): List<MemoryCard>

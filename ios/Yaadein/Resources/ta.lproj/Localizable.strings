@@ -500,10 +500,12 @@
 "relationships_title" = "யார் யார் ஒன்றாகத் தோன்றுகிறார்கள்";
 "relive_another" = "இன்னொன்று";
 "relive_birthday_in" = "%1$@ · %2$d நாட்கள்";
+"relive_birthday_reel" = "ரீல் உருவாக்கு";
 "relive_birthday_today" = "இன்று %1$@-இன் பிறந்தநாள்";
 "relive_birthdays" = "வரவிருப்பவை";
 "relive_empty_message" = "சில நினைவுகள் சேர்ந்தவுடன், “இதே நாளில்”, ஆச்சரியங்கள், ஆண்டுக் கதைகள் எல்லாம் இங்கே இருக்கும்.";
 "relive_empty_title" = "மீண்டும் காண இன்னும் எதுவும் இல்லை";
+"relive_got_it" = "சரி";
 "relive_made_for_you" = "உங்களுக்காக உருவாக்கியது";
 "relive_make_recap" = "ரீல் உருவாக்கு";
 "relive_on_this_day" = "இதே நாளில்";
@@ -512,7 +514,10 @@
 "relive_play_reel" = "ரீலை இயக்கு";
 "relive_random_title" = "தற்செயலாகத் தேர்ந்த ஒரு நினைவு";
 "relive_record_story" = "பதிவுசெய்";
+"relive_shake_hint_title" = "குலுக்குங்கள், ஆச்சரியம் பெறுங்கள்";
 "relive_surprise" = "ஆச்சரியப்படுத்து";
+"relive_this_month" = "இந்த மாதம், முந்தைய ஆண்டுகளில்";
+"relive_this_week" = "இந்த வாரம், முந்தைய ஆண்டுகளில்";
 "relive_title" = "நினைவலைகள்";
 "relive_years" = "உங்கள் ஆண்டுகள்";
 "relive_your_reels" = "உங்கள் ரீல்கள்";

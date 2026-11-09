@@ -36,4 +36,10 @@
     <string name="relive_play_reel">रील चलाएँ</string>
     <string name="relive_record_story">रिकॉर्ड करें</string>
     <string name="relive_places">जगहें</string>
+    <string name="relive_this_week">इस हफ़्ते, बीते सालों में</string>
+    <string name="relive_this_month">इस महीने, बीते सालों में</string>
+    <plurals name="relive_years_ago"><item quantity="one">%1$d साल पहले</item><item quantity="other">%1$d साल पहले</item></plurals>
+    <string name="relive_shake_hint_title">हिलाइए, सरप्राइज़ पाइए</string>
+    <string name="relive_got_it">ठीक है</string>
+    <string name="relive_birthday_reel">रील बनाएँ</string>
 </resources>

@@ -500,10 +500,12 @@
 "relationships_title" = "কারা একসঙ্গে আছেন";
 "relive_another" = "আরেকটা";
 "relive_birthday_in" = "%1$@ · %2$d দিন";
+"relive_birthday_reel" = "রিল বানান";
 "relive_birthday_today" = "আজ %1$@-এর জন্মদিন";
 "relive_birthdays" = "সামনে আসছে";
 "relive_empty_message" = "কয়েকটা স্মৃতি জমলে এখানেই থাকবে “আজকের দিনে”, চমক আর বছরের গল্প।";
 "relive_empty_title" = "ফিরে দেখার মতো এখনও কিছু নেই";
+"relive_got_it" = "ঠিক আছে";
 "relive_made_for_you" = "আপনার জন্য বানানো";
 "relive_make_recap" = "রিল বানান";
 "relive_on_this_day" = "আজকের দিনে";
@@ -512,7 +514,10 @@
 "relive_play_reel" = "রিল চালান";
 "relive_random_title" = "এলোমেলোভাবে বাছা একটি স্মৃতি";
 "relive_record_story" = "রেকর্ড করুন";
+"relive_shake_hint_title" = "ফোন ঝাঁকান, সারপ্রাইজ পান";
 "relive_surprise" = "একটা চমক দিন";
+"relive_this_month" = "এই মাসে, আগের বছরগুলোতে";
+"relive_this_week" = "এই সপ্তাহে, আগের বছরগুলোতে";
 "relive_title" = "ফিরে দেখা";
 "relive_years" = "আপনার বছরগুলো";
 "relive_your_reels" = "আপনার রিল";

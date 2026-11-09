@@ -500,10 +500,12 @@
 "relationships_title" = "ಯಾರು ಒಟ್ಟಿಗೆ ಕಾಣಿಸುತ್ತಾರೆ";
 "relive_another" = "ಇನ್ನೊಂದು";
 "relive_birthday_in" = "%1$@ · %2$d ದಿನಗಳು";
+"relive_birthday_reel" = "ರೀಲ್ ಮಾಡಿ";
 "relive_birthday_today" = "ಇಂದು %1$@ ಅವರ ಹುಟ್ಟುಹಬ್ಬ";
 "relive_birthdays" = "ಮುಂಬರುವವು";
 "relive_empty_message" = "ನಿಮ್ಮ ಬಳಿ ಕೆಲವು ನೆನಪುಗಳಾದ ಮೇಲೆ, “ಈ ದಿನ”, ಅಚ್ಚರಿಗಳು ಮತ್ತು ವರ್ಷದ ಕಥೆಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.";
 "relive_empty_title" = "ಮತ್ತೆ ನೆನಪಿಸಲು ಇನ್ನೂ ಏನೂ ಇಲ್ಲ";
+"relive_got_it" = "ಸರಿ";
 "relive_made_for_you" = "ನಿಮಗಾಗಿ ಮಾಡಿದ್ದು";
 "relive_make_recap" = "ರೀಲ್ ರಚಿಸಿ";
 "relive_on_this_day" = "ಈ ದಿನ";
@@ -512,7 +514,10 @@
 "relive_play_reel" = "ರೀಲ್ ಪ್ಲೇ ಮಾಡಿ";
 "relive_random_title" = "ಯಾದೃಚ್ಛಿಕವಾಗಿ ಆರಿಸಿದ ಒಂದು ನೆನಪು";
 "relive_record_story" = "ರೆಕಾರ್ಡ್ ಮಾಡಿ";
+"relive_shake_hint_title" = "ಫೋನ್ ಅಲುಗಾಡಿಸಿ, ಸರ್ಪ್ರೈಸ್ ಪಡೆಯಿರಿ";
 "relive_surprise" = "ಅಚ್ಚರಿ ತೋರಿಸಿ";
+"relive_this_month" = "ಈ ತಿಂಗಳು, ಹಿಂದಿನ ವರ್ಷಗಳಲ್ಲಿ";
+"relive_this_week" = "ಈ ವಾರ, ಹಿಂದಿನ ವರ್ಷಗಳಲ್ಲಿ";
 "relive_title" = "ಮತ್ತೆ ನೆನಪಿಸಿ";
 "relive_years" = "ನಿಮ್ಮ ವರ್ಷಗಳು";
 "relive_your_reels" = "ನಿಮ್ಮ ರೀಲ್‌ಗಳು";

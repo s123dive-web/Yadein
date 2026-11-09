@@ -53,4 +53,6 @@ data class UserSettings(
     val backupNudgeDismissedAtMillis: Long = 0L,
     /** The last automatic backup failed (target deleted or access revoked); shown on the Backup screen. */
     val autoBackupFailed: Boolean = false,
+    /** The "shake for a random memory" tip on Relive was closed. */
+    val shakeHintDismissed: Boolean = false,
 )

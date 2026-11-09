@@ -36,4 +36,10 @@
     <string name="relive_play_reel">రీల్ ప్లే చేయండి</string>
     <string name="relive_record_story">రికార్డ్ చేయండి</string>
     <string name="relive_places">ప్రదేశాలు</string>
+    <string name="relive_this_week">ఈ వారం, గత సంవత్సరాల్లో</string>
+    <string name="relive_this_month">ఈ నెల, గత సంవత్సరాల్లో</string>
+    <plurals name="relive_years_ago"><item quantity="one">%1$d సంవత్సరం క్రితం</item><item quantity="other">%1$d సంవత్సరాల క్రితం</item></plurals>
+    <string name="relive_shake_hint_title">ఫోన్ ఊపండి, సర్‌ప్రైజ్ పొందండి</string>
+    <string name="relive_got_it">సరే</string>
+    <string name="relive_birthday_reel">రీల్ చేయండి</string>
 </resources>

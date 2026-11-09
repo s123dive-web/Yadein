@@ -195,6 +195,22 @@
             <string>हमने आपकी फ़ोटो को %1$d यादों में बाँटा है। नाम बदलें, मिलाएँ या बाँटें, फिर सहेजें।</string>
         </dict>
     </dict>
+    <key>relive_years_ago</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d साल पहले</string>
+            <key>other</key>
+            <string>%1$d साल पहले</string>
+        </dict>
+    </dict>
     <key>storage_check_ok</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

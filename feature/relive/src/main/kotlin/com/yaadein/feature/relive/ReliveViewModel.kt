@@ -6,13 +6,18 @@ import com.yaadein.data.reels.ReelEntry
 import com.yaadein.data.reels.ReelKind
 import com.yaadein.data.reels.ReelLibrary
 import com.yaadein.domain.dates.Dates
-import com.yaadein.domain.reminders.PromptPick
-import com.yaadein.domain.reminders.Reminders
 import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.Person
+import com.yaadein.domain.reminders.PromptPick
+import com.yaadein.domain.reminders.Reminders
+import com.yaadein.domain.relive.CoverPick
+import com.yaadein.domain.relive.Rewind
+import com.yaadein.domain.relive.RewindResult
 import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.PersonRepository
+import com.yaadein.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,12 +27,19 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
-data class YearHighlight(val year: Int, val count: Int)
+/** A year on Relive, with the photo that stands for it. */
+data class YearHighlight(val year: Int, val count: Int, val cover: CoverPick? = null)
+
+/** A place on Relive, with the photo that stands for it. */
+data class PlaceHighlight(val place: String, val count: Int, val cover: CoverPick? = null)
 
 data class ReliveUiState(
     val loading: Boolean = true,
-    val onThisDay: List<MemoryCard> = emptyList(),
+    /** "On this day", widened to this week or this month in earlier years when the exact day has nothing. */
+    val rewind: RewindResult? = null,
     val random: MemoryCard? = null,
+    /** Bumped on every "Surprise me" so the reveal animation and haptic run again for "Another one". */
+    val randomRound: Int = 0,
     val years: List<YearHighlight> = emptyList(),
     val upcomingBirthdays: List<Pair<Person, Int>> = emptyList(),
     val totalMemories: Int = 0,
@@ -36,25 +48,35 @@ data class ReliveUiState(
     /** This week's story prompt. */
     val prompt: PromptPick? = null,
     /** Where memories happened, most first. */
-    val places: List<Pair<String, Int>> = emptyList(),
+    val places: List<PlaceHighlight> = emptyList(),
+    /** Show the one-time "shake your phone for a random memory" tip. */
+    val showShakeHint: Boolean = false,
 )
 
 @HiltViewModel
 class ReliveViewModel @Inject constructor(
     private val memoryRepository: MemoryRepository,
     private val personRepository: PersonRepository,
+    private val settingsRepository: SettingsRepository,
     val reelLibrary: ReelLibrary,
 ) : ViewModel() {
     private val _state = MutableStateFlow(ReliveUiState())
     val state: StateFlow<ReliveUiState> = _state.asStateFlow()
+    private var refreshJob: Job? = null
 
-    init { refresh() }
-
+    /** Reloads everything; called each time Relive is shown so new memories, people and reels appear at once. */
     fun refresh() {
-        viewModelScope.launch {
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
             val today = LocalDate.now()
-            val onThisDay = memoryRepository.onThisDay(Dates.monthDayKey(today), excludeYear = today.year)
-            val years = memoryRepository.countsByYear().entries.sortedByDescending { it.key }.map { YearHighlight(it.key, it.value) }
+            val counts = memoryRepository.countsByYear()
+            val rewind = counts.keys.minOrNull()?.let { earliest ->
+                Rewind.pick(memoryRepository.inDayRanges(Rewind.windows(today, earliest)), today)
+            }
+            val yearCovers = runCatching { memoryRepository.yearCovers() }.getOrDefault(emptyMap())
+            val years = counts.entries.sortedByDescending { it.key }.map { YearHighlight(it.key, it.value, yearCovers[it.key]) }
+            val placeCovers = runCatching { memoryRepository.placeCovers() }.getOrDefault(emptyMap())
+            val places = memoryRepository.topPlaces().map { (place, n) -> PlaceHighlight(place, n, placeCovers[place.trim().lowercase()]) }
             val people = personRepository.observeAll().first()
             val prompt = Reminders.weeklyPrompt(Reminders.build(emptyList(), people, 0L), today)
             val reels = runCatching { reelLibrary.load() }.getOrDefault(emptyList())
@@ -62,15 +84,37 @@ class ReliveViewModel @Inject constructor(
             val birthdays = people
                 .mapNotNull { p -> p.birthdayEpochDay?.let { p to Dates.daysUntilBirthday(it, today) } }
                 .filter { it.second <= 30 }.sortedBy { it.second }
+            val settings = settingsRepository.current()
+            val total = memoryRepository.count()
             _state.update {
-                it.copy(loading = false, onThisDay = onThisDay, years = years, upcomingBirthdays = birthdays, totalMemories = memoryRepository.count(), latestReel = latest, prompt = prompt, places = memoryRepository.topPlaces())
+                it.copy(
+                    loading = false, rewind = rewind, years = years, upcomingBirthdays = birthdays, totalMemories = total,
+                    latestReel = latest, prompt = prompt, places = places,
+                    showShakeHint = settings.shakeForMemory && !settings.shakeHintDismissed && total >= SHAKE_HINT_MIN_MEMORIES,
+                )
             }
         }
     }
 
     fun surpriseMe() {
-        viewModelScope.launch { _state.update { it.copy(random = memoryRepository.random()) } }
+        viewModelScope.launch {
+            val previous = _state.value.random?.memory?.id
+            // Avoid showing the same memory twice in a row when there is more than one.
+            var next = memoryRepository.random()
+            if (next != null && next.memory.id == previous && _state.value.totalMemories > 1) next = memoryRepository.random() ?: next
+            _state.update { it.copy(random = next, randomRound = it.randomRound + 1) }
+        }
     }
 
     fun dismissRandom() = _state.update { it.copy(random = null) }
+
+    fun dismissShakeHint() {
+        _state.update { it.copy(showShakeHint = false) }
+        viewModelScope.launch { settingsRepository.update { it.copy(shakeHintDismissed = true) } }
+    }
+
+    companion object {
+        /** A random memory is only a surprise once there are a few to pick from. */
+        const val SHAKE_HINT_MIN_MEMORIES = 3
+    }
 }

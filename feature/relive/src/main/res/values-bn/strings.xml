@@ -36,4 +36,10 @@
     <string name="relive_play_reel">রিল চালান</string>
     <string name="relive_record_story">রেকর্ড করুন</string>
     <string name="relive_places">জায়গা</string>
+    <string name="relive_this_week">এই সপ্তাহে, আগের বছরগুলোতে</string>
+    <string name="relive_this_month">এই মাসে, আগের বছরগুলোতে</string>
+    <plurals name="relive_years_ago"><item quantity="one">%1$d বছর আগে</item><item quantity="other">%1$d বছর আগে</item></plurals>
+    <string name="relive_shake_hint_title">ফোন ঝাঁকান, সারপ্রাইজ পান</string>
+    <string name="relive_got_it">ঠিক আছে</string>
+    <string name="relive_birthday_reel">রিল বানান</string>
 </resources>

@@ -500,10 +500,12 @@
 "relationships_title" = "कोण कोणासोबत दिसतं";
 "relive_another" = "अजून एक";
 "relive_birthday_in" = "%1$@ · %2$d दिवस";
+"relive_birthday_reel" = "रील बनवा";
 "relive_birthday_today" = "आज %1$@ चा वाढदिवस";
 "relive_birthdays" = "येणारे";
 "relive_empty_message" = "काही आठवणी झाल्यावर इथे “आजच्या दिवशी”, सरप्राइज आणि वार्षिक गोष्टी असतील.";
 "relive_empty_title" = "अजून पुन्हा जगण्यासारखं काही नाही";
+"relive_got_it" = "ठीक आहे";
 "relive_made_for_you" = "तुमच्यासाठी बनवलेली";
 "relive_make_recap" = "रील बनवा";
 "relive_on_this_day" = "आजच्या दिवशी";
@@ -512,7 +514,10 @@
 "relive_play_reel" = "रील पाहा";
 "relive_random_title" = "एक आठवण, यादृच्छिक निवडलेली";
 "relive_record_story" = "रेकॉर्ड करा";
+"relive_shake_hint_title" = "फोन हलवा, सरप्राइज मिळवा";
 "relive_surprise" = "सरप्राइज द्या";
+"relive_this_month" = "या महिन्यात, मागील वर्षी";
+"relive_this_week" = "या आठवड्यात, मागील वर्षी";
 "relive_title" = "पुन्हा जगा";
 "relive_years" = "तुमची वर्षे";
 "relive_your_reels" = "तुमच्या रील्स";

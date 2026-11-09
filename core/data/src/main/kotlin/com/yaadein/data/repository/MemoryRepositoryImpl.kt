@@ -12,6 +12,9 @@ import com.yaadein.data.db.entity.MemorySearchEntity
 import com.yaadein.domain.model.Memory
 import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.MemoryDetail
+import com.yaadein.domain.relive.CoverPick
+import com.yaadein.domain.relive.Covers
+import com.yaadein.data.db.dao.CoverRow
 import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.TimelineFilter
 import kotlinx.coroutines.flow.Flow
@@ -73,6 +76,22 @@ class MemoryRepositoryImpl @Inject constructor(
         memoryDao.onThisDay(monthDay, excludeYear).map { it.toCard() }
 
     override suspend fun random(): MemoryCard? = memoryDao.random()?.toCard()
+
+    override suspend fun inDayRanges(ranges: List<LongRange>): List<MemoryCard> {
+        if (ranges.isEmpty()) return emptyList()
+        val where = ranges.joinToString(" OR ") { "m.start_epoch_day BETWEEN ? AND ?" }
+        val args = ranges.flatMap { listOf<Any>(it.first, it.last) }.toTypedArray()
+        val query = SimpleSQLiteQuery("SELECT m.* FROM memories m WHERE $where ORDER BY m.start_epoch_day DESC, m.id DESC", args)
+        return memoryDao.raw(query).map { it.toCard() }
+    }
+
+    override suspend fun yearCovers(): Map<Int, CoverPick> =
+        Covers.pick(memoryDao.coverRows().map { it.year to it.toPick() })
+
+    override suspend fun placeCovers(): Map<String, CoverPick> =
+        Covers.pick(memoryDao.coverRows().filter { it.place.isNotBlank() }.map { it.place.trim().lowercase() to it.toPick() })
+
+    private fun CoverRow.toPick() = CoverPick(memoryId = memoryId, mediaId = mediaId, coverStyle = coverStyle)
 
     override suspend fun countsByYear(): Map<Int, Int> = memoryDao.countsByYear().associate { it.year to it.n }
 

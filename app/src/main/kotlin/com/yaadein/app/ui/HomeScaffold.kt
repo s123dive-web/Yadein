@@ -111,6 +111,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                 onRecordPrompt = { text, personId -> navController.navigate(Route.VoiceCapture(prompt = text, personId = personId)) },
                 onPlace = { place -> placeFilter = place; tab = HomeTab.TIMELINE },
                 onYear = { year -> navController.navigate(Route.YearlySummary(0L, year)) },
+                onBirthdayReel = { personId -> navController.navigate(Route.RecapSetup(personId = personId)) },
                 contentPadding = padding,
             )
             HomeTab.SETTINGS -> SettingsRoute(

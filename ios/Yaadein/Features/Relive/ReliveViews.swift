@@ -1,8 +1,10 @@
 import SwiftUI
 import UIKit
+import YaadeinData
 import YaadeinDomain
 
-/// Relive (ReliveScreen.kt): story prompt, Surprise me, birthdays, On this day, places, years.
+/// Relive (ReliveScreen.kt): story prompt, Surprise me, shake tip, birthdays (with a one-tap reel), On this day widened to
+/// this week / this month (Rewind), places and years as photo tiles.
 struct ReliveView: View {
     let onPlace: (String) -> Void
     @Environment(AppModel.self) private var model
@@ -13,16 +15,23 @@ struct ReliveView: View {
         let store = model.store
         let today = LocalDate.today()
         let total = store?.memoryCount ?? 0
-        let onThisDay = store?.onThisDay(monthDay: Dates.monthDayKey(today), excludeYear: today.year) ?? []
+        let countsByYear = store?.countsByYear() ?? []
+        let rewind = countsByYear.map(\.year).min().flatMap { earliest in
+            Rewind.pick(store?.inDayRanges(Rewind.windows(today: today, earliestYear: earliest)) ?? [], today: today)
+        }
+        let yearCovers = store?.yearCovers() ?? [:]
+        let placeCovers = store?.placeCovers() ?? [:]
         let digest = YaadeinDomain.Reminders.build(cards: [], people: store?.persons() ?? [], nowMillis: 0)
         let birthdays = YaadeinDomain.Reminders.birthdays(digest, today: today, daysAhead: 30)
         let places = store?.topPlaces() ?? []
-        let years = store?.countsByYear() ?? []
+        let years = countsByYear
+        let birthdaysFirst = (birthdays.first?.inDays ?? Int.max) <= 1
         ScrollView {
             if total == 0 {
                 EmptyState(illustration: .kite, title: L("relive_empty_title"), message: L("relive_empty_message"))
             } else {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
+                    if birthdaysFirst { birthdaysSection(birthdays, store) }
                     promptCard(digest, today)
                     FlowLayout(spacing: Spacing.sm) {
                         NavigationLink(value: Route.randomMemory) { Label(L("relive_surprise"), systemImage: "dice") }
@@ -32,35 +41,20 @@ struct ReliveView: View {
                         NavigationLink(value: Route.reels) { Label(L("relive_your_reels"), systemImage: "film.stack") }
                             .buttonStyle(FilledButtonStyle(tonal: true))
                     }
-                    if !birthdays.isEmpty {
-                        SectionHeader(title: L("relive_birthdays"))
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: Spacing.sm) {
-                                ForEach(birthdays, id: \.person.id) { b in
-                                    if let p = store?.person(id: b.person.id) {
-                                        NavigationLink(value: Route.person(p.id)) {
-                                            HStack(spacing: Spacing.sm) {
-                                                PersonAvatar(person: p, size: look.sizes.avatarSm)
-                                                Text(b.inDays == 0 ? L("relive_birthday_today", p.displayName) : L("relive_birthday_in", p.displayName, b.inDays))
-                                                    .font(look.type.labelLarge)
-                                            }
-                                            .padding(.horizontal, Spacing.md).padding(.vertical, Spacing.sm)
-                                            .background(Capsule().fill(look.colors.secondaryContainer))
-                                            .foregroundStyle(look.colors.onSecondaryContainer)
-                                        }
-                                        .buttonStyle(.plain)
-                                    }
-                                }
+                    if model.settings.shakeForMemory && !model.settings.shakeHintDismissed && total >= 3 {
+                        shakeHint
+                    }
+                    if !birthdaysFirst { birthdaysSection(birthdays, store) }
+                    SectionHeader(title: L(rewind?.scope == .WEEK ? "relive_this_week" : rewind?.scope == .MONTH ? "relive_this_month" : "relive_on_this_day"))
+                    if let rewind {
+                        ForEach(rewind.items, id: \.card.memory.id) { item in
+                            VStack(alignment: .leading, spacing: Spacing.xs) {
+                                Text(LP("relive_years_ago", item.yearsAgo)).font(look.type.labelLarge).foregroundStyle(look.colors.primary)
+                                NavigationLink(value: Route.memory(item.card.memory.id)) { MemoryCardView(card: item.card, compact: true) }.buttonStyle(.plain)
                             }
                         }
-                    }
-                    SectionHeader(title: L("relive_on_this_day"))
-                    if onThisDay.isEmpty {
-                        Text(L("relive_on_this_day_empty")).font(look.type.bodyMedium).foregroundStyle(look.colors.onSurfaceVariant)
                     } else {
-                        ForEach(onThisDay) { c in
-                            NavigationLink(value: Route.memory(c.memory.id)) { MemoryCardView(card: c, compact: true) }.buttonStyle(.plain)
-                        }
+                        Text(L("relive_on_this_day_empty")).font(look.type.bodyMedium).foregroundStyle(look.colors.onSurfaceVariant)
                     }
                     if !places.isEmpty {
                         SectionHeader(title: L("relive_places"))
@@ -68,7 +62,11 @@ struct ReliveView: View {
                             HStack(spacing: Spacing.sm) {
                                 ForEach(places.indices, id: \.self) { i in
                                     let p = places[i]
-                                    Button { onPlace(p.place) } label: { ChipLabel(text: "\(p.place) · \(p.count)", icon: "mappin") }.buttonStyle(.plain)
+                                    Button { onPlace(p.place) } label: {
+                                        PhotoTile(title: p.place, subtitle: LP("memory_count", p.count),
+                                                  cover: placeCovers[p.place.trimmingCharacters(in: .whitespaces).lowercased()], pin: true)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
@@ -80,20 +78,12 @@ struct ReliveView: View {
                                 ForEach(years.indices, id: \.self) { i in
                                     let y = years[i]
                                     NavigationLink(value: Route.yearly(personId: 0, year: y.year)) {
-                                        VStack(spacing: 2) {
-                                            Text(String(y.year)).font(look.type.titleLarge).foregroundStyle(look.colors.primary)
-                                            Text(LP("memory_count", y.count)).font(look.type.bodySmall).foregroundStyle(look.colors.onSurfaceVariant)
-                                        }
-                                        .padding(Spacing.md)
-                                        .background(RoundedRectangle(cornerRadius: Radius.md).fill(look.colors.surfaceContainerLow))
+                                        PhotoTile(title: String(y.year), subtitle: LP("memory_count", y.count), cover: yearCovers[y.year])
                                     }
                                     .buttonStyle(.plain)
                                 }
                             }
                         }
-                    }
-                    if model.settings.shakeForMemory {
-                        Text(L("shake_hint")).font(look.type.bodySmall).foregroundStyle(look.colors.onSurfaceVariant)
                     }
                 }
                 .padding(.horizontal, Spacing.gutter)
@@ -104,6 +94,59 @@ struct ReliveView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .topBarLeading) { Text(L("relive_title")).font(look.type.headlineMedium).accessibilityAddTraits(.isHeader) } }
         .toolbarBackground(look.colors.surface, for: .navigationBar)
+    }
+
+    /// Upcoming birthdays as cards; within a week, one tap makes a reel of that person.
+    @ViewBuilder private func birthdaysSection(_ birthdays: [UpcomingBirthday], _ store: VaultStore?) -> some View {
+        if !birthdays.isEmpty {
+            SectionHeader(title: L("relive_birthdays"))
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: Spacing.sm) {
+                    ForEach(birthdays, id: \.person.id) { b in
+                        if let p = store?.person(id: b.person.id) {
+                            VStack(alignment: .leading, spacing: Spacing.sm) {
+                                NavigationLink(value: Route.person(p.id)) {
+                                    HStack(spacing: Spacing.sm) {
+                                        PersonAvatar(person: p, size: look.sizes.avatarMd)
+                                        Text(b.inDays == 0 ? L("relive_birthday_today", p.displayName) : L("relive_birthday_in", p.displayName, b.inDays))
+                                            .font(look.type.titleSmall).lineLimit(2).multilineTextAlignment(.leading)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                if b.inDays <= 7 {
+                                    NavigationLink(value: Route.recap(.person(p.id))) { Label(L("relive_birthday_reel"), systemImage: "film") }
+                                        .buttonStyle(FilledButtonStyle())
+                                }
+                            }
+                            .padding(Spacing.md)
+                            .frame(width: 220, alignment: .leading)
+                            .background(RoundedRectangle(cornerRadius: Radius.lg).fill(b.inDays == 0 ? look.colors.tertiaryContainer : look.colors.secondaryContainer))
+                            .foregroundStyle(b.inDays == 0 ? look.colors.onTertiaryContainer : look.colors.onSecondaryContainer)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// One-time tip that shaking the phone opens a random memory.
+    private var shakeHint: some View {
+        HStack(alignment: .top, spacing: Spacing.md) {
+            Image(systemName: "iphone.radiowaves.left.and.right").font(.title3)
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                Text(L("relive_shake_hint_title")).font(look.type.titleSmall)
+                Text(L("shake_hint")).font(look.type.bodyMedium)
+                NavigationLink(value: Route.randomMemory) { Text(L("relive_surprise")) }.font(look.type.labelLarge)
+            }
+            Spacer(minLength: 0)
+            Button { withAnimation(Motion.standard) { model.updateSettings { $0.shakeHintDismissed = true } } } label: {
+                Image(systemName: "xmark").frame(width: 44, height: 44)
+            }
+            .accessibilityLabel(L("relive_got_it"))
+        }
+        .padding(.leading, Spacing.lg).padding(.vertical, Spacing.sm)
+        .foregroundStyle(look.colors.onSecondaryContainer)
+        .background(RoundedRectangle(cornerRadius: Radius.lg).fill(look.colors.secondaryContainer))
     }
 
     /// This week's story prompt (PromptCard): about a family member, a friend, or the user.
@@ -131,17 +174,30 @@ struct RandomMemoryView: View {
         ScrollView {
             VStack(spacing: Spacing.lg) {
                 if let card {
+                    // Each new pick pops in, so "Another one" feels like drawing a card rather than a refresh.
                     NavigationLink(value: Route.memory(card.memory.id)) { MemoryCardView(card: card) }.buttonStyle(.plain)
+                        .id(card.memory.id)
+                        .transition(.scale(scale: 0.85).combined(with: .opacity))
                 } else {
                     EmptyState(illustration: .kite, title: L("relive_empty_title"), message: L("relive_empty_message"))
                 }
-                Button(L("relive_another")) { withAnimation(Motion.standard) { card = model.store?.random() } }
-                    .buttonStyle(FilledButtonStyle(tonal: true))
+                Button { withAnimation(.spring(response: 0.45, dampingFraction: 0.7)) { card = nextRandom() } } label: {
+                    Label(L("relive_another"), systemImage: "shuffle")
+                }
+                .buttonStyle(FilledButtonStyle(tonal: true))
             }
             .padding(Spacing.gutter)
         }
         .screenTitle(L("relive_random_title"))
         .onAppear { if card == nil { card = model.store?.random() } }
+        .sensoryFeedback(.impact(weight: .medium), trigger: card?.memory.id)
+    }
+
+    /// A random memory, not the one on screen when there are others to pick from.
+    private func nextRandom() -> MemoryCard? {
+        let next = model.store?.random()
+        if let next, next.memory.id == card?.memory.id, (model.store?.memoryCount ?? 0) > 1 { return model.store?.random() ?? next }
+        return next
     }
 }
 
@@ -303,4 +359,41 @@ extension UIWindow {
 
 extension Notification.Name {
     static let yaadeinShake = Notification.Name("yaadein.shake")
+}
+
+/// A year or a place: its photo (or cover art) with the name and count on a scrim (PhotoTile in ReliveScreen.kt).
+private struct PhotoTile: View {
+    let title: String
+    let subtitle: String
+    let cover: CoverPick?
+    var pin = false
+    @Environment(AppModel.self) private var model
+    @Environment(\.look) private var look
+
+    var body: some View {
+        ZStack(alignment: .bottomLeading) {
+            SwiftUI.Group {
+                if let id = cover?.mediaId, let media = model.store?.media(id: id) {
+                    VaultImage(path: media.thumbPath)
+                } else {
+                    CoverArt(style: cover?.coverStyle ?? CoverStyle.defaultStyle, seed: cover?.memoryId ?? 0)
+                }
+            }
+            .frame(width: 148, height: 112)
+            .clipped()
+            LinearGradient(colors: [.clear, .black.opacity(0.65)], startPoint: .top, endPoint: .bottom)
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(spacing: 2) {
+                    if pin { Image(systemName: "mappin").font(.caption) }
+                    Text(title).font(look.type.titleMedium).lineLimit(1)
+                }
+                Text(subtitle).font(look.type.labelMedium).opacity(0.9).lineLimit(1)
+            }
+            .foregroundStyle(.white)
+            .padding(Spacing.sm)
+        }
+        .frame(width: 148, height: 112)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.md))
+        .accessibilityElement(children: .combine)
+    }
 }
