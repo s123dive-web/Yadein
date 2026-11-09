@@ -840,4 +840,7 @@ Play Billing for Plus is planned, not built.
   APK, not abstract, and has its `@HiltViewModelMap` key (obfuscated binary name as a string constant). Build APK runs
   it after `assembleBeta`; on a miss it rebuilds once with `--no-build-cache --rerun-tasks` and fails if still broken,
   so a crashing APK is never attached to a release. Verified against the real v0.1.69 APK (flags `lv4` as ABSTRACT).
+- Root cause is the same flakiness as "PersonRepository could not be resolved" (KSP in `feature:people`, run 66):
+  builds that restore outputs from the Gradle build cache. `build.yml` now passes `--no-build-cache` to every Gradle
+  call; the APK check stays as a backstop.
 
