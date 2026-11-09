@@ -294,7 +294,13 @@ jobs:
           files: app/build/outputs/apk/debug/Yaadein-*.apk
 ```
 
-Note: the workflow also triggers on `ccr-*` branches so the autonomous build branch gets CI runs before merge.
+Note: the real workflow differs from the sketch above in its steps (beta build type, lint, zero-network guard, Hilt
+check, key rotation). Its triggers: push to `main` builds **and publishes** a `build-N` release (tag created on the built
+commit via `target_commitish`); pull requests into `main` run the same checks and upload the APK as an artifact only.
+`ios.yml` and `device-tests.yml` follow the same rule (iOS releases and TestFlight only from `main`).
+
+**Branch workflow:** `main` is the release branch and must always hold all app code. Develop on a session branch, open
+a pull request into `main` (that runs CI), and merge it to ship. Never leave finished work only on a side branch.
 
 `.github/workflows/release.yml` (manual) decodes `KEYSTORE_BASE64` into `release.jks`, reads
 `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` and runs `:app:bundleRelease`, uploading the AAB.

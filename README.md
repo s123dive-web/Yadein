@@ -6,8 +6,10 @@ stories, and as recap videos with music. No account, no internet permission, no 
 
 [![Build debug APK](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
 
-Every push builds the **beta APK** (`Yaadein-v<version>-beta.apk`: R8-optimised, not debuggable) on GitHub Actions and
-attaches it to a release tagged `build-<run number>` (see the Releases page). It installs over earlier builds and keeps
+`main` is the release branch. Every push to `main` (normally a merged pull request) builds the **beta APK**
+(`Yaadein-v<version>-beta.apk`: R8-optimised, not debuggable) on GitHub Actions and attaches it to a release tagged
+`build-<run number>` (see the Releases page). Pull requests into `main` run the same checks and keep the APK as a run
+artifact, without a release; work on other branches is released only once it is merged. It installs over earlier builds and keeps
 every memory. Add the release key secrets once (`docs/RELEASE_SIGNING.md`) and CI signs with your private key using
 APK key rotation. Nothing is built on a laptop.
 
@@ -25,8 +27,10 @@ Android module, Gradle file or Android workflow.
 | Suggested tag | `android-stable-build-42` → `189f6b2` (create with `git tag android-stable-build-42 189f6b2 && git push origin android-stable-build-42`) |
 | CI | [Build APK run 42](https://github.com/s123dive-web/Yadein/actions/runs/42379000221): unit tests, zero-network guard, lint and beta APK all green |
 
-Note: the `build-N` release tags are created by the release action against `main`, so they do not point at the commit
-that was built. Use the commit/tag above (or the run's `head_sha`) to find the source of an APK.
+Note: releases up to `build-67` / `ios-build-17` were built from side branches, and most `build-N` tags were created on
+the then-empty `main`, so they do not point at the commit that was built. Use the commit above (or the run's
+`head_sha`) to find the source of those APKs. From now on releases come only from `main` and each tag points at the
+commit it was built from.
 
 To rebuild or roll back to it: `git checkout 189f6b2 && ./gradlew :app:assembleBeta`.
 

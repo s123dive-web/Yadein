@@ -6,7 +6,15 @@ name: Device tests and performance
 on:
   workflow_dispatch:
   push:
-    branches: [main, 'ccr-*']
+    branches: [main]
+    paths:
+      - 'core/data/**'
+      - 'feature/recap/**'
+      - 'app/**'
+      - 'benchmark/**'
+      - '.github/workflows/device-tests.yml'
+  pull_request:
+    branches: [main]
     paths:
       - 'core/data/**'
       - 'feature/recap/**'

@@ -4,7 +4,7 @@ name: iOS
 # release.yml are unchanged and keep producing the APK on every push.
 on:
   push:
-    branches: [main, 'ccr-*']
+    branches: [main]
     paths:
       - 'ios/**'
       - '.github/workflows/ios.yml'
@@ -12,14 +12,17 @@ on:
       - '**/src/main/res/values*/strings.xml'
       - 'core/ui/src/main/kotlin/com/yaadein/core/ui/theme/Color.kt'
   pull_request:
+    branches: [main]
     paths:
       - 'ios/**'
       - '.github/workflows/ios.yml'
+      - '**/src/main/res/values*/strings.xml'
+      - 'core/ui/src/main/kotlin/com/yaadein/core/ui/theme/Color.kt'
   workflow_dispatch:
 
 concurrency:
   group: ios-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   # Strings and palettes are generated from the Android sources; fail if someone edited one side only.
@@ -154,8 +157,9 @@ jobs:
             ios/build/out
             ios/build/*.log
           if-no-files-found: ignore
+      # Only main publishes iOS releases.
       - name: Attach to a release
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ios-build-${{ github.run_number }}
@@ -175,7 +179,7 @@ jobs:
   # Signed build to TestFlight, only when the owner has added the Apple secrets (docs/IOS.md, "Installing on an iPhone").
   testflight:
     needs: app
-    if: github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: macos-15
     timeout-minutes: 60
     env:

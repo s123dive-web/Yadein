@@ -1,8 +1,12 @@
 name: Build APK
 
+# main is the release branch: every push to main (normally a merged pull request) builds the APK and publishes it as a
+# release. Pull requests into main run the same checks and upload the APK as a run artifact, without a release.
 on:
   push:
-    branches: [main, 'ccr-*']
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -10,7 +14,8 @@ permissions:
 
 concurrency:
   group: build-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a main build half-way: each one publishes a release.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build:
@@ -109,10 +114,13 @@ jobs:
           name: test-reports
           path: '**/build/reports/tests/**'
           if-no-files-found: ignore
+      # Only main publishes. target_commitish makes the build-N tag point at the commit that was built.
       - name: Attach APK to release
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
           name: Build ${{ github.run_number }}
           body: |
             Install **Yaadein-v*-beta.apk**. It updates an existing install in place and keeps every memory.
