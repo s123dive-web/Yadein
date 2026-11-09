@@ -164,6 +164,9 @@ fun ReliveScreen(
             ) {
                 // A birthday today or tomorrow is the most timely thing on the screen.
                 val birthdaysFirst = state.upcomingBirthdays.firstOrNull()?.second?.let { it <= 1 } == true
+                if (state.story.isNotEmpty()) {
+                    item(key = "story") { DailyStoryCard(pages = state.story, onOpenMemory = onOpenMemory, onOpenPerson = onOpenPerson) }
+                }
                 if (birthdaysFirst) birthdaysItem(state.upcomingBirthdays, onOpenPerson, onBirthdayReel)
                 latestReel?.let { card -> item(key = "latest-reel") { card() } }
                 promptCard?.let { card -> item(key = "prompt") { card() } }

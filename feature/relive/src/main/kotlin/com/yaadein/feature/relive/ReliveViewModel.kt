@@ -11,6 +11,9 @@ import com.yaadein.domain.model.Person
 import com.yaadein.domain.reminders.PromptPick
 import com.yaadein.domain.reminders.Reminders
 import com.yaadein.domain.relive.CoverPick
+import com.yaadein.domain.relive.DailyStory
+import com.yaadein.domain.relive.StoryPage
+import com.yaadein.domain.repository.TimelineFilter
 import com.yaadein.domain.relive.Rewind
 import com.yaadein.domain.relive.RewindResult
 import com.yaadein.domain.repository.MemoryRepository
@@ -49,6 +52,8 @@ data class ReliveUiState(
     val prompt: PromptPick? = null,
     /** Where memories happened, most first. */
     val places: List<PlaceHighlight> = emptyList(),
+    /** Swipeable daily story at the top: memories from years ago, a person spotlight, the memory of the day. */
+    val story: List<StoryPage> = emptyList(),
     /** Show the one-time "shake your phone for a random memory" tip. */
     val showShakeHint: Boolean = false,
 )
@@ -84,16 +89,29 @@ class ReliveViewModel @Inject constructor(
             val birthdays = people
                 .mapNotNull { p -> p.birthdayEpochDay?.let { p to Dates.daysUntilBirthday(it, today) } }
                 .filter { it.second <= 30 }.sortedBy { it.second }
+            val story = runCatching { buildStory(rewind, people, today) }.getOrDefault(emptyList())
             val settings = settingsRepository.current()
             val total = memoryRepository.count()
             _state.update {
                 it.copy(
                     loading = false, rewind = rewind, years = years, upcomingBirthdays = birthdays, totalMemories = total,
-                    latestReel = latest, prompt = prompt, places = places,
+                    latestReel = latest, prompt = prompt, places = places, story = story,
                     showShakeHint = settings.shakeForMemory && !settings.shakeHintDismissed && total >= SHAKE_HINT_MIN_MEMORIES,
                 )
             }
         }
+    }
+
+    private suspend fun buildStory(rewind: com.yaadein.domain.relive.RewindResult?, people: List<Person>, today: LocalDate): List<StoryPage> {
+        val counts = personRepository.memoryCounts()
+        val spotlight = DailyStory.spotlightPerson(people, counts, today)?.let { person ->
+            val ids = memoryRepository.idsFor(TimelineFilter(personIds = setOf(person.id))).take(SPOTLIGHT_CANDIDATES)
+            val cards = ids.mapNotNull { memoryRepository.observeCard(it).first() }
+            StoryPage.Spotlight(person, counts[person.id] ?: cards.size, cards.firstOrNull { it.cover != null } ?: cards.firstOrNull())
+        }
+        val ofTheDay = DailyStory.memoryOfTheDayId(memoryRepository.idsFor(TimelineFilter()), today)
+            ?.let { memoryRepository.observeCard(it).first() }
+        return DailyStory.build(rewind, spotlight, ofTheDay)
     }
 
     fun surpriseMe() {
@@ -116,5 +134,7 @@ class ReliveViewModel @Inject constructor(
     companion object {
         /** A random memory is only a surprise once there are a few to pick from. */
         const val SHAKE_HINT_MIN_MEMORIES = 3
+        /** Newest memories of the spotlight person looked at for one with a photo. */
+        const val SPOTLIGHT_CANDIDATES = 8
     }
 }

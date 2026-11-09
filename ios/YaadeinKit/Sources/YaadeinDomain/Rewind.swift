@@ -103,3 +103,58 @@ public enum Covers {
         return result
     }
 }
+
+/// One full-screen page of the daily story at the top of Relive (DailyStory.kt).
+public enum StoryPage: Hashable, Sendable {
+    /// A memory from years ago (`yearsAgo` set) or the memory of the day (`yearsAgo` nil).
+    case moment(card: MemoryCard, yearsAgo: Int?)
+    /// "Remember these with Nana?": a person and one of their memories as the picture.
+    case spotlight(person: Person, memoryCount: Int, card: MemoryCard?)
+
+    public var key: String {
+        switch self {
+        case let .moment(card, yearsAgo): return "m-\(card.memory.id)-\(yearsAgo.map(String.init) ?? "day")"
+        case let .spotlight(person, _, _): return "p-\(person.id)"
+        }
+    }
+}
+
+/// Port of DailyStory.kt: memories from years ago (photos first, at most 4), a person spotlight, the memory of the day.
+public enum DailyStory {
+    public static let maxRewindPages = 4
+    public static let spotlightMinMemories = 2
+
+    public static func build(rewind: RewindResult?, spotlight: StoryPage?, memoryOfTheDay: MemoryCard?) -> [StoryPage] {
+        let items = rewind?.items ?? []
+        // Stable partition: photos first, newest-first order kept inside each group.
+        let ordered = items.filter { $0.card.cover != nil } + items.filter { $0.card.cover == nil }
+        let moments = ordered.prefix(maxRewindPages)
+        var pages = moments.map { StoryPage.moment(card: $0.card, yearsAgo: $0.yearsAgo) }
+        if let spotlight { pages.append(spotlight) }
+        let shown = Set(moments.map(\.card.memory.id))
+        if let day = memoryOfTheDay, !shown.contains(day.memory.id) { pages.append(.moment(card: day, yearsAgo: nil)) }
+        return pages
+    }
+
+    public static func spotlightPerson(_ people: [Person], memoryCounts: [Int64: Int], today: LocalDate) -> Person? {
+        let eligible = people.filter { (memoryCounts[$0.id] ?? 0) >= spotlightMinMemories }.sorted { $0.id < $1.id }
+        guard !eligible.isEmpty else { return nil }
+        return eligible[floorMod(today.epochDay, Int64(eligible.count))]
+    }
+
+    public static func memoryOfTheDayId(_ ids: [Int64], today: LocalDate) -> Int64? {
+        let sorted = Array(Set(ids)).sorted()
+        guard !sorted.isEmpty else { return nil }
+        return sorted[floorMod(mix(today.epochDay), Int64(sorted.count))]
+    }
+
+    private static func floorMod(_ x: Int64, _ m: Int64) -> Int { Int(((x % m) + m) % m) }
+
+    /// SplitMix64 finaliser, bit-for-bit the same as the Kotlin version.
+    private static func mix(_ x: Int64) -> Int64 {
+        var z = UInt64(bitPattern: x) &+ 0x9E37_79B9_7F4A_7C15
+        z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
+        return Int64(bitPattern: z ^ (z >> 31))
+    }
+}

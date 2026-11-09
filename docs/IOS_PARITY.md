@@ -47,6 +47,7 @@
 | Relationships map | ✅ | ✅ | |
 | On this day, surprise me, shake, birthdays, places, years | ✅ | ✅ | |
 | Relive: on this day widened to this week / this month (`Rewind`), "N years ago" labels, year and place photo tiles, one-time shake tip, birthday "Make a reel" within 7 days, surprise reveal + haptic, refresh on return | ✅ | ✅ | same `Rewind` / `Covers` rules and tests on both |
+| Relive daily story (memories from years ago, person spotlight, memory of the day; auto-advance, tap/swipe, pause on hold) | ✅ | ✅ | same `DailyStory` rules; memory of the day pinned by a shared test |
 | Yearly summary | ✅ | ✅ | |
 | Weekly story prompt | ✅ | ✅ | same rotation |
 | Reminders (on this day, birthdays, prompts) | ✅ | 🟡 | iOS schedules 30 days ahead when the app is opened |

@@ -42,4 +42,9 @@
     <string name="relive_shake_hint_title">குலுக்குங்கள், ஆச்சரியம் பெறுங்கள்</string>
     <string name="relive_got_it">சரி</string>
     <string name="relive_birthday_reel">ரீல் உருவாக்கு</string>
+    <string name="relive_story_memory_of_day">இன்றைய நினைவு</string>
+    <string name="relive_story_spotlight">%1$s உடனான இந்த தருணங்கள் நினைவிருக்கிறதா?</string>
+    <string name="relive_story_open">திற</string>
+    <string name="relive_story_see_person">அவர்களின் கதையைப் பார்</string>
+    <string name="relive_story_page">கதை, பக்கம் %1$d / %2$d</string>
 </resources>

@@ -822,4 +822,11 @@ Play Billing for Plus is planned, not built.
 - Strings `relive_this_week`, `relive_this_month`, `relive_years_ago`, `relive_shake_hint_title`, `relive_got_it`,
   `relive_birthday_reel` in all eight locales (non-English machine-assisted); iOS strings regenerated, iOS Relive
   updated to match (parity row added).
+- **Daily story** (top of Relive, `DailyStoryCard` / iOS `DailyStoryView`): full-width 420 dp pages with progress
+  segments, 6 s per page, stops on the last page; tap right/left (mirrored in RTL) or swipe; holding a finger pauses;
+  no autoplay when system animations are off (Android `ANIMATOR_DURATION_SCALE` 0, iOS Reduce Motion). Pages from
+  `core/domain/relive/DailyStory`: up to 4 memories from years ago (photos first), a person spotlight ("Remember these
+  with Nana?", rotates daily among people with ≥ 2 memories, picture from their newest memory with a photo), then the
+  memory of the day (SplitMix64 of the epoch day over sorted ids, pinned to the same picks on both platforms). Photos
+  are decrypted at full size for sharpness; videos use their thumbnail. Strings `relive_story_*` in all eight locales.
 

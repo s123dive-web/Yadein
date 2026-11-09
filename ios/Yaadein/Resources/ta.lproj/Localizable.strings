@@ -515,6 +515,11 @@
 "relive_random_title" = "தற்செயலாகத் தேர்ந்த ஒரு நினைவு";
 "relive_record_story" = "பதிவுசெய்";
 "relive_shake_hint_title" = "குலுக்குங்கள், ஆச்சரியம் பெறுங்கள்";
+"relive_story_memory_of_day" = "இன்றைய நினைவு";
+"relive_story_open" = "திற";
+"relive_story_page" = "கதை, பக்கம் %1$d / %2$d";
+"relive_story_see_person" = "அவர்களின் கதையைப் பார்";
+"relive_story_spotlight" = "%1$@ உடனான இந்த தருணங்கள் நினைவிருக்கிறதா?";
 "relive_surprise" = "ஆச்சரியப்படுத்து";
 "relive_this_month" = "இந்த மாதம், முந்தைய ஆண்டுகளில்";
 "relive_this_week" = "இந்த வாரம், முந்தைய ஆண்டுகளில்";

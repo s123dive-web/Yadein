@@ -42,4 +42,9 @@
     <string name="relive_shake_hint_title">फोन हलवा, सरप्राइज मिळवा</string>
     <string name="relive_got_it">ठीक आहे</string>
     <string name="relive_birthday_reel">रील बनवा</string>
+    <string name="relive_story_memory_of_day">आजची आठवण</string>
+    <string name="relive_story_spotlight">%1$s सोबतचे हे क्षण आठवतात?</string>
+    <string name="relive_story_open">उघडा</string>
+    <string name="relive_story_see_person">त्यांची गोष्ट पाहा</string>
+    <string name="relive_story_page">गोष्ट, पान %1$d / %2$d</string>
 </resources>

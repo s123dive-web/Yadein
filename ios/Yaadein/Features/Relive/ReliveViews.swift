@@ -26,11 +26,13 @@ struct ReliveView: View {
         let places = store?.topPlaces() ?? []
         let years = countsByYear
         let birthdaysFirst = (birthdays.first?.inDays ?? Int.max) <= 1
+        let story = dailyStory(store, rewind, today)
         ScrollView {
             if total == 0 {
                 EmptyState(illustration: .kite, title: L("relive_empty_title"), message: L("relive_empty_message"))
             } else {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
+                    if !story.isEmpty { DailyStoryView(pages: story) }
                     if birthdaysFirst { birthdaysSection(birthdays, store) }
                     promptCard(digest, today)
                     FlowLayout(spacing: Spacing.sm) {
@@ -94,6 +96,18 @@ struct ReliveView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .topBarLeading) { Text(L("relive_title")).font(look.type.headlineMedium).accessibilityAddTraits(.isHeader) } }
         .toolbarBackground(look.colors.surface, for: .navigationBar)
+    }
+
+    /// Memories from years ago, today's person spotlight and the memory of the day (DailyStory).
+    private func dailyStory(_ store: VaultStore?, _ rewind: RewindResult?, _ today: LocalDate) -> [StoryPage] {
+        guard let store else { return [] }
+        let counts = store.memoryCounts()
+        let spotlight = DailyStory.spotlightPerson(store.persons(), memoryCounts: counts, today: today).map { person -> StoryPage in
+            let cards = Array(store.cards(TimelineFilter(personIds: [person.id])).prefix(8))
+            return .spotlight(person: person, memoryCount: counts[person.id] ?? cards.count, card: cards.first { $0.cover != nil } ?? cards.first)
+        }
+        let ofTheDay = DailyStory.memoryOfTheDayId(store.ids(TimelineFilter()), today: today).flatMap { store.card(id: $0) }
+        return DailyStory.build(rewind: rewind, spotlight: spotlight, memoryOfTheDay: ofTheDay)
     }
 
     /// Upcoming birthdays as cards; within a week, one tap makes a reel of that person.
@@ -395,5 +409,131 @@ private struct PhotoTile: View {
         .frame(width: 148, height: 112)
         .clipShape(RoundedRectangle(cornerRadius: Radius.md))
         .accessibilityElement(children: .combine)
+    }
+}
+
+/// The daily story at the top of Relive (DailyStoryCard.kt): full-width pages with progress segments that move on by
+/// themselves (not with Reduce Motion, nor while a finger is held down); tap right for next, left for previous, or swipe.
+private struct DailyStoryView: View {
+    let pages: [StoryPage]
+    @Environment(\.look) private var look
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var index = 0
+    @State private var progress: Double = 0
+    @State private var held = false
+    private static let pageSeconds = 6.0
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            TabView(selection: $index) {
+                ForEach(Array(pages.enumerated()), id: \.element.key) { i, page in
+                    StoryPageView(page: page).tag(i)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .simultaneousGesture(
+                SpatialTapGesture().onEnded { value in
+                    let back = value.location.x < 120
+                    withAnimation(Motion.standard) { index = min(max(index + (back ? -1 : 1), 0), pages.count - 1) }
+                }
+            )
+            .simultaneousGesture(
+                LongPressGesture(minimumDuration: 0.25).onChanged { _ in held = true }.onEnded { _ in held = false }
+            )
+            HStack(spacing: 4) {
+                ForEach(pages.indices, id: \.self) { i in
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(.white.opacity(0.35))
+                            Capsule().fill(.white).frame(width: geo.size.width * (i < index ? 1 : i == index ? progress : 0))
+                        }
+                    }
+                    .frame(height: 3)
+                }
+            }
+            .padding(Spacing.md)
+        }
+        .frame(height: 420)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.xl))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(L("relive_story_page", index + 1, pages.count))
+        .onChange(of: index) { progress = 0 }
+        .task(id: "\(index)-\(held)") { await tick() }
+    }
+
+    /// Fills the current segment and then moves to the next page; stops on the last page.
+    private func tick() async {
+        if reduceMotion { progress = 1; return }
+        let step = 0.05
+        while !Task.isCancelled {
+            if held { return }
+            try? await Task.sleep(nanoseconds: UInt64(step * 1_000_000_000))
+            if Task.isCancelled || held { return }
+            progress = min(1, progress + step / Self.pageSeconds)
+            if progress >= 1 {
+                if index < pages.count - 1 { progress = 0; withAnimation(Motion.standard) { index += 1 } }
+                return
+            }
+        }
+    }
+}
+
+private struct StoryPageView: View {
+    let page: StoryPage
+    @Environment(AppModel.self) private var model
+    @Environment(\.look) private var look
+
+    var body: some View {
+        let card: MemoryCard? = {
+            switch page {
+            case let .moment(card, _): return card
+            case let .spotlight(_, _, card): return card
+            }
+        }()
+        ZStack(alignment: .bottomLeading) {
+            SwiftUI.Group {
+                if let cover = card?.cover {
+                    VaultImage(path: cover.kind == .VIDEO ? cover.thumbPath : cover.encryptedPath, full: cover.kind != .VIDEO)
+                } else {
+                    CoverArt(style: card?.memory.coverStyle ?? CoverStyle.defaultStyle, seed: card?.memory.id ?? 0)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .clipped()
+            LinearGradient(stops: [.init(color: .black.opacity(0.35), location: 0), .init(color: .clear, location: 0.35),
+                                   .init(color: .clear, location: 0.55), .init(color: .black.opacity(0.8), location: 1)],
+                           startPoint: .top, endPoint: .bottom)
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                switch page {
+                case let .moment(card, yearsAgo):
+                    Text(yearsAgo.map { LP("relive_years_ago", $0) } ?? L("relive_story_memory_of_day")).font(look.type.labelLarge).opacity(0.9)
+                    Text(card.memory.title).font(look.type.headlineSmall).lineLimit(2)
+                    let details = [memoryDateText(card.memory.date), card.memory.place, card.people.prefix(3).map(\.displayName).joined(separator: ", ")]
+                        .filter { !$0.isEmpty }.joined(separator: " · ")
+                    if !details.isEmpty { Text(details).font(look.type.bodyMedium).opacity(0.85).lineLimit(2) }
+                    NavigationLink(value: Route.memory(card.memory.id)) { storyButton(L("relive_story_open")) }.buttonStyle(.plain)
+                case let .spotlight(person, count, _):
+                    HStack(spacing: Spacing.md) {
+                        PersonAvatar(person: person, size: look.sizes.avatarLg)
+                        VStack(alignment: .leading) {
+                            Text(L("relive_story_spotlight", person.displayName)).font(look.type.headlineSmall).lineLimit(2)
+                            Text(LP("memory_count", count)).font(look.type.bodyMedium).opacity(0.85)
+                        }
+                    }
+                    NavigationLink(value: Route.person(person.id)) { storyButton(L("relive_story_see_person")) }.buttonStyle(.plain)
+                }
+            }
+            .foregroundStyle(.white)
+            .padding(Spacing.lg)
+        }
+    }
+
+    private func storyButton(_ text: String) -> some View {
+        Label(text, systemImage: "arrow.forward")
+            .labelStyle(.titleAndIcon)
+            .font(look.type.labelLarge)
+            .padding(.horizontal, Spacing.lg).padding(.vertical, Spacing.sm)
+            .background(Capsule().fill(.white))
+            .foregroundStyle(.black)
     }
 }

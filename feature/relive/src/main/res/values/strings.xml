@@ -42,4 +42,9 @@
     <string name="relive_shake_hint_title">Shake for a surprise</string>
     <string name="relive_got_it">Got it</string>
     <string name="relive_birthday_reel">Make a reel</string>
+    <string name="relive_story_memory_of_day">Memory of the day</string>
+    <string name="relive_story_spotlight">Remember these with %1$s?</string>
+    <string name="relive_story_open">Open</string>
+    <string name="relive_story_see_person">See their story</string>
+    <string name="relive_story_page">Story, page %1$d of %2$d</string>
 </resources>

@@ -72,4 +72,43 @@ final class RewindTests: XCTestCase {
         XCTAssertEqual(20, picks[2025]?.mediaId)
         XCTAssertEqual(CoverPick(memoryId: 4, mediaId: nil, coverStyle: "rain"), picks[2024])
     }
+
+    // MARK: - DailyStory (mirrors DailyStoryTest.kt)
+
+    func photoCard(_ id: Int64) -> MemoryCard {
+        MemoryCard(memory: Memory(id: id, type: .EVENT, title: "m\(id)", date: Dates.exact(.of(2020, 11, 9))), people: [],
+                   cover: Media(id: id * 10, memoryId: id, kind: .PHOTO, encryptedPath: "", thumbPath: "", sizeBytes: 1, width: 1, height: 1, sha256: ""),
+                   mediaCount: 1)
+    }
+
+    func testStoryPutsPhotosFirstAndCaps() {
+        let cards = [exact(1, 2020, 11, 9), photoCard(2), exact(3, 2020, 11, 9), photoCard(4), exact(5, 2020, 11, 9), exact(6, 2020, 11, 9)]
+        let rewind = RewindResult(scope: .DAY, items: cards.enumerated().map { RewindItem(card: $1, yearsAgo: $0 + 1) })
+        let pages = DailyStory.build(rewind: rewind, spotlight: nil, memoryOfTheDay: nil)
+        XCTAssertEqual(["m-2-2", "m-4-4", "m-1-1", "m-3-3"], pages.map(\.key))
+    }
+
+    func testStorySpotlightThenMemoryOfTheDayWithoutRepeats() {
+        let spotlight = StoryPage.spotlight(person: Person(id: 7, name: "Nana"), memoryCount: 5, card: exact(9, 2020, 1, 1))
+        let rewind = RewindResult(scope: .WEEK, items: [RewindItem(card: exact(1, 2024, 11, 10), yearsAgo: 2)])
+        XCTAssertEqual(["m-1-2", "p-7", "m-8-day"], DailyStory.build(rewind: rewind, spotlight: spotlight, memoryOfTheDay: exact(8, 2020, 1, 1)).map(\.key))
+        XCTAssertEqual(2, DailyStory.build(rewind: rewind, spotlight: spotlight, memoryOfTheDay: exact(1, 2024, 11, 10)).count)
+        XCTAssertTrue(DailyStory.build(rewind: nil, spotlight: nil, memoryOfTheDay: nil).isEmpty)
+    }
+
+    func testSpotlightRotatesAmongPeopleWithEnoughMemories() {
+        let people = [Person(id: 3, name: "C"), Person(id: 1, name: "A"), Person(id: 2, name: "B")]
+        let counts: [Int64: Int] = [1: 5, 2: 1, 3: 2]
+        let picks = (0..<4).map { DailyStory.spotlightPerson(people, memoryCounts: counts, today: today.plusDays(Int64($0)))!.id }
+        XCTAssertTrue(picks.allSatisfy { $0 == 1 || $0 == 3 })
+        XCTAssertNotEqual(picks[0], picks[1])
+        XCTAssertNil(DailyStory.spotlightPerson(people, memoryCounts: [2: 1], today: today))
+    }
+
+    func testMemoryOfTheDayMatchesAndroid() {
+        let ids = Array(Int64(1)...Int64(50))
+        XCTAssertEqual([44, 49, 38], (0..<3).map { DailyStory.memoryOfTheDayId(ids, today: today.plusDays(Int64($0))) })
+        XCTAssertEqual(DailyStory.memoryOfTheDayId(ids, today: today), DailyStory.memoryOfTheDayId(ids.shuffled(), today: today))
+        XCTAssertNil(DailyStory.memoryOfTheDayId([], today: today))
+    }
 }

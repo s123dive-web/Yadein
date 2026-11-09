@@ -515,6 +515,11 @@
 "relive_random_title" = "ಯಾದೃಚ್ಛಿಕವಾಗಿ ಆರಿಸಿದ ಒಂದು ನೆನಪು";
 "relive_record_story" = "ರೆಕಾರ್ಡ್ ಮಾಡಿ";
 "relive_shake_hint_title" = "ಫೋನ್ ಅಲುಗಾಡಿಸಿ, ಸರ್ಪ್ರೈಸ್ ಪಡೆಯಿರಿ";
+"relive_story_memory_of_day" = "ಇಂದಿನ ನೆನಪು";
+"relive_story_open" = "ತೆರೆಯಿರಿ";
+"relive_story_page" = "ಕಥೆ, ಪುಟ %1$d / %2$d";
+"relive_story_see_person" = "ಅವರ ಕಥೆ ನೋಡಿ";
+"relive_story_spotlight" = "%1$@ ಜೊತೆಗಿನ ಈ ಕ್ಷಣಗಳು ನೆನಪಿವೆಯೇ?";
 "relive_surprise" = "ಅಚ್ಚರಿ ತೋರಿಸಿ";
 "relive_this_month" = "ಈ ತಿಂಗಳು, ಹಿಂದಿನ ವರ್ಷಗಳಲ್ಲಿ";
 "relive_this_week" = "ಈ ವಾರ, ಹಿಂದಿನ ವರ್ಷಗಳಲ್ಲಿ";

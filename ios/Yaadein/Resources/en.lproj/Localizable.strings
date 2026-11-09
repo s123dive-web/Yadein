@@ -515,6 +515,11 @@
 "relive_random_title" = "A memory, picked at random";
 "relive_record_story" = "Record it";
 "relive_shake_hint_title" = "Shake for a surprise";
+"relive_story_memory_of_day" = "Memory of the day";
+"relive_story_open" = "Open";
+"relive_story_page" = "Story, page %1$d of %2$d";
+"relive_story_see_person" = "See their story";
+"relive_story_spotlight" = "Remember these with %1$@?";
 "relive_surprise" = "Surprise me";
 "relive_this_month" = "This month, years ago";
 "relive_this_week" = "This week, years ago";

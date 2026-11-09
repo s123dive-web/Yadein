@@ -515,6 +515,11 @@
 "relive_random_title" = "એક યાદ, અચાનક પસંદ કરેલી";
 "relive_record_story" = "રેકોર્ડ કરો";
 "relive_shake_hint_title" = "ફોન હલાવો, સરપ્રાઇઝ મેળવો";
+"relive_story_memory_of_day" = "આજની યાદ";
+"relive_story_open" = "ખોલો";
+"relive_story_page" = "વાર્તા, પાનું %1$d / %2$d";
+"relive_story_see_person" = "તેમની વાર્તા જુઓ";
+"relive_story_spotlight" = "%1$@ સાથેની આ પળો યાદ છે?";
 "relive_surprise" = "મને સરપ્રાઇઝ આપો";
 "relive_this_month" = "આ મહિને, પાછલાં વર્ષોમાં";
 "relive_this_week" = "આ અઠવાડિયે, પાછલાં વર્ષોમાં";
