@@ -7,7 +7,12 @@ import java.time.LocalDate
 /** One full-screen page of the daily story at the top of Relive. */
 sealed interface StoryPage {
     /** A memory from years ago ([yearsAgo] set) or the memory of the day ([yearsAgo] null). */
-    data class Moment(val card: MemoryCard, val yearsAgo: Int?) : StoryPage
+    data class Moment(
+        val card: MemoryCard,
+        val yearsAgo: Int?,
+        /** The photo to show instead of the memory's cover (in a person's story: one that shows them). */
+        val mediaId: Long? = null,
+    ) : StoryPage
 
     /** "Remember these with Nana?": someone the story brings back today, with one of their memories as the picture. */
     data class Spotlight(val person: Person, val memoryCount: Int, val card: MemoryCard?) : StoryPage

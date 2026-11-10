@@ -7,6 +7,8 @@ import com.yaadein.domain.relive.CoverPick
 import com.yaadein.domain.relive.DailyStory
 import com.yaadein.domain.relive.Festivals
 import com.yaadein.domain.relive.Milestones
+import com.yaadein.domain.relive.PersonPhotos
+import com.yaadein.domain.relive.ThenNowPair
 import com.yaadein.domain.relive.Rewind
 import com.yaadein.domain.relive.RingKind
 import com.yaadein.domain.relive.RingPlace
@@ -61,9 +63,13 @@ class StoryLoader @Inject constructor(
             when (ring.kind) {
                 RingKind.TODAY -> listOfNotNull(yearCovers.maxByOrNull { it.key }?.value)
                 RingKind.PERSON -> ring.person?.let { person ->
-                    // Their own profile photo first, then their memories, newest first.
+                    // Their own profile photo first, then photos they are known to be in (newest memory first), and only
+                    // then the covers of memories they are tagged on.
+                    val cards = cardsOf(person)
+                    val shownIn = memoryRepository.photosShowingPerson(person.id)
                     listOfNotNull(person.profileMediaId?.let { CoverPick(memoryId = 0L, mediaId = it, coverStyle = CoverStyle.DEFAULT) }) +
-                        cardsOf(person).map { it.toCover() }
+                        cards.flatMap { card -> shownIn[card.memory.id].orEmpty().map { CoverPick(card.memory.id, it, card.memory.coverStyle) } } +
+                        cards.map { it.toCover() }
                 }.orEmpty()
                 RingKind.YEAR -> listOfNotNull(yearCovers[ring.year]) + memoryRepository.cardsForYear(ring.year ?: today.year).map { it.toCover() }
                 RingKind.FESTIVAL -> festivalCards.map { it.toCover() }
@@ -121,7 +127,7 @@ class StoryLoader @Inject constructor(
             // Then & Now: the spotlight person first, then anyone with a ring, then today's place.
             val candidates = listOfNotNull(spotlightPerson) + StoryRings.people(people, personRepository.photoMemoryCounts(), today)
             val personPair = candidates.distinctBy { it.id }.firstNotNullOfOrNull { person ->
-                ThenAndNow.pick(memoryRepository.datedPhotosOfPerson(person.id), today)?.let { StoryPage.ThenNow(it, person = person) }
+                thenAndNowOf(person, memoryRepository.photosShowingPerson(person.id), today)?.let { StoryPage.ThenNow(it, person = person) }
             }
             val pair = personPair ?: StoryRings.place(memoryRepository.topPlaces().map { (place, n) -> RingPlace(place, n) }, today)?.let { place ->
                 ThenAndNow.pick(memoryRepository.datedPhotosAtPlace(place), today)?.let { StoryPage.ThenNow(it, place = place) }
@@ -139,12 +145,22 @@ class StoryLoader @Inject constructor(
 
     private suspend fun personPages(person: Person, today: LocalDate, now: Long): List<StoryPage> {
         val cards = cardsOf(person)
+        // A tag on a memory does not mean they are in its cover photo: prefer photos they are known to be in.
+        val shownIn = memoryRepository.photosShowingPerson(person.id)
+        val moments = PersonPhotos.select(cards, shownIn, memoryRepository.memoriesWithFaces(), PERSON_MEMORIES, today, now)
         return buildList {
-            addAll(moments(cards, today, now, limit = PERSON_MEMORIES))
-            ThenAndNow.pick(memoryRepository.datedPhotosOfPerson(person.id), today)?.let { add(StoryPage.ThenNow(it, person = person)) }
+            addAll(moments.map { StoryPage.Moment(it.card, yearsAgo = null, mediaId = it.mediaId) })
+            thenAndNowOf(person, shownIn, today)?.let { add(StoryPage.ThenNow(it, person = person)) }
             val first = personRepository.observeStory(person.id, today.toEpochDay()).first()?.firstMemory?.date?.startEpochDay
             Milestones.yearsWith(person.id, first, today)?.let { add(StoryPage.Milestone(it, cards.lastOrNull { c -> c.cover != null } ?: cards.lastOrNull(), person = person)) }
         }
+    }
+
+    /** Then & Now from photos the person is known to be in when those give a pair; otherwise from their memories' photos. */
+    private suspend fun thenAndNowOf(person: Person, shownIn: Map<Long, List<Long>>, today: LocalDate): ThenNowPair? {
+        val all = memoryRepository.datedPhotosOfPerson(person.id)
+        val known = shownIn.values.flatten().toSet()
+        return ThenAndNow.pick(all.filter { it.mediaId in known }, today) ?: ThenAndNow.pick(all, today)
     }
 
     private suspend fun placePages(place: String, today: LocalDate, now: Long): List<StoryPage> {

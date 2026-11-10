@@ -136,6 +136,11 @@ class MemoryRepositoryImpl @Inject constructor(
     override suspend fun datedPhotosOfPerson(personId: Long): List<com.yaadein.domain.relive.DatedPhoto> =
         mediaDao.datedPhotosOfPerson(personId, THEN_NOW_LIMIT).map { com.yaadein.domain.relive.DatedPhoto(it.mediaId, it.memoryId, it.epochDay) }
 
+    override suspend fun photosShowingPerson(personId: Long): Map<Long, List<Long>> =
+        mediaDao.photosShowingPerson(personId, THEN_NOW_LIMIT).groupBy({ it.memoryId }, { it.mediaId })
+
+    override suspend fun memoriesWithFaces(): Set<Long> = mediaDao.memoryIdsWithFaces().toSet()
+
     override suspend fun datedPhotosAtPlace(place: String): List<com.yaadein.domain.relive.DatedPhoto> =
         mediaDao.datedPhotosAtPlace(place, THEN_NOW_LIMIT).map { com.yaadein.domain.relive.DatedPhoto(it.mediaId, it.memoryId, it.epochDay) }
 

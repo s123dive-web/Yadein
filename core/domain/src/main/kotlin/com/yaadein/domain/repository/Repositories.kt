@@ -98,6 +98,13 @@ interface MemoryRepository {
     suspend fun markOpened(id: Long)
     /** Photos of memories [personId] is tagged in (or photos tagged with them), with their memory's day; for Then & Now. */
     suspend fun datedPhotosOfPerson(personId: Long): List<com.yaadein.domain.relive.DatedPhoto>
+    /**
+     * Memory id → the photos of that memory [personId] is known to be in (tagged on the photo, or their face confirmed
+     * or recognised in it), in album order. A memory they are only tagged on as a whole is not in the map.
+     */
+    suspend fun photosShowingPerson(personId: Long): Map<Long, List<Long>>
+    /** Ids of the memories in which face recognition has found at least one face. */
+    suspend fun memoriesWithFaces(): Set<Long>
     /** Photos of memories at [place] (compared trimmed, ignoring case), with their memory's day; for Then & Now. */
     suspend fun datedPhotosAtPlace(place: String): List<com.yaadein.domain.relive.DatedPhoto>
 }
