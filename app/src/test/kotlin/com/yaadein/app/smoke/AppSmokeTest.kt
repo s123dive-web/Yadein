@@ -135,21 +135,29 @@ class AppSmokeTest {
         org.junit.Assert.assertEquals(0, runBlocking { persons.count() })
     }
 
+    private fun oneMemoryWithAPerson() = runBlocking {
+        val aai = persons.upsert(com.yaadein.domain.model.Person(name = "Sunita Deshmukh", nickname = "Aai"))
+        memories.create(com.yaadein.domain.model.Memory(type = com.yaadein.domain.model.MemoryType.TEXT_ONLY, title = "Diwali at home", date = com.yaadein.domain.dates.Dates.year(2024)), listOf(aai))
+    }
+
     @Test
-    fun `without a lock the first memory offers protection once, then a card that opens lock setup`() {
-        runBlocking {
-            val aai = persons.upsert(com.yaadein.domain.model.Person(name = "Sunita Deshmukh", nickname = "Aai"))
-            memories.create(com.yaadein.domain.model.Memory(type = com.yaadein.domain.model.MemoryType.TEXT_ONLY, title = "Diwali at home", date = com.yaadein.domain.dates.Dates.year(2024)), listOf(aai))
-        }
+    fun `without a lock the first memory offers protection over the timeline`() {
+        oneMemoryWithAPerson()
         relaunchWith { it.copy(pinConfigured = false) }
         compose.waitUntil(10_000) { shown("Protect these memories?") }
-        // The timeline is already there underneath: the sheet does not block the first look.
+        // The timeline is already there underneath: the sheet does not block the first look, and no lock screen is forced.
         org.junit.Assert.assertTrue(shown("Diwali at home"))
-        compose.onNode(hasText("Not now") and hasClickAction()).performClick()
-        compose.waitUntil(10_000) { runBlocking { settings.current() }.lockPromptPostponed }
+        compose.onAllNodesWithText("Choose a 6-digit PIN").assertCountEquals(0)
+        compose.onNodeWithText("Not now").assertExists()
+    }
+
+    @Test
+    fun `after the lock offer is put off a home card stays and opens lock setup`() {
+        oneMemoryWithAPerson()
+        relaunchWith { it.copy(pinConfigured = false, lockPromptPostponed = true) }
         compose.waitUntil(10_000) { shown("Your memories have no lock yet") }
-        compose.waitUntil(10_000) { !shown("Protect these memories?") && compose.onAllNodesWithText("Set a PIN").fetchSemanticsNodes().size == 1 }
-        compose.onNode(hasText("Set a PIN") and hasClickAction()).performSemanticsAction(SemanticsActions.OnClick)
+        compose.onAllNodesWithText("Protect these memories?").assertCountEquals(0)
+        compose.onNode(hasText("Set a PIN") and hasClickAction()).performClick()
         compose.waitUntil(10_000) { shown("Choose a 6-digit PIN") }
     }
 
