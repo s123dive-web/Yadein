@@ -223,4 +223,34 @@
     <string name="pack_added_text">%1$dটি স্মৃতি যোগ হয়েছে, %2$d জন নতুন মানুষ।</string>
     <string name="appearance_language">ভাষা</string>
     <string name="appearance_language_help">Yaadein-এর ভাষা বেছে নিন: ইংরেজি, হিন্দি, মারাঠি, গুজরাটি, তামিল, তেলুগু, বাংলা বা কন্নড়।</string>
+    <!-- Settings → How I use Yaadein (Fast & Rich, Phase 4) -->
+    <string name="settings_usage">আমি Yaadein কীভাবে ব্যবহার করি</string>
+    <string name="settings_usage_subtitle">আপনার নিজের সময়ের হিসাব, এই ফোনেই</string>
+    <string name="usage_intro">স্মৃতি যোগ করতে সত্যিই তিনটি ট্যাপ আর দশ সেকেন্ড লাগে কি না তা আপনি দেখতে পারেন, সেজন্য Yaadein প্রতিটি সেভের সময় এই ফোনেই মাপে। এখান থেকে কিছুই ফোনের বাইরে যায় না।</string>
+    <string name="usage_empty_title">এখনও কোনও সেভ মাপা হয়নি</string>
+    <string name="usage_empty_message">+ বোতাম দিয়ে একটি স্মৃতি যোগ করে ফিরে আসুন; সময়গুলো এখানে দেখা যাবে।</string>
+    <plurals name="usage_captures"><item quantity="one">%1$dটি স্মৃতি সেভ হয়েছে</item><item quantity="other">%1$dটি স্মৃতি সেভ হয়েছে</item></plurals>
+    <string name="usage_captures_help">সময় মাপা শুরু হওয়ার পর থেকে</string>
+    <plurals name="usage_items"><item quantity="one">%1$dটি ছবি বা ক্লিপ</item><item quantity="other">%1$dটি ছবি ও ক্লিপ</item></plurals>
+    <string name="usage_items_help">সেই সেভগুলোর মাধ্যমে যোগ হয়েছে</string>
+    <string name="usage_tap_to_save">+ ট্যাপ করা থেকে সেভ পর্যন্ত</string>
+    <string name="usage_save_to_encrypted">সেভ থেকে সব এনক্রিপ্ট হওয়া পর্যন্ত</string>
+    <string name="usage_typical">সাধারণত</string>
+    <string name="usage_slowest">১০-এর মধ্যে সবচেয়ে ধীর ১টি</string>
+    <string name="usage_not_yet">এখনও যথেষ্ট সেভ হয়নি।</string>
+    <string name="usage_within_budget">%1$d%% সেভ দশ সেকেন্ড বা তার কমে হয়েছে।</string>
+    <string name="usage_seconds_decimal">%1$.1f সে.</string>
+    <string name="usage_seconds">%1$d সে.</string>
+    <string name="usage_minutes">%1$d মি.</string>
+    <string name="usage_sparkline_cd">শেষ %1$dটি সেভের সময়ের চার্ট</string>
+    <string name="usage_weeks">প্রতি সপ্তাহে সেভ</string>
+    <string name="usage_weeks_cd">প্রতি সপ্তাহের সেভের বার চার্ট, মোট %1$dটি</string>
+    <string name="usage_weeks_ago">%1$d সপ্তাহ আগে</string>
+    <string name="usage_this_week">এই সপ্তাহে</string>
+    <string name="usage_by_entry">সেভ কীভাবে শুরু হয়েছে</string>
+    <string name="usage_entry_fab">+ বোতাম</string>
+    <string name="usage_entry_share">অন্য অ্যাপ থেকে শেয়ার করা</string>
+    <string name="usage_entry_hub">যোগ করার আরও উপায়</string>
+    <string name="usage_entry_widget">হোম-স্ক্রিন উইজেট</string>
+    <string name="usage_privacy">এই সংখ্যাগুলো আপনার এনক্রিপ্ট করা ভল্টে রাখা থাকে এবং কোথাও পাঠানো হয় না। স্টোরেজে “সব মুছে ফেলুন” দিয়ে এগুলো মুছে দিন।</string>
 </resources>

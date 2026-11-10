@@ -403,6 +403,38 @@
             <string>%1$d వీడియోలు</string>
         </dict>
     </dict>
+    <key>usage_captures</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d జ్ఞాపకం సేవ్ అయింది</string>
+            <key>other</key>
+            <string>%1$d జ్ఞాపకాలు సేవ్ అయ్యాయి</string>
+        </dict>
+    </dict>
+    <key>usage_items</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ఫోటో లేదా క్లిప్</string>
+            <key>other</key>
+            <string>%1$d ఫోటోలు, క్లిప్‌లు</string>
+        </dict>
+    </dict>
     <key>who_named</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

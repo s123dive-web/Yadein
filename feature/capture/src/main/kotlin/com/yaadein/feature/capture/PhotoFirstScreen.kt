@@ -66,6 +66,7 @@ import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.grouping.PhotoGrouper
 import com.yaadein.domain.grouping.PickedItem
 import com.yaadein.domain.grouping.SuggestedGroup
+import com.yaadein.domain.model.DateKind
 import com.yaadein.domain.model.Memory
 import com.yaadein.domain.model.MemoryDate
 import com.yaadein.domain.model.MemoryType
@@ -125,23 +126,54 @@ class PhotoFirstViewModel @Inject constructor(
         QuickSaveInbox.takeForSplit()?.let { uris -> _state.update { it.copy(picking = false) }; onPicked(uris) }
     }
 
+    /**
+     * First pick: the photos are grouped into drafts. "Pick more": photos already on the screen are skipped (the strip is
+     * keyed by URI), the new ones are grouped, and each new group folds into the existing draft whose days it touches
+     * (title, date range, people and any merge/split the user did are kept) or becomes a new draft in date order.
+     */
     fun onPicked(uris: List<Uri>) {
-        if (uris.isEmpty()) { _state.update { it.copy(picking = false) }; return }
+        val fresh = PickMerging.fresh(uris, byKey.keys) { it.toString() }
+        if (fresh.isEmpty()) { _state.update { it.copy(picking = false) }; return }
         viewModelScope.launch {
             _state.update { it.copy(picking = false, inspecting = true) }
+            val optimize = settingsRepository.current().storeOptimizedCopies
             val accepted = ArrayList<PickedMedia>()
             val rejected = ArrayList<ImportFailure>()
-            for (uri in uris) {
+            for (uri in fresh) {
                 val p = importer.inspect(uri)
                 if (p == null) { rejected += ImportFailure.Unsupported; continue }
-                val limit = importer.checkLimit(p)
+                val limit = importer.checkLimit(p, optimize)
                 if (limit != null) rejected += limit else accepted += p
             }
             accepted.forEach { byKey[it.uri.toString()] = it }
             val groups = PhotoGrouper.group(accepted.map { PickedItem(it.uri.toString(), it.takenAtMillis, it.isVideo) })
-            val drafts = groups.map { toDraft(it) }
-            _state.update { it.copy(inspecting = false, drafts = drafts, rejected = it.rejected + rejected) }
+            _state.update { s ->
+                var drafts = s.drafts
+                for (group in groups) drafts = addGroup(drafts, group)
+                s.copy(inspecting = false, drafts = drafts, rejected = s.rejected + rejected)
+            }
         }
+    }
+
+    /** Folds [group] into the draft whose days it touches, else inserts it as a new draft (newest first, undated last). */
+    private fun addGroup(drafts: List<DraftMemory>, group: SuggestedGroup): List<DraftMemory> {
+        val start = group.startDate?.toEpochDay()
+        val end = group.endDate?.toEpochDay() ?: start
+        if (start != null && end != null) {
+            val ranges = drafts.map { d -> if (d.date.kind == DateKind.EXACT) d.date.startEpochDay..(d.date.endEpochDay ?: d.date.startEpochDay) else null }
+            val at = PickMerging.foldTarget(ranges, start, end)
+            if (at >= 0) {
+                val target = drafts[at]
+                val items = (target.items + group.items.mapNotNull { byKey[it.key] }).sortedBy { it.takenAtMillis ?: Long.MAX_VALUE }
+                val first = minOf(target.date.startEpochDay, start)
+                val last = maxOf(target.date.endEpochDay ?: target.date.startEpochDay, end)
+                val date = Dates.exact(LocalDate.ofEpochDay(first), LocalDate.ofEpochDay(last))
+                return drafts.toMutableList().apply { set(at, target.copy(items = items, date = date)) }
+            }
+        }
+        val draft = toDraft(group)
+        val index = if (start == null) drafts.size else drafts.indexOfFirst { it.date.kind == DateKind.EXACT && it.date.startEpochDay < start }.let { if (it < 0) drafts.size else it }
+        return drafts.toMutableList().apply { add(index, draft) }
     }
 
     private fun toDraft(group: SuggestedGroup): DraftMemory {
@@ -163,7 +195,11 @@ class PhotoFirstViewModel @Inject constructor(
     fun setTitle(key: Long, title: String) = updateDraft(key) { it.copy(title = title) }
     fun setDate(key: Long, date: MemoryDate) = updateDraft(key) { it.copy(date = date) }
     fun togglePerson(key: Long, personId: Long) = updateDraft(key) { it.copy(selectedPeople = if (personId in it.selectedPeople) it.selectedPeople - personId else it.selectedPeople + personId) }
-    fun remove(key: Long) = _state.update { it.copy(drafts = it.drafts.filterNot { d -> d.key == key }) }
+    fun remove(key: Long) {
+        // Forget the removed photos so that picking one of them again brings it back (outside update {}, which may retry).
+        _state.value.drafts.firstOrNull { it.key == key }?.items?.forEach { byKey.remove(it.uri.toString()) }
+        _state.update { s -> s.copy(drafts = s.drafts.filterNot { d -> d.key == key }) }
+    }
     fun dismissRejected() = _state.update { it.copy(rejected = emptyList()) }
 
     /** Merges a draft into the previous (newer) one. */

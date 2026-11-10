@@ -403,6 +403,38 @@
             <string>%1$dটি ভিডিও</string>
         </dict>
     </dict>
+    <key>usage_captures</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি স্মৃতি সেভ হয়েছে</string>
+            <key>other</key>
+            <string>%1$dটি স্মৃতি সেভ হয়েছে</string>
+        </dict>
+    </dict>
+    <key>usage_items</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি ছবি বা ক্লিপ</string>
+            <key>other</key>
+            <string>%1$dটি ছবি ও ক্লিপ</string>
+        </dict>
+    </dict>
     <key>who_named</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

@@ -28,6 +28,7 @@ import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PrivacyTip
 import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -53,7 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.settings.UserSettings
 
-enum class SettingsPage { APPEARANCE, SECURITY, STORAGE, BACKUP, NOTIFICATIONS, FACES, PRIVACY, ABOUT, CRASH_LOG, UPDATE, APP_INFO }
+enum class SettingsPage { APPEARANCE, SECURITY, STORAGE, BACKUP, NOTIFICATIONS, FACES, USAGE, PRIVACY, ABOUT, CRASH_LOG, UPDATE, APP_INFO }
 
 @Composable
 fun SettingsRoute(
@@ -99,6 +100,7 @@ fun SettingsScreen(
             SettingsRow(Icons.Rounded.Face, stringResource(R.string.settings_faces), stringResource(R.string.settings_faces_subtitle)) { onOpen(SettingsPage.FACES) }
             SettingsRow(Icons.Rounded.Storage, stringResource(R.string.settings_storage), stringResource(R.string.settings_storage_subtitle)) { onOpen(SettingsPage.STORAGE) }
             SettingsRow(Icons.Rounded.Backup, stringResource(R.string.settings_backup), stringResource(R.string.settings_backup_subtitle)) { onOpen(SettingsPage.BACKUP) }
+            SettingsRow(Icons.Rounded.Timer, stringResource(R.string.settings_usage), stringResource(R.string.settings_usage_subtitle)) { onOpen(SettingsPage.USAGE) }
             HorizontalDivider(modifier = Modifier.padding(horizontal = spacing.gutter))
             SettingsRow(Icons.Rounded.PrivacyTip, stringResource(R.string.settings_privacy), stringResource(R.string.settings_privacy_subtitle)) { onOpen(SettingsPage.PRIVACY) }
             SettingsRow(Icons.Rounded.BugReport, stringResource(R.string.settings_crash_log), stringResource(R.string.settings_crash_log_subtitle)) { onOpen(SettingsPage.CRASH_LOG) }

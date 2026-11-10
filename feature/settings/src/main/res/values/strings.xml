@@ -223,4 +223,34 @@
     <string name="pack_added_text">%1$d memories added, %2$d new people.</string>
     <string name="appearance_language">Language</string>
     <string name="appearance_language_help">Choose Yaadein\'s language: English, Hindi, Marathi, Gujarati, Tamil, Telugu, Bengali or Kannada.</string>
+    <!-- Settings → How I use Yaadein (Fast & Rich, Phase 4) -->
+    <string name="settings_usage">How I use Yaadein</string>
+    <string name="settings_usage_subtitle">Your own timings, kept on this phone</string>
+    <string name="usage_intro">Yaadein times each save on this phone so you can see whether adding a memory really takes three taps and ten seconds. Nothing here leaves the phone.</string>
+    <string name="usage_empty_title">No saves measured yet</string>
+    <string name="usage_empty_message">Add a memory with the + button and come back; the timings appear here.</string>
+    <plurals name="usage_captures"><item quantity="one">%1$d memory saved</item><item quantity="other">%1$d memories saved</item></plurals>
+    <string name="usage_captures_help">Since timings started</string>
+    <plurals name="usage_items"><item quantity="one">%1$d photo or clip</item><item quantity="other">%1$d photos and clips</item></plurals>
+    <string name="usage_items_help">Added through those saves</string>
+    <string name="usage_tap_to_save">From tapping + to Save</string>
+    <string name="usage_save_to_encrypted">From Save to everything encrypted</string>
+    <string name="usage_typical">typical</string>
+    <string name="usage_slowest">slowest 1 in 10</string>
+    <string name="usage_not_yet">Not enough saves yet.</string>
+    <string name="usage_within_budget">%1$d%% of saves took ten seconds or less.</string>
+    <string name="usage_seconds_decimal">%1$.1f s</string>
+    <string name="usage_seconds">%1$d s</string>
+    <string name="usage_minutes">%1$d min</string>
+    <string name="usage_sparkline_cd">Chart of the last %1$d save times</string>
+    <string name="usage_weeks">Saves per week</string>
+    <string name="usage_weeks_cd">Bar chart of saves per week, %1$d in total</string>
+    <string name="usage_weeks_ago">%1$d weeks ago</string>
+    <string name="usage_this_week">This week</string>
+    <string name="usage_by_entry">How saves started</string>
+    <string name="usage_entry_fab">The + button</string>
+    <string name="usage_entry_share">Shared from another app</string>
+    <string name="usage_entry_hub">More ways to add</string>
+    <string name="usage_entry_widget">Home-screen widget</string>
+    <string name="usage_privacy">These numbers are stored in your encrypted vault and are never sent anywhere. Delete them with “Erase everything” in Storage.</string>
 </resources>

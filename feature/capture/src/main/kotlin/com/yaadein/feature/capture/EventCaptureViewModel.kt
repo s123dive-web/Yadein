@@ -103,18 +103,26 @@ class EventCaptureViewModel @Inject constructor(
     fun removePending(uri: Uri) = _state.update { it.copy(pending = it.pending.filterNot { p -> p.uri == uri }) }
     fun dismissRejected() = _state.update { it.copy(rejected = emptyList()) }
 
-    /** Inspects picked URIs, enforcing size limits up front with a clear message. */
+    /**
+     * Inspects picked URIs, enforcing size limits up front with a clear message. A photo that is already attached (or
+     * picked twice in one go) is kept once: the media strip is keyed by URI and would crash on a duplicate key.
+     */
     fun onPicked(uris: List<Uri>) {
         viewModelScope.launch {
+            val fresh = PickMerging.fresh(uris, _state.value.pending.map { it.uri.toString() }.toSet()) { it.toString() }
+            val optimize = _state.value.optimize
             val accepted = ArrayList<PickedMedia>()
             val rejected = ArrayList<ImportFailure>()
-            for (uri in uris) {
+            for (uri in fresh) {
                 val picked = importer.inspect(uri)
                 if (picked == null) { rejected += ImportFailure.Unsupported; continue }
-                val limit = importer.checkLimit(picked)
+                val limit = importer.checkLimit(picked, optimize)
                 if (limit != null) rejected += limit else accepted += picked
             }
-            _state.update { it.copy(pending = it.pending + accepted, rejected = it.rejected + rejected) }
+            _state.update { s ->
+                val known = s.pending.map { it.uri.toString() }.toSet()
+                s.copy(pending = s.pending + accepted.filter { it.uri.toString() !in known }, rejected = s.rejected + rejected)
+            }
             // Suggest a date from the photos when the user has not changed it from today.
             val earliest = accepted.mapNotNull { it.takenAtMillis }.minOrNull()
             if (earliest != null && _state.value.isNew && _state.value.date == Dates.exact(LocalDate.now())) {
