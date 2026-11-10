@@ -47,6 +47,7 @@ import com.yaadein.feature.settings.NotificationsRoute
 import com.yaadein.feature.settings.BackupRoute
 import com.yaadein.feature.settings.FacesRoute
 import com.yaadein.feature.settings.PrivacyScreen
+import com.yaadein.feature.settings.UsageRoute
 import com.yaadein.feature.settings.CrashLogScreen
 import com.yaadein.feature.settings.UpdateRoute
 import com.yaadein.feature.settings.AppInfoScreen
@@ -243,6 +244,7 @@ fun AppNavHost(
                 SettingsPage.NOTIFICATIONS -> NotificationsRoute(onBack = { navController.popBackStack() })
                 SettingsPage.BACKUP -> BackupRoute(onBack = { navController.popBackStack() })
                 SettingsPage.FACES -> FacesRoute(onBack = { navController.popBackStack() }, onWhoIsThis = { navController.navigate(Route.WhoIsThis) })
+                SettingsPage.USAGE -> UsageRoute(onBack = { navController.popBackStack() })
                 SettingsPage.PRIVACY -> PrivacyScreen(onBack = { navController.popBackStack() })
                 SettingsPage.CRASH_LOG -> CrashLogScreen(onBack = { navController.popBackStack() })
                 SettingsPage.UPDATE -> if (BuildConfig.SIDELOAD_UPDATES) UpdateRoute(onBack = { navController.popBackStack() }) else AboutRoute(onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = false)

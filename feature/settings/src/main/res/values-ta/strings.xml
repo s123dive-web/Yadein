@@ -223,4 +223,34 @@
     <string name="pack_added_text">%1$d நினைவுகள் சேர்க்கப்பட்டன, %2$d புதிய நபர்கள்.</string>
     <string name="appearance_language">மொழி</string>
     <string name="appearance_language_help">Yaadein மொழியைத் தேர்ந்தெடுங்கள்: ஆங்கிலம், இந்தி, மராத்தி, குஜராத்தி, தமிழ், தெலுங்கு, வங்காளம் அல்லது கன்னடம்.</string>
+    <!-- Settings → How I use Yaadein (Fast & Rich, Phase 4) -->
+    <string name="settings_usage">நான் Yaadein-ஐ எப்படிப் பயன்படுத்துகிறேன்</string>
+    <string name="settings_usage_subtitle">உங்கள் சொந்த நேரக் கணக்குகள், இந்த ஃபோனிலேயே</string>
+    <string name="usage_intro">நினைவு சேர்க்க உண்மையில் மூன்று தட்டல்களும் பத்து வினாடிகளும் ஆகிறதா என்று நீங்கள் பார்க்க, Yaadein ஒவ்வொரு சேமிப்பின் நேரத்தையும் இந்த ஃபோனிலேயே அளக்கிறது. இங்கிருந்து எதுவும் ஃபோனை விட்டு வெளியே போகாது.</string>
+    <string name="usage_empty_title">இன்னும் எந்தச் சேமிப்பும் அளக்கப்படவில்லை</string>
+    <string name="usage_empty_message">+ பொத்தானால் ஒரு நினைவைச் சேர்த்துத் திரும்பி வாருங்கள்; நேரங்கள் இங்கே தெரியும்.</string>
+    <plurals name="usage_captures"><item quantity="one">%1$d நினைவு சேமிக்கப்பட்டது</item><item quantity="other">%1$d நினைவுகள் சேமிக்கப்பட்டன</item></plurals>
+    <string name="usage_captures_help">நேரம் அளக்கத் தொடங்கியதிலிருந்து</string>
+    <plurals name="usage_items"><item quantity="one">%1$d படம் அல்லது கிளிப்</item><item quantity="other">%1$d படங்கள் மற்றும் கிளிப்புகள்</item></plurals>
+    <string name="usage_items_help">அந்தச் சேமிப்புகள் வழியாகச் சேர்க்கப்பட்டவை</string>
+    <string name="usage_tap_to_save">+ தட்டியதிலிருந்து சேமிப்பு வரை</string>
+    <string name="usage_save_to_encrypted">சேமிப்பிலிருந்து எல்லாம் என்க்ரிப்ட் ஆகும் வரை</string>
+    <string name="usage_typical">வழக்கமாக</string>
+    <string name="usage_slowest">10-இல் மிக மெதுவான 1</string>
+    <string name="usage_not_yet">இன்னும் போதுமான சேமிப்புகள் இல்லை.</string>
+    <string name="usage_within_budget">%1$d%% சேமிப்புகள் பத்து வினாடிகள் அல்லது அதற்குக் குறைவாக ஆனவை.</string>
+    <string name="usage_seconds_decimal">%1$.1f வி</string>
+    <string name="usage_seconds">%1$d வி</string>
+    <string name="usage_minutes">%1$d நிமி</string>
+    <string name="usage_sparkline_cd">கடைசி %1$d சேமிப்பு நேரங்களின் விளக்கப்படம்</string>
+    <string name="usage_weeks">வாரத்திற்கான சேமிப்புகள்</string>
+    <string name="usage_weeks_cd">வாரவாரியான சேமிப்புகளின் பட்டை விளக்கப்படம், மொத்தம் %1$d</string>
+    <string name="usage_weeks_ago">%1$d வாரங்களுக்கு முன்</string>
+    <string name="usage_this_week">இந்த வாரம்</string>
+    <string name="usage_by_entry">சேமிப்புகள் எப்படித் தொடங்கின</string>
+    <string name="usage_entry_fab">+ பொத்தான்</string>
+    <string name="usage_entry_share">வேறு ஆப்பிலிருந்து பகிரப்பட்டது</string>
+    <string name="usage_entry_hub">சேர்க்க மேலும் வழிகள்</string>
+    <string name="usage_entry_widget">முகப்புத் திரை விட்ஜெட்</string>
+    <string name="usage_privacy">இந்த எண்கள் உங்கள் என்க்ரிப்ட் செய்த வால்ட்டில் வைக்கப்படுகின்றன; எங்கும் அனுப்பப்படுவதில்லை. சேமிப்பகத்தில் “அனைத்தையும் அழி” மூலம் அவற்றை நீக்குங்கள்.</string>
 </resources>

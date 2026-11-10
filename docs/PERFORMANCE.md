@@ -11,6 +11,10 @@ numbers come from `.github/workflows/device-tests.yml` (KVM-accelerated x86_64 A
 | Import 20 phone photos | ≤ 30 s | Encrypt + thumbnail + verify per photo, on the import queue |
 | 30-second reel export | ≤ 90 s | Media3 Transformer, 1080×1920 H.264 at 10 Mbit/s (`RecapRenderer`); the screen shows a time estimate |
 | Open a memory with photos | ≤ 300 ms to first thumbnails | Thumbnails are 512 px and decrypted in memory (no disk cache by design) |
+| Quick Save: + tap → Save | ≤ 3 taps, ≤ 10 s typical | `capture_stats.tap_to_save_ms`, shown as median / p90 and "% within 10 s" in Settings → How I use Yaadein (`UsageSummary`); `QuickSaveFlowTest` keeps the Save call itself under 500 ms on the JVM |
+| Save → every photo encrypted | background, never blocks Save | `capture_stats.save_to_encrypted_ms`, same screen; the card shows a progress ring meanwhile |
+| Face embedding | < 1 s per face on a 2020 phone | logcat `Yaadein.Faces embed_ms=` (ML Kit detect + align + GhostFaceNet int8 on XNNPACK); the re-index worker runs behind the import lock so it never slows an import |
+| Beta APK size | ≤ 64,790,000 bytes (Phase 0 baseline 58,499,460 + 6 MB) | CI "APK size" step fails above it; arm64-v8a + armeabi-v7a only since Phase 2 |
 
 ## Measured so far
 

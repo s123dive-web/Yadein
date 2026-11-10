@@ -86,7 +86,7 @@ class AppSmokeTest {
     @Test
     fun `every settings page opens and closes`() {
         tab("Settings")
-        listOf("Appearance", "Security", "Relive reminders", "Face suggestions", "Storage", "Backup and restore", "Privacy", "Problem log", "Update app", "About Yaadein").forEach { page ->
+        listOf("Appearance", "Security", "Relive reminders", "Face suggestions", "How I use Yaadein", "Storage", "Backup and restore", "Privacy", "Problem log", "Update app", "About Yaadein").forEach { page ->
             try {
                 // Click through semantics: on the small Robolectric screen the last rows can sit under the bottom bar.
                 compose.onNode(hasText(page) and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
@@ -98,6 +98,19 @@ class AppSmokeTest {
                 throw AssertionError("Settings page \"$page\" did not open and close", e)
             }
         }
+    }
+
+    @Test
+    fun `how I use yaadein opens from settings with its empty state`() {
+        tab("Settings")
+        compose.onNode(hasText("How I use Yaadein") and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitForIdle()
+        // The page title (a heading) and, with no captures measured yet, the designed empty state.
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("No saves measured yet").fetchSemanticsNodes().isNotEmpty() }
+        org.junit.Assert.assertTrue(compose.onAllNodesWithText("How I use Yaadein").fetchSemanticsNodes().isNotEmpty())
+        compose.onNodeWithContentDescription("Back").performClick()
+        compose.waitForIdle()
+        compose.onNodeWithText("Appearance").performScrollTo().assertIsDisplayed()
     }
 
     @Test

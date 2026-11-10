@@ -403,6 +403,38 @@
             <string>%1$d வீடியோக்கள்</string>
         </dict>
     </dict>
+    <key>usage_captures</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d நினைவு சேமிக்கப்பட்டது</string>
+            <key>other</key>
+            <string>%1$d நினைவுகள் சேமிக்கப்பட்டன</string>
+        </dict>
+    </dict>
+    <key>usage_items</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d படம் அல்லது கிளிப்</string>
+            <key>other</key>
+            <string>%1$d படங்கள் மற்றும் கிளிப்புகள்</string>
+        </dict>
+    </dict>
     <key>who_named</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

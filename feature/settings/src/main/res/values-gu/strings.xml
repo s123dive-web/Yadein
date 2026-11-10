@@ -223,4 +223,34 @@
     <string name="pack_added_text">%1$d યાદો ઉમેરાઈ, %2$d નવા લોકો.</string>
     <string name="appearance_language">ભાષા</string>
     <string name="appearance_language_help">Yaadein ની ભાષા પસંદ કરો: અંગ્રેજી, હિન્દી, મરાઠી, ગુજરાતી, તમિલ, તેલુગુ, બંગાળી કે કન્નડ.</string>
+    <!-- Settings → How I use Yaadein (Fast & Rich, Phase 4) -->
+    <string name="settings_usage">હું Yaadein કેવી રીતે વાપરું છું</string>
+    <string name="settings_usage_subtitle">તમારા પોતાના સમય, આ જ ફોન પર</string>
+    <string name="usage_intro">યાદ ઉમેરવામાં ખરેખર ત્રણ ટૅપ અને દસ સેકન્ડ લાગે છે કે નહીં તે તમે જોઈ શકો, એ માટે Yaadein દરેક સેવનો સમય આ જ ફોન પર માપે છે. અહીંથી કશું ફોનની બહાર જતું નથી.</string>
+    <string name="usage_empty_title">હજી કોઈ સેવ માપ્યો નથી</string>
+    <string name="usage_empty_message">+ બટનથી એક યાદ ઉમેરો અને પાછા આવો; સમય અહીં દેખાશે.</string>
+    <plurals name="usage_captures"><item quantity="one">%1$d યાદ સેવ થઈ</item><item quantity="other">%1$d યાદો સેવ થઈ</item></plurals>
+    <string name="usage_captures_help">સમય માપવાની શરૂઆતથી</string>
+    <plurals name="usage_items"><item quantity="one">%1$d ફોટો કે ક્લિપ</item><item quantity="other">%1$d ફોટા અને ક્લિપ</item></plurals>
+    <string name="usage_items_help">એ સેવ દ્વારા ઉમેરાયેલા</string>
+    <string name="usage_tap_to_save">+ ટૅપ કરવાથી સેવ સુધી</string>
+    <string name="usage_save_to_encrypted">સેવથી બધું એન્ક્રિપ્ટ થાય ત્યાં સુધી</string>
+    <string name="usage_typical">સામાન્ય રીતે</string>
+    <string name="usage_slowest">10 માંથી સૌથી ધીમો 1</string>
+    <string name="usage_not_yet">હજી પૂરતા સેવ થયા નથી.</string>
+    <string name="usage_within_budget">%1$d%% સેવ દસ સેકન્ડ કે તેથી ઓછા સમયમાં થયા.</string>
+    <string name="usage_seconds_decimal">%1$.1f સે</string>
+    <string name="usage_seconds">%1$d સે</string>
+    <string name="usage_minutes">%1$d મિનિટ</string>
+    <string name="usage_sparkline_cd">છેલ્લા %1$d સેવના સમયનો ચાર્ટ</string>
+    <string name="usage_weeks">દર અઠવાડિયે સેવ</string>
+    <string name="usage_weeks_cd">દર અઠવાડિયાના સેવનો બાર ચાર્ટ, કુલ %1$d</string>
+    <string name="usage_weeks_ago">%1$d અઠવાડિયા પહેલાં</string>
+    <string name="usage_this_week">આ અઠવાડિયે</string>
+    <string name="usage_by_entry">સેવ કેવી રીતે શરૂ થયા</string>
+    <string name="usage_entry_fab">+ બટન</string>
+    <string name="usage_entry_share">બીજી ઍપમાંથી શેર કર્યું</string>
+    <string name="usage_entry_hub">ઉમેરવાની વધુ રીતો</string>
+    <string name="usage_entry_widget">હોમ-સ્ક્રીન વિજેટ</string>
+    <string name="usage_privacy">આ આંકડા તમારા એન્ક્રિપ્ટેડ વૉલ્ટમાં રાખવામાં આવે છે અને ક્યાંય મોકલાતા નથી. સ્ટોરેજમાં “બધું ભૂંસી નાખો” થી તેમને કાઢી નાખો.</string>
 </resources>

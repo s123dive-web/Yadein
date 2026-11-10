@@ -157,14 +157,15 @@ class BulkUploadViewModel @Inject constructor(
     }
 
     fun onPicked(uris: List<Uri>) {
-        val fresh = uris.filterNot { picked.containsKey(it.toString()) }
+        val fresh = PickMerging.fresh(uris, picked.keys) { it.toString() }
         if (fresh.isEmpty()) { _state.update { it.copy(picking = false) }; return }
         viewModelScope.launch {
             _state.update { it.copy(picking = false, inspecting = true, inspected = 0, toInspect = fresh.size) }
+            val optimize = settingsRepository.current().storeOptimizedCopies
             val rejected = ArrayList<ImportFailure>()
             for (uri in fresh) {
                 val p = importer.inspect(uri)
-                val failure = if (p == null) ImportFailure.Unsupported else importer.checkLimit(p)
+                val failure = if (p == null) ImportFailure.Unsupported else importer.checkLimit(p, optimize)
                 if (failure != null) rejected += failure else picked[uri.toString()] = p!!
                 _state.update { it.copy(inspected = it.inspected + 1) }
             }

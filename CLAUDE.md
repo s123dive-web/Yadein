@@ -40,7 +40,7 @@ change nothing need no PR. If the session branch's earlier PR is already merged,
 | 1 | Quick Save: 3 taps, 10 seconds | ✅ done | + opens the Photo Picker, pre-filled Quick Save, copy-first import with progress ring, `capture_stats`, Room v2 |
 | 2 | Faces v2 | ✅ done | Bundled GhostFaceNet TFLite embeddings, person centroids, "Who is this?", re-index worker, Room v3 |
 | 3 | Festivals, kinship, WhatsApp reel | ✅ done | Festival table 2010–2035, Relive festival card, kin terms, 30 s / 16 MB preset, Room v4 |
-| 4 | Measure, harden, ship | ⏳ next | Settings → How I use Yaadein, Easy mode / TalkBack pass, regression, docs |
+| 4 | Measure, harden, ship | ✅ done | Settings → How I use Yaadein, Easy mode / TalkBack pass, regression, docs |
 
 Phase STOP reports are appended at the bottom of this file under "Phase reports". The owner asked
 for the build to proceed autonomously while they are offline, so each STOP report is recorded here
@@ -197,7 +197,8 @@ exported schemas under `core/data/schemas/`.
 
 Rule for every bump: add the entity/column, bump `VERSION`, add the `Migration`, commit the regenerated
 `core/data/schemas/.../N.json` (the Build APK workflow prints a regenerated schema when the committed one is stale),
-add a `MigrationTest` case that inserts rows at N−1 and validates at N. Backup rows get new fields with defaults so a
+add a `MigrationTest` case that inserts rows at N−1 and validates at N. Without an SDK the `N.json` is hand-written from `N−1.json`: put a placeholder identityHash, push, and copy the
+"Expected identity hash" that `MigrationTest` prints on CI into both places in the file (one CI round; it is the only failure). Backup rows get new fields with defaults so a
 `.yaadein` from before the change still restores (FORMAT stays 2).
 
 ## 5. Design tokens (core/ui/theme/Tokens.kt)
@@ -247,7 +248,7 @@ RootGraph
     ├── + (long-press)      ──► Create hub sheet ──► EventCapture(memoryId?) / PhotoFirst / TextOnly / QuickCapture / PastWizard / BulkUpload / VoiceCapture / ImportExport
     ├── Relive              ──► OnThisDay / RandomMemory(shake) / YearlySummary / RecapSetup
     │                       RecapSetup ──► RecapPreview ──► (WorkManager render) ──► share sheet
-    └── Settings            ──► Appearance / Security / Storage / Backup / Notifications / Faces / Privacy / About / CrashLog
+    └── Settings            ──► Appearance / Security / Storage / Backup / Notifications / Faces / Usage ("How I use Yaadein") / Privacy / About / CrashLog
 ```
 
 Shared-element transitions: Timeline card → MemoryDetail cover → MediaViewer (Compose
@@ -964,10 +965,10 @@ result → words-only). Screenshot previews: Quick Save light, dark, Easy mode, 
 - Title templates for photo-first titles live in `PolishEngine.titleFor` (English, like the rest of the engine).
 - Hand large payloads (URIs) between screens through an inbox object (`QuickSaveInbox`, `SharedMediaInbox`), never routes.
 
-**Findings (not fixed)**: `EventCaptureViewModel.onPicked` keeps duplicates (LazyRow key crash on a double pick); Photo-first
-"Pick more" replaces earlier drafts; `checkLimit` is called with `optimize = true` regardless of the setting in Photo-first,
-Quick capture and Bulk; CI does not validate screenshots; `FaceSuggester.SIZE = 32` is dead; the widget + still opens the
-old "Today, in one line" screen on purpose.
+**Findings**: `EventCaptureViewModel.onPicked` kept duplicates (LazyRow key crash on a double pick); Photo-first
+"Pick more" replaced earlier drafts; `checkLimit` was called with `optimize = true` regardless of the setting in Photo-first,
+Quick capture and Bulk — all three fixed in Phase 4 (`PickMerging`, `PickMoreTest`). Still open: CI does not validate
+screenshots; the widget + still opens the old "Today, in one line" screen on purpose.
 
 ### Fast & Rich — Phase 2: Faces v2 (STOP report)
 
@@ -1119,3 +1120,50 @@ language (an "Aaji" is "Aaji" in Hindi UI too, transliterated).
 **Next phase plan**: Phase 4 — Settings → How I use Yaadein (`UsageSummary` from `capture_stats`: median / p90 tap-to-save
 and save-to-encrypted, share within the 10 s budget, saves per week, entry points), accessibility pass over the new screens
 (`AccessibilityTest` for Quick Save, Who is this?, Faces, Usage), regression (smoke test additions), docs and the release link.
+
+### Fast & Rich — Phase 4: measure, harden, ship (STOP report)
+
+**Built**
+- **Settings → How I use Yaadein** (`feature/settings/UsageScreen.kt`, `UsageViewModel`, `SettingsPage.USAGE`): the local
+  `capture_stats` rows summarised on the phone by the pure `core/domain/usage/UsageSummary` (`from(stats, now)`): memories
+  saved and photos added, **tap → Save** median and "slowest 1 in 10" (nearest-rank p90) with a 20-point sparkline and the
+  share of saves within the 10-second budget, **Save → everything encrypted** median / p90, saves per week over eight weeks
+  (bar chart), and how saves started (+ button / shared / more ways / widget). Designed empty state until the first save;
+  a privacy line says the numbers never leave the vault. Charts carry content descriptions for TalkBack.
+- **Hardening** (the Phase 1 findings): `EventCaptureViewModel.onPicked` de-duplicates picks by URI (the LazyRow key crash
+  on a double pick); Photo-first "Pick more" merges the new pick into the existing drafts instead of replacing them;
+  `checkLimit` gets the real "store optimised copies" setting in Photo-first, Quick capture and Bulk upload.
+- **Accessibility regression**: `AccessibilityTest` now also covers Faces (on and off), Who is this? (group and empty),
+  Quick Save (photos and words-only) and Usage (data and empty); the smoke test opens the new Settings page.
+- **Docs**: docs/PERFORMANCE.md gains the Fast & Rich budgets (Quick Save ≤ 3 taps / ≤ 10 s, background encryption, face
+  embedding < 1 s, APK ≤ baseline + 6 MB) and how each is measured; README features; this file.
+
+**Files**: core/domain `usage/UsageSummary.kt` (+ test). feature/settings `UsageScreen.kt`, `SettingsScreen.kt`
+(`SettingsPage.USAGE`, row), strings `settings_usage*`, `usage_*` (8 locales). app `navigation/AppNavHost.kt`,
+`AccessibilityTest.kt`, `smoke/AppSmokeTest.kt`. feature/capture `PickMerging.kt` (new), `EventCaptureViewModel.kt`, `PhotoFirstScreen.kt`, `QuickCaptureScreen.kt`,
+`BulkUploadScreen.kt`, tests `PickMergingTest`, `PickMoreTest`. docs/PERFORMANCE.md,
+README.md, CLAUDE.md, iOS strings regenerated.
+
+**Schema**: none (Room stays at 4).
+
+**Tests**: `UsageSummaryTest` (empty summary; percentiles, budget share, entry points, sparkline order, week buckets),
+`UsageViewModelTest`, `AccessibilityTest` ×8 new cases, smoke test page walk, capture de-dup tests. 109 core:domain tests
+pass locally; Android tests on CI.
+
+**Self-check**: INTERNET absent ✔ · no schema change ✔ · 8 locales ✔ · 48 dp rows, charts described ✔ · frozen folders
+untouched (iOS strings regenerated only) ✔ · lint MissingTranslation 0 (CI) ✔.
+
+**Budgets**: APK unchanged (Compose code only). Cold start unchanged (the usage summary is computed on open, off the main
+thread). Round totals are printed by CI ("APK size" step) on the merge to main.
+
+**Findings (not fixed)**: the CI emulator cold-start medians drifted from 1.38 s (Phase 0) to 1.92 s on main after Phase 2 and
+2.08 s on the Phase 3 PR (budget 2.0 s), while the spread inside one run is 0.8–2.3 s; nothing new runs before the first frame
+(the face detector, the TFLite interpreter and the festival table are all lazy), so this reads as emulator noise plus a larger
+R8 output, but it must be measured on the owner's phone (`docs/PERFORMANCE.md`) and the device-tests workflow (frozen this round)
+should move its guard to a trimmed mean or a larger sample. `faces_scanning`, `faces_seen`, `faces_is_this`, `faces_yes`,
+`faces_not_sure` remain unused (lint UnusedResources warnings); screenshot reference PNGs for the new screens must be generated on a machine with the SDK
+(`:app:updateDebugScreenshotTest`); the five new Indic locales still need a native-speaker review (now including the
+festival and kinship words); on-device checks still pending for the owner: `embed_ms`, a real WhatsApp status post, the
+first festival-day reminder.
+
+**Open questions**: none. **Next**: the owner's phone test; see the final session report.

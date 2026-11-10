@@ -111,7 +111,7 @@ class QuickCaptureViewModel @Inject constructor(
         viewModelScope.launch {
             val picked = importer.inspect(uri)
             if (picked == null) { _state.update { it.copy(rejected = listOf(ImportFailure.Unsupported)) }; return@launch }
-            val limit = importer.checkLimit(picked)
+            val limit = importer.checkLimit(picked, settingsRepository.current().storeOptimizedCopies)
             if (limit != null) _state.update { it.copy(rejected = listOf(limit)) } else _state.update { it.copy(photo = picked) }
         }
     }
