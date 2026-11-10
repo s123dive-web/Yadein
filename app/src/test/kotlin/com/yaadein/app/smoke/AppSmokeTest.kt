@@ -145,8 +145,9 @@ class AppSmokeTest {
         compose.waitUntil(10_000) { shown("Protect these memories?") }
         // The timeline is already there underneath: the sheet does not block the first look.
         org.junit.Assert.assertTrue(shown("Diwali at home"))
-        compose.onNode(hasText("Not now") and hasClickAction()).performSemanticsAction(SemanticsActions.OnClick)
-        compose.waitUntil(10_000) { runBlocking { settings.current() }.lockPromptPostponed && shown("Your memories have no lock yet") }
+        compose.onNode(hasText("Not now") and hasClickAction()).performClick()
+        compose.waitUntil(10_000) { runBlocking { settings.current() }.lockPromptPostponed }
+        compose.waitUntil(10_000) { shown("Your memories have no lock yet") }
         compose.waitUntil(10_000) { !shown("Protect these memories?") && compose.onAllNodesWithText("Set a PIN").fetchSemanticsNodes().size == 1 }
         compose.onNode(hasText("Set a PIN") and hasClickAction()).performSemanticsAction(SemanticsActions.OnClick)
         compose.waitUntil(10_000) { shown("Choose a 6-digit PIN") }
