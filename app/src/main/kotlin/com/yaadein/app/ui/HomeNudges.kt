@@ -43,6 +43,7 @@ import com.yaadein.feature.settings.FaceReindexWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -130,7 +131,8 @@ class HomeNudgesViewModel @Inject constructor(
 
     /** "Not now" (or opening the lock setup): the sheet is not shown again; the Home card stays until a lock is set. */
     fun postponeLock() {
-        viewModelScope.launch { settingsRepository.update { it.copy(lockPromptPostponed = true) } }
+        // Not cancellable: "Set a PIN" navigates away in the same tap, and the choice must still be saved.
+        viewModelScope.launch { withContext(NonCancellable) { settingsRepository.update { it.copy(lockPromptPostponed = true) } } }
     }
 
     /** One tap: the sample family goes, anything the user added stays, and Home shows its own empty state. */

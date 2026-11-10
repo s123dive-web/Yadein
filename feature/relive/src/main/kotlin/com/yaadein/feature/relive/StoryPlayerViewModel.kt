@@ -16,6 +16,8 @@ import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -93,6 +95,10 @@ class StoryPlayerViewModel @Inject constructor(
         val ring = _state.value.rings.getOrNull(index) ?: return
         _state.update { it.copy(ringIndex = index, pages = emptyList(), pagesLoading = true) }
         pagesJob?.cancel()
+        // Opening a story is what counts as watching it; the note must survive the player being closed right away.
+        viewModelScope.launch {
+            withContext(NonCancellable) { settingsRepository.update { it.copy(storySeen = StorySeen.mark(it.storySeen, ring.ring.key, today)) } }
+        }
         pagesJob = viewModelScope.launch {
             val pages = runCatching { stories.pages(ring.ring, today) }.getOrDefault(emptyList())
             val favorites = pages.mapNotNull { page ->
@@ -109,7 +115,6 @@ class StoryPlayerViewModel @Inject constructor(
                     rings = s.rings.mapIndexed { i, r -> if (i == index) r.copy(seen = true) else r },
                 )
             }
-            settingsRepository.update { it.copy(storySeen = StorySeen.mark(it.storySeen, ring.ring.key, today)) }
         }
     }
 
