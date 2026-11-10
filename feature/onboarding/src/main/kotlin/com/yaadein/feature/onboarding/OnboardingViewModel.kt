@@ -17,6 +17,7 @@ import com.yaadein.domain.model.MemoryType
 import com.yaadein.domain.polish.PolishEngine
 import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.SettingsRepository
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,11 +53,18 @@ data class OnboardingUiState(
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val settings: SettingsRepository,
-    private val memoryRepository: MemoryRepository,
-    private val importer: MediaImporter,
-    private val coordinator: ImportCoordinator,
-    private val seeder: DemoSeeder,
+    // Lazy on purpose: this ViewModel is created for the very first frame of a cold start, and the database, the vault
+    // and the importer must not be built on the main thread before it (docs/PERFORMANCE.md, cold-start budget).
+    private val lazyMemoryRepository: Lazy<MemoryRepository>,
+    private val lazyImporter: Lazy<MediaImporter>,
+    private val lazyCoordinator: Lazy<ImportCoordinator>,
+    private val lazySeeder: Lazy<DemoSeeder>,
 ) : ViewModel() {
+    private val memoryRepository get() = lazyMemoryRepository.get()
+    private val importer get() = lazyImporter.get()
+    private val coordinator get() = lazyCoordinator.get()
+    private val seeder get() = lazySeeder.get()
+
     private val _state = MutableStateFlow(OnboardingUiState())
     val state: StateFlow<OnboardingUiState> = _state.asStateFlow()
 
@@ -66,6 +74,7 @@ class OnboardingViewModel @Inject constructor(
         _state.update { it.copy(busy = OnboardingBusy.IMPORTING, nothingAdded = false) }
         viewModelScope.launch {
             val optimize = settings.current().storeOptimizedCopies
+            withContext(Dispatchers.IO) { lazyImporter.get(); lazyCoordinator.get(); lazyMemoryRepository.get() }
             val accepted = ArrayList<PickedMedia>()
             for (uri in uris.distinct().take(MAX_ITEMS)) {
                 val picked = importer.inspect(uri) ?: continue
@@ -94,7 +103,7 @@ class OnboardingViewModel @Inject constructor(
         _state.update { it.copy(busy = OnboardingBusy.SAMPLE, nothingAdded = false) }
         viewModelScope.launch {
             // The sample photos are drawn on the phone: keep that off the main thread.
-            withContext(Dispatchers.Default) { seeder.seed() }
+            withContext(Dispatchers.Default) { lazySeeder.get().seed() }
             settings.update { it.copy(onboardingDone = true, demoMode = true) }
             _state.update { it.copy(busy = null, exit = OnboardingExit.HOME) }
         }

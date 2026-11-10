@@ -74,7 +74,7 @@ class OnboardingViewModelTest {
         store.wipeAll()
     }
 
-    private fun viewModel() = OnboardingViewModel(settings, memories, importer, coordinator, seeder)
+    private fun viewModel() = OnboardingViewModel(settings, { memories }, { importer }, { coordinator }, { seeder })
 
     private fun photo(name: String, date: String?): Uri {
         val bmp = Bitmap.createBitmap(160, 120, Bitmap.Config.ARGB_8888).apply { eraseColor(0xFF4466AA.toInt()) }

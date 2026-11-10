@@ -71,6 +71,9 @@ fun OnboardingRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris -> viewModel.onPicked(uris) }
+    // Asked after the first frame: reading the per-app language is a call into the system.
+    var language by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(Unit) { language = AppLanguage.current(context) }
     LaunchedEffect(state.exit) {
         when (state.exit) {
             OnboardingExit.STORY -> onStory()
@@ -80,7 +83,7 @@ fun OnboardingRoute(
     }
     WelcomeScreen(
         state = state,
-        language = remember { AppLanguage.current(context) },
+        language = language,
         onLanguage = { AppLanguage.set(context, it) },
         onPick = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
         onSample = viewModel::seeSample,
