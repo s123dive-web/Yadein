@@ -84,6 +84,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaadein.core.ui.components.CoverArt
 import com.yaadein.core.ui.components.PersonAvatar
+import com.yaadein.core.ui.components.kinLabel
 import com.yaadein.core.ui.media.ThumbnailImage
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.model.Media
@@ -242,6 +243,9 @@ fun MemoryDetailScreen(
                                     PersonAvatar(person = p, size = Yaadein.sizes.avatarLg)
                                     Spacer(Modifier.height(spacing.xs))
                                     Text(text = p.displayName, style = MaterialTheme.typography.labelMedium, maxLines = 1)
+                                    kinLabel(p)?.let { kin ->
+                                        Text(text = kin, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                                    }
                                 }
                             }
                         }

@@ -84,6 +84,20 @@ class MigrationTest {
     }
 
     @Test
+    fun `migration 3 to 4 adds kin term and relation text with nulls`() {
+        helper.createDatabase(dbName, 3).use { db ->
+            db.execSQL("INSERT INTO persons (id, name, nickname, relation, birthday_epoch_day, profile_media_id, notes, avatar_color_index, created_at, centroid, centroid_model, confirmed_faces) VALUES (1, 'Aaji', NULL, 'FAMILY', NULL, NULL, '', 2, 1, NULL, NULL, 0)")
+        }
+        helper.runMigrationsAndValidate(dbName, 4, true, Migrations.MIGRATION_3_4).use { db ->
+            db.query("SELECT name, kin_term, relation_text, confirmed_faces FROM persons").use { c ->
+                assertTrue(c.moveToFirst()); assertEquals("Aaji", c.getString(0)); assertTrue(c.isNull(1)); assertTrue(c.isNull(2)); assertEquals(0, c.getInt(3))
+            }
+            db.execSQL("UPDATE persons SET kin_term = 'AAJI' WHERE id = 1")
+            db.query("SELECT kin_term FROM persons").use { c -> c.moveToFirst(); assertEquals("AAJI", c.getString(0)) }
+        }
+    }
+
+    @Test
     fun `every version from 1 to current has a migration path`() {
         val covered = Migrations.ALL.map { it.startVersion to it.endVersion }.toSet()
         for (v in 1 until AppDatabase.VERSION) {

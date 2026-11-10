@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaadein.core.ui.components.EmptyState
 import com.yaadein.core.ui.components.PersonAvatar
+import com.yaadein.core.ui.components.kinLabel
 import com.yaadein.core.ui.illustrations.IllustrationKind
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.model.Group
@@ -253,6 +254,16 @@ fun PersonTileView(tile: PersonTile, onClick: () -> Unit, modifier: Modifier = M
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
             )
+            kinLabel(tile.person)?.let { kin ->
+                Text(
+                    text = kin,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                )
+            }
             Text(
                 text = pluralStringResource(CoreR.plurals.memory_count, tile.memoryCount, tile.memoryCount),
                 style = MaterialTheme.typography.bodySmall,

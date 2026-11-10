@@ -57,5 +57,13 @@ object Migrations {
         }
     }
 
-    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3)
+    /** Fast & Rich, Phase 3: kinship terms ("Aaji", "Mama") and a free-text relationship on persons. */
+    val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `persons` ADD COLUMN `kin_term` TEXT")
+            db.execSQL("ALTER TABLE `persons` ADD COLUMN `relation_text` TEXT")
+        }
+    }
+
+    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
 }

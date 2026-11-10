@@ -53,4 +53,5 @@
         <item quantity="other">%1$d व्हिडिओंसाठी फोनमध्ये आणखी मोकळी जागा हवी.</item>
     </plurals>
     <string name="import_failed_hint">आठवण उघडा आणि “फोटो जोडा” वापरून ते पुन्हा निवडा.</string>
+    <string name="filter_festival">सण</string>
 </resources>

@@ -14,6 +14,7 @@ import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.MemoryDetail
 import com.yaadein.domain.relive.CoverPick
 import com.yaadein.domain.relive.Covers
+import com.yaadein.domain.relive.Festivals
 import com.yaadein.data.db.dao.CoverRow
 import com.yaadein.domain.capture.KnownPlace
 import com.yaadein.domain.repository.MemoryRepository
@@ -27,6 +28,8 @@ import javax.inject.Singleton
 @Singleton
 class MemoryRepositoryImpl @Inject constructor(
     private val db: AppDatabase,
+    /** Bundled festival calendar for [TimelineFilter.festival]; defaulted so tests can keep `MemoryRepositoryImpl(db) { now }`. */
+    private val festivals: Festivals = Festivals.bundled(),
     private val clock: () -> Long,
 ) : MemoryRepository {
     private val memoryDao get() = db.memoryDao()
@@ -169,6 +172,16 @@ class MemoryRepositoryImpl @Inject constructor(
         }
         ftsQuery(filter.query)?.let {
             where += "m.id IN (SELECT rowid FROM memory_search WHERE memory_search MATCH ?)"; args += it
+        }
+        filter.festival?.let { festival ->
+            // Every year's window of the festival (e.g. Diwali ± 3 days, 2010–2035); a festival without dates matches nothing.
+            val windows = festivals.windows(festival)
+            if (windows.isEmpty()) {
+                where += "0"
+            } else {
+                where += windows.joinToString(" OR ", prefix = "(", postfix = ")") { "m.start_epoch_day BETWEEN ? AND ?" }
+                windows.forEach { args += it.first; args += it.last }
+            }
         }
         val sql = buildString {
             append("SELECT m.* FROM memories m")

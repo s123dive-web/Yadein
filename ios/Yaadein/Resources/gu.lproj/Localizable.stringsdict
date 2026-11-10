@@ -323,6 +323,22 @@
             <string>અમે તમારા ફોટાને %1$d યાદોમાં ગોઠવ્યા. નામ બદલો, જોડો કે અલગ કરો, પછી સાચવો.</string>
         </dict>
     </dict>
+    <key>relive_festival_upcoming</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>કાલે %1$@ છે</string>
+            <key>other</key>
+            <string>%2$d દિવસમાં %1$@</string>
+        </dict>
+    </dict>
     <key>relive_years_ago</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

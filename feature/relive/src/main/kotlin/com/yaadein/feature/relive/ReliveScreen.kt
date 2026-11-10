@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Celebration
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.Place
@@ -68,6 +69,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaadein.core.ui.components.CoverArt
 import com.yaadein.core.ui.components.EmptyState
+import com.yaadein.core.ui.components.festivalName
 import com.yaadein.core.ui.components.MemoryCardView
 import com.yaadein.core.ui.components.PersonAvatar
 import com.yaadein.core.ui.illustrations.IllustrationKind
@@ -193,6 +195,24 @@ fun ReliveScreen(
                     item(key = "shake-hint") { ShakeHintCard(onTry = onSurprise, onDismiss = onDismissShakeHint) }
                 }
                 if (!birthdaysFirst) birthdaysItem(state.upcomingBirthdays, onOpenPerson, onBirthdayReel)
+                // Festivals: memories from earlier years of the festival that is on now; otherwise a nudge about the next one.
+                state.festivalRewind?.let { festival ->
+                    item(key = "festival-title") { SectionTitle(stringResource(R.string.relive_festival_rewind, festivalName(festival.festival))) }
+                    items(festival.items.size, key = { "festival-" + festival.items[it].card.memory.id }) { i ->
+                        val item = festival.items[i]
+                        Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+                            Text(
+                                pluralStringResource(R.plurals.relive_years_ago, item.yearsAgo, item.yearsAgo),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            MemoryCardView(card = item.card, onClick = { onOpenMemory(item.card.memory.id) }, compact = true)
+                        }
+                    }
+                }
+                state.upcomingFestival?.let { upcoming ->
+                    item(key = "festival-upcoming") { UpcomingFestivalCard(name = festivalName(upcoming.festival), inDays = upcoming.inDays) }
+                }
                 val rewind = state.rewind
                 item(key = "otd-title") {
                     SectionTitle(
@@ -370,6 +390,30 @@ private fun PhotoTile(title: String, subtitle: String, cover: CoverPick?, onClic
                 Text(title, style = MaterialTheme.typography.titleMedium, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Text(subtitle, style = MaterialTheme.typography.labelMedium, color = Color.White.copy(alpha = 0.9f), maxLines = 1)
+        }
+    }
+}
+
+/** "Diwali in 12 days": the festival's photos from earlier years will appear on Relive when it comes. */
+@Composable
+private fun UpcomingFestivalCard(name: String, inDays: Int) {
+    val spacing = Yaadein.spacing
+    Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.tertiaryContainer, modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.padding(horizontal = spacing.lg, vertical = spacing.md), verticalAlignment = Alignment.Top) {
+            Icon(Icons.Rounded.Celebration, contentDescription = null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.padding(top = spacing.xs))
+            Spacer(Modifier.width(spacing.md))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    pluralStringResource(R.plurals.relive_festival_upcoming, inDays, name, inDays),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
+                Text(
+                    stringResource(R.string.relive_festival_upcoming_help, name),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                )
+            }
         }
     }
 }

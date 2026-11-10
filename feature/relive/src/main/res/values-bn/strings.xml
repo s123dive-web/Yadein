@@ -47,4 +47,10 @@
     <string name="relive_story_open">খুলুন</string>
     <string name="relive_story_see_person">ওঁর গল্প দেখুন</string>
     <string name="relive_story_page">গল্প, পাতা %1$d / %2$d</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="relive_festival_rewind">এই %1$s, বছর আগে</string>
+    <plurals name="relive_festival_upcoming"><item quantity="one">আগামীকাল %1$s</item><item quantity="other">%2$d দিন পরে %1$s</item></plurals>
+    <string name="relive_festival_upcoming_help">আগের বছরগুলোর %1$s-এর ছবি এখানে দেখা যাবে।</string>
+    <string name="reminder_festival_today">শুভ %1$s! আজকের ছবি Yaadein-এ যোগ করুন</string>
+    <string name="reminder_festival_today_text">এক বছর পরে, এই দিনটাই আবার দেখতে চাইবেন।</string>
 </resources>

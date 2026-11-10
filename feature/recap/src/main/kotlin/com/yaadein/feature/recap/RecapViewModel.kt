@@ -77,8 +77,14 @@ sealed interface RenderStatus {
     data object Idle : RenderStatus
     /** [etaSeconds]: estimated time left, once enough progress has been seen to guess (null before that). */
     data class Running(val progress: Int, val etaSeconds: Int? = null) : RenderStatus
-    /** [reelId]: the copy kept in the app's reel library, for in-app playback (null if it could not be stored). */
-    data class Done(val uri: Uri, val reelId: String? = null) : RenderStatus
+    /**
+     * [reelId]: the copy kept in the app's reel library, for in-app playback (null if it could not be stored).
+     * [sizeBytes] / [durationMs]: of the MP4 (0 when unknown, e.g. work queued by an older build).
+     */
+    data class Done(val uri: Uri, val reelId: String? = null, val sizeBytes: Long = 0L, val durationMs: Long = 0L) : RenderStatus {
+        /** Short enough and small enough to post as a WhatsApp status untouched. */
+        val fitsWhatsAppStatus: Boolean get() = WhatsAppShare.fitsStatus(durationMs, sizeBytes)
+    }
     data class Failed(val message: String) : RenderStatus
 }
 
@@ -348,8 +354,13 @@ class RecapViewModel @Inject constructor(
                     WorkInfo.State.RUNNING -> info.progress.getInt(RecapRenderWorker.KEY_PROGRESS, 0).let { p ->
                         RenderStatus.Running(p, eta.estimate(p, android.os.SystemClock.elapsedRealtime()))
                     }
-                    WorkInfo.State.SUCCEEDED -> info.outputData.getString(RecapRenderWorker.KEY_OUTPUT_URI)
-                        ?.let { RenderStatus.Done(Uri.parse(it), info.outputData.getString(RecapRenderWorker.KEY_REEL_ID)) } ?: RenderStatus.Idle
+                    WorkInfo.State.SUCCEEDED -> info.outputData.getString(RecapRenderWorker.KEY_OUTPUT_URI)?.let {
+                        RenderStatus.Done(
+                            uri = Uri.parse(it), reelId = info.outputData.getString(RecapRenderWorker.KEY_REEL_ID),
+                            sizeBytes = info.outputData.getLong(RecapRenderWorker.KEY_SIZE_BYTES, 0L),
+                            durationMs = info.outputData.getLong(RecapRenderWorker.KEY_DURATION_MS, 0L),
+                        )
+                    } ?: RenderStatus.Idle
                     WorkInfo.State.FAILED -> RenderStatus.Failed(info.outputData.getString(RecapRenderWorker.KEY_ERROR) ?: "")
                     WorkInfo.State.CANCELLED -> RenderStatus.Idle
                 }

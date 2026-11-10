@@ -4,6 +4,8 @@ import com.yaadein.domain.model.DateKind
 import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.model.Relation
+import com.yaadein.domain.relive.FestivalDate
+import com.yaadein.domain.relive.Festivals
 import kotlinx.serialization.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -75,6 +77,13 @@ object Reminders {
         val thisYear = inYear(today.year)
         return if (thisYear.isBefore(today)) inYear(today.year + 1) else thisYear
     }
+
+    /**
+     * The festival whose exact day is [today] ("Happy Diwali! Add today's photos"), or null. Reads only the bundled
+     * table, so the reminder works while the vault is locked; the window days around a festival do not count.
+     */
+    fun festivalToday(festivals: Festivals, today: LocalDate): FestivalDate? =
+        festivals.inYear(today.year).firstOrNull { it.date == today }
 
     /** Prompts go out on Sundays. */
     fun isPromptDay(today: LocalDate): Boolean = today.dayOfWeek == DayOfWeek.SUNDAY

@@ -37,8 +37,12 @@ data class PersonEntity(
     val centroid: ByteArray? = null,
     @ColumnInfo(name = "centroid_model") val centroidModel: Int? = null,
     @ColumnInfo(name = "confirmed_faces", defaultValue = "0") val confirmedFaces: Int = 0,
+    /** Family word chosen for this person (`KinTerm.name`, schema v4), or null. */
+    @ColumnInfo(name = "kin_term") val kinTerm: String? = null,
+    /** Free-text relationship when no kin term fits (schema v4). */
+    @ColumnInfo(name = "relation_text") val relationText: String? = null,
 ) {
-    override fun equals(other: Any?): Boolean = other is PersonEntity && other.id == id && other.name == name && other.nickname == nickname &&
+    override fun equals(other: Any?): Boolean = other is PersonEntity && other.id == id && other.name == name && other.nickname == nickname && other.kinTerm == kinTerm && other.relationText == relationText &&
         other.relation == relation && other.birthdayEpochDay == birthdayEpochDay && other.profileMediaId == profileMediaId && other.notes == notes &&
         other.avatarColorIndex == avatarColorIndex && other.createdAt == createdAt && other.confirmedFaces == confirmedFaces &&
         other.centroidModel == centroidModel && (other.centroid?.contentEquals(centroid) ?: (centroid == null))

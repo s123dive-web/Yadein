@@ -145,23 +145,34 @@ class ReelLibrary @Inject constructor(
     fun videoFile(entry: ReelEntry): File = File(dir, entry.videoPath)
 
     /**
+     * Decrypts [entry] into the shareable exports folder (`cache/exports/`, a FileProvider root) and returns the
+     * content URI another app can read with [Intent.FLAG_GRANT_READ_URI_PERMISSION]. Only the most recent export is
+     * kept there. Used by [shareIntent] and by "Send to WhatsApp", which targets one package instead of a chooser.
+     */
+    suspend fun shareUri(entry: ReelEntry): Uri = withContext(Dispatchers.IO) {
+        val exportDir = File(context.cacheDir, "exports").apply { mkdirs() }
+        exportDir.listFiles { f -> f.name.startsWith(EXPORT_PREFIX) }?.forEach { it.delete() }
+        val out = File(exportDir, exportName(entry))
+        mediaStore.crypto.decryptingStream(videoFile(entry).inputStream()).use { input -> out.outputStream().use { input.copyTo(it) } }
+        FileProvider.getUriForFile(context, context.packageName + ".files", out)
+    }
+
+    /**
      * Decrypts [entry] into the shareable exports folder and returns a ready ACTION_SEND chooser.
      * Only the most recent export is kept there.
      */
-    suspend fun shareIntent(entry: ReelEntry, chooserTitle: CharSequence): Intent = withContext(Dispatchers.IO) {
-        val exportDir = File(context.cacheDir, "exports").apply { mkdirs() }
-        exportDir.listFiles { f -> f.name.startsWith(EXPORT_PREFIX) }?.forEach { it.delete() }
-        val name = EXPORT_PREFIX + entry.title.replace(Regex("[^\\p{L}\\p{N} _-]"), "").trim().ifBlank { "Yaadein" } + ".mp4"
-        val out = File(exportDir, name)
-        mediaStore.crypto.decryptingStream(videoFile(entry).inputStream()).use { input -> out.outputStream().use { input.copyTo(it) } }
-        val uri: Uri = FileProvider.getUriForFile(context, context.packageName + ".files", out)
+    suspend fun shareIntent(entry: ReelEntry, chooserTitle: CharSequence): Intent {
+        val uri = shareUri(entry)
         val send = Intent(Intent.ACTION_SEND)
             .setType("video/mp4")
             .putExtra(Intent.EXTRA_STREAM, uri)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        send.clipData = android.content.ClipData.newUri(context.contentResolver, name, uri)
-        Intent.createChooser(send, chooserTitle).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        send.clipData = android.content.ClipData.newUri(context.contentResolver, exportName(entry), uri)
+        return Intent.createChooser(send, chooserTitle).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
+
+    private fun exportName(entry: ReelEntry): String =
+        EXPORT_PREFIX + entry.title.replace(Regex("[^\\p{L}\\p{N} _-]"), "").trim().ifBlank { "Yaadein" } + ".mp4"
 
     private fun ensureLoaded() {
         if (loaded) return

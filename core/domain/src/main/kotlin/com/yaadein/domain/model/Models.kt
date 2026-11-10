@@ -27,6 +27,10 @@ data class Person(
     /** Index into the avatar palette so a person's colour is stable everywhere. */
     val avatarColorIndex: Int = 0,
     val createdAt: Long = 0,
+    /** The family word for this person (`KinTerm.name`, e.g. "AAJI"), or null when only [relation] is known. */
+    val kinTerm: String? = null,
+    /** A relationship typed by the user when no [kinTerm] fits ("Neighbour", "Guruji"). */
+    val relationText: String? = null,
 ) {
     val displayName: String get() = nickname?.takeIf { it.isNotBlank() } ?: name
     val initials: String

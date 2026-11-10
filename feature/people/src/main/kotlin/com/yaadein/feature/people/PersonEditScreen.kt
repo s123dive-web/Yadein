@@ -2,11 +2,13 @@ package com.yaadein.feature.people
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -35,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,9 +51,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.yaadein.core.ui.components.PersonAvatar
+import com.yaadein.core.ui.components.kinTermNameRes
+import com.yaadein.core.ui.components.relationLabel
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.model.Relation
+import com.yaadein.domain.people.KinTerm
 import com.yaadein.domain.repository.PersonRepository
 import com.yaadein.domain.repository.MediaRepository
 import com.yaadein.data.media.ImportOutcome
@@ -228,19 +234,7 @@ fun PersonEditScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Column {
-                Text(stringResource(R.string.person_relation), style = MaterialTheme.typography.titleSmall)
-                Spacer(Modifier.height(spacing.sm))
-                Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                    Relation.entries.forEach { r ->
-                        FilterChip(
-                            selected = person.relation == r,
-                            onClick = { onChange { it.copy(relation = r) } },
-                            label = { Text(relationLabel(r)) },
-                        )
-                    }
-                }
-            }
+            KinSection(person = person, onChange = onChange)
             Column {
                 Text(stringResource(R.string.person_birthday), style = MaterialTheme.typography.titleSmall)
                 Spacer(Modifier.height(spacing.sm))
@@ -300,10 +294,68 @@ fun PersonEditScreen(
     }
 }
 
+/**
+ * "Who are they to you?": the family words first (one selected at most), then "Other…" for a typed relationship,
+ * then the four coarse buckets. Picking a kin term sets both [Person.kinTerm] and the coarse [Person.relation];
+ * picking a coarse bucket keeps any typed text but clears the kin term.
+ */
 @Composable
-fun relationLabel(r: Relation): String = when (r) {
-    Relation.FAMILY -> stringResource(CoreR.string.relation_family)
-    Relation.FRIEND -> stringResource(CoreR.string.relation_friend)
-    Relation.COLLEAGUE -> stringResource(CoreR.string.relation_colleague)
-    Relation.OTHER -> stringResource(CoreR.string.relation_other)
+private fun KinSection(person: Person, onChange: ((Person) -> Person) -> Unit) {
+    val spacing = Yaadein.spacing
+    val chipHeight = Yaadein.sizes.touchTarget
+    val selectedTerm = KinTerm.fromName(person.kinTerm)
+    var otherOpen by rememberSaveable(person.id) { mutableStateOf(selectedTerm == null && !person.relationText.isNullOrBlank()) }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(stringResource(R.string.person_kin_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
+        Spacer(Modifier.height(spacing.sm))
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+            KinTerm.PICKER_ORDER.forEach { term ->
+                val selected = selectedTerm == term
+                FilterChip(
+                    selected = selected,
+                    onClick = {
+                        otherOpen = false
+                        onChange {
+                            if (selected) it.copy(kinTerm = null) else it.copy(kinTerm = term.name, relation = term.coarse, relationText = null)
+                        }
+                    },
+                    label = { Text(stringResource(kinTermNameRes(term))) },
+                    modifier = Modifier.heightIn(min = chipHeight),
+                )
+            }
+            FilterChip(
+                selected = otherOpen,
+                onClick = {
+                    otherOpen = !otherOpen
+                    if (otherOpen) onChange { it.copy(kinTerm = null, relation = Relation.OTHER) }
+                },
+                label = { Text(stringResource(R.string.person_kin_other)) },
+                modifier = Modifier.heightIn(min = chipHeight),
+            )
+        }
+        if (otherOpen) {
+            Spacer(Modifier.height(spacing.sm))
+            OutlinedTextField(
+                value = person.relationText.orEmpty(),
+                onValueChange = { v -> onChange { it.copy(relationText = v, kinTerm = null) } },
+                label = { Text(stringResource(R.string.person_kin_other_label)) },
+                placeholder = { Text(stringResource(R.string.person_kin_other_hint)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        Spacer(Modifier.height(spacing.md))
+        Text(stringResource(R.string.person_relation), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(spacing.xs))
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+            Relation.entries.forEach { r ->
+                FilterChip(
+                    selected = person.relation == r,
+                    onClick = { onChange { it.copy(relation = r, kinTerm = null) } },
+                    label = { Text(relationLabel(r)) },
+                    modifier = Modifier.heightIn(min = chipHeight),
+                )
+            }
+        }
+    }
 }

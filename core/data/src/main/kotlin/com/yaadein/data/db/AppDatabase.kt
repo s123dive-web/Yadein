@@ -55,7 +55,7 @@ abstract class AppDatabase : RoomDatabase() {
          * v3 (Phase 2): per-face embeddings (`faces`, `face_rejections`), person centroids, media.face_scan_version;
          * the LBP `face_clusters` table is dropped.
          */
-        const val VERSION = 3
+        const val VERSION = 4
         const val NAME = "yaadein.db"
     }
 }

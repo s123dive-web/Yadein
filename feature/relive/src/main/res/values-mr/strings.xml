@@ -47,4 +47,10 @@
     <string name="relive_story_open">उघडा</string>
     <string name="relive_story_see_person">त्यांची गोष्ट पाहा</string>
     <string name="relive_story_page">गोष्ट, पान %1$d / %2$d</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="relive_festival_rewind">या %1$sला, वर्षांपूर्वी</string>
+    <plurals name="relive_festival_upcoming"><item quantity="one">उद्या %1$s आहे</item><item quantity="other">%2$d दिवसांनी %1$s</item></plurals>
+    <string name="relive_festival_upcoming_help">आधीच्या वर्षांतले %1$sचे फोटो इथे दिसतील.</string>
+    <string name="reminder_festival_today">%1$sच्या शुभेच्छा! आजचे फोटो Yaadein मध्ये जोडा</string>
+    <string name="reminder_festival_today_text">वर्षभरानंतर, हाच तो दिवस असेल जो तुम्हाला पुन्हा पाहायचा असेल.</string>
 </resources>

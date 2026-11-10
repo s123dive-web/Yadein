@@ -53,4 +53,5 @@
         <item quantity="other">%1$d વીડિયો માટે ફોનમાં વધુ ખાલી જગ્યા જોઈએ.</item>
     </plurals>
     <string name="import_failed_hint">યાદ ખોલો અને “ફોટા ઉમેરો” વડે તેમને ફરી પસંદ કરો.</string>
+    <string name="filter_festival">તહેવાર</string>
 </resources>

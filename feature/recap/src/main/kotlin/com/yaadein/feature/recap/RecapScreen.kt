@@ -1,6 +1,8 @@
 package com.yaadein.feature.recap
 
 import android.content.Intent
+import android.text.format.Formatter
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.LinearEasing
@@ -29,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.PhotoLibrary
@@ -120,6 +123,10 @@ fun RecapRoute(
             val share = Intent(Intent.ACTION_SEND).setType("video/mp4").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             context.startActivity(Intent.createChooser(share, shareTitle))
         },
+        whatsAppAvailable = rememberWhatsAppAvailable(),
+        onSendWhatsApp = { uri ->
+            if (!WhatsAppShare.sendToWhatsApp(context, uri, shareTitle)) Toast.makeText(context, R.string.recap_whatsapp_missing, Toast.LENGTH_SHORT).show()
+        },
         years = viewModel.yearsAvailable(),
         modifier = modifier,
     )
@@ -164,6 +171,9 @@ fun RecapScreen(
     onSelectOwnSong: (com.yaadein.data.recap.OwnSong) -> Unit = {},
     onRemoveOwnSong: (com.yaadein.data.recap.OwnSong) -> Unit = {},
     onDismissMissingSong: () -> Unit = {},
+    /** WhatsApp (or WhatsApp Business) is installed: shows "Send to WhatsApp" on the done card. */
+    whatsAppAvailable: Boolean = false,
+    onSendWhatsApp: (android.net.Uri) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     var choosing by remember { mutableStateOf(false) }
@@ -238,12 +248,33 @@ fun RecapScreen(
                     Column(Modifier.padding(spacing.lg), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
                         Text(stringResource(R.string.recap_done_title), style = MaterialTheme.typography.titleMedium)
                         Text(stringResource(if (r.reelId != null) R.string.recap_done_text_kept else R.string.recap_done_text), style = MaterialTheme.typography.bodyMedium)
+                        if (r.sizeBytes > 0L) {
+                            Text(
+                                stringResource(R.string.recap_file_size, Formatter.formatShortFileSize(LocalContext.current, r.sizeBytes)),
+                                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        // A reel made with the WhatsApp status length leads with WhatsApp; any other reel leads with Play.
+                        val whatsAppFirst = whatsAppAvailable && r.fitsWhatsAppStatus
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+                            if (whatsAppFirst) {
+                                Button(onClick = { onSendWhatsApp(r.uri) }) { Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(R.string.recap_send_whatsapp)) }
+                            }
                             if (r.reelId != null) {
-                                Button(onClick = { onPlayReel(r.reelId) }) { Icon(Icons.Rounded.PlayArrow, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(R.string.reel_play)) }
+                                if (whatsAppFirst) {
+                                    FilledTonalButton(onClick = { onPlayReel(r.reelId) }) { Icon(Icons.Rounded.PlayArrow, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(R.string.reel_play)) }
+                                } else {
+                                    Button(onClick = { onPlayReel(r.reelId) }) { Icon(Icons.Rounded.PlayArrow, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(R.string.reel_play)) }
+                                }
                             }
                             FilledTonalButton(onClick = { onShare(r.uri) }) { Icon(Icons.Rounded.Share, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(CoreR.string.action_share)) }
+                            if (whatsAppAvailable && !whatsAppFirst) {
+                                FilledTonalButton(onClick = { onSendWhatsApp(r.uri) }) { Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = null); Spacer(Modifier.width(spacing.sm)); Text(stringResource(R.string.recap_send_whatsapp)) }
+                            }
                             TextButton(onClick = onReset) { Text(stringResource(R.string.recap_make_another)) }
+                        }
+                        if (whatsAppAvailable && WhatsAppShare.tooBigForStatus(r.sizeBytes)) {
+                            Text(stringResource(R.string.recap_whatsapp_too_big), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -295,8 +326,11 @@ fun RecapScreen(
             // ---- length ----
             Section(stringResource(R.string.recap_length)) {
                 RecapLength.entries.forEach { l ->
-                    FilterChip(selected = state.length == l, onClick = { onLength(l) }, label = { Text(stringResource(R.string.recap_length_seconds, l.targetSeconds)) })
+                    FilterChip(selected = state.length == l, onClick = { onLength(l) }, label = { Text(lengthLabel(l)) })
                 }
+            }
+            if (state.length == RecapLength.STATUS) {
+                Text(stringResource(R.string.recap_status_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.recap_include_videos), modifier = Modifier.weight(1f))
@@ -305,6 +339,13 @@ fun RecapScreen(
             Spacer(Modifier.height(spacing.xxxl))
         }
     }
+}
+
+/** Chip label for a length: the WhatsApp status preset is named, the others show their rough length. */
+@Composable
+private fun lengthLabel(length: RecapLength): String = when (length) {
+    RecapLength.STATUS -> stringResource(R.string.recap_length_status)
+    RecapLength.SHORT, RecapLength.MEDIUM, RecapLength.LONG -> stringResource(R.string.recap_length_seconds, length.targetSeconds)
 }
 
 @Composable

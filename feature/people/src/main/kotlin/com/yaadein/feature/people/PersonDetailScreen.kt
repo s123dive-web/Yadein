@@ -46,11 +46,11 @@ import com.yaadein.domain.dates.Dates
 import com.yaadein.core.ui.components.EmptyState
 import com.yaadein.core.ui.components.MemoryCardView
 import com.yaadein.core.ui.components.PersonAvatar
+import com.yaadein.core.ui.components.relationLabel
 import com.yaadein.core.ui.illustrations.IllustrationKind
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.PersonStory
-import com.yaadein.domain.model.Relation
 import com.yaadein.core.ui.R as CoreR
 
 @Composable
@@ -151,12 +151,7 @@ private fun StoryHeader(story: PersonStory, onTogether: () -> Unit, onRecap: () 
         PersonAvatar(person = person, size = Yaadein.sizes.avatarXl)
         Spacer(Modifier.height(spacing.md))
         Text(text = person.name, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
-        val relationText = when (person.relation) {
-            Relation.FAMILY -> stringResource(CoreR.string.relation_family)
-            Relation.FRIEND -> stringResource(CoreR.string.relation_friend)
-            Relation.COLLEAGUE -> stringResource(CoreR.string.relation_colleague)
-            Relation.OTHER -> stringResource(CoreR.string.relation_other)
-        }
+        val relationText = relationLabel(person)
         Text(
             text = listOfNotNull(person.nickname?.takeIf { it.isNotBlank() }?.let { "“$it”" }, relationText).joinToString(" · "),
             style = MaterialTheme.typography.bodyMedium,

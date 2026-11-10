@@ -18,6 +18,7 @@ import com.yaadein.data.media.MediaStore
 import com.yaadein.data.repository.MemoryRepositoryImpl
 import com.yaadein.domain.model.DateKind
 import com.yaadein.domain.model.MemoryType
+import com.yaadein.domain.people.KinTerm
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.Random
@@ -35,7 +36,7 @@ class DemoSeeder @Inject constructor(
     private val mediaStore: MediaStore,
     private val memoryRepository: MemoryRepositoryImpl,
 ) {
-    private data class P(val name: String, val nick: String?, val relation: String, val birthday: LocalDate?, val color: Int)
+    private data class P(val name: String, val nick: String?, val relation: String, val birthday: LocalDate?, val color: Int, val kin: KinTerm? = null, val relationText: String? = null)
     private data class M(
         val title: String,
         val description: String,
@@ -52,16 +53,16 @@ class DemoSeeder @Inject constructor(
     )
 
     private val people = listOf(
-        P("Sunita Deshmukh", "Aai", "FAMILY", LocalDate.of(1966, 8, 14), 0),
-        P("Vijay Deshmukh", "Baba", "FAMILY", LocalDate.of(1962, 1, 26), 1),
-        P("Rahul Deshmukh", "Rahul", "FAMILY", LocalDate.of(1994, 3, 10), 2),
-        P("Priya Deshmukh", "Priya", "FAMILY", LocalDate.of(1998, 11, 2), 3),
-        P("Shalini Joshi", "Aaji", "FAMILY", LocalDate.of(1942, 5, 5), 4),
-        P("Neha Kulkarni", "Neha", "FRIEND", LocalDate.of(1995, 7, 21), 5),
-        P("Arjun Mehta", null, "FRIEND", LocalDate.of(1994, 12, 30), 6),
-        P("Meera Joshi", "Meera tai", "FAMILY", LocalDate.of(1990, 2, 17), 7),
-        P("Sameer Rao", null, "COLLEAGUE", null, 1),
-        P("Kabir Deshmukh", "Kabir", "FAMILY", LocalDate.of(2023, 9, 9), 2),
+        P("Sunita Deshmukh", "Aai", "FAMILY", LocalDate.of(1966, 8, 14), 0, kin = KinTerm.AAI),
+        P("Vijay Deshmukh", "Baba", "FAMILY", LocalDate.of(1962, 1, 26), 1, kin = KinTerm.BABA),
+        P("Rahul Deshmukh", "Rahul", "FAMILY", LocalDate.of(1994, 3, 10), 2, kin = KinTerm.DADA),
+        P("Priya Deshmukh", "Priya", "FAMILY", LocalDate.of(1998, 11, 2), 3, kin = KinTerm.SISTER),
+        P("Shalini Joshi", "Aaji", "FAMILY", LocalDate.of(1942, 5, 5), 4, kin = KinTerm.AAJI),
+        P("Neha Kulkarni", "Neha", "FRIEND", LocalDate.of(1995, 7, 21), 5, kin = KinTerm.FRIEND),
+        P("Arjun Mehta", null, "FRIEND", LocalDate.of(1994, 12, 30), 6, kin = KinTerm.FRIEND),
+        P("Meera Joshi", "Meera tai", "FAMILY", LocalDate.of(1990, 2, 17), 7, kin = KinTerm.TAI),
+        P("Sameer Rao", null, "COLLEAGUE", null, 1, kin = KinTerm.COLLEAGUE),
+        P("Kabir Deshmukh", "Kabir", "FAMILY", LocalDate.of(2023, 9, 9), 2, relationText = "Nephew"),
     )
 
     private val memories = listOf(
@@ -113,6 +114,7 @@ class DemoSeeder @Inject constructor(
                     name = p.name, nickname = p.nick, relation = p.relation,
                     birthdayEpochDay = p.birthday?.toEpochDay(), profileMediaId = null, notes = "",
                     avatarColorIndex = p.color, createdAt = now - (people.size - i) * 86_400_000L,
+                    kinTerm = p.kin?.name, relationText = p.relationText,
                 ),
             )
         }

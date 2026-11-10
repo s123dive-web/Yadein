@@ -22,6 +22,14 @@
     <string name="person_name">Name</string>
     <string name="person_nickname">Nickname (optional)</string>
     <string name="person_relation">Relation</string>
+    <string name="person_kin_title">Who are they to you?</string>
+    <string name="person_kin_other">Other…</string>
+    <string name="person_kin_other_label">Relationship</string>
+    <string name="person_kin_other_hint">e.g. Neighbour, Guruji</string>
+    <string name="kin_side_maternal">Mother\'s side</string>
+    <string name="kin_side_paternal">Father\'s side</string>
+    <string name="kin_side_own">Own family</string>
+    <string name="kin_side_in_law">In-laws</string>
     <string name="person_birthday">Birthday</string>
     <string name="person_birthday_unset">Not set</string>
     <string name="person_notes">Notes</string>

@@ -6,6 +6,8 @@ import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.MemoryType
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.model.Relation
+import com.yaadein.domain.relive.Festival
+import com.yaadein.domain.relive.Festivals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -71,6 +73,15 @@ class RemindersTest {
         assertTrue(picks.count { it.person?.relation == Relation.FAMILY } >= 4)
         assertTrue(picks.any { it.person == null })
         assertTrue(picks.all { it.index >= 0 })
+    }
+
+    @Test
+    fun `festival reminder fires on the exact day only`() {
+        val festivals = Festivals.parse("diwali,2024,2024-10-31\nchristmas,2024,2024-12-25")
+        assertEquals(Festival.DIWALI, Reminders.festivalToday(festivals, LocalDate.of(2024, 10, 31))?.festival)
+        assertNull(Reminders.festivalToday(festivals, LocalDate.of(2024, 10, 30))) // inside the window, but not the day
+        assertNull(Reminders.festivalToday(festivals, LocalDate.of(2025, 10, 31))) // the table has no 2025 row
+        assertEquals(Festival.CHRISTMAS, Reminders.festivalToday(Festivals.bundled(), LocalDate.of(2030, 12, 25))?.festival)
     }
 
     @Test

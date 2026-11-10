@@ -71,7 +71,7 @@ class BackupManager(
         val faceRejections: List<Pair<Long, Long>> = emptyList(),
     )
 
-    @Serializable data class PersonRow(val id: Long, val name: String, val nickname: String?, val relation: String, val birthdayEpochDay: Long?, val profileMediaId: Long?, val notes: String, val avatarColorIndex: Int, val createdAt: Long)
+    @Serializable data class PersonRow(val id: Long, val name: String, val nickname: String?, val relation: String, val birthdayEpochDay: Long?, val profileMediaId: Long?, val notes: String, val avatarColorIndex: Int, val createdAt: Long, val kinTerm: String? = null, val relationText: String? = null)
     @Serializable data class FaceRow(val id: Long, val mediaId: Long, val embedding: String, val modelVersion: Int, val quality: Float, val left: Float, val top: Float, val right: Float, val bottom: Float, val personId: Long?, val state: String, val similarity: Float?, val createdAt: Long)
     @Serializable data class GroupRow(val id: Long, val name: String, val emoji: String, val createdAt: Long)
     @Serializable data class MemoryRow(val id: Long, val type: String, val title: String, val description: String, val dateKind: String, val startEpochDay: Long, val endEpochDay: Long?, val fuzzyLabel: String?, val place: String, val mood: String?, val coverMediaId: Long?, val coverStyle: String, val createdAt: Long, val updatedAt: Long, val voice: Boolean = false)
@@ -218,7 +218,7 @@ class BackupManager(
                 d.persons.forEach { p ->
                     personIds[p.id] = existing[norm(p.name)]?.id ?: run {
                         newPeople++
-                        db.personDao().upsert(PersonEntity(0, p.name, p.nickname, p.relation, p.birthdayEpochDay, null, p.notes, p.avatarColorIndex, p.createdAt))
+                        db.personDao().upsert(PersonEntity(0, p.name, p.nickname, p.relation, p.birthdayEpochDay, null, p.notes, p.avatarColorIndex, p.createdAt, kinTerm = p.kinTerm, relationText = p.relationText))
                     }
                 }
                 val memoryIds = HashMap<Long, Long>()
@@ -279,7 +279,7 @@ class BackupManager(
             db.withTransaction {
                 db.clearAllTables()
                 val personIds = HashMap<Long, Long>()
-                d.persons.forEach { p -> personIds[p.id] = db.personDao().upsert(PersonEntity(0, p.name, p.nickname, p.relation, p.birthdayEpochDay, null, p.notes, p.avatarColorIndex, p.createdAt)) }
+                d.persons.forEach { p -> personIds[p.id] = db.personDao().upsert(PersonEntity(0, p.name, p.nickname, p.relation, p.birthdayEpochDay, null, p.notes, p.avatarColorIndex, p.createdAt, kinTerm = p.kinTerm, relationText = p.relationText)) }
                 val groupIds = HashMap<Long, Long>()
                 d.groups.forEach { g -> groupIds[g.id] = db.groupDao().upsert(GroupEntity(0, g.name, g.emoji, g.createdAt)) }
                 db.groupDao().insertMembers(d.groupMembers.mapNotNull { (g, p) -> val gi = groupIds[g]; val pi = personIds[p]; if (gi != null && pi != null) GroupMemberEntity(gi, pi) else null })
@@ -384,7 +384,7 @@ class BackupManager(
         val media = db.mediaDao().all().filter { onlyMemoryIds == null || it.memoryId in onlyMemoryIds }
         val packPeople = onlyMemoryIds?.let { memories.flatMapTo(HashSet()) { r -> r.people.map { it.id } } + media.flatMap { db.mediaDao().personIds(it.id) } }
         val persons = db.personDao().getAll().filter { packPeople == null || it.id in packPeople }
-            .map { PersonRow(it.id, it.name, it.nickname, it.relation, it.birthdayEpochDay, it.profileMediaId?.takeIf { onlyMemoryIds == null }, it.notes, it.avatarColorIndex, it.createdAt) }
+            .map { PersonRow(it.id, it.name, it.nickname, it.relation, it.birthdayEpochDay, it.profileMediaId?.takeIf { onlyMemoryIds == null }, it.notes, it.avatarColorIndex, it.createdAt, it.kinTerm, it.relationText) }
         val groups = if (onlyMemoryIds == null) db.groupDao().observeAll().first() else emptyList()
         val mediaPersons = ArrayList<Pair<Long, Long>>()
         media.forEach { m -> db.mediaDao().personIds(m.id).forEach { mediaPersons += m.id to it } }

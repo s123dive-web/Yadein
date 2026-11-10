@@ -74,4 +74,13 @@
     <string name="who_undo">पूर्ववत करें</string>
     <string name="who_empty_title">हर चेहरे का नाम है</string>
     <string name="who_empty_message">फ़ोटो जोड़ते ही नए चेहरे यहाँ इंतज़ार करेंगे। और ढूँढने के लिए सेटिंग्स में चेहरा सुझाव चालू करें।</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="person_kin_title">ये आपके कौन हैं?</string>
+    <string name="person_kin_other">अन्य…</string>
+    <string name="person_kin_other_label">रिश्ता</string>
+    <string name="person_kin_other_hint">जैसे पड़ोसी, गुरुजी</string>
+    <string name="kin_side_maternal">माँ की तरफ़ से</string>
+    <string name="kin_side_paternal">पिता की तरफ़ से</string>
+    <string name="kin_side_own">अपना परिवार</string>
+    <string name="kin_side_in_law">ससुराल</string>
 </resources>

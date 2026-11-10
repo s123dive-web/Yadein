@@ -1,11 +1,12 @@
 package com.yaadein.feature.recap
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,11 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -66,6 +69,7 @@ fun ReelPlayerRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val shareTitle = stringResource(CoreR.string.action_share)
+    val whatsAppAvailable = rememberWhatsAppAvailable()
     var confirmDelete by remember { mutableStateOf(false) }
     LaunchedEffect(state.deleted) { if (state.deleted) onBack() }
     val reel = state.reel
@@ -89,20 +93,55 @@ fun ReelPlayerRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel
             }
         }
         if (reel != null) {
-            Row(
-                Modifier.fillMaxWidth().padding(Yaadein.spacing.lg),
-                horizontalArrangement = Arrangement.spacedBy(Yaadein.spacing.md, Alignment.CenterHorizontally),
-            ) {
-                Button(onClick = { viewModel.share(shareTitle) { intent: Intent -> context.startActivity(intent) } }, enabled = !state.sharing) {
-                    if (state.sharing) CircularProgressIndicator(Modifier.size(Yaadein.sizes.iconSm), color = MaterialTheme.colorScheme.onPrimary)
-                    else Icon(Icons.Rounded.Share, contentDescription = null)
-                    Spacer(Modifier.width(Yaadein.spacing.sm))
-                    Text(stringResource(CoreR.string.action_share))
+            // A reel that fits a WhatsApp status (≤ 30 s, ≤ 16 MB) leads with WhatsApp; otherwise Share leads.
+            val whatsAppFirst = whatsAppAvailable && WhatsAppShare.fitsStatus(reel.durationMs, reel.sizeBytes)
+            val sendToWhatsApp = {
+                viewModel.export { uri ->
+                    if (!WhatsAppShare.sendToWhatsApp(context, uri, shareTitle)) Toast.makeText(context, R.string.recap_whatsapp_missing, Toast.LENGTH_SHORT).show()
                 }
-                OutlinedButton(onClick = { confirmDelete = true }, colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)) {
-                    Icon(Icons.Rounded.Delete, contentDescription = null)
-                    Spacer(Modifier.width(Yaadein.spacing.sm))
-                    Text(stringResource(R.string.reel_delete))
+            }
+            val share = { viewModel.share(shareTitle) { intent: Intent -> context.startActivity(intent) } }
+            Column(Modifier.fillMaxWidth().padding(Yaadein.spacing.lg), verticalArrangement = Arrangement.spacedBy(Yaadein.spacing.sm)) {
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(Yaadein.spacing.md, Alignment.CenterHorizontally),
+                    verticalArrangement = Arrangement.spacedBy(Yaadein.spacing.xs),
+                ) {
+                    if (whatsAppFirst) {
+                        Button(onClick = sendToWhatsApp, enabled = !state.sharing) {
+                            if (state.sharing) CircularProgressIndicator(Modifier.size(Yaadein.sizes.iconSm), color = MaterialTheme.colorScheme.onPrimary)
+                            else Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = null)
+                            Spacer(Modifier.width(Yaadein.spacing.sm))
+                            Text(stringResource(R.string.recap_send_whatsapp))
+                        }
+                        FilledTonalButton(onClick = share, enabled = !state.sharing) {
+                            Icon(Icons.Rounded.Share, contentDescription = null)
+                            Spacer(Modifier.width(Yaadein.spacing.sm))
+                            Text(stringResource(CoreR.string.action_share))
+                        }
+                    } else {
+                        Button(onClick = share, enabled = !state.sharing) {
+                            if (state.sharing) CircularProgressIndicator(Modifier.size(Yaadein.sizes.iconSm), color = MaterialTheme.colorScheme.onPrimary)
+                            else Icon(Icons.Rounded.Share, contentDescription = null)
+                            Spacer(Modifier.width(Yaadein.spacing.sm))
+                            Text(stringResource(CoreR.string.action_share))
+                        }
+                        if (whatsAppAvailable) {
+                            FilledTonalButton(onClick = sendToWhatsApp, enabled = !state.sharing) {
+                                Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = null)
+                                Spacer(Modifier.width(Yaadein.spacing.sm))
+                                Text(stringResource(R.string.recap_send_whatsapp))
+                            }
+                        }
+                    }
+                    OutlinedButton(onClick = { confirmDelete = true }, colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)) {
+                        Icon(Icons.Rounded.Delete, contentDescription = null)
+                        Spacer(Modifier.width(Yaadein.spacing.sm))
+                        Text(stringResource(R.string.reel_delete))
+                    }
+                }
+                if (whatsAppAvailable && WhatsAppShare.tooBigForStatus(reel.sizeBytes)) {
+                    Text(stringResource(R.string.recap_whatsapp_too_big), style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f))
                 }
             }
         }
