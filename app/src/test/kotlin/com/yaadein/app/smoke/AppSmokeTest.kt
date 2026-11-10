@@ -76,6 +76,18 @@ class AppSmokeTest {
         compose.waitForIdle()
     }
 
+    /**
+     * Waits for a settings write made by the app. The write resumes on the main thread, which Robolectric only runs when
+     * the test touches the UI, so each poll idles Compose first (a bare `runBlocking` poll would wait for ever).
+     */
+    private fun awaitSetting(condition: (com.yaadein.domain.settings.UserSettings) -> Boolean) {
+        compose.waitUntil(10_000) {
+            compose.waitForIdle()
+            org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle()
+            condition(runBlocking { settings.current() })
+        }
+    }
+
     private fun shown(text: String) = compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
 
     @Test
@@ -148,7 +160,10 @@ class AppSmokeTest {
         // The timeline is already there underneath: the sheet does not block the first look, and no lock screen is forced.
         org.junit.Assert.assertTrue(shown("Diwali at home"))
         compose.onAllNodesWithText("Choose a 6-digit PIN").assertCountEquals(0)
-        compose.onNodeWithText("Not now").assertExists()
+        // "Not now" puts it off once: the sheet goes and a card stays on Home.
+        compose.onNode(hasText("Not now") and hasClickAction()).performClick()
+        awaitSetting { it.lockPromptPostponed }
+        compose.waitUntil(10_000) { !shown("Protect these memories?") && shown("Your memories have no lock yet") }
     }
 
     @Test
@@ -241,7 +256,7 @@ class AppSmokeTest {
         compose.onNodeWithContentDescription("Close story").performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithText("Your reels").fetchSemanticsNodes().isNotEmpty() }
         // Watching it once is remembered for the day.
-        compose.waitUntil(10_000) { runBlocking { settings.current() }.storySeen.contains("today") }
+        awaitSetting { it.storySeen.contains("today") }
     }
 
     @Test

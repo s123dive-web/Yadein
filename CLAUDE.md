@@ -1246,13 +1246,14 @@ is a simpler screen than before.
 - Home shows at most one nudge card (`HomeCard`); new nudges go through `HomeNudges.decide` so they stay unit-tested.
 - Cold-start tests relaunch the activity (`relaunchWith` in `AppSmokeTest`); `scenario.recreate()` restores the old back
   stack and never re-evaluates the start screen.
+- A smoke test that waits for a settings write must touch the UI in each poll (`awaitSetting`): the write resumes on the
+  main thread, which Robolectric runs only when the test idles Compose. A bare `runBlocking { settings.current() }` poll
+  times out although the app is right (this cost three CI rounds in this phase).
 
 **Findings (not fixed)**
 - Not verified on a real device: the Photo Picker hand-over and the 60-second target (stopwatch), the language switch on
   Android 13+ (activity recreation) and on Android 8–12 (`attachBaseContext` path), the "Find faces" card with real
-  faces, and tapping **Not now** inside the "Protect these memories?" sheet (under Robolectric the tap inside that sheet
-  did not register, so the smoke tests check the sheet's appearance and the follow-up card separately; the ViewModel
-  path is one settings write).
+  faces, and the feel of the "Protect these memories?" sheet on a small screen.
 - The old strings `onboarding_1_title` … `onboarding_add_first_person` are unused on Android now (the iPhone app still
   uses them; lint UnusedResources warnings only).
 - A share received while the welcome screen is still open is kept in the inbox and opens Quick Save without Home below
