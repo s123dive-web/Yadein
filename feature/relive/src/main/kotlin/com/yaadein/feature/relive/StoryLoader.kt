@@ -1,5 +1,6 @@
 package com.yaadein.feature.relive
 
+import com.yaadein.domain.model.CoverStyle
 import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.relive.CoverPick
@@ -54,15 +55,29 @@ class StoryLoader @Inject constructor(
         val yearCovers = runCatching { memoryRepository.yearCovers() }.getOrDefault(emptyMap())
         val placeCovers = runCatching { memoryRepository.placeCovers() }.getOrDefault(emptyMap())
         val seen = StorySeen.seenToday(seenStored, today)
-        return rings.map { ring ->
-            val cover = when (ring.kind) {
-                RingKind.TODAY -> yearCovers.maxByOrNull { it.key }?.value
-                RingKind.PERSON -> ring.person?.let { person -> cardsOf(person).let { cards -> cards.firstOrNull { it.cover != null } ?: cards.firstOrNull() } }?.toCover()
-                RingKind.YEAR -> yearCovers[ring.year]
-                RingKind.FESTIVAL -> (festivalCards.firstOrNull { it.cover != null } ?: festivalCards.firstOrNull())?.toCover()
-                RingKind.PLACE -> ring.place?.let { placeCovers[it.trim().lowercase()] }
+        // Candidates per ring, best first; then one photo per ring so that no two rings look the same (two people who
+        // share their newest memory used to get the same picture, and so did Today and This year).
+        val candidates = rings.map { ring ->
+            when (ring.kind) {
+                RingKind.TODAY -> listOfNotNull(yearCovers.maxByOrNull { it.key }?.value)
+                RingKind.PERSON -> ring.person?.let { person ->
+                    // Their own profile photo first, then their memories, newest first.
+                    listOfNotNull(person.profileMediaId?.let { CoverPick(memoryId = 0L, mediaId = it, coverStyle = CoverStyle.DEFAULT) }) +
+                        cardsOf(person).map { it.toCover() }
+                }.orEmpty()
+                RingKind.YEAR -> listOfNotNull(yearCovers[ring.year]) + memoryRepository.cardsForYear(ring.year ?: today.year).map { it.toCover() }
+                RingKind.FESTIVAL -> festivalCards.map { it.toCover() }
+                RingKind.PLACE -> ring.place?.let { place ->
+                    listOfNotNull(placeCovers[place.trim().lowercase()]) +
+                        memoryRepository.observeCards(TimelineFilter(place = place)).first().map { it.toCover() }
+                }.orEmpty()
             }
-            RingUi(ring, cover, seen = ring.key in seen)
+        }
+        val covers = StoryRings.distinctCovers(candidates)
+        return rings.mapIndexed { i, ring ->
+            // No unused photo: a person shows their avatar; other rings show cover art in their memory's style.
+            val fallback = if (ring.kind == RingKind.PERSON) null else candidates[i].firstOrNull()?.copy(mediaId = null)
+            RingUi(ring, covers[i] ?: fallback, seen = ring.key in seen)
         }
     }
 

@@ -1357,3 +1357,12 @@ start: nothing new before the first frame; the story loader and both players are
 open it on the memory on screen)?
 
 **Next**: the owner's phone test of both phases (stopwatch on the first minute; a story with music).
+
+### Story rings showed the same photo (owner's phone, Build 100)
+
+- Cause: Today took the newest year's cover and each person took their newest memory's cover, so people tagged together in
+  the newest memory (and Today, and This year) all showed one picture.
+- Fix: `StoryRings.distinctCovers` (pure, tested) gives each ring its first candidate photo that no earlier ring has taken.
+  `StoryLoader.rings` supplies the candidates: a person's profile photo first, then their memories newest first; a year's
+  and a place's other memories after their usual cover. With nothing unused left a person shows their avatar and other
+  rings show cover art. Rule: anything shown side by side on Relive picks its pictures together, not one by one.
