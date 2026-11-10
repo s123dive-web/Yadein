@@ -113,7 +113,7 @@ jobs:
       - name: Warn when still signed with the public debug key
         if: env.HAS_RELEASE_KEY != 'true'
         run: echo "::warning::APK is signed with the public debug key. Add the KEYSTORE_* secrets (docs/RELEASE_SIGNING.md) to finish securing updates."
-      - name: APK size (Fast & Rich budget: at most 6 MB over the 58.5 MB Phase 0 baseline, or smaller)
+      - name: APK size (Fast & Rich budget, at most 6 MB over the 58.5 MB Phase 0 baseline)
         run: |
           APK=$(ls app/build/outputs/apk/beta/Yaadein-*.apk)
           SIZE=$(stat -c %s "$APK")
