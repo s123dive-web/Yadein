@@ -10,7 +10,8 @@ import com.yaadein.data.db.dao.MediaDao
 import com.yaadein.data.db.dao.MemoryDao
 import com.yaadein.data.db.dao.PersonDao
 import com.yaadein.data.db.entity.CaptureStatEntity
-import com.yaadein.data.db.entity.FaceClusterEntity
+import com.yaadein.data.db.entity.FaceEntity
+import com.yaadein.data.db.entity.FaceRejectionEntity
 import com.yaadein.data.db.entity.GroupEntity
 import com.yaadein.data.db.entity.GroupMemberEntity
 import com.yaadein.data.db.entity.ImportJobEntity
@@ -30,7 +31,8 @@ import com.yaadein.data.db.entity.PersonEntity
         MediaEntity::class,
         MediaPersonEntity::class,
         MemoryPersonEntity::class,
-        FaceClusterEntity::class,
+        FaceEntity::class,
+        FaceRejectionEntity::class,
         MemorySearchEntity::class,
         ImportJobEntity::class,
         CaptureStatEntity::class,
@@ -48,8 +50,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun captureStatDao(): CaptureStatDao
 
     companion object {
-        /** v2 (Fast & Rich round, Phase 1): capture_stats, media GPS columns, import_jobs.picked_json. */
-        const val VERSION = 2
+        /**
+         * v2 (Fast & Rich round, Phase 1): capture_stats, media GPS columns, import_jobs.picked_json.
+         * v3 (Phase 2): per-face embeddings (`faces`, `face_rejections`), person centroids, media.face_scan_version;
+         * the LBP `face_clusters` table is dropped.
+         */
+        const val VERSION = 3
         const val NAME = "yaadein.db"
     }
 }

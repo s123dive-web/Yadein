@@ -99,12 +99,24 @@
     <string name="backup_error_title">Something went wrong</string>
     <string name="backup_note">The .yaadein file is encrypted (AES-256, Argon2id). Share it through the share sheet to a drive, a computer or another phone.</string>
     <string name="faces_enable">Suggest who is in photos</string>
-    <string name="faces_enable_help">Finds faces on this phone and asks “Is this Rahul?”. You confirm every suggestion.</string>
-    <string name="faces_privacy">Face detection runs entirely on the device with a bundled model. Nothing is tagged automatically and nothing leaves the phone.</string>
-    <string name="faces_scan">Scan my photos now</string>
+    <string name="faces_enable_help">Recognises the people you have already tagged and suggests them on new photos. Very sure matches get a “suggested” badge you can undo with one tap.</string>
+    <string name="faces_privacy">Faces are found and compared entirely on this phone with a bundled model. The face data stays in your encrypted vault, goes into your backups, and is deleted with the person or with the button below. Nothing leaves the phone.</string>
+    <string name="faces_optin_title">Know who is in every photo</string>
+    <string name="faces_optin_body">Turn this on and Yaadein looks at the faces in your photos, on this phone only. Name a face once and it recognises that person next time: fewer taps when you save, and “Who is this?” for the rest.</string>
+    <string name="faces_optin_action">Turn on face suggestions</string>
+    <string name="faces_reindex_running">Looking at faces in your photos…</string>
+    <string name="faces_reindex_channel">Face suggestions</string>
+    <string name="faces_reindex_waiting">Waiting for a charger or a quiet moment to look at your photos…</string>
+    <plurals name="faces_unscanned"><item quantity="one">%1$d photo has not been looked at yet.</item><item quantity="other">%1$d photos have not been looked at yet.</item></plurals>
+    <string name="faces_all_scanned">Every photo has been looked at. New photos are checked as you add them.</string>
+    <string name="faces_who_help">Name a face once; the whole group and every later photo follow.</string>
+    <string name="faces_delete">Delete all face data</string>
+    <string name="faces_delete_help">Removes every face measurement and suggestion from this phone. People you tagged stay tagged.</string>
+    <string name="faces_delete_confirm">All face data on this phone will be deleted. Photos and the people tagged on them are not affected. Turn face suggestions on again to start afresh.</string>
+    <string name="faces_scan">Look at them now</string>
     <string name="faces_scanning">Scanning %1$d of %2$d photos…</string>
-    <string name="faces_none">No suggestions yet. Add photos or scan your library.</string>
-    <plurals name="faces_pending"><item quantity="one">%1$d face to confirm</item><item quantity="other">%1$d faces to confirm</item></plurals>
+    <string name="faces_none">No faces waiting for a name.</string>
+    <plurals name="faces_pending"><item quantity="one">%1$d face to name</item><item quantity="other">%1$d faces to name</item></plurals>
     <plurals name="faces_seen"><item quantity="one">Seen in %1$d photo</item><item quantity="other">Seen in %1$d photos</item></plurals>
     <string name="faces_is_this">Is this %1$s?</string>
     <string name="faces_who">Who is this?</string>
@@ -116,7 +128,7 @@
     <string name="privacy_s2_title">What stays on your phone</string>
     <string name="privacy_s2_body">Your people, memories, photos, videos, voice recordings, notes and settings stay in the app\'s private storage, encrypted. With a Yaadein PIN, the keys can only be unlocked with your PIN or fingerprint. Android cloud backup is switched off for this app.</string>
     <string name="privacy_s3_title">Optional on-device features</string>
-    <string name="privacy_s3_body">Face suggestions (off by default) run on the phone. Smart polish uses Gemini Nano on the phone only where it is already installed. Voice memories use the microphone only while you record. Reminders and the widget are scheduled on the phone and hidden on the lock screen.</string>
+    <string name="privacy_s3_body">Face suggestions (off by default) find and compare faces on the phone with a bundled model; the face measurements are stored only in your encrypted vault and can be deleted in Settings → Face suggestions. Smart polish uses Gemini Nano on the phone only where it is already installed. Voice memories use the microphone only while you record. Reminders and the widget are scheduled on the phone and hidden on the lock screen.</string>
     <string name="privacy_s4_title">When data leaves the phone</string>
     <string name="privacy_s4_body">Only when you choose to: sharing a reel, a picture or PDF of a memory, a password-protected family pack, or a password-protected backup (by hand, or weekly to a file you picked).</string>
     <string name="privacy_s5_title">Deleting your data</string>

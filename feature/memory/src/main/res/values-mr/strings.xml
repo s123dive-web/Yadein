@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="memory_who_was_there">कोण कोण होतं</string>
+    <string name="memory_face_suggested_title">हा…?</string>
+    <string name="memory_face_suggested_badge">सुचवलेलं</string>
+    <string name="memory_face_not_them">%1$s नाही</string>
     <string name="memory_photos">फोटो आणि व्हिडिओ</string>
     <string name="memory_add_photos">जोडा</string>
     <string name="memory_no_photos_hint">अजून फोटो नाहीत. फोटो किंवा व्हिडिओ जोडण्यासाठी टॅप करा — ही गोष्ट आपोआप सजेल.</string>

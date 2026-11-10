@@ -45,4 +45,33 @@
     <string name="relationships_empty_message">एकाच आठवणीत दोन किंवा अधिक माणसांना टॅग करा म्हणजे नकाशा वाढेल.</string>
     <string name="relationships_hint">मोठे गोळे जास्त आठवणींत आहेत. जाड रेषा म्हणजे जास्त सामायिक आठवणी.</string>
     <string name="person_stat_memories">आठवणी</string>
+    <plurals name="people_faces_banner">
+        <item quantity="one">%1$d चेहऱ्याला नाव द्यायचं आहे</item>
+        <item quantity="other">%1$d चेहऱ्यांना नाव द्यायचं आहे</item>
+    </plurals>
+    <string name="people_faces_banner_hint">Yaadein ला तुमच्या फोटोंत अशी माणसं सापडली जी त्याला अजून माहीत नाहीत.</string>
+    <string name="people_faces_banner_action">हा कोण आहे?</string>
+    <string name="who_title">हा कोण आहे?</string>
+    <string name="who_intro">हे चेहरे एकाच व्यक्तीचे वाटतात. ही व्यक्ती कोण ते निवडा म्हणजे प्रत्येक फोटो एकाच वेळी टॅग होईल. तुम्ही सांगितल्याशिवाय काहीही टॅग होत नाही.</string>
+    <plurals name="who_seen_in">
+        <item quantity="one">%1$d फोटोत दिसला</item>
+        <item quantity="other">%1$d फोटोंत दिसला</item>
+    </plurals>
+    <plurals name="who_remaining">
+        <item quantity="one">अजून %1$d बाकी</item>
+        <item quantity="other">अजून %1$d बाकी</item>
+    </plurals>
+    <string name="who_face_cd">%2$d पैकी %1$d वा चेहरा</string>
+    <string name="who_pick_person">हा कोण आहे?</string>
+    <string name="who_add_person">व्यक्ती जोडा</string>
+    <string name="who_name_them">नाव द्या</string>
+    <string name="who_name_as">हा %1$s आहे</string>
+    <string name="who_not_same">एकच व्यक्ती नाही</string>
+    <plurals name="who_named">
+        <item quantity="one">%1$d चेहऱ्याला %2$s नाव दिलं</item>
+        <item quantity="other">%1$d चेहऱ्यांना %2$s नाव दिलं</item>
+    </plurals>
+    <string name="who_undo">पूर्ववत करा</string>
+    <string name="who_empty_title">प्रत्येक चेहऱ्याला नाव आहे</string>
+    <string name="who_empty_message">फोटो जोडाल तसे नवे चेहरे इथे वाट पाहतील. आणखी शोधायला सेटिंग्जमध्ये चेहरा सूचना चालू करा.</string>
 </resources>

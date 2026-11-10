@@ -105,7 +105,7 @@ class QuickSaveFlowTest {
         importer = importer,
         coordinator = coordinator,
         captureStats = stats,
-        faceSuggester = FaceSuggester(db, store),
+        faceSuggester = FaceSuggester(db, store, com.yaadein.data.faces.FaceEmbedder(context)),
         lockState = AppLockState(),
     )
 

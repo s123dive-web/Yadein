@@ -6,7 +6,13 @@ import androidx.test.core.app.ApplicationProvider
 import com.yaadein.data.crypto.MediaCrypto
 import com.yaadein.data.db.AppDatabase
 import com.yaadein.data.db.DatabaseFactory
+import com.yaadein.data.db.entity.FaceEntity
+import com.yaadein.data.db.entity.FaceRejectionEntity
 import com.yaadein.data.db.entity.MediaEntity
+import com.yaadein.data.faces.FaceState
+import com.yaadein.data.faces.FaceSuggester.Companion.toBytes
+import com.yaadein.data.faces.FaceSuggester.Companion.toFloats
+import com.yaadein.domain.faces.FaceModel
 import com.yaadein.data.media.MediaStore
 import com.yaadein.data.repository.MemoryRepositoryImpl
 import com.yaadein.data.repository.PersonRepositoryImpl
@@ -19,6 +25,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -88,6 +95,45 @@ class BackupManagerTest {
         assertEquals(card.memory.coverMediaId, media.id)
         assertArrayEquals(plain, store.crypto.decryptToBytes(store.file(media.encryptedPath)))
         assertEquals(1, memories.search("diwali").size)
+    }
+
+    @Test
+    fun `faces, rejections and centroids round-trip and keep working after a restore`() = runTest {
+        val people = PersonRepositoryImpl(db) { 1L }
+        val memories = MemoryRepositoryImpl(db) { 1L }
+        val aai = people.upsert(Person(name = "Aai"))
+        val memId = memories.create(Memory(type = MemoryType.EVENT, title = "Holi", description = "", date = Dates.exact(LocalDate.of(2024, 3, 25))), listOf(aai))
+        val f = store.newMediaFile("jpg"); val t = store.newThumbFile()
+        val sha = store.crypto.encryptBytes(ByteArray(100) { 3 }, f); store.crypto.encryptBytes(ByteArray(16), t)
+        val mediaId = db.mediaDao().insert(MediaEntity(memoryId = memId, kind = "PHOTO", encryptedPath = store.relativize(f), thumbPath = store.relativize(t), takenAt = null, durationMs = null, sizeBytes = 100, caption = "", width = 10, height = 10, sha256 = sha, position = 0, createdAt = 1, faceScanVersion = FaceModel.VERSION))
+        val embedding = FloatArray(FaceModel.EMBEDDING_SIZE).also { it[0] = 1f }
+        fun face(state: String, personId: Long?) = FaceEntity(mediaId = mediaId, embedding = embedding.toBytes(), modelVersion = FaceModel.VERSION, quality = 0.9f, boxLeft = 0.1f, boxTop = 0.1f, boxRight = 0.3f, boxBottom = 0.4f, personId = personId, state = state, similarity = null, createdAt = 1)
+        db.faceDao().insert(face(FaceState.CONFIRMED, aai))
+        val unknown = db.faceDao().insert(face(FaceState.UNKNOWN, null))
+        db.faceDao().reject(FaceRejectionEntity(unknown, aai))
+        db.faceDao().setCentroid(aai, embedding.toBytes(), FaceModel.VERSION, 1)
+
+        val outUri = Uri.fromFile(File(context.cacheDir, "f.yaadein"))
+        val bytes = ByteArrayOutputStream()
+        Shadows.shadowOf(context.contentResolver).registerOutputStream(outUri, bytes)
+        manager.export(outUri, "secret".toCharArray())
+        db.clearAllTables(); store.wipeAll()
+        val inUri = Uri.parse("content://test/faces")
+        Shadows.shadowOf(context.contentResolver).registerInputStream(inUri, bytes.toByteArray().inputStream())
+        manager.restore(inUri, "secret".toCharArray())
+
+        assertEquals(2, db.faceDao().count())
+        val newAai = people.observeAll().first().single().id
+        val restoredMedia = db.mediaDao().all().single()
+        assertEquals(FaceModel.VERSION, restoredMedia.faceScanVersion)
+        val confirmed = db.faceDao().byState(FaceState.CONFIRMED).single()
+        assertEquals(newAai, confirmed.personId); assertEquals(restoredMedia.id, confirmed.mediaId)
+        val restoredUnknown = db.faceDao().byState(FaceState.UNKNOWN).single()
+        assertNull(restoredUnknown.personId)
+        assertEquals(listOf(newAai), db.faceDao().rejectedPeople(restoredUnknown.id))
+        val withCentroid = db.faceDao().peopleWithCentroids(FaceModel.VERSION).single()
+        assertEquals(1, withCentroid.confirmedFaces)
+        assertEquals(1f, withCentroid.centroid!!.toFloats()[0], 1e-6f)
     }
 
     @Test

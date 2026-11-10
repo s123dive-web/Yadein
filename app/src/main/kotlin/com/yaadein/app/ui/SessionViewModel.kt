@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.yaadein.data.backup.AutoBackup
 import com.yaadein.data.reminders.ReminderDigestStore
 import com.yaadein.feature.settings.AutoBackupWorker
+import com.yaadein.feature.settings.FaceReindexWorker
 import com.yaadein.domain.settings.UserSettings
 import com.yaadein.feature.relive.notify.OnThisDayWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,6 +36,8 @@ class SessionViewModel @Inject constructor(
             runCatching { OnThisDayWorker.sync(context, settings) }
             runCatching { context.sendBroadcast(Intent(OnThisDayWorker.ACTION_REMINDERS_REFRESHED).setPackage(context.packageName)) }
             if (AutoBackup.isDue(settings, System.currentTimeMillis())) runCatching { AutoBackupWorker.enqueue(context) }
+            // Photos added while face suggestions were off, or scanned with an older model, are indexed in the background.
+            if (settings.faceSuggestions) runCatching { FaceReindexWorker.enqueue(context) }
         }
     }
 }

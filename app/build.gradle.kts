@@ -65,6 +65,9 @@ android {
         create("beta") {
             initWith(getByName("release"))
             applicationIdSuffix = ".debug"
+            // Phones only: the x86 ABIs were a third of the APK (about 24 MB of native libraries) and no family phone runs
+            // them; debug and benchmark keep every ABI for the CI emulator.
+            ndk { abiFilters += setOf("arm64-v8a", "armeabi-v7a") }
             isDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true
@@ -107,6 +110,11 @@ android {
     packaging {
         resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/LICENSE*")
         jniLibs.useLegacyPackaging = false
+    }
+
+    // The face model is memory-mapped straight from the APK; it must not be compressed.
+    androidResources {
+        noCompress += listOf("tflite")
     }
 
     testOptions {

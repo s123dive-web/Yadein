@@ -45,4 +45,33 @@
     <string name="relationships_empty_message">एक ही याद में दो या अधिक लोगों को टैग करें, नक्शा बढ़ेगा।</string>
     <string name="relationships_hint">बड़े गोले ज़्यादा यादों में हैं। मोटी रेखाएँ मतलब ज़्यादा साझा यादें।</string>
     <string name="person_stat_memories">यादें</string>
+    <plurals name="people_faces_banner">
+        <item quantity="one">%1$d चेहरे को नाम देना है</item>
+        <item quantity="other">%1$d चेहरों को नाम देना है</item>
+    </plurals>
+    <string name="people_faces_banner_hint">Yaadein को आपकी फ़ोटो में ऐसे लोग मिले जिन्हें वह अभी नहीं जानता।</string>
+    <string name="people_faces_banner_action">यह कौन है?</string>
+    <string name="who_title">यह कौन है?</string>
+    <string name="who_intro">ये चेहरे एक ही व्यक्ति के लगते हैं। बताइए यह कौन है और हर फ़ोटो एक साथ टैग हो जाएगी। आपके कहे बिना कुछ भी टैग नहीं होता।</string>
+    <plurals name="who_seen_in">
+        <item quantity="one">%1$d फ़ोटो में दिखा</item>
+        <item quantity="other">%1$d फ़ोटो में दिखा</item>
+    </plurals>
+    <plurals name="who_remaining">
+        <item quantity="one">%1$d और बाकी</item>
+        <item quantity="other">%1$d और बाकी</item>
+    </plurals>
+    <string name="who_face_cd">%2$d में से %1$d चेहरा</string>
+    <string name="who_pick_person">यह कौन है?</string>
+    <string name="who_add_person">व्यक्ति जोड़ें</string>
+    <string name="who_name_them">नाम बताएँ</string>
+    <string name="who_name_as">यह %1$s है</string>
+    <string name="who_not_same">एक ही व्यक्ति नहीं</string>
+    <plurals name="who_named">
+        <item quantity="one">%1$d चेहरे को %2$s नाम दिया</item>
+        <item quantity="other">%1$d चेहरों को %2$s नाम दिया</item>
+    </plurals>
+    <string name="who_undo">पूर्ववत करें</string>
+    <string name="who_empty_title">हर चेहरे का नाम है</string>
+    <string name="who_empty_message">फ़ोटो जोड़ते ही नए चेहरे यहाँ इंतज़ार करेंगे। और ढूँढने के लिए सेटिंग्स में चेहरा सुझाव चालू करें।</string>
 </resources>

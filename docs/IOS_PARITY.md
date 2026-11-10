@@ -57,7 +57,7 @@
 | Reels: rendering, library (newest 10), player, share, 3 automatic reels | ✅ | ✅ | AVFoundation renderer, same storyboard, music and 1080×1920 output; automatic reels refresh when Your reels opens |
 | Reels: choose exact photos, own music | ✅ | ✅ | own music from Files |
 | Reels: Your songs (songs from the phone remembered for every reel, search, Hindi/Marathi suggestions) | ✅ | ⬜ | Android: `MusicLibrary` + `OwnMusicSheet`, system picker only (no audio permission). iOS still picks one file from Files per reel |
-| Face suggestions | ✅ | ✅ | Vision face boxes + the same 64×64 LBP descriptor and clustering; nothing tagged until confirmed |
+| Face suggestions | ✅ v2 | 🟡 diverged, deferred | Android (Fast & Rich, Phase 2): GhostFaceNet embeddings, person centroids, auto-tag ≥ 0.75 with undo, "Who is this?" groups, background re-index. iPhone still has the LBP descriptor; a Core ML port of the same model is deferred |
 
 ## Trust
 

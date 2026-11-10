@@ -99,12 +99,24 @@
     <string name="backup_error_title">કંઈક ખોટું થયું</string>
     <string name="backup_note">.yaadein ફાઇલ એન્ક્રિપ્ટેડ છે (AES-256, Argon2id). શેર મેનૂ દ્વારા તેને ડ્રાઇવ, કમ્પ્યુટર કે બીજા ફોનમાં મોકલો.</string>
     <string name="faces_enable">ફોટામાં કોણ છે તે સૂચવો</string>
-    <string name="faces_enable_help">આ ફોનમાં ચહેરા શોધે છે અને પૂછે છે “શું આ રાહુલ છે?”. દરેક સૂચનની પુષ્ટિ તમે કરો છો.</string>
-    <string name="faces_privacy">ચહેરા ઓળખવાનું કામ સંપૂર્ણપણે ફોનમાં, સાથે આવેલા મોડેલથી થાય છે. કંઈ પણ આપમેળે ટેગ થતું નથી અને કંઈ પણ ફોનની બહાર જતું નથી.</string>
-    <string name="faces_scan">મારા ફોટા હમણાં સ્કેન કરો</string>
+    <string name="faces_enable_help">તમે પહેલેથી ટેગ કરેલા લોકોને ઓળખીને નવા ફોટા પર સૂચવે છે. ખૂબ પાકા મેળ પર “સૂચવેલું” બેજ લાગે છે, જે એક ટૅપથી પાછું વાળી શકાય છે.</string>
+    <string name="faces_privacy">ચહેરા સંપૂર્ણપણે આ જ ફોનમાં, સાથે આવેલા મોડેલથી શોધાય અને મેળવાય છે. ચહેરાનો ડેટા તમારી એન્ક્રિપ્ટેડ તિજોરીમાં રહે છે, તમારા બૅકઅપમાં જાય છે, અને તે વ્યક્તિ સાથે કે નીચેના બટનથી ભૂંસાઈ જાય છે. કંઈ પણ ફોનની બહાર જતું નથી.</string>
+    <string name="faces_optin_title">દરેક ફોટામાં કોણ છે તે જાણો</string>
+    <string name="faces_optin_body">આ ચાલુ કરો એટલે Yaadein તમારા ફોટાના ચહેરા જુએ છે, ફક્ત આ જ ફોનમાં. કોઈ ચહેરાનું નામ એક વાર કહો, આવતી વખતે તે એ વ્યક્તિને ઓળખી લેશે: સેવ કરતી વખતે ઓછા ટૅપ, અને બાકીના માટે “આ કોણ છે?”.</string>
+    <string name="faces_optin_action">ચહેરાનાં સૂચનો ચાલુ કરો</string>
+    <string name="faces_reindex_running">તમારા ફોટામાં ચહેરા જોવાઈ રહ્યા છે…</string>
+    <string name="faces_reindex_channel">ચહેરાનાં સૂચનો</string>
+    <string name="faces_reindex_waiting">તમારા ફોટા જોવા માટે ચાર્જર કે નિરાંતની પળની રાહ જોવાય છે…</string>
+    <plurals name="faces_unscanned"><item quantity="one">%1$d ફોટો હજી જોવાયો નથી.</item><item quantity="other">%1$d ફોટા હજી જોવાયા નથી.</item></plurals>
+    <string name="faces_all_scanned">દરેક ફોટો જોવાઈ ગયો છે. નવા ફોટા ઉમેરતાં જ તપાસાઈ જાય છે.</string>
+    <string name="faces_who_help">કોઈ ચહેરાનું નામ એક વાર કહો; આખું જૂથ અને પછીનો દરેક ફોટો એની પાછળ આવે છે.</string>
+    <string name="faces_delete">ચહેરાનો બધો ડેટા કાઢી નાખો</string>
+    <string name="faces_delete_help">આ ફોનમાંથી ચહેરાનું દરેક માપ અને સૂચન દૂર કરે છે. તમે ટેગ કરેલા લોકો ટેગ રહે છે.</string>
+    <string name="faces_delete_confirm">આ ફોન પરનો ચહેરાનો બધો ડેટા કાઢી નખાશે. ફોટા અને તેના પર ટેગ કરેલા લોકો જેમના તેમ રહેશે. નવેસરથી શરૂ કરવા ચહેરાનાં સૂચનો ફરી ચાલુ કરો.</string>
+    <string name="faces_scan">હમણાં જુઓ</string>
     <string name="faces_scanning">%2$d માંથી %1$d ફોટા સ્કેન થઈ રહ્યા છે…</string>
-    <string name="faces_none">હજી કોઈ સૂચન નથી. ફોટા ઉમેરો અથવા તમારી લાઇબ્રેરી સ્કેન કરો.</string>
-    <plurals name="faces_pending"><item quantity="one">પુષ્ટિ કરવા માટે %1$d ચહેરો</item><item quantity="other">પુષ્ટિ કરવા માટે %1$d ચહેરા</item></plurals>
+    <string name="faces_none">નામની રાહ જોતો કોઈ ચહેરો નથી.</string>
+    <plurals name="faces_pending"><item quantity="one">%1$d ચહેરાને નામ આપવાનું છે</item><item quantity="other">%1$d ચહેરાઓને નામ આપવાનું છે</item></plurals>
     <plurals name="faces_seen"><item quantity="one">%1$d ફોટામાં દેખાયા</item><item quantity="other">%1$d ફોટામાં દેખાયા</item></plurals>
     <string name="faces_is_this">શું આ %1$s છે?</string>
     <string name="faces_who">આ કોણ છે?</string>
@@ -116,7 +128,7 @@
     <string name="privacy_s2_title">તમારા ફોનમાં શું રહે છે</string>
     <string name="privacy_s2_body">તમારા લોકો, યાદો, ફોટા, વિડિયો, અવાજના રેકોર્ડિંગ, નોંધો અને સેટિંગ્સ ઍપની ખાનગી જગ્યામાં એન્ક્રિપ્ટ થઈને રહે છે. Yaadein PIN સાથે ચાવીઓ ફક્ત તમારા PIN કે ફિંગરપ્રિન્ટથી ખૂલે છે. આ ઍપ માટે Android ક્લાઉડ બૅકઅપ બંધ છે.</string>
     <string name="privacy_s3_title">ફોનમાં જ ચાલતી વૈકલ્પિક સુવિધાઓ</string>
-    <string name="privacy_s3_body">ચહેરાના સૂચનો (શરૂઆતમાં બંધ) ફોન પર જ ચાલે છે. સ્માર્ટ પોલિશ ફક્ત એ જ ફોન પર Gemini Nano વાપરે છે જેમાં તે પહેલેથી છે. અવાજની યાદો માઇક્રોફોન ફક્ત રેકોર્ડ કરતી વખતે વાપરે છે. રિમાઇન્ડર અને વિજેટ ફોન પર ગોઠવાય છે અને લૉક સ્ક્રીન પર છુપાયેલા રહે છે.</string>
+    <string name="privacy_s3_body">ચહેરાના સૂચનો (શરૂઆતમાં બંધ) ફોન પર જ, સાથે આવેલા મોડેલથી ચહેરા શોધે અને મેળવે છે; ચહેરાનાં માપ ફક્ત તમારી એન્ક્રિપ્ટેડ તિજોરીમાં રહે છે અને સેટિંગ્સ → ચહેરાનાં સૂચનોમાં કાઢી શકાય છે. સ્માર્ટ પોલિશ ફક્ત એ જ ફોન પર Gemini Nano વાપરે છે જેમાં તે પહેલેથી છે. અવાજની યાદો માઇક્રોફોન ફક્ત રેકોર્ડ કરતી વખતે વાપરે છે. રિમાઇન્ડર અને વિજેટ ફોન પર ગોઠવાય છે અને લૉક સ્ક્રીન પર છુપાયેલા રહે છે.</string>
     <string name="privacy_s4_title">ડેટા ફોનની બહાર ક્યારે જાય છે</string>
     <string name="privacy_s4_body">ફક્ત ત્યારે, જ્યારે તમે ઇચ્છો: રીલ, કોઈ યાદનું ચિત્ર કે PDF, પાસવર્ડવાળો ફૅમિલી પૅક, કે પાસવર્ડવાળો બૅકઅપ (હાથેથી કે દર અઠવાડિયે તમે પસંદ કરેલી ફાઇલમાં) મોકલતી વખતે.</string>
     <string name="privacy_s5_title">તમારો ડેટા ડિલીટ કરવો</string>

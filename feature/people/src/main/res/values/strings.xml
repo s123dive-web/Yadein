@@ -45,4 +45,33 @@
     <string name="relationships_empty_message">Tag two or more people in the same memories and the map will grow.</string>
     <string name="relationships_hint">Bigger bubbles appear in more memories. Thicker lines mean more memories together.</string>
     <string name="person_stat_memories">Memories</string>
+    <plurals name="people_faces_banner">
+        <item quantity="one">%1$d face to name</item>
+        <item quantity="other">%1$d faces to name</item>
+    </plurals>
+    <string name="people_faces_banner_hint">Yaadein found people in your photos it doesn\'t know yet.</string>
+    <string name="people_faces_banner_action">Who is this?</string>
+    <string name="who_title">Who is this?</string>
+    <string name="who_intro">These faces look like the same person. Pick who it is and every photo gets tagged at once. Nothing is tagged until you say so.</string>
+    <plurals name="who_seen_in">
+        <item quantity="one">Seen in %1$d photo</item>
+        <item quantity="other">Seen in %1$d photos</item>
+    </plurals>
+    <plurals name="who_remaining">
+        <item quantity="one">%1$d more to go</item>
+        <item quantity="other">%1$d more to go</item>
+    </plurals>
+    <string name="who_face_cd">Face %1$d of %2$d</string>
+    <string name="who_pick_person">Who is it?</string>
+    <string name="who_add_person">Add person</string>
+    <string name="who_name_them">Name them</string>
+    <string name="who_name_as">This is %1$s</string>
+    <string name="who_not_same">Not the same person</string>
+    <plurals name="who_named">
+        <item quantity="one">Named %1$d face as %2$s</item>
+        <item quantity="other">Named %1$d faces as %2$s</item>
+    </plurals>
+    <string name="who_undo">Undo</string>
+    <string name="who_empty_title">Every face has a name</string>
+    <string name="who_empty_message">New faces will wait here as you add photos. Turn on face suggestions in Settings to find more.</string>
 </resources>

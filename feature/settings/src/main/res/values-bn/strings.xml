@@ -99,12 +99,24 @@
     <string name="backup_error_title">কিছু একটা গোলমাল হয়েছে</string>
     <string name="backup_note">.yaadein ফাইলটা এনক্রিপ্ট করা (AES-256, Argon2id)। শেয়ার মেনু দিয়ে এটা কোনো ড্রাইভে, কম্পিউটারে বা অন্য ফোনে পাঠান।</string>
     <string name="faces_enable">ছবিতে কে আছেন, তা জানিয়ে দিক</string>
-    <string name="faces_enable_help">এই ফোনেই মুখ খুঁজে জিজ্ঞেস করে “ইনি কি রাহুল?”। প্রতিটা পরামর্শ আপনি নিজে নিশ্চিত করবেন।</string>
-    <string name="faces_privacy">মুখ চেনার কাজ পুরোটাই ফোনের ভেতরে, সঙ্গে দেওয়া মডেল দিয়ে হয়। নিজে থেকে কাউকে ট্যাগ করা হয় না, কিছুই ফোনের বাইরে যায় না।</string>
-    <string name="faces_scan">এখনই আমার ছবি স্ক্যান করুন</string>
+    <string name="faces_enable_help">আপনি আগে যাঁদের ট্যাগ করেছেন, তাঁদের চিনে নতুন ছবিতে পরামর্শ দেয়। খুব নিশ্চিত মিলে “পরামর্শ” ব্যাজ লাগে, এক ট্যাপেই তা ফিরিয়ে নেওয়া যায়।</string>
+    <string name="faces_privacy">মুখ খোঁজা ও মেলানোর পুরো কাজটাই এই ফোনে, সঙ্গে দেওয়া মডেল দিয়ে হয়। মুখের তথ্য আপনার এনক্রিপ্ট করা ভল্টে থাকে, আপনার ব্যাকআপে যায়, আর সেই মানুষটির সঙ্গে বা নিচের বোতামে মুছে যায়। কিছুই ফোনের বাইরে যায় না।</string>
+    <string name="faces_optin_title">প্রতিটি ছবিতে কে আছেন, জেনে নিন</string>
+    <string name="faces_optin_body">এটা চালু করলে Yaadein আপনার ছবির মুখগুলো দেখে, শুধু এই ফোনেই। একটা মুখের নাম একবার বলে দিন, পরের বার সে মানুষটিকে চিনে নেবে: সেভ করার সময় কম ট্যাপ, আর বাকিদের জন্য “ইনি কে?”।</string>
+    <string name="faces_optin_action">মুখ চেনার পরামর্শ চালু করুন</string>
+    <string name="faces_reindex_running">আপনার ছবির মুখগুলো দেখা হচ্ছে…</string>
+    <string name="faces_reindex_channel">মুখ চেনার পরামর্শ</string>
+    <string name="faces_reindex_waiting">আপনার ছবি দেখার জন্য চার্জার বা একটু ফুরসতের অপেক্ষায়…</string>
+    <plurals name="faces_unscanned"><item quantity="one">%1$dটি ছবি এখনও দেখা হয়নি।</item><item quantity="other">%1$dটি ছবি এখনও দেখা হয়নি।</item></plurals>
+    <string name="faces_all_scanned">সব ছবি দেখা হয়ে গেছে। নতুন ছবি যোগ করলেই দেখে নেওয়া হয়।</string>
+    <string name="faces_who_help">একটা মুখের নাম একবার বলুন; পুরো দলটা আর পরের প্রতিটি ছবি তার পিছু নেবে।</string>
+    <string name="faces_delete">মুখের সব তথ্য মুছে ফেলুন</string>
+    <string name="faces_delete_help">এই ফোন থেকে মুখের প্রতিটি মাপ ও পরামর্শ সরিয়ে দেয়। আপনি যাঁদের ট্যাগ করেছেন, তাঁরা ট্যাগ করাই থাকবেন।</string>
+    <string name="faces_delete_confirm">এই ফোনের মুখের সব তথ্য মুছে যাবে। ছবি আর তাতে ট্যাগ করা মানুষজন যেমন আছেন তেমনই থাকবেন। নতুন করে শুরু করতে মুখ চেনার পরামর্শ আবার চালু করুন।</string>
+    <string name="faces_scan">এখনই দেখুন</string>
     <string name="faces_scanning">%2$dটির মধ্যে %1$dটি ছবি স্ক্যান হচ্ছে…</string>
-    <string name="faces_none">এখনও কোনো পরামর্শ নেই। ছবি যোগ করুন বা আপনার সংগ্রহ স্ক্যান করুন।</string>
-    <plurals name="faces_pending"><item quantity="one">%1$dটি মুখ নিশ্চিত করতে হবে</item><item quantity="other">%1$dটি মুখ নিশ্চিত করতে হবে</item></plurals>
+    <string name="faces_none">নামের অপেক্ষায় কোনো মুখ নেই।</string>
+    <plurals name="faces_pending"><item quantity="one">%1$dটি মুখের নাম দিতে হবে</item><item quantity="other">%1$dটি মুখের নাম দিতে হবে</item></plurals>
     <plurals name="faces_seen"><item quantity="one">%1$dটি ছবিতে দেখা গেছে</item><item quantity="other">%1$dটি ছবিতে দেখা গেছে</item></plurals>
     <string name="faces_is_this">ইনি কি %1$s?</string>
     <string name="faces_who">ইনি কে?</string>
@@ -116,7 +128,7 @@
     <string name="privacy_s2_title">কী আপনার ফোনেই থাকে</string>
     <string name="privacy_s2_body">আপনার মানুষজন, স্মৃতি, ছবি, ভিডিও, ভয়েস রেকর্ডিং, নোট ও সেটিংস অ্যাপের নিজস্ব জায়গায় এনক্রিপ্ট হয়ে থাকে। Yaadein PIN থাকলে চাবিগুলি শুধু আপনার PIN বা আঙুলের ছাপেই খোলে। এই অ্যাপের জন্য Android ক্লাউড ব্যাকআপ বন্ধ।</string>
     <string name="privacy_s3_title">ইচ্ছামতো চালু করার মতো ফোনের ভেতরের সুবিধা</string>
-    <string name="privacy_s3_body">মুখের পরামর্শ (শুরুতে বন্ধ) ফোনেই চলে। Smart polish শুধু সেই ফোনে Gemini Nano ব্যবহার করে যেখানে এটি আগে থেকেই আছে। ভয়েস স্মৃতি শুধু রেকর্ড করার সময় মাইক্রোফোন ব্যবহার করে। রিমাইন্ডার ও উইজেট ফোনেই ঠিক হয় এবং লক স্ক্রিনে লুকানো থাকে।</string>
+    <string name="privacy_s3_body">মুখের পরামর্শ (শুরুতে বন্ধ) ফোনেই, সঙ্গে দেওয়া মডেল দিয়ে মুখ খোঁজে ও মেলায়; মুখের মাপগুলো শুধু আপনার এনক্রিপ্ট করা ভল্টে থাকে এবং সেটিংস → মুখ চেনার পরামর্শ থেকে মুছে ফেলা যায়। Smart polish শুধু সেই ফোনে Gemini Nano ব্যবহার করে যেখানে এটি আগে থেকেই আছে। ভয়েস স্মৃতি শুধু রেকর্ড করার সময় মাইক্রোফোন ব্যবহার করে। রিমাইন্ডার ও উইজেট ফোনেই ঠিক হয় এবং লক স্ক্রিনে লুকানো থাকে।</string>
     <string name="privacy_s4_title">তথ্য কখন ফোনের বাইরে যায়</string>
     <string name="privacy_s4_body">শুধু যখন আপনি চান: রিল, কোনো স্মৃতির ছবি বা PDF, পাসওয়ার্ড দেওয়া ফ্যামিলি প্যাক, বা পাসওয়ার্ড দেওয়া ব্যাকআপ (নিজে, বা প্রতি সপ্তাহে আপনার বেছে নেওয়া ফাইলে) পাঠানোর সময়।</string>
     <string name="privacy_s5_title">আপনার তথ্য মুছে ফেলা</string>

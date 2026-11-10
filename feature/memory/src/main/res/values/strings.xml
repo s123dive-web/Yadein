@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="memory_who_was_there">Who was there</string>
+    <string name="memory_face_suggested_title">Is this…?</string>
+    <string name="memory_face_suggested_badge">Suggested</string>
+    <string name="memory_face_not_them">Not %1$s</string>
     <string name="memory_photos">Photos and videos</string>
     <string name="memory_add_photos">Add</string>
     <string name="memory_no_photos_hint">No photos yet. Tap to add photos or videos — this story will upgrade itself.</string>

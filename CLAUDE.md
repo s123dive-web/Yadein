@@ -38,8 +38,8 @@ change nothing need no PR. If the session branch's earlier PR is already merged,
 |-------|------|--------|-------|
 | 0 | Audit and plan | ✅ done | Capture-path table, face pipeline, Polish inputs, baselines (APK 58.5 MB, Room v1, 710 strings, cold start 1.38 s) |
 | 1 | Quick Save: 3 taps, 10 seconds | ✅ done | + opens the Photo Picker, pre-filled Quick Save, copy-first import with progress ring, `capture_stats`, Room v2 |
-| 2 | Faces v2 | ⏳ next | Bundled GhostFaceNet TFLite embeddings, person centroids, "Who is this?", re-index worker, Room v3 |
-| 3 | Festivals, kinship, WhatsApp reel | ⏳ | Festival table 2010–2035, Relive festival card, kin terms, 30 s / 16 MB preset, Room v4 |
+| 2 | Faces v2 | ✅ done | Bundled GhostFaceNet TFLite embeddings, person centroids, "Who is this?", re-index worker, Room v3 |
+| 3 | Festivals, kinship, WhatsApp reel | ⏳ next | Festival table 2010–2035, Relive festival card, kin terms, 30 s / 16 MB preset, Room v4 |
 | 4 | Measure, harden, ship | ⏳ | Settings → How I use Yaadein, Easy mode / TalkBack pass, regression, docs |
 
 Phase STOP reports are appended at the bottom of this file under "Phase reports". The owner asked
@@ -89,7 +89,7 @@ A native SwiftUI port lives in `ios/` (docs/IOS.md, parity in docs/IOS_PARITY.md
 | DI / async | Hilt 2.60, Coroutines + Flow, WorkManager 2.12 (Hilt workers) |
 | Security | BiometricPrompt (class 3) + 6-digit PIN (Argon2id via `argon2kt`), `FLAG_SECURE` optional (off by default since settings version 3), Keystore AES keys |
 | Media | Coil 3 (custom encrypted fetcher), Media3 1.11 ExoPlayer (custom decrypting `DataSource`), Media3 Transformer for recap rendering, `ExifInterface` for dates |
-| Faces (optional) | ML Kit Face Detection 16.1.7 (bundled model, on device); lightweight local embedding + clustering |
+| Faces (optional) | ML Kit Face Detection 16.1.7 (bundled, detection + landmarks) → `FaceAlign` (ArcFace 112×112 template) → GhostFaceNetV1 W1.3-S1 int8 TFLite (MIT, 4.5 MB asset, LiteRT 1.0.1 CPU/XNNPACK) → `FaceMatcher` (cosine to person centroids: SUGGEST 0.60, AUTO 0.75, CLUSTER 0.65) |
 | Smart polish (optional) | ML Kit GenAI Prompt API (Gemini Nano via AICore) behind a capability check; rule-based Polish engine is the default and always works |
 | Testing | JUnit 5 (android-junit5), Turbine, MockK, Room migration tests, Robolectric Compose UI tests, Compose Preview Screenshot Testing |
 
@@ -192,6 +192,7 @@ exported schemas under `core/data/schemas/`.
 | Version | Migration | Change |
 |---------|-----------|--------|
 | 2 | `MIGRATION_1_2` (Fast & Rich, Phase 1) | `media.latitude`, `media.longitude` REAL NULL (EXIF GPS, for Quick Save's place suggestion); `import_jobs.picked_json` TEXT NULL (a copied file can finish importing after a restart); new table `capture_stats(id, entry TEXT, item_count INT, tap_to_save_ms INT, save_to_encrypted_ms INT NULL, created_at INT)` + index on `created_at` (local timings for Settings → How I use Yaadein) |
+| 3 | `MIGRATION_2_3` (Fast & Rich, Phase 2) | Drops the LBP `face_clusters` table (old suggestions cannot be converted); new table `faces(id, media_id FK CASCADE, embedding BLOB, model_version INT, quality REAL, box_left/top/right/bottom REAL, person_id FK SET NULL, state TEXT (UNKNOWN / SUGGESTED / CONFIRMED / AUTO), similarity REAL NULL, created_at INT)` with indices on `media_id`, `person_id`, `state`; new table `face_rejections(face_id FK CASCADE, person_id FK CASCADE, PK(face_id, person_id))`; `persons.centroid` BLOB NULL, `persons.centroid_model` INT NULL, `persons.confirmed_faces` INT NOT NULL DEFAULT 0; `media.face_scan_version` INT NOT NULL DEFAULT 0 (scan ledger: `< FaceModel.VERSION` means the current model has not looked at the photo) |
 
 Rule for every bump: add the entity/column, bump `VERSION`, add the `Migration`, commit the regenerated
 `core/data/schemas/.../N.json` (the Build APK workflow prints a regenerated schema when the committed one is stale),
@@ -237,6 +238,7 @@ RootGraph
 └── Home (scaffold with bottom nav + FAB; two-pane on expanded width)
     ├── Timeline            (filters sheet, search bar) ──► MemoryDetail(id) ──► MediaViewer(memoryId, index)
     ├── People              ──► PersonDetail(id) ──► Together(ids) / YearlySummary(personId, year)
+    │                       ──► WhoIsThis (faces nobody has named; also from Settings → Face suggestions)
     │                       ──► PersonEdit(id?) / GroupEdit(id?) / RelationshipsMap
     ├── + (tap)             ──► system Photo Picker ──► QuickSave(fromShare?, wordsOnly?) ──► Home (card shows an import ring)
     │                       QuickSave ──► PhotoFirst ("Looks like N days, split") / hub sheet ("More ways")
@@ -965,3 +967,83 @@ result → words-only). Screenshot previews: Quick Save light, dark, Easy mode, 
 "Pick more" replaces earlier drafts; `checkLimit` is called with `optimize = true` regardless of the setting in Photo-first,
 Quick capture and Bulk; CI does not validate screenshots; `FaceSuggester.SIZE = 32` is dead; the widget + still opens the
 old "Today, in one line" screen on purpose.
+
+### Fast & Rich — Phase 2: Faces v2 (STOP report)
+
+**Built**
+- **Real face embeddings, on the phone**: ML Kit face detection (bundled, with landmarks) → `FaceAlign` (least-squares
+  similarity transform of the two eyes, nose and mouth corners onto the ArcFace 112×112 template; eyes-only fallback) →
+  **GhostFaceNetV1 W1.3-S1** (MIT) as an int8 dynamic-range TFLite asset (`core/data/src/main/assets/faces/
+  ghostfacenet_v1_w1.3_s1_int8.tflite`, 4,484,976 bytes) run by LiteRT 1.0.1 on CPU/XNNPACK → 512-d L2-normalised
+  vector. `FaceModel.VERSION = 2`; `FaceEmbedder` logs `Yaadein.Faces embed_ms=` per scan for the < 1 s/face budget.
+  Conversion is reproducible: `scripts/faces/convert_ghostfacenet.py` (tf_keras 2.21: the published weights carry
+  `mixed_float16` layer policies, which the TFLite converter rejects as `tf.Conv2D`; the script rebuilds the architecture
+  in float32, loads the weights, freezes at batch 1 and quantises; cosine vs Keras ≥ 0.98 on the check set). Licence
+  text in `scripts/faces/LICENSE.GhostFaceNets.txt`, credited in README → Licences.
+- **Person centroids** (`FaceMatcher`, pure Kotlin): each person keeps a running-mean centroid of confirmed faces
+  (`persons.centroid`, `confirmed_faces`); a new face is compared by cosine: ≥ **0.75** → `AUTO` (tagged, shown with an
+  undoable "suggested" badge), ≥ **0.60** → `SUGGESTED` ("Is this Aai?"), else `UNKNOWN`. A rejected person is never
+  suggested again for that face (`face_rejections`). Confirming adds to the centroid, un-tagging removes from it; a
+  deleted person leaves the faces as unknown. Greedy agglomerative clustering at **0.65** groups unknown faces for
+  "Who is this?" so one name covers the whole group.
+- **Who is this?** (`feature/people/WhoIsThisScreen`): groups of unnamed faces with face crops, sample photos, "This is…"
+  (person picker + "New person"), "Not a person / skip"; naming a group tags the photos and seeds the centroid. Reached
+  from People (banner when faces are waiting) and Settings → Face suggestions.
+- **Quick Save and memory detail** use the centroids: Quick Save's people chips put recognised people first
+  (`FaceSuggester.suggestPeople`), memory detail shows suggestion chips with confirm/undo.
+- **Re-index worker** (`FaceReindexWorker`, unique work `face_reindex`): scans every photo whose `face_scan_version <
+  FaceModel.VERSION`, newest first, in batches of 25, as a foreground job with a progress notification; needs the vault
+  open (queued after an unlock from `SessionViewModel`), battery/storage not low unless the user taps "Look at them
+  now", and shares `ImportCoordinator`'s heavy-work mutex so encryption always goes first (`withImportLock`, steps aside
+  while `importing`). Turning the switch off cancels it; "Delete all face data" clears faces, rejections and centroids
+  (tags stay). Faces are off by default and nothing runs until the switch is on.
+- **Settings → Face suggestions** rewritten: plain-language opt-in card, index status (scanning N of M / waiting for a
+  charger / N photos not looked at / all looked at), "Who is this?" card, "Delete all face data" with confirmation.
+- **Backups**: `Dump.faces` / `faceRejections` (embeddings Base64) are additive; a `.yaadein` from before restores (no
+  faces, the ledger is 0, the worker re-indexes); restore remaps ids and rebuilds centroids. FORMAT stays 2.
+- **APK**: beta build limited to `arm64-v8a` + `armeabi-v7a`; `.tflite` stored uncompressed (memory-mapped); a CI step
+  fails the build if the beta APK exceeds 64,790,000 bytes (baseline + 6 MB).
+
+**Files**: core/domain `faces/FaceMatcher.kt`, `faces/FaceAlign.kt` (replace `FaceFeatures.kt`, `FaceClustering.kt`).
+core/data `faces/FaceEmbedder.kt`, `faces/FaceSuggester.kt` (rewritten), `db/entity/Entities.kt` (`FaceEntity`,
+`FaceRejectionEntity`, `PersonEntity` centroid columns, `MediaEntity.faceScanVersion`; `FaceClusterEntity` removed),
+`db/dao/Daos.kt` (`FaceDao`), `db/AppDatabase.kt`, `db/Migrations.kt`, `backup/BackupManager.kt`,
+`media/ImportCoordinator.kt` (`withImportLock`, `importing`), `src/main/assets/faces/…tflite`, `schemas/…/3.json`.
+feature/settings `FaceReindexWorker.kt`, `FacesScreen.kt`. feature/people `WhoIsThisScreen.kt`, `WhoIsThisViewModel.kt`,
+People banner. feature/memory suggestion chips. app `Routes.kt`, `AppNavHost.kt`, `SessionViewModel` (enqueue after
+unlock). `scripts/faces/*`, `gradle/libs.versions.toml` (litert), `core/data/build.gradle.kts`, `app/build.gradle.kts`,
+`.github/workflows/build.yml` (APK size step), PRIVACY.md, README.md, docs/IOS_PARITY.md.
+
+**Schema**: Room 2 → 3, `MIGRATION_2_3` (see §4 "Schema changes").
+
+**Tests**: `FaceMatcherTest` (normalise, cosine, thresholds, running-mean add/remove, clustering, rescore),
+`FaceAlignTest` (identity on the template, rotation/scale recovery, eyes-only fallback), `MigrationTest` 2→3 with rows
+(face_clusters dropped, new columns default), `FaceDaoTest` (scan ledger order and marking, faces/rejections/centroids,
+cascade on media delete, person delete clears the suggestion), `BackupManagerTest` (faces, rejections, centroids and the
+scan ledger survive export → restore with remapped ids), existing suites updated to the new `FaceSuggester`.
+The detector, the TFLite interpreter and the worker need a device: first on-phone check is the owner's (log line
+`Yaadein.Faces embed_ms=`).
+
+**Self-check**: INTERNET absent ✔ (no new permission) · migrations + test ✔ · old backup restores ✔ · no hardcoded
+strings/colours ✔ · 8 locales ✔ (machine-assisted) · 48 dp targets, TalkBack labels on face crops ✔ · frozen folders
+untouched (iOS strings regenerated only) ✔.
+
+**Budgets**: APK — model 4.5 MB + LiteRT ≈ 1 MB per ABI minus the two dropped ABIs (x86/x86_64 ≈ −19 MB of lib/), so the
+beta APK is expected well under the baseline; the CI "APK size" step prints the exact bytes and fails above
+64,790,000. Embedding: GhostFaceNet W1.3-S1 is ≈ 60 MFLOPs; int8 on XNNPACK should be well under 100 ms per face on a
+2020 phone (measure with the log line). Cold start unchanged: the interpreter is created lazily on the first scan.
+
+**Strings**: settings `faces_*` (15 new/changed), `privacy_s3_body`; people `who_*`; memory `face_*` chips. All eight
+locales; iOS `Localizable.strings` regenerated.
+
+**Findings (not fixed)**: `faces_scanning`, `faces_seen`, `faces_is_this`, `faces_yes`, `faces_not_sure` are now unused
+(lint UnusedResources warning, kept for one release); the LBP `face_clusters` rows of old installs are dropped, not
+converted; iOS faces (Vision framework) now differ from Android (parity row "diverged"); the model asset is not
+re-downloaded or updated at runtime by design (a new model = new `FaceModel.VERSION` = full re-index).
+
+**Open questions**: none blocking. The owner should check `embed_ms` on their phone and the suggestion quality on real
+family photos (thresholds are constants in `FaceMatcher.Thresholds`).
+
+**Next phase plan**: Phase 3 — festival table 2010–2035 (`core/domain/relive/Festivals.kt` + CSV resource), Relive
+festival card and reminders, kin terms (`persons.kin_term`, Room 3 → 4), 30 s / ≤ 16 MB WhatsApp status preset with
+"Send to WhatsApp" (`<queries>` only).

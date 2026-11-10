@@ -45,4 +45,33 @@
     <string name="relationships_empty_message">ஒரே நினைவுகளில் இரண்டு அல்லது அதற்கு மேற்பட்டவர்களைக் குறியிடுங்கள், வரைபடம் வளரும்.</string>
     <string name="relationships_hint">பெரிய வட்டங்கள் அதிக நினைவுகளில் உள்ளவர்கள். தடித்த கோடுகள் என்றால் ஒன்றாக அதிக நினைவுகள்.</string>
     <string name="person_stat_memories">நினைவுகள்</string>
+    <plurals name="people_faces_banner">
+        <item quantity="one">பெயரிட %1$d முகம்</item>
+        <item quantity="other">பெயரிட %1$d முகங்கள்</item>
+    </plurals>
+    <string name="people_faces_banner_hint">உங்கள் படங்களில் Yaadein-க்கு இன்னும் தெரியாதவர்கள் இருக்கிறார்கள்.</string>
+    <string name="people_faces_banner_action">இது யார்?</string>
+    <string name="who_title">இது யார்?</string>
+    <string name="who_intro">இந்த முகங்கள் ஒரே நபருடையவை போலத் தெரிகின்றன. யார் என்று தேர்ந்தெடுங்கள், எல்லாப் படங்களும் ஒரே நேரத்தில் குறியிடப்படும். நீங்கள் சொல்லாமல் எதுவும் குறியிடப்படாது.</string>
+    <plurals name="who_seen_in">
+        <item quantity="one">%1$d படத்தில் காணப்பட்டது</item>
+        <item quantity="other">%1$d படங்களில் காணப்பட்டது</item>
+    </plurals>
+    <plurals name="who_remaining">
+        <item quantity="one">இன்னும் %1$d உள்ளது</item>
+        <item quantity="other">இன்னும் %1$d உள்ளன</item>
+    </plurals>
+    <string name="who_face_cd">%2$d-இல் %1$d-ஆவது முகம்</string>
+    <string name="who_pick_person">இது யார்?</string>
+    <string name="who_add_person">நபரைச் சேர்</string>
+    <string name="who_name_them">பெயரிடு</string>
+    <string name="who_name_as">இது %1$s</string>
+    <string name="who_not_same">ஒரே நபர் இல்லை</string>
+    <plurals name="who_named">
+        <item quantity="one">%1$d முகத்திற்கு %2$s என்று பெயரிடப்பட்டது</item>
+        <item quantity="other">%1$d முகங்களுக்கு %2$s என்று பெயரிடப்பட்டது</item>
+    </plurals>
+    <string name="who_undo">செயல்தவிர்</string>
+    <string name="who_empty_title">எல்லா முகங்களுக்கும் பெயர் உள்ளது</string>
+    <string name="who_empty_message">படங்களைச் சேர்க்கும்போது புதிய முகங்கள் இங்கே காத்திருக்கும். மேலும் கண்டறிய அமைப்புகளில் முகப் பரிந்துரைகளை இயக்குங்கள்.</string>
 </resources>

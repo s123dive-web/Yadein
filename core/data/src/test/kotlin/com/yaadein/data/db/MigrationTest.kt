@@ -64,6 +64,26 @@ class MigrationTest {
     }
 
     @Test
+    fun `migration 2 to 3 drops the LBP clusters, keeps tags and adds the face tables`() {
+        helper.createDatabase(dbName, 2).use { db ->
+            db.execSQL("INSERT INTO persons (id, name, nickname, relation, birthday_epoch_day, profile_media_id, notes, avatar_color_index, created_at) VALUES (1, 'Aai', NULL, 'FAMILY', NULL, NULL, '', 0, 1)")
+            db.execSQL("INSERT INTO memories (id, type, title, description, date_kind, start_epoch_day, end_epoch_day, fuzzy_label, place, mood, cover_media_id, cover_style, voice_note_path, created_at, updated_at) VALUES (7, 'EVENT', 'Diwali', '', 'EXACT', 20027, NULL, NULL, 'Pune', NULL, NULL, 'diwali', NULL, 5, 5)")
+            db.execSQL("INSERT INTO media (id, memory_id, kind, encrypted_path, thumb_path, taken_at, duration_ms, size_bytes, caption, width, height, sha256, position, created_at, latitude, longitude) VALUES (3, 7, 'PHOTO', 'media/a', 'thumbs/a', 1000, NULL, 10, '', 4, 3, 'x', 0, 6, NULL, NULL)")
+            db.execSQL("INSERT INTO media_persons (media_id, person_id) VALUES (3, 1)")
+            db.execSQL("INSERT INTO face_clusters (id, embedding, sample_media_id, sample_left, sample_top, sample_right, sample_bottom, suggested_person_id, confirmed, face_count, created_at) VALUES (1, X'00000000', 3, 0, 0, 1, 1, 1, 1, 2, 1)")
+        }
+        helper.runMigrationsAndValidate(dbName, 3, true, Migrations.MIGRATION_2_3).use { db ->
+            db.query("SELECT COUNT(*) FROM media_persons WHERE media_id = 3 AND person_id = 1").use { c -> c.moveToFirst(); assertEquals("confirmed tags survive", 1, c.getInt(0)) }
+            db.query("SELECT centroid, centroid_model, confirmed_faces FROM persons WHERE id = 1").use { c -> assertTrue(c.moveToFirst()); assertTrue(c.isNull(0)); assertTrue(c.isNull(1)); assertEquals(0, c.getInt(2)) }
+            db.query("SELECT face_scan_version FROM media WHERE id = 3").use { c -> assertTrue(c.moveToFirst()); assertEquals(0, c.getInt(0)) }
+            db.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'face_clusters'").use { c -> assertEquals("LBP table gone", 0, c.count) }
+            db.execSQL("INSERT INTO faces (media_id, embedding, model_version, quality, box_left, box_top, box_right, box_bottom, person_id, state, similarity, created_at) VALUES (3, X'0000803F', 2, 0.5, 0.1, 0.1, 0.4, 0.5, 1, 'CONFIRMED', 1.0, 9)")
+            db.execSQL("INSERT INTO face_rejections (face_id, person_id) VALUES (1, 1)")
+            db.query("SELECT COUNT(*) FROM faces").use { c -> c.moveToFirst(); assertEquals(1, c.getInt(0)) }
+        }
+    }
+
+    @Test
     fun `every version from 1 to current has a migration path`() {
         val covered = Migrations.ALL.map { it.startVersion to it.endVersion }.toSet()
         for (v in 1 until AppDatabase.VERSION) {

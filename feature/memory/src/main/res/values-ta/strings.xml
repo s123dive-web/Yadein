@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="memory_who_was_there">யார் யார் இருந்தார்கள்</string>
+    <string name="memory_face_suggested_title">இது…?</string>
+    <string name="memory_face_suggested_badge">பரிந்துரை</string>
+    <string name="memory_face_not_them">%1$s இல்லை</string>
     <string name="memory_photos">படங்களும் வீடியோக்களும்</string>
     <string name="memory_add_photos">சேர்</string>
     <string name="memory_no_photos_hint">இன்னும் படங்கள் இல்லை. படங்கள் அல்லது வீடியோக்களைச் சேர்க்க தட்டவும் — இந்தக் கதை தானாகவே மேம்படும்.</string>
