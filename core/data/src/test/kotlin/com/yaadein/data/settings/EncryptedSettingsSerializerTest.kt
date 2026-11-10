@@ -53,4 +53,17 @@ class EncryptedSettingsSerializerTest {
         // Turning blocking back on after the update is kept.
         assertEquals(true, SettingsDto(settingsVersion = SETTINGS_VERSION, secureScreen = true).toDomain().secureScreen)
     }
+
+    @Test
+    fun `settings saved before the photos-first onboarding keep their meaning`() {
+        // An existing user's file has no trace of the new flags: they stay onboarded and locked, nothing is re-asked.
+        val existing = SettingsDto(settingsVersion = SETTINGS_VERSION, onboardingDone = true, pinConfigured = true).toDomain()
+        assertEquals(true, existing.onboardingDone)
+        assertEquals(true, existing.pinConfigured)
+        assertEquals(false, existing.lockPromptPostponed)
+        assertEquals(false, existing.peopleNudgeDismissed)
+        // The new flags survive a round trip.
+        val changed = existing.copy(lockPromptPostponed = true, peopleNudgeDismissed = true)
+        assertEquals(changed, changed.toDto().toDomain())
+    }
 }

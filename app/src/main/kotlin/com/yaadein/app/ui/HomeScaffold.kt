@@ -107,6 +107,12 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
         Column(Modifier.fillMaxSize()) {
             if (tab == HomeTab.TIMELINE) {
                 CrashNoticeBanner()
+                // Photos-first start: the sample-family banner, the lock card or the people card, and "Protect these memories?".
+                HomeNudges(
+                    onSetUpLock = { navController.navigate(Route.LockSetup) },
+                    onWhoIsThis = { navController.navigate(Route.WhoIsThis) },
+                    onAddPerson = { navController.navigate(Route.PersonEdit()) },
+                )
                 BackupNudgeBanner(onSetUp = { navController.navigate(Route.Settings(SettingsPage.BACKUP.name)) })
             }
             when (tab) {

@@ -36,4 +36,19 @@
         <item quantity="other">%1$d memories from this day</item>
     </plurals>
     <string name="nav_create_more_ways">More ways to add a memory</string>
+    <string name="sample_banner_title">This is a sample family</string>
+    <string name="sample_banner_text">Look around, then clear it to start with your own memories.</string>
+    <string name="sample_banner_clear">Clear sample and start mine</string>
+    <string name="lock_prompt_title">Protect these memories?</string>
+    <string name="lock_prompt_text">Set a PIN, and fingerprint if you like, so only you can open Yaadein. Your memories are already encrypted on this phone.</string>
+    <string name="lock_prompt_action">Set a PIN</string>
+    <string name="nudge_not_now">Not now</string>
+    <string name="lock_banner_title">Your memories have no lock yet</string>
+    <string name="lock_banner_text">Anyone who opens this phone can open Yaadein. A PIN takes a few seconds.</string>
+    <string name="people_nudge_faces_title">Who is in these photos?</string>
+    <string name="people_nudge_faces_action">Find faces</string>
+    <string name="people_nudge_who_action">Name them</string>
+    <string name="people_nudge_add_title">Add someone you love</string>
+    <string name="people_nudge_add_text">Tag family and friends to see your story with each of them.</string>
+    <string name="people_nudge_add_action">Add someone</string>
 </resources>

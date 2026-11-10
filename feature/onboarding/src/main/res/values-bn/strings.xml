@@ -7,4 +7,14 @@
     <string name="onboarding_3_title">প্রিয় মানুষদের গল্প</string>
     <string name="onboarding_3_body">পরিবার আর বন্ধুদের ট্যাগ করুন, প্রত্যেকের সঙ্গে আপনার গল্প দেখুন, আর জন্মদিনে শেয়ার করার জন্য রিল বানান।</string>
     <string name="onboarding_add_first_person">প্রথম মানুষটিকে যোগ করুন</string>
+    <string name="welcome_title">আপনার পরিবারের স্মৃতি, এক মিনিটেই আপনার সামনে</string>
+    <string name="welcome_body">কয়েকটি ছবি বেছে নিন আর দেখুন সেগুলো আপনার গল্প হয়ে উঠছে। সবকিছু এই ফোনেই থাকে: অ্যাকাউন্ট নেই, ইন্টারনেট নেই।</string>
+    <string name="welcome_language">ভাষা: %1$s</string>
+    <string name="welcome_language_system">ফোনের ভাষা</string>
+    <string name="welcome_pick">শুরু করতে ছবি বেছে নিন</string>
+    <string name="welcome_pick_hint">শুরুর জন্য ১০ থেকে ২০টি প্রিয় ছবিই যথেষ্ট</string>
+    <string name="welcome_sample">একটি নমুনা পরিবার দেখুন</string>
+    <string name="welcome_importing">আপনার ছবি আনা হচ্ছে…</string>
+    <string name="welcome_sample_loading">নমুনা পরিবার তৈরি হচ্ছে…</string>
+    <string name="welcome_none_added">ওই ফাইলগুলো যোগ করা যায়নি। অন্য ছবি চেষ্টা করুন।</string>
 </resources>

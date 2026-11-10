@@ -36,4 +36,19 @@
     </plurals>
     <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
     <string name="nav_create_more_ways">याद जोड़ने के और तरीके</string>
+    <string name="sample_banner_title">यह एक नमूना परिवार है</string>
+    <string name="sample_banner_text">घूमकर देखें, फिर इसे हटाकर अपनी यादों से शुरुआत करें।</string>
+    <string name="sample_banner_clear">नमूना हटाएँ और अपना शुरू करें</string>
+    <string name="lock_prompt_title">इन यादों को सुरक्षित करें?</string>
+    <string name="lock_prompt_text">एक PIN सेट करें, और चाहें तो फ़िंगरप्रिंट भी, ताकि Yaadein सिर्फ़ आप खोल सकें। आपकी यादें इस फ़ोन पर पहले से एन्क्रिप्टेड हैं।</string>
+    <string name="lock_prompt_action">PIN सेट करें</string>
+    <string name="nudge_not_now">अभी नहीं</string>
+    <string name="lock_banner_title">आपकी यादों पर अभी कोई ताला नहीं है</string>
+    <string name="lock_banner_text">जो भी यह फ़ोन खोलता है वह Yaadein खोल सकता है। PIN सेट करने में कुछ ही सेकंड लगते हैं।</string>
+    <string name="people_nudge_faces_title">इन फ़ोटो में कौन है?</string>
+    <string name="people_nudge_faces_action">चेहरे खोजें</string>
+    <string name="people_nudge_who_action">नाम बताएँ</string>
+    <string name="people_nudge_add_title">किसी अपने को जोड़ें</string>
+    <string name="people_nudge_add_text">परिवार और दोस्तों को टैग करें और हर एक के साथ अपनी कहानी देखें।</string>
+    <string name="people_nudge_add_action">किसी को जोड़ें</string>
 </resources>

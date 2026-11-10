@@ -51,6 +51,8 @@ class AppSmokeTest {
     @Inject lateinit var lockState: AppLockState
     @Inject lateinit var pinManager: PinManager
     @Inject lateinit var seeder: DemoSeeder
+    @Inject lateinit var memories: com.yaadein.domain.repository.MemoryRepository
+    @Inject lateinit var persons: com.yaadein.domain.repository.PersonRepository
 
     private lateinit var scenario: ActivityScenario<MainActivity>
 
@@ -64,6 +66,90 @@ class AppSmokeTest {
         lockState.unlock()
         scenario = ActivityScenario.launch(MainActivity::class.java)
         compose.waitForIdle()
+    }
+
+    /** A cold start with other settings (a recreate would restore the old back stack instead of choosing a start screen). */
+    private fun relaunchWith(transform: (com.yaadein.domain.settings.UserSettings) -> com.yaadein.domain.settings.UserSettings) {
+        scenario.close()
+        runBlocking { settings.update(transform) }
+        scenario = ActivityScenario.launch(MainActivity::class.java)
+        compose.waitForIdle()
+    }
+
+    private fun shown(text: String) = compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+
+    @Test
+    fun `an existing user opens straight to home and is asked nothing new`() {
+        runBlocking {
+            val aai = persons.upsert(com.yaadein.domain.model.Person(name = "Sunita Deshmukh", nickname = "Aai"))
+            memories.create(com.yaadein.domain.model.Memory(type = com.yaadein.domain.model.MemoryType.TEXT_ONLY, title = "Diwali at home", date = com.yaadein.domain.dates.Dates.year(2024)), listOf(aai))
+        }
+        relaunchWith { it }
+        compose.onAllNodesWithText("Timeline")[0].assertIsDisplayed()
+        compose.waitUntil(10_000) { shown("Diwali at home") }
+        compose.onAllNodesWithText("Pick photos to start").assertCountEquals(0)
+        compose.onAllNodesWithText("Protect these memories?").assertCountEquals(0)
+        compose.onAllNodesWithText("Your memories have no lock yet").assertCountEquals(0)
+        compose.onAllNodesWithText("This is a sample family").assertCountEquals(0)
+        val s = runBlocking { settings.current() }
+        org.junit.Assert.assertTrue(s.onboardingDone && s.pinConfigured)
+    }
+
+    @Test
+    fun `a first run shows one welcome screen and skip lands on the empty home without a lock`() {
+        relaunchWith { com.yaadein.domain.settings.UserSettings() }
+        compose.onNodeWithText("Pick photos to start").assertExists()
+        compose.onNodeWithText("See a sample family").assertExists()
+        compose.onNode(hasText("Skip") and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(10_000) { shown("Timeline") }
+        val s = runBlocking { settings.current() }
+        org.junit.Assert.assertTrue(s.onboardingDone)
+        org.junit.Assert.assertFalse(s.pinConfigured)
+        // No person form, no PIN screen, no prompts on an empty vault.
+        compose.onAllNodesWithText("Welcome back").assertCountEquals(0)
+        compose.onAllNodesWithText("Protect these memories?").assertCountEquals(0)
+        compose.onAllNodesWithText("Pick photos to start").assertCountEquals(0)
+    }
+
+    @Test
+    fun `pick photos on the welcome screen opens the system photo picker`() {
+        relaunchWith { com.yaadein.domain.settings.UserSettings() }
+        compose.onNode(hasText("Pick photos to start") and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitForIdle()
+        var started: android.content.Intent? = null
+        scenario.onActivity { started = org.robolectric.Shadows.shadowOf(it).nextStartedActivityForResult?.intent }
+        org.junit.Assert.assertNotNull("the welcome screen's first button must open a picker", started)
+    }
+
+    @Test
+    fun `the sample family is labelled on home and one tap clears it`() {
+        relaunchWith { com.yaadein.domain.settings.UserSettings() }
+        compose.onNode(hasText("See a sample family") and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(60_000) { shown("This is a sample family") }
+        org.junit.Assert.assertTrue(runBlocking { settings.current() }.demoMode)
+        org.junit.Assert.assertTrue(runBlocking { memories.count() } > 10)
+        compose.onAllNodesWithText("Protect these memories?").assertCountEquals(0)
+        compose.onNode(hasText("Clear sample and start mine") and hasClickAction()).performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(60_000) { !shown("This is a sample family") && !runBlocking { settings.current() }.demoMode }
+        org.junit.Assert.assertEquals(0, runBlocking { memories.count() })
+        org.junit.Assert.assertEquals(0, runBlocking { persons.count() })
+    }
+
+    @Test
+    fun `without a lock the first memory offers protection once, then a card that opens lock setup`() {
+        runBlocking {
+            val aai = persons.upsert(com.yaadein.domain.model.Person(name = "Sunita Deshmukh", nickname = "Aai"))
+            memories.create(com.yaadein.domain.model.Memory(type = com.yaadein.domain.model.MemoryType.TEXT_ONLY, title = "Diwali at home", date = com.yaadein.domain.dates.Dates.year(2024)), listOf(aai))
+        }
+        relaunchWith { it.copy(pinConfigured = false) }
+        compose.waitUntil(10_000) { shown("Protect these memories?") }
+        // The timeline is already there underneath: the sheet does not block the first look.
+        org.junit.Assert.assertTrue(shown("Diwali at home"))
+        compose.onNode(hasText("Not now") and hasClickAction()).performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(10_000) { runBlocking { settings.current() }.lockPromptPostponed && shown("Your memories have no lock yet") }
+        compose.waitUntil(10_000) { !shown("Protect these memories?") && compose.onAllNodesWithText("Set a PIN").fetchSemanticsNodes().size == 1 }
+        compose.onNode(hasText("Set a PIN") and hasClickAction()).performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(10_000) { shown("Choose a 6-digit PIN") }
     }
 
     /** The + button inside the bottom bar's Create item (its own node: a long-press target with a TalkBack action). */

@@ -36,4 +36,19 @@
     </plurals>
     <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
     <string name="nav_create_more_ways">நினைவைச் சேர்க்க மேலும் வழிகள்</string>
+    <string name="sample_banner_title">இது ஒரு மாதிரி குடும்பம்</string>
+    <string name="sample_banner_text">சுற்றிப் பாருங்கள், பின்னர் இதை நீக்கி உங்கள் சொந்த நினைவுகளுடன் தொடங்குங்கள்.</string>
+    <string name="sample_banner_clear">மாதிரியை நீக்கி என்னுடையதைத் தொடங்கு</string>
+    <string name="lock_prompt_title">இந்த நினைவுகளைப் பாதுகாக்கவா?</string>
+    <string name="lock_prompt_text">PIN ஒன்றை அமைக்கவும், விரும்பினால் கைரேகையும், அப்போது Yaadein-ஐ நீங்கள் மட்டுமே திறக்க முடியும். உங்கள் நினைவுகள் இந்த ஃபோனில் ஏற்கனவே குறியாக்கம் செய்யப்பட்டுள்ளன.</string>
+    <string name="lock_prompt_action">PIN அமை</string>
+    <string name="nudge_not_now">இப்போது வேண்டாம்</string>
+    <string name="lock_banner_title">உங்கள் நினைவுகளுக்கு இன்னும் பூட்டு இல்லை</string>
+    <string name="lock_banner_text">இந்த ஃபோனைத் திறக்கும் யாரும் Yaadein-ஐத் திறக்கலாம். PIN அமைக்க சில நொடிகளே ஆகும்.</string>
+    <string name="people_nudge_faces_title">இந்தப் புகைப்படங்களில் யார் இருக்கிறார்கள்?</string>
+    <string name="people_nudge_faces_action">முகங்களைக் கண்டறி</string>
+    <string name="people_nudge_who_action">பெயரிடு</string>
+    <string name="people_nudge_add_title">நீங்கள் நேசிக்கும் ஒருவரைச் சேர்க்கவும்</string>
+    <string name="people_nudge_add_text">குடும்பத்தினரையும் நண்பர்களையும் குறியிட்டு, ஒவ்வொருவருடனான உங்கள் கதையைப் பாருங்கள்.</string>
+    <string name="people_nudge_add_action">ஒருவரைச் சேர்</string>
 </resources>

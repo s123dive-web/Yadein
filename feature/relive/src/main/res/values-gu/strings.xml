@@ -53,4 +53,9 @@
     <string name="relive_festival_upcoming_help">આગલા વર્ષોના %1$sના ફોટા અહીં દેખાશે.</string>
     <string name="reminder_festival_today">%1$sની શુભેચ્છા! આજના ફોટા Yaadein માં ઉમેરો</string>
     <string name="reminder_festival_today_text">એક વર્ષ પછી, આ જ એ દિવસ હશે જે તમે ફરી જોવા ઇચ્છશો.</string>
+    <string name="first_story_title">તમારી યાદો આવી ગઈ</string>
+    <string name="first_story_preparing">તમારા ફોટા તૈયાર થઈ રહ્યા છે…</string>
+    <string name="first_story_progress">%2$d માંથી %1$d ફોટા સુરક્ષિત રીતે સચવાયા</string>
+    <string name="first_story_continue">મારી ટાઇમલાઇન પર જાઓ</string>
+    <string name="first_story_new">હમણાં જ ઉમેર્યું</string>
 </resources>

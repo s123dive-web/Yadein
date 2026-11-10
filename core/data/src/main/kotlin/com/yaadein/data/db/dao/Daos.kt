@@ -137,6 +137,10 @@ interface GroupDao {
     @Query("DELETE FROM groups WHERE id = :id")
     suspend fun delete(id: Long)
 
+    /** Groups with exactly this name (clearing the sample family). */
+    @Query("SELECT id FROM groups WHERE name = :name")
+    suspend fun idsByName(name: String): List<Long>
+
     @Query("SELECT person_id FROM group_members WHERE group_id = :groupId")
     suspend fun memberIds(groupId: Long): List<Long>
 }
@@ -174,6 +178,10 @@ interface MemoryDao {
 
     @Query("DELETE FROM memories WHERE id = :id")
     suspend fun delete(id: Long)
+
+    /** Memories with exactly this title on this start day (clearing the sample family). */
+    @Query("SELECT id FROM memories WHERE title = :title AND start_epoch_day = :startEpochDay")
+    suspend fun idsByTitleAndDay(title: String, startEpochDay: Long): List<Long>
 
     @Query("SELECT COUNT(*) FROM memories")
     suspend fun count(): Int

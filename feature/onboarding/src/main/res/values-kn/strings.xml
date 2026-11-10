@@ -7,4 +7,14 @@
     <string name="onboarding_3_title">ನೀವು ಪ್ರೀತಿಸುವವರ ಕಥೆಗಳು</string>
     <string name="onboarding_3_body">ಕುಟುಂಬ ಮತ್ತು ಸ್ನೇಹಿತರನ್ನು ಟ್ಯಾಗ್ ಮಾಡಿ, ಪ್ರತಿಯೊಬ್ಬರ ಜೊತೆಗಿನ ನಿಮ್ಮ ಕಥೆ ನೋಡಿ, ಮತ್ತು ಹುಟ್ಟುಹಬ್ಬಗಳಂದು ಹಂಚಿಕೊಳ್ಳಲು ರೀಲ್‌ಗಳನ್ನು ಮಾಡಿ.</string>
     <string name="onboarding_add_first_person">ನಿಮ್ಮ ಮೊದಲ ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ</string>
+    <string name="welcome_title">ನಿಮ್ಮ ಕುಟುಂಬದ ನೆನಪುಗಳು, ಒಂದೇ ನಿಮಿಷದಲ್ಲಿ ನಿಮ್ಮ ಮುಂದೆ</string>
+    <string name="welcome_body">ಕೆಲವು ಫೋಟೋಗಳನ್ನು ಆರಿಸಿ, ಅವು ನಿಮ್ಮ ಕಥೆಯಾಗುವುದನ್ನು ನೋಡಿ. ಎಲ್ಲವೂ ಈ ಫೋನ್‌ನಲ್ಲೇ ಇರುತ್ತದೆ: ಖಾತೆ ಇಲ್ಲ, ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ.</string>
+    <string name="welcome_language">ಭಾಷೆ: %1$s</string>
+    <string name="welcome_language_system">ಫೋನ್ ಭಾಷೆ</string>
+    <string name="welcome_pick">ಪ್ರಾರಂಭಿಸಲು ಫೋಟೋಗಳನ್ನು ಆರಿಸಿ</string>
+    <string name="welcome_pick_hint">ಪ್ರಾರಂಭಕ್ಕೆ 10 ರಿಂದ 20 ನೆಚ್ಚಿನ ಫೋಟೋಗಳು ಸಾಕು</string>
+    <string name="welcome_sample">ಮಾದರಿ ಕುಟುಂಬವನ್ನು ನೋಡಿ</string>
+    <string name="welcome_importing">ನಿಮ್ಮ ಫೋಟೋಗಳನ್ನು ತರಲಾಗುತ್ತಿದೆ…</string>
+    <string name="welcome_sample_loading">ಮಾದರಿ ಕುಟುಂಬ ಸಿದ್ಧವಾಗುತ್ತಿದೆ…</string>
+    <string name="welcome_none_added">ಆ ಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗಲಿಲ್ಲ. ಬೇರೆ ಫೋಟೋಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ.</string>
 </resources>

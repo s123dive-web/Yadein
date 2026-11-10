@@ -55,4 +55,8 @@ data class UserSettings(
     val autoBackupFailed: Boolean = false,
     /** The "shake for a random memory" tip on Relive was closed. */
     val shakeHintDismissed: Boolean = false,
+    /** "Protect these memories?" was shown once and put off (or opened); Home keeps a banner until a lock is set. */
+    val lockPromptPostponed: Boolean = false,
+    /** The Home card that offers to name the people in the photos was closed. */
+    val peopleNudgeDismissed: Boolean = false,
 )

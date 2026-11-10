@@ -57,6 +57,8 @@ internal data class SettingsDto(
     val backupNudgeDismissedAtMillis: Long = 0L,
     val autoBackupFailed: Boolean = false,
     val shakeHintDismissed: Boolean = false,
+    val lockPromptPostponed: Boolean = false,
+    val peopleNudgeDismissed: Boolean = false,
 )
 
 internal fun SettingsDto.toDomain() = UserSettings(
@@ -89,6 +91,8 @@ internal fun SettingsDto.toDomain() = UserSettings(
     backupNudgeDismissedAtMillis = backupNudgeDismissedAtMillis,
     autoBackupFailed = autoBackupFailed,
     shakeHintDismissed = shakeHintDismissed,
+    lockPromptPostponed = lockPromptPostponed,
+    peopleNudgeDismissed = peopleNudgeDismissed,
 )
 
 /** Files saved by version 1 carried IMMEDIATELY only because it was the default; lift them to the new default. */
@@ -126,6 +130,8 @@ internal fun UserSettings.toDto() = SettingsDto(
     backupNudgeDismissedAtMillis = backupNudgeDismissedAtMillis,
     autoBackupFailed = autoBackupFailed,
     shakeHintDismissed = shakeHintDismissed,
+    lockPromptPostponed = lockPromptPostponed,
+    peopleNudgeDismissed = peopleNudgeDismissed,
 )
 
 private inline fun <reified E : Enum<E>> enumOr(name: String, default: E): E =

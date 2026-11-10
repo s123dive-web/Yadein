@@ -39,6 +39,7 @@ import com.yaadein.feature.people.GroupEditRoute
 import com.yaadein.feature.people.RelationshipsRoute
 import com.yaadein.feature.people.TogetherRoute
 import com.yaadein.feature.people.WhoIsThisRoute
+import com.yaadein.feature.relive.FirstStoryRoute
 import com.yaadein.feature.relive.YearlySummaryRoute
 import com.yaadein.feature.recap.RecapRoute
 import com.yaadein.feature.recap.ReelPlayerRoute
@@ -73,7 +74,16 @@ fun AppNavHost(
         popExitTransition = { fadeOut(tween(motion.fastMs)) + slideOutHorizontally(tween(motion.normalMs)) { it / 8 } },
     ) {
         composable<Route.Onboarding> {
-            OnboardingRoute(onAddFirstPerson = { navController.navigate(Route.PersonEdit(fromOnboarding = true)) })
+            OnboardingRoute(
+                onStory = { navController.navigate(Route.FirstStory) { popUpTo(0) { inclusive = true } } },
+                onHome = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
+            )
+        }
+        composable<Route.FirstStory> {
+            FirstStoryRoute(
+                onDone = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
+                onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
+            )
         }
         composable<Route.LockSetup> {
             LockSetupRoute(
@@ -110,18 +120,8 @@ fun AppNavHost(
                 onRecap = { navController.navigate(Route.RecapSetup(personId = it)) },
             )
         }
-        composable<Route.PersonEdit> { entry ->
-            val route = entry.toRoute<Route.PersonEdit>()
-            PersonEditRoute(
-                onBack = { navController.popBackStack() },
-                onSaved = {
-                    if (route.fromOnboarding) {
-                        navController.navigate(Route.LockSetup) { popUpTo(0) { inclusive = true } }
-                    } else {
-                        navController.popBackStack()
-                    }
-                },
-            )
+        composable<Route.PersonEdit> {
+            PersonEditRoute(onBack = { navController.popBackStack() }, onSaved = { navController.popBackStack() })
         }
         composable<Route.MediaViewer> {
             MediaViewerRoute(onBack = { navController.popBackStack() })

@@ -7,4 +7,14 @@
     <string name="onboarding_3_title">మీరు ప్రేమించే వారి కథలు</string>
     <string name="onboarding_3_body">కుటుంబాన్ని, స్నేహితులను ట్యాగ్ చేయండి, ఒక్కొక్కరితో మీ కథను చూడండి, పుట్టినరోజులకు షేర్ చేయడానికి రీల్స్ తయారు చేయండి.</string>
     <string name="onboarding_add_first_person">మీ మొదటి వ్యక్తిని జోడించండి</string>
+    <string name="welcome_title">మీ కుటుంబ జ్ఞాపకాలు, ఒక్క నిమిషంలో మీ ముందు</string>
+    <string name="welcome_body">కొన్ని ఫోటోలను ఎంచుకుని, అవి మీ కథగా మారడం చూడండి. అన్నీ ఈ ఫోన్‌లోనే ఉంటాయి: ఖాతా లేదు, ఇంటర్నెట్ లేదు.</string>
+    <string name="welcome_language">భాష: %1$s</string>
+    <string name="welcome_language_system">ఫోన్ భాష</string>
+    <string name="welcome_pick">ప్రారంభించడానికి ఫోటోలు ఎంచుకోండి</string>
+    <string name="welcome_pick_hint">మొదలుపెట్టడానికి 10 నుండి 20 ఇష్టమైన ఫోటోలు చాలు</string>
+    <string name="welcome_sample">నమూనా కుటుంబాన్ని చూడండి</string>
+    <string name="welcome_importing">మీ ఫోటోలను తీసుకువస్తున్నాం…</string>
+    <string name="welcome_sample_loading">నమూనా కుటుంబం సిద్ధమవుతోంది…</string>
+    <string name="welcome_none_added">ఆ ఫైళ్లను జోడించడం కుదరలేదు. వేరే ఫోటోలను ప్రయత్నించండి.</string>
 </resources>

@@ -56,4 +56,9 @@
     <string name="relive_festival_upcoming_help">%1$s photos from earlier years will show up here.</string>
     <string name="reminder_festival_today">Happy %1$s! Add today\'s photos to Yaadein</string>
     <string name="reminder_festival_today_text">A year from now, this is the day you\'ll want to see again.</string>
+    <string name="first_story_title">Your memories are here</string>
+    <string name="first_story_preparing">Getting your photos ready…</string>
+    <string name="first_story_progress">%1$d of %2$d photos safely stored</string>
+    <string name="first_story_continue">Go to my timeline</string>
+    <string name="first_story_new">Just added</string>
 </resources>

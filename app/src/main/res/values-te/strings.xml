@@ -36,4 +36,19 @@
     </plurals>
     <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
     <string name="nav_create_more_ways">జ్ఞాపకం జోడించడానికి మరిన్ని మార్గాలు</string>
+    <string name="sample_banner_title">ఇది ఒక నమూనా కుటుంబం</string>
+    <string name="sample_banner_text">చుట్టూ చూడండి, తర్వాత దీన్ని తొలగించి మీ సొంత జ్ఞాపకాలతో మొదలుపెట్టండి.</string>
+    <string name="sample_banner_clear">నమూనాను తొలగించి నాది మొదలుపెట్టు</string>
+    <string name="lock_prompt_title">ఈ జ్ఞాపకాలను కాపాడాలా?</string>
+    <string name="lock_prompt_text">PIN సెట్ చేయండి, కావాలంటే వేలిముద్ర కూడా, అప్పుడు Yaadeinను మీరు మాత్రమే తెరవగలరు. మీ జ్ఞాపకాలు ఈ ఫోన్‌లో ఇప్పటికే ఎన్‌క్రిప్ట్ అయి ఉన్నాయి.</string>
+    <string name="lock_prompt_action">PIN సెట్ చేయి</string>
+    <string name="nudge_not_now">ఇప్పుడు కాదు</string>
+    <string name="lock_banner_title">మీ జ్ఞాపకాలకు ఇంకా లాక్ లేదు</string>
+    <string name="lock_banner_text">ఈ ఫోన్ తెరిచిన ఎవరైనా Yaadeinను తెరవగలరు. PIN సెట్ చేయడానికి కొన్ని సెకన్లే పడుతుంది.</string>
+    <string name="people_nudge_faces_title">ఈ ఫోటోల్లో ఎవరున్నారు?</string>
+    <string name="people_nudge_faces_action">ముఖాలను కనుగొను</string>
+    <string name="people_nudge_who_action">పేర్లు పెట్టు</string>
+    <string name="people_nudge_add_title">మీకు ఇష్టమైన వారిని జోడించండి</string>
+    <string name="people_nudge_add_text">కుటుంబ సభ్యులను, స్నేహితులను ట్యాగ్ చేసి, ప్రతి ఒక్కరితో మీ కథను చూడండి.</string>
+    <string name="people_nudge_add_action">ఒకరిని జోడించు</string>
 </resources>

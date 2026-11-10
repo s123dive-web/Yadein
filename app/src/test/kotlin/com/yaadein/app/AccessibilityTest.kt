@@ -202,4 +202,75 @@ class AccessibilityTest {
         compose.setContent { YaadeinTheme { UsageScreen(summary = UsageSummary.from(emptyList(), 0L), onBack = {}) } }
         assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
     }
+
+    @Test
+    fun `welcome screen clickables are labelled`() {
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.onboarding.WelcomeScreen(
+                    state = com.yaadein.feature.onboarding.OnboardingUiState(nothingAdded = true), language = "mr",
+                    onLanguage = {}, onPick = {}, onSample = {}, onSkip = {},
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+        // Three ways on and the language: nothing else stands between a new user and their photos.
+        org.junit.Assert.assertEquals(4, compose.onAllNodes(hasClickAction()).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun `welcome screen while importing has no dead buttons`() {
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.onboarding.WelcomeScreen(
+                    state = com.yaadein.feature.onboarding.OnboardingUiState(busy = com.yaadein.feature.onboarding.OnboardingBusy.IMPORTING), language = null,
+                    onLanguage = {}, onPick = {}, onSample = {}, onSkip = {},
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
+
+    @Test
+    fun `first story clickables are labelled`() {
+        val pages = cards.map { com.yaadein.domain.relive.StoryPage.Moment(it, yearsAgo = null) }
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.relive.FirstStoryScreen(
+                    state = com.yaadein.feature.relive.FirstStoryUiState(loading = false, pages = pages, photosStored = 3, photosTotal = 12), onDone = {}, onOpenMemory = {},
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
+
+    @Test
+    fun `first story while photos are still arriving is labelled`() {
+        compose.setContent {
+            YaadeinTheme { com.yaadein.feature.relive.FirstStoryScreen(state = com.yaadein.feature.relive.FirstStoryUiState(loading = false, photosStored = 0, photosTotal = 12), onDone = {}, onOpenMemory = {}) }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
+
+    @Test
+    fun `home nudge cards and the lock prompt are labelled`() {
+        val cardsToShow = listOf(
+            com.yaadein.app.ui.HomeCard.Sample, com.yaadein.app.ui.HomeCard.Lock, com.yaadein.app.ui.HomeCard.OfferFaces,
+            com.yaadein.app.ui.HomeCard.NameFaces(3), com.yaadein.app.ui.HomeCard.AddSomeone,
+        )
+        compose.setContent {
+            YaadeinTheme {
+                androidx.compose.foundation.layout.Column {
+                    cardsToShow.forEach { card ->
+                        com.yaadein.app.ui.HomeNudgeCard(
+                            state = com.yaadein.app.ui.HomeNudgesUiState(card = card),
+                            onClearSample = {}, onSetUpLock = {}, onEnableFaces = {}, onWhoIsThis = {}, onAddPerson = {}, onDismissPeople = {},
+                        )
+                    }
+                    com.yaadein.app.ui.LockPromptContent(onSetUp = {}, onLater = {})
+                }
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
 }

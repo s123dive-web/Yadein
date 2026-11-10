@@ -7,4 +7,14 @@
     <string name="onboarding_3_title">तुमच्या प्रिय माणसांच्या गोष्टी</string>
     <string name="onboarding_3_body">कुटुंब आणि मित्रांना टॅग करा, प्रत्येकासोबतची तुमची गोष्ट पाहा, आणि वाढदिवसाला शेअर करण्यासाठी रील बनवा.</string>
     <string name="onboarding_add_first_person">पहिली व्यक्ती जोडा</string>
+    <string name="welcome_title">तुमच्या कुटुंबाच्या आठवणी, एका मिनिटात तुमच्यासमोर</string>
+    <string name="welcome_body">काही फोटो निवडा आणि त्यांची तुमची गोष्ट होताना पाहा. सर्व काही याच फोनवर राहते: खाते नाही, इंटरनेट नाही.</string>
+    <string name="welcome_language">भाषा: %1$s</string>
+    <string name="welcome_language_system">फोनची भाषा</string>
+    <string name="welcome_pick">सुरू करण्यासाठी फोटो निवडा</string>
+    <string name="welcome_pick_hint">सुरुवातीला 10 ते 20 आवडते फोटो पुरेसे आहेत</string>
+    <string name="welcome_sample">नमुना कुटुंब पाहा</string>
+    <string name="welcome_importing">तुमचे फोटो आणत आहोत…</string>
+    <string name="welcome_sample_loading">नमुना कुटुंब तयार होत आहे…</string>
+    <string name="welcome_none_added">त्या फाइल जोडता आल्या नाहीत. दुसरे फोटो वापरून पाहा.</string>
 </resources>
