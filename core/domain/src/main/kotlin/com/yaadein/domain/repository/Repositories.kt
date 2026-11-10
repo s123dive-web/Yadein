@@ -48,6 +48,8 @@ interface PersonRepository {
     suspend fun memoryCounts(): Map<Long, Int>
     /** People tagged on the most recently created memories, most recent first; Quick Save offers them as chips. */
     suspend fun recentlyTagged(limit: Int): List<Person>
+    /** Person id → number of their memories that have a photo or video; a story ring needs a few of these. */
+    suspend fun photoMemoryCounts(): Map<Long, Int>
 }
 
 interface GroupRepository {
@@ -91,6 +93,13 @@ interface MemoryRepository {
     suspend fun idsFor(filter: TimelineFilter): List<Long>
     /** Every place name in the vault with a GPS position from one of its photos (for Quick Save's place suggestion). */
     suspend fun knownPlaces(): List<KnownPlace>
+    suspend fun setFavorite(id: Long, favorite: Boolean)
+    /** Remembers that the memory's page was opened now (stories lean towards recently opened memories). */
+    suspend fun markOpened(id: Long)
+    /** Photos of memories [personId] is tagged in (or photos tagged with them), with their memory's day; for Then & Now. */
+    suspend fun datedPhotosOfPerson(personId: Long): List<com.yaadein.domain.relive.DatedPhoto>
+    /** Photos of memories at [place] (compared trimmed, ignoring case), with their memory's day; for Then & Now. */
+    suspend fun datedPhotosAtPlace(place: String): List<com.yaadein.domain.relive.DatedPhoto>
 }
 
 interface MediaRepository {

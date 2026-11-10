@@ -135,6 +135,17 @@ class MemoryDetailViewModel @Inject constructor(
         }
     }
 
+    init {
+        // Opening a memory is remembered: stories lean towards the memories people come back to.
+        viewModelScope.launch { runCatching { memoryRepository.markOpened(memoryId) } }
+    }
+
+    /** The heart: favourites come up more often in stories and as the memory of the day. */
+    fun toggleFavorite() {
+        val memory = uiState.value.detail?.memory ?: return
+        viewModelScope.launch { memoryRepository.setFavorite(memoryId, !memory.favorite) }
+    }
+
     fun setCover(mediaId: Long) {
         viewModelScope.launch { memoryRepository.setCover(memoryId, mediaId) }
     }

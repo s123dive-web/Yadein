@@ -68,6 +68,8 @@ class PersonRepositoryImpl @Inject constructor(
     override suspend fun memoryCounts(): Map<Long, Int> = dao.memoryCounts().associate { it.id to it.n }
 
     override suspend fun recentlyTagged(limit: Int): List<Person> = dao.recentlyTagged(limit).map { it.toDomain() }
+
+    override suspend fun photoMemoryCounts(): Map<Long, Int> = dao.photoMemoryCounts().associate { it.id to it.n }
 }
 
 @Singleton

@@ -54,6 +54,15 @@ build. See [docs/IOS.md](docs/IOS.md) and the parity checklist [docs/IOS_PARITY.
 
 ## Features
 
+- **Relive you can watch (story rings)**: rings at the top of Relive (Today, up to three people who rotate daily, This
+  year, the festival that is on or coming, one place), each with its cover and an "unseen today" ring. One tap opens a
+  full-screen story: progress segments, tap left/right, hold to pause, swipe down to close, swipe sideways for the next
+  ring, slow Ken Burns motion on photos, muted clips for videos, and music (the app's own tracks or one of *Your songs*;
+  the mute choice is remembered, nothing plays while the phone is on silent, nothing moves when animations are off).
+  Every page can open its memory, be marked a favourite, take "Add what you remember" (a line or a voice note) or
+  become a reel. **Then & Now** pages pair two photos of the same person or place at least three years apart;
+  **milestone** pages mark the 10th/50th/100th memory and "N years with Aaji". Favourites and recently opened
+  memories come up more often. No streaks.
 - **First minute (photos first)**: one welcome screen (the promise in two lines, a language picker for the eight
   languages, *Pick photos to start*, *See a sample family*, *Skip*). Picked photos become memories by day and play as a
   story while they are still being encrypted. No person form and no PIN first: a lock is offered after the first real

@@ -59,6 +59,9 @@ internal data class SettingsDto(
     val shakeHintDismissed: Boolean = false,
     val lockPromptPostponed: Boolean = false,
     val peopleNudgeDismissed: Boolean = false,
+    val storyMuted: Boolean = false,
+    val storyMusicUri: String? = null,
+    val storySeen: String = "",
 )
 
 internal fun SettingsDto.toDomain() = UserSettings(
@@ -93,6 +96,9 @@ internal fun SettingsDto.toDomain() = UserSettings(
     shakeHintDismissed = shakeHintDismissed,
     lockPromptPostponed = lockPromptPostponed,
     peopleNudgeDismissed = peopleNudgeDismissed,
+    storyMuted = storyMuted,
+    storyMusicUri = storyMusicUri,
+    storySeen = storySeen,
 )
 
 /** Files saved by version 1 carried IMMEDIATELY only because it was the default; lift them to the new default. */
@@ -132,6 +138,9 @@ internal fun UserSettings.toDto() = SettingsDto(
     shakeHintDismissed = shakeHintDismissed,
     lockPromptPostponed = lockPromptPostponed,
     peopleNudgeDismissed = peopleNudgeDismissed,
+    storyMuted = storyMuted,
+    storyMusicUri = storyMusicUri,
+    storySeen = storySeen,
 )
 
 private inline fun <reified E : Enum<E>> enumOr(name: String, default: E): E =

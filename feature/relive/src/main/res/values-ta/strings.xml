@@ -58,4 +58,34 @@
     <string name="first_story_progress">%2$d இல் %1$d புகைப்படங்கள் பாதுகாப்பாகச் சேமிக்கப்பட்டன</string>
     <string name="first_story_continue">என் காலவரிசைக்குச் செல்</string>
     <string name="first_story_new">இப்போதுதான் சேர்க்கப்பட்டது</string>
+    <string name="story_rings_title">கதைகள்</string>
+    <string name="story_ring_today">இன்று</string>
+    <string name="story_ring_new_cd">%1$s, இன்று புதியது</string>
+    <string name="story_ring_seen_cd">%1$s, பார்த்தாயிற்று</string>
+    <string name="story_close">கதையை மூடு</string>
+    <string name="story_next_page">அடுத்த பக்கம்</string>
+    <string name="story_previous_page">முந்தைய பக்கம்</string>
+    <string name="story_next_story">அடுத்த கதை</string>
+    <string name="story_previous_story">முந்தைய கதை</string>
+    <string name="story_mute">இசையை நிறுத்து</string>
+    <string name="story_unmute">இசையை இயக்கு</string>
+    <string name="story_music">இசையைத் தேர்ந்தெடு</string>
+    <string name="story_music_bundled">Yaadein இசை</string>
+    <string name="story_music_add">ஃபோனிலிருந்து சேர்</string>
+    <string name="story_music_help">உங்கள் ஃபோனில் உள்ள பாடல் உங்கள் கதைகளுடன் ஒலிக்கலாம். அது இங்கேயே படிக்கப்படும், எங்கும் நகலெடுக்கப்படாது, அனுப்பப்படாது.</string>
+    <string name="story_add_note">நினைவில் இருப்பதைச் சேர்</string>
+    <string name="story_add_note_hint">ஒரு வரி, ஒரு பெயர், ஒரு மணம்… நினைவில் உள்ள எதுவும்</string>
+    <string name="story_add_note_save">இந்த நினைவில் சேமி</string>
+    <string name="story_add_note_voice">அதற்குப் பதிலாக குரலைப் பதிவு செய்</string>
+    <string name="story_make_reel">இந்தக் கதையிலிருந்து ரீல் உருவாக்கு</string>
+    <string name="story_then">அன்று</string>
+    <string name="story_now">இன்று</string>
+    <string name="story_then_now">%1$s, அன்றும் இன்றும்</string>
+    <plurals name="story_years_apart"><item quantity="one">%1$d ஆண்டு இடைவெளி</item><item quantity="other">%1$d ஆண்டுகள் இடைவெளி</item></plurals>
+    <string name="story_milestone_count">%1$d நினைவுகள் சேமிக்கப்பட்டன</string>
+    <string name="story_milestone_count_sub">ஒவ்வொன்றும் இந்த ஃபோனில் பாதுகாப்பாக உள்ளது.</string>
+    <plurals name="story_years_with"><item quantity="one">%2$s உடன் %1$d ஆண்டு</item><item quantity="other">%2$s உடன் %1$d ஆண்டுகள்</item></plurals>
+    <string name="story_years_with_sub">உங்கள் முதல் பகிர்ந்த நினைவிலிருந்து.</string>
+    <string name="story_empty">இந்தக் கதையில் காட்ட இன்னும் எதுவும் இல்லை</string>
+    <string name="story_ring_this_year">இந்த ஆண்டு</string>
 </resources>

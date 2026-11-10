@@ -62,7 +62,8 @@ class MemoryRepositoryImpl @Inject constructor(
 
     override suspend fun update(memory: Memory, personIds: List<Long>) = db.withTransaction {
         val existing = memoryDao.get(memory.id) ?: return@withTransaction
-        memoryDao.update(memory.copy(createdAt = existing.createdAt, updatedAt = clock()).toEntity())
+        // The heart and the last-opened time have their own setters; an edit never resets them.
+        memoryDao.update(memory.copy(createdAt = existing.createdAt, updatedAt = clock(), favorite = existing.favorite, lastOpenedAt = existing.lastOpenedAt).toEntity())
         memoryDao.clearPeople(memory.id)
         memoryDao.insertPeople(personIds.distinct().map { MemoryPersonEntity(memory.id, it) })
         reindex(memory.id)
@@ -127,6 +128,16 @@ class MemoryRepositoryImpl @Inject constructor(
 
     override suspend fun knownPlaces(): List<KnownPlace> =
         mediaDao.locatedPlaces(KNOWN_PLACES_LIMIT).map { KnownPlace(it.place.trim(), it.latitude, it.longitude) }.distinct()
+
+    override suspend fun setFavorite(id: Long, favorite: Boolean) = memoryDao.setFavorite(id, favorite)
+
+    override suspend fun markOpened(id: Long) = memoryDao.setLastOpened(id, clock())
+
+    override suspend fun datedPhotosOfPerson(personId: Long): List<com.yaadein.domain.relive.DatedPhoto> =
+        mediaDao.datedPhotosOfPerson(personId, THEN_NOW_LIMIT).map { com.yaadein.domain.relive.DatedPhoto(it.mediaId, it.memoryId, it.epochDay) }
+
+    override suspend fun datedPhotosAtPlace(place: String): List<com.yaadein.domain.relive.DatedPhoto> =
+        mediaDao.datedPhotosAtPlace(place, THEN_NOW_LIMIT).map { com.yaadein.domain.relive.DatedPhoto(it.mediaId, it.memoryId, it.epochDay) }
 
     /** Rebuilds the FTS row for a memory from title, description, place, captions and tagged names. */
     suspend fun reindex(memoryId: Long) {
@@ -194,6 +205,8 @@ class MemoryRepositoryImpl @Inject constructor(
     companion object {
         /** Most located photos considered for "nearest known place" (one row per photo with GPS). */
         const val KNOWN_PLACES_LIMIT = 2000
+        /** Most photos looked at for one Then & Now pair (oldest first, so the early years are always in). */
+        const val THEN_NOW_LIMIT = 4000
 
         /** Turns free text into an FTS prefix query: "goa tr" → "goa* tr*". Returns null for blank input. */
         fun ftsQuery(text: String): String? {

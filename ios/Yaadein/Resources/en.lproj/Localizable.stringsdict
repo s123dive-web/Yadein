@@ -403,6 +403,38 @@
             <string>%1$d videos</string>
         </dict>
     </dict>
+    <key>story_years_apart</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d year apart</string>
+            <key>other</key>
+            <string>%1$d years apart</string>
+        </dict>
+    </dict>
+    <key>story_years_with</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d year with %2$@</string>
+            <key>other</key>
+            <string>%1$d years with %2$@</string>
+        </dict>
+    </dict>
     <key>usage_captures</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

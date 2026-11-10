@@ -157,3 +157,5 @@ These previews exist in `app/src/screenshotTest` but their PNGs must be generate
 - `ScreenPreviews.OnboardingPhone` ("Onboarding"): now the single welcome screen; the committed PNG above still shows the old first slide.
 - `ScreenPreviews.FirstStoryPhone` ("First story"): the user's first memories as a story, with the import count.
 - `ScreenPreviews.HomeNudgesPhone` ("Home nudges"): sample-family banner, lock card, "Who is in these photos?" card and the "Protect these memories?" sheet content.
+- `RelivePreviews.Relive` ("Relive"): now with the story rings row and the compact action row; the committed PNG shows the old layout.
+- `RelivePreviews.StoryPlayer` ("Story player"): the full-screen story player (progress segments, caption, page actions).

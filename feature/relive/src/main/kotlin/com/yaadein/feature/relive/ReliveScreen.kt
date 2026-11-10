@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,7 +62,9 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -92,20 +95,18 @@ fun ReliveRoute(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     onReels: () -> Unit = {},
-    onPlayReel: (String) -> Unit = {},
-    onRecordPrompt: (text: String, personId: Long) -> Unit = { _, _ -> },
     onPlace: (String) -> Unit = {},
     onBirthdayReel: (personId: Long) -> Unit = {},
+    /** Opens the full-screen story player on the ring with this key. */
+    onOpenStory: (ringKey: String) -> Unit = {},
     viewModel: ReliveViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    // Reload whenever Relive comes back into view (tab switch, back from a new memory, app resumed).
+    // Reload whenever Relive comes back into view (tab switch, back from a story or a new memory, app resumed).
     LifecycleResumeEffect(viewModel) {
         viewModel.refresh()
         onPauseOrDispose { }
     }
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val promptText = state.prompt?.let { com.yaadein.feature.relive.notify.OnThisDayWorker.promptText(context, it.index, it.person?.name, it.person?.relation) }
     ReliveScreen(
         state = state,
         onOpenMemory = onOpenMemory,
@@ -117,11 +118,9 @@ fun ReliveRoute(
         contentPadding = contentPadding,
         modifier = modifier,
         onReels = onReels,
-        latestReel = state.latestReel?.let { reel -> { LatestReelCard(reel = reel, library = viewModel.reelLibrary, onPlay = { onPlayReel(reel.id) }) } },
         onPlace = onPlace,
-        promptCard = promptText?.let { text -> { PromptCard(text = text, onRecord = { onRecordPrompt(text, state.prompt?.person?.id ?: 0L) }) } },
         onBirthdayReel = onBirthdayReel,
-        onDismissShakeHint = viewModel::dismissShakeHint,
+        onOpenStory = onOpenStory,
     )
 }
 
@@ -138,12 +137,9 @@ fun ReliveScreen(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
     onReels: () -> Unit = {},
-    /** Slots filled by the route (they need the vault's players); null hides them. */
-    latestReel: (@Composable () -> Unit)? = null,
-    promptCard: (@Composable () -> Unit)? = null,
     onPlace: (String) -> Unit = {},
     onBirthdayReel: (personId: Long) -> Unit = {},
-    onDismissShakeHint: () -> Unit = {},
+    onOpenStory: (ringKey: String) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
@@ -164,55 +160,20 @@ fun ReliveScreen(
                 contentPadding = PaddingValues(start = spacing.gutter, end = spacing.gutter, bottom = spacing.xxxl + contentPadding.calculateBottomPadding() + Yaadein.sizes.fabSize),
                 verticalArrangement = Arrangement.spacedBy(spacing.md),
             ) {
+                // Stories first: one tap on a ring and Relive is something to watch.
+                if (state.rings.isNotEmpty()) {
+                    item(key = "rings") { StoryRingsRow(rings = state.rings, onOpen = onOpenStory) }
+                }
+                item(key = "actions") {
+                    Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm), modifier = Modifier.fillMaxWidth()) {
+                        CompactAction(Icons.Rounded.Shuffle, stringResource(R.string.relive_surprise), onSurprise, Modifier.weight(1f))
+                        CompactAction(Icons.Rounded.Movie, stringResource(R.string.relive_make_recap), onRecap, Modifier.weight(1f))
+                        CompactAction(Icons.Rounded.VideoLibrary, stringResource(R.string.relive_your_reels), onReels, Modifier.weight(1f))
+                    }
+                }
                 // A birthday today or tomorrow is the most timely thing on the screen.
                 val birthdaysFirst = state.upcomingBirthdays.firstOrNull()?.second?.let { it <= 1 } == true
-                if (state.story.isNotEmpty()) {
-                    item(key = "story") { DailyStoryCard(pages = state.story, onOpenMemory = onOpenMemory, onOpenPerson = onOpenPerson) }
-                }
                 if (birthdaysFirst) birthdaysItem(state.upcomingBirthdays, onOpenPerson, onBirthdayReel)
-                latestReel?.let { card -> item(key = "latest-reel") { card() } }
-                promptCard?.let { card -> item(key = "prompt") { card() } }
-                item(key = "actions") {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
-                        FilledTonalButton(onClick = onSurprise) {
-                            Icon(Icons.Rounded.Shuffle, contentDescription = null)
-                            Spacer(Modifier.width(spacing.sm))
-                            Text(stringResource(R.string.relive_surprise))
-                        }
-                        Button(onClick = onRecap) {
-                            Icon(Icons.Rounded.Movie, contentDescription = null)
-                            Spacer(Modifier.width(spacing.sm))
-                            Text(stringResource(R.string.relive_make_recap))
-                        }
-                        FilledTonalButton(onClick = onReels) {
-                            Icon(Icons.Rounded.VideoLibrary, contentDescription = null)
-                            Spacer(Modifier.width(spacing.sm))
-                            Text(stringResource(R.string.relive_your_reels))
-                        }
-                    }
-                }
-                if (state.showShakeHint) {
-                    item(key = "shake-hint") { ShakeHintCard(onTry = onSurprise, onDismiss = onDismissShakeHint) }
-                }
-                if (!birthdaysFirst) birthdaysItem(state.upcomingBirthdays, onOpenPerson, onBirthdayReel)
-                // Festivals: memories from earlier years of the festival that is on now; otherwise a nudge about the next one.
-                state.festivalRewind?.let { festival ->
-                    item(key = "festival-title") { SectionTitle(stringResource(R.string.relive_festival_rewind, festivalName(festival.festival))) }
-                    items(festival.items.size, key = { "festival-" + festival.items[it].card.memory.id }) { i ->
-                        val item = festival.items[i]
-                        Column(verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
-                            Text(
-                                pluralStringResource(R.plurals.relive_years_ago, item.yearsAgo, item.yearsAgo),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                            MemoryCardView(card = item.card, onClick = { onOpenMemory(item.card.memory.id) }, compact = true)
-                        }
-                    }
-                }
-                state.upcomingFestival?.let { upcoming ->
-                    item(key = "festival-upcoming") { UpcomingFestivalCard(name = festivalName(upcoming.festival), inDays = upcoming.inDays) }
-                }
                 val rewind = state.rewind
                 item(key = "otd-title") {
                     SectionTitle(
@@ -246,6 +207,25 @@ fun ReliveScreen(
                         }
                     }
                 }
+                if (!birthdaysFirst) birthdaysItem(state.upcomingBirthdays, onOpenPerson, onBirthdayReel)
+                if (state.years.isNotEmpty()) {
+                    item(key = "years") {
+                        Column {
+                            SectionTitle(stringResource(R.string.relive_years))
+                            LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                                items(state.years.size, key = { state.years[it].year }) { i ->
+                                    val y = state.years[i]
+                                    PhotoTile(
+                                        title = y.year.toString(),
+                                        subtitle = pluralStringResource(CoreR.plurals.memory_count, y.count, y.count),
+                                        cover = y.cover,
+                                        onClick = { onYear(y.year) },
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
                 if (state.places.isNotEmpty()) {
                     item(key = "places") {
                         Column {
@@ -259,24 +239,6 @@ fun ReliveScreen(
                                         cover = p.cover,
                                         onClick = { onPlace(p.place) },
                                         showPin = true,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                if (state.years.isNotEmpty()) {
-                    item(key = "years") {
-                        Column {
-                            SectionTitle(stringResource(R.string.relive_years))
-                            LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                                items(state.years.size, key = { state.years[it].year }) { i ->
-                                    val y = state.years[i]
-                                    PhotoTile(
-                                        title = y.year.toString(),
-                                        subtitle = pluralStringResource(CoreR.plurals.memory_count, y.count, y.count),
-                                        cover = y.cover,
-                                        onClick = { onYear(y.year) },
                                     )
                                 }
                             }
@@ -394,50 +356,6 @@ private fun PhotoTile(title: String, subtitle: String, cover: CoverPick?, onClic
     }
 }
 
-/** "Diwali in 12 days": the festival's photos from earlier years will appear on Relive when it comes. */
-@Composable
-private fun UpcomingFestivalCard(name: String, inDays: Int) {
-    val spacing = Yaadein.spacing
-    Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.tertiaryContainer, modifier = Modifier.fillMaxWidth()) {
-        Row(Modifier.padding(horizontal = spacing.lg, vertical = spacing.md), verticalAlignment = Alignment.Top) {
-            Icon(Icons.Rounded.Celebration, contentDescription = null, tint = MaterialTheme.colorScheme.onTertiaryContainer, modifier = Modifier.padding(top = spacing.xs))
-            Spacer(Modifier.width(spacing.md))
-            Column(Modifier.weight(1f)) {
-                Text(
-                    pluralStringResource(R.plurals.relive_festival_upcoming, inDays, name, inDays),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                )
-                Text(
-                    stringResource(R.string.relive_festival_upcoming_help, name),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                )
-            }
-        }
-    }
-}
-
-/** One-time tip that shaking the phone opens a random memory. */
-@Composable
-private fun ShakeHintCard(onTry: () -> Unit, onDismiss: () -> Unit) {
-    val spacing = Yaadein.spacing
-    Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.fillMaxWidth()) {
-        Row(Modifier.padding(start = spacing.lg, top = spacing.md, bottom = spacing.sm, end = spacing.xs), verticalAlignment = Alignment.Top) {
-            Icon(Icons.Rounded.ScreenRotation, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.padding(top = spacing.xs))
-            Spacer(Modifier.width(spacing.md))
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.relive_shake_hint_title), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                Text(stringResource(R.string.shake_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                TextButton(onClick = onTry) { Text(stringResource(R.string.relive_surprise)) }
-            }
-            IconButton(onClick = onDismiss) {
-                Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.relive_got_it), tint = MaterialTheme.colorScheme.onSecondaryContainer)
-            }
-        }
-    }
-}
-
 @Composable
 private fun SectionTitle(text: String) {
     Text(
@@ -446,4 +364,26 @@ private fun SectionTitle(text: String) {
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(top = Yaadein.spacing.sm, bottom = Yaadein.spacing.sm).semantics { heading() },
     )
+}
+
+/** One of the three things to do on Relive, small enough that all three share one row. */
+@Composable
+private fun CompactAction(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val spacing = Yaadein.spacing
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(Yaadein.radius.lg),
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        modifier = modifier.heightIn(min = Yaadein.sizes.touchTarget + spacing.sm).semantics { role = Role.Button },
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = spacing.sm, vertical = spacing.sm),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(spacing.xxs, Alignment.CenterVertically),
+        ) {
+            Icon(icon, contentDescription = null)
+            Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+        }
+    }
 }

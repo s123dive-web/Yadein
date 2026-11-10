@@ -99,6 +99,10 @@ data class MemoryEntity(
     @ColumnInfo(name = "voice_note_path") val voiceNotePath: String?,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
+    /** The heart: stories lean towards favourites (Room 5). */
+    @ColumnInfo(defaultValue = "0") val favorite: Boolean = false,
+    /** When the memory's page was last opened, epoch millis (Room 5). */
+    @ColumnInfo(name = "last_opened_at") val lastOpenedAt: Long? = null,
 )
 
 @Entity(

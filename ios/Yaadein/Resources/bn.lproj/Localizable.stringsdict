@@ -403,6 +403,38 @@
             <string>%1$dটি ভিডিও</string>
         </dict>
     </dict>
+    <key>story_years_apart</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d বছরের ব্যবধান</string>
+            <key>other</key>
+            <string>%1$d বছরের ব্যবধান</string>
+        </dict>
+    </dict>
+    <key>story_years_with</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%2$@-এর সঙ্গে %1$d বছর</string>
+            <key>other</key>
+            <string>%2$@-এর সঙ্গে %1$d বছর</string>
+        </dict>
+    </dict>
     <key>usage_captures</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

@@ -11,6 +11,7 @@
 | Fonts Fraunces + Manrope, type scale | ✅ | ✅ | same font files |
 | Illustrations, cover art, avatars, memory card | ✅ | ✅ | same geometry and colours |
 | Onboarding → first person → PIN → home | replaced (First Minute, Phase 1) | ✅ | Android now starts photos-first; the iPhone app keeps the slides → person → PIN flow |
+| Relive story rings, full-screen story player with music, Then & Now, milestones, favourites (Relive 2, Phase 2) | ✅ | ⬜ deferred | Pure rules in `core/domain/relive` (`StoryRings`, `ThenAndNow`, `Milestones`, `StoryPicks`) are ready to port to YaadeinKit with their tests; a backup written by Android carries `favorite` (ignored by older readers) |
 | Photos-first welcome (language picker, pick photos → first story, sample family with one-tap clear, lock offered after the first memory, people from faces) (First Minute, Phase 1) | ✅ | ⬜ deferred | iOS is frozen this round; the new strings are generated for it |
 | PIN lock, lockout 30 s…1 h, wipe after 10 | ✅ | ✅ | |
 | Biometric unlock | ✅ fingerprint/face | ✅ Face ID / Touch ID | copy invalidated by new enrolment on both |

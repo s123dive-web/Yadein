@@ -98,6 +98,23 @@ class MigrationTest {
     }
 
     @Test
+    fun `migration 4 to 5 adds the favourite flag and last opened time without touching memories`() {
+        helper.createDatabase(dbName, 4).use { db ->
+            db.execSQL("INSERT INTO memories (id, type, title, description, date_kind, start_epoch_day, end_epoch_day, fuzzy_label, place, mood, cover_media_id, cover_style, voice_note_path, created_at, updated_at) VALUES (7, 'EVENT', 'Diwali', 'lights', 'EXACT', 20027, NULL, NULL, 'Pune', 'JOYFUL', NULL, 'diwali', NULL, 5, 6)")
+        }
+        helper.runMigrationsAndValidate(dbName, 5, true, Migrations.MIGRATION_4_5).use { db ->
+            db.query("SELECT title, description, place, mood, created_at, updated_at, favorite, last_opened_at FROM memories WHERE id = 7").use { c ->
+                assertTrue(c.moveToFirst())
+                assertEquals("Diwali", c.getString(0)); assertEquals("lights", c.getString(1)); assertEquals("Pune", c.getString(2)); assertEquals("JOYFUL", c.getString(3))
+                assertEquals(5, c.getInt(4)); assertEquals(6, c.getInt(5))
+                assertEquals("not a favourite until the user says so", 0, c.getInt(6)); assertTrue(c.isNull(7))
+            }
+            db.execSQL("UPDATE memories SET favorite = 1, last_opened_at = 99 WHERE id = 7")
+            db.query("SELECT favorite, last_opened_at FROM memories").use { c -> c.moveToFirst(); assertEquals(1, c.getInt(0)); assertEquals(99, c.getInt(1)) }
+        }
+    }
+
+    @Test
     fun `every version from 1 to current has a migration path`() {
         val covered = Migrations.ALL.map { it.startVersion to it.endVersion }.toSet()
         for (v in 1 until AppDatabase.VERSION) {

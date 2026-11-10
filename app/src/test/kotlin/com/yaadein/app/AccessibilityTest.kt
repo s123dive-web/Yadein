@@ -273,4 +273,61 @@ class AccessibilityTest {
         }
         assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
     }
+
+    private val storyRings = listOf(
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.TODAY, "today"), null, seen = false),
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.PERSON, "person-1", person = people[0]), null, seen = true),
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.YEAR, "year-2026", year = 2026), null, seen = false),
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.FESTIVAL, "festival-diwali", festival = com.yaadein.domain.relive.Festival.DIWALI), null, seen = false),
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.PLACE, "place-pune", place = "Pune"), null, seen = false),
+    )
+
+    @Test
+    fun `relive story rings say what they are and whether they are new`() {
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.relive.ReliveScreen(
+                    state = com.yaadein.feature.relive.ReliveUiState(loading = false, rings = storyRings, totalMemories = 12, upcomingBirthdays = listOf(people[1] to 3)),
+                    onOpenMemory = {}, onOpenPerson = {}, onSurprise = {}, onDismissRandom = {}, onRecap = {}, onYear = {}, contentPadding = PaddingValues(),
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+        val descriptions = compose.onAllNodes(hasClickAction()).fetchSemanticsNodes().flatMap { it.config.getOrNull(SemanticsProperties.ContentDescription).orEmpty() }
+        assertTrue("an unseen ring is announced as new: $descriptions", "Today, new today" in descriptions)
+        assertTrue("a watched ring is announced as watched: $descriptions", "Aai, watched" in descriptions)
+    }
+
+    @Test
+    fun `story player clickables are labelled and its gestures have TalkBack actions`() {
+        val pages = cards.map { com.yaadein.domain.relive.StoryPage.Moment(it, yearsAgo = 2) }
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.relive.StoryPlayerScreen(
+                    state = com.yaadein.feature.relive.StoryPlayerUiState(loading = false, rings = storyRings, ringIndex = 0, pages = pages, pagesLoading = false),
+                    actions = com.yaadein.feature.relive.StoryPlayerActions(), motion = false,
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+        val actions = compose.onAllNodes(androidx.compose.ui.test.SemanticsMatcher.keyIsDefined(androidx.compose.ui.semantics.SemanticsActions.CustomActions))
+            .fetchSemanticsNodes().flatMap { it.config[androidx.compose.ui.semantics.SemanticsActions.CustomActions].map { a -> a.label } }
+        assertTrue("page and story moves are available without gestures: $actions", actions.containsAll(listOf("Next page", "Previous page", "Next story", "Previous story")))
+    }
+
+    @Test
+    fun `story note and music sheets are labelled`() {
+        compose.setContent {
+            YaadeinTheme {
+                androidx.compose.foundation.layout.Column {
+                    com.yaadein.feature.relive.AddNoteContent(onSave = {}, onRecordVoice = {})
+                    com.yaadein.feature.relive.StoryMusicContent(
+                        state = com.yaadein.feature.relive.StoryPlayerUiState(songs = listOf(com.yaadein.data.recap.OwnSong(uri = "content://songs/1", title = "Lag Jaa Gale", artist = "Lata Mangeshkar"))),
+                        onChoose = {}, onAdd = {},
+                    )
+                }
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
 }

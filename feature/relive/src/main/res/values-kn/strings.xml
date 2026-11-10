@@ -58,4 +58,34 @@
     <string name="first_story_progress">%2$d ರಲ್ಲಿ %1$d ಫೋಟೋಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಇರಿಸಲಾಗಿದೆ</string>
     <string name="first_story_continue">ನನ್ನ ಟೈಮ್‌ಲೈನ್‌ಗೆ ಹೋಗಿ</string>
     <string name="first_story_new">ಈಗಷ್ಟೇ ಸೇರಿಸಲಾಗಿದೆ</string>
+    <string name="story_rings_title">ಕಥೆಗಳು</string>
+    <string name="story_ring_today">ಇಂದು</string>
+    <string name="story_ring_new_cd">%1$s, ಇಂದು ಹೊಸದು</string>
+    <string name="story_ring_seen_cd">%1$s, ನೋಡಲಾಗಿದೆ</string>
+    <string name="story_close">ಕಥೆ ಮುಚ್ಚಿ</string>
+    <string name="story_next_page">ಮುಂದಿನ ಪುಟ</string>
+    <string name="story_previous_page">ಹಿಂದಿನ ಪುಟ</string>
+    <string name="story_next_story">ಮುಂದಿನ ಕಥೆ</string>
+    <string name="story_previous_story">ಹಿಂದಿನ ಕಥೆ</string>
+    <string name="story_mute">ಸಂಗೀತ ನಿಲ್ಲಿಸಿ</string>
+    <string name="story_unmute">ಸಂಗೀತ ಪ್ರಾರಂಭಿಸಿ</string>
+    <string name="story_music">ಸಂಗೀತ ಆರಿಸಿ</string>
+    <string name="story_music_bundled">Yaadein ಸಂಗೀತ</string>
+    <string name="story_music_add">ಫೋನ್‌ನಿಂದ ಸೇರಿಸಿ</string>
+    <string name="story_music_help">ನಿಮ್ಮ ಫೋನ್‌ನ ಹಾಡು ನಿಮ್ಮ ಕಥೆಗಳೊಂದಿಗೆ ಕೇಳಿಸಬಹುದು. ಅದನ್ನು ಇಲ್ಲಿ ಮಾತ್ರ ಓದಲಾಗುತ್ತದೆ, ಎಲ್ಲಿಗೂ ನಕಲಿಸುವುದಿಲ್ಲ, ಕಳುಹಿಸುವುದಿಲ್ಲ.</string>
+    <string name="story_add_note">ನಿಮಗೆ ನೆನಪಿರುವುದನ್ನು ಸೇರಿಸಿ</string>
+    <string name="story_add_note_hint">ಒಂದು ಸಾಲು, ಒಂದು ಹೆಸರು, ಒಂದು ಪರಿಮಳ… ನೆನಪಿರುವ ಏನಾದರೂ</string>
+    <string name="story_add_note_save">ಈ ನೆನಪಿನಲ್ಲಿ ಉಳಿಸಿ</string>
+    <string name="story_add_note_voice">ಬದಲಿಗೆ ಧ್ವನಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ</string>
+    <string name="story_make_reel">ಈ ಕಥೆಯಿಂದ ರೀಲ್ ಮಾಡಿ</string>
+    <string name="story_then">ಆಗ</string>
+    <string name="story_now">ಈಗ</string>
+    <string name="story_then_now">%1$s, ಆಗ ಮತ್ತು ಈಗ</string>
+    <plurals name="story_years_apart"><item quantity="one">%1$d ವರ್ಷದ ಅಂತರ</item><item quantity="other">%1$d ವರ್ಷಗಳ ಅಂತರ</item></plurals>
+    <string name="story_milestone_count">%1$d ನೆನಪುಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ</string>
+    <string name="story_milestone_count_sub">ಪ್ರತಿಯೊಂದೂ ಈ ಫೋನ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿದೆ.</string>
+    <plurals name="story_years_with"><item quantity="one">%2$s ಜೊತೆ %1$d ವರ್ಷ</item><item quantity="other">%2$s ಜೊತೆ %1$d ವರ್ಷಗಳು</item></plurals>
+    <string name="story_years_with_sub">ನಿಮ್ಮ ಮೊದಲ ಜಂಟಿ ನೆನಪಿನಿಂದ.</string>
+    <string name="story_empty">ಈ ಕಥೆಯಲ್ಲಿ ತೋರಿಸಲು ಇನ್ನೂ ಏನೂ ಇಲ್ಲ</string>
+    <string name="story_ring_this_year">ಈ ವರ್ಷ</string>
 </resources>

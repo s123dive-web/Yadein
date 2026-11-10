@@ -61,4 +61,34 @@
     <string name="first_story_progress">%1$d of %2$d photos safely stored</string>
     <string name="first_story_continue">Go to my timeline</string>
     <string name="first_story_new">Just added</string>
+    <string name="story_rings_title">Stories</string>
+    <string name="story_ring_today">Today</string>
+    <string name="story_ring_new_cd">%1$s, new today</string>
+    <string name="story_ring_seen_cd">%1$s, watched</string>
+    <string name="story_close">Close story</string>
+    <string name="story_next_page">Next page</string>
+    <string name="story_previous_page">Previous page</string>
+    <string name="story_next_story">Next story</string>
+    <string name="story_previous_story">Previous story</string>
+    <string name="story_mute">Turn music off</string>
+    <string name="story_unmute">Turn music on</string>
+    <string name="story_music">Choose music</string>
+    <string name="story_music_bundled">Yaadein music</string>
+    <string name="story_music_add">Add from phone</string>
+    <string name="story_music_help">A song from your phone can play under your stories. It is only read here, never copied or sent anywhere.</string>
+    <string name="story_add_note">Add what you remember</string>
+    <string name="story_add_note_hint">A line, a name, a smell… anything you remember</string>
+    <string name="story_add_note_save">Save to this memory</string>
+    <string name="story_add_note_voice">Record a voice note instead</string>
+    <string name="story_make_reel">Make a reel from this story</string>
+    <string name="story_then">Then</string>
+    <string name="story_now">Now</string>
+    <string name="story_then_now">%1$s, then and now</string>
+    <plurals name="story_years_apart"><item quantity="one">%1$d year apart</item><item quantity="other">%1$d years apart</item></plurals>
+    <string name="story_milestone_count">%1$d memories saved</string>
+    <string name="story_milestone_count_sub">Every one of them is safe on this phone.</string>
+    <plurals name="story_years_with"><item quantity="one">%1$d year with %2$s</item><item quantity="other">%1$d years with %2$s</item></plurals>
+    <string name="story_years_with_sub">Since your first memory together.</string>
+    <string name="story_empty">Nothing to show in this story yet</string>
+    <string name="story_ring_this_year">This year</string>
 </resources>

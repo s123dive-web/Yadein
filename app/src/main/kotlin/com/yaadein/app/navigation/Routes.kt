@@ -41,6 +41,8 @@ sealed interface Route {
     /** Reels kept in the app: three made automatically plus the user's last ten. */
     @Serializable data object Reels : Route
     @Serializable data class ReelPlayer(val reelId: String) : Route
+    /** The full-screen story player, opened on the ring with this key ("today", "person-12", "year-2026"…). */
+    @Serializable data class StoryPlayer(val ringKey: String = "today") : Route
     @Serializable data class Settings(val page: String) : Route
 }
 

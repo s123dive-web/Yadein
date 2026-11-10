@@ -111,4 +111,6 @@
     <string name="kin_FATHER_IN_LAW">Father-in-law</string>
     <string name="kin_FRIEND">Friend</string>
     <string name="kin_COLLEAGUE">Colleague</string>
+    <string name="favorite_add">Add to favourites</string>
+    <string name="favorite_remove">Remove from favourites</string>
 </resources>

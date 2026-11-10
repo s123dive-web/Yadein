@@ -146,6 +146,8 @@ fun DailyStoryCard(
 private fun pageKey(page: StoryPage): String = when (page) {
     is StoryPage.Moment -> "m-${page.card.memory.id}-${page.yearsAgo}"
     is StoryPage.Spotlight -> "p-${page.person.id}"
+    is StoryPage.ThenNow -> "t-${page.pair.then.mediaId}-${page.pair.now.mediaId}"
+    is StoryPage.Milestone -> "s-${page.milestone}"
 }
 
 @Composable
@@ -154,6 +156,9 @@ private fun StoryPageContent(page: StoryPage, onOpenMemory: (Long) -> Unit, onOp
     val card = when (page) {
         is StoryPage.Moment -> page.card
         is StoryPage.Spotlight -> page.card
+        // Then & Now and milestones belong to the full-screen player; this card only ever gets the two kinds above.
+        is StoryPage.ThenNow -> null
+        is StoryPage.Milestone -> page.card
     }
     Box(Modifier.fillMaxSize()) {
         StoryBackground(card)
@@ -193,6 +198,7 @@ private fun StoryPageContent(page: StoryPage, onOpenMemory: (Long) -> Unit, onOp
                     Spacer(Modifier.height(spacing.xs))
                     StoryButton(stringResource(R.string.relive_story_see_person)) { onOpenPerson(page.person.id) }
                 }
+                is StoryPage.ThenNow, is StoryPage.Milestone -> Unit
             }
         }
     }

@@ -65,6 +65,15 @@ interface PersonDao {
     @Query("SELECT person_id AS id, COUNT(*) AS n FROM memory_persons GROUP BY person_id")
     fun observeMemoryCounts(): Flow<List<IdCount>>
 
+    /** Per person: how many of their memories have a photo or video (a story ring needs a few). */
+    @Query(
+        """
+        SELECT mp.person_id AS id, COUNT(*) AS n FROM memory_persons mp
+        WHERE EXISTS (SELECT 1 FROM media md WHERE md.memory_id = mp.memory_id) GROUP BY mp.person_id
+        """,
+    )
+    suspend fun photoMemoryCounts(): List<IdCount>
+
     @Query(
         """
         SELECT a.person_id AS a, b.person_id AS b, COUNT(*) AS n
@@ -200,6 +209,12 @@ interface MemoryDao {
 
     @Query("UPDATE memories SET cover_media_id = :mediaId, updated_at = :now WHERE id = :memoryId")
     suspend fun setCover(memoryId: Long, mediaId: Long?, now: Long)
+
+    @Query("UPDATE memories SET favorite = :favorite WHERE id = :memoryId")
+    suspend fun setFavorite(memoryId: Long, favorite: Boolean)
+
+    @Query("UPDATE memories SET last_opened_at = :now WHERE id = :memoryId")
+    suspend fun setLastOpened(memoryId: Long, now: Long)
 
     @Query("SELECT DISTINCT place FROM memories WHERE place <> '' ORDER BY place COLLATE NOCASE")
     suspend fun distinctPlaces(): List<String>
@@ -354,6 +369,32 @@ interface MediaDao {
         """,
     )
     suspend fun locatedPlaces(limit: Int): List<PlacePoint>
+
+    /**
+     * Photos that show [personId] for Then & Now: photos of memories they are tagged in, and photos tagged with them,
+     * each with its memory's day. Fuzzy dates have no day to compare and are left out.
+     */
+    @Query(
+        """
+        SELECT md.id AS mediaId, md.memory_id AS memoryId, m.start_epoch_day AS epochDay FROM media md JOIN memories m ON m.id = md.memory_id
+        WHERE md.kind = 'PHOTO' AND m.date_kind != 'FUZZY' AND (
+            md.memory_id IN (SELECT memory_id FROM memory_persons WHERE person_id = :personId)
+            OR md.id IN (SELECT media_id FROM media_persons WHERE person_id = :personId)
+        )
+        ORDER BY m.start_epoch_day, md.id LIMIT :limit
+        """,
+    )
+    suspend fun datedPhotosOfPerson(personId: Long, limit: Int): List<DatedPhotoRow>
+
+    /** Photos of memories at [place] (trimmed, case ignored) with their memory's day, for Then & Now. */
+    @Query(
+        """
+        SELECT md.id AS mediaId, md.memory_id AS memoryId, m.start_epoch_day AS epochDay FROM media md JOIN memories m ON m.id = md.memory_id
+        WHERE md.kind = 'PHOTO' AND m.date_kind != 'FUZZY' AND LOWER(TRIM(m.place)) = LOWER(TRIM(:place))
+        ORDER BY m.start_epoch_day, md.id LIMIT :limit
+        """,
+    )
+    suspend fun datedPhotosAtPlace(place: String, limit: Int): List<DatedPhotoRow>
 }
 
 @Dao
@@ -482,6 +523,9 @@ data class CoverRow(val year: Int, val place: String, val memoryId: Long, val co
 
 /** Row of [MemoryDao.placeCounts]. */
 data class PlaceCount(val place: String, val n: Int)
+
+/** Row of [MediaDao.datedPhotosOfPerson] and [MediaDao.datedPhotosAtPlace]. */
+data class DatedPhotoRow(val mediaId: Long, val memoryId: Long, val epochDay: Long)
 
 /** Row of [MediaDao.locatedPlaces]. */
 data class PlacePoint(val place: String, val latitude: Double, val longitude: Double)

@@ -11,7 +11,22 @@ sealed interface StoryPage {
 
     /** "Remember these with Nana?": someone the story brings back today, with one of their memories as the picture. */
     data class Spotlight(val person: Person, val memoryCount: Int, val card: MemoryCard?) : StoryPage
+
+    /** Then & Now: two photos of the same person ([person]) or the same place ([place]) at least three years apart. */
+    data class ThenNow(val pair: ThenNowPair, val person: Person? = null, val place: String? = null) : StoryPage
+
+    /** A milestone worth a page: the 10th/50th/100th memory, or "N years with Aaji" ([person]); [card] gives the picture. */
+    data class Milestone(val milestone: com.yaadein.domain.relive.Milestone, val card: MemoryCard?, val person: Person? = null) : StoryPage
 }
+
+/** The memory a page is about (what "Open", the heart and "Add what you remember" act on), or null for a page without one. */
+val StoryPage.memoryId: Long?
+    get() = when (this) {
+        is StoryPage.Moment -> card.memory.id
+        is StoryPage.Spotlight -> card?.memory?.id
+        is StoryPage.ThenNow -> pair.then.memoryId
+        is StoryPage.Milestone -> card?.memory?.id
+    }
 
 /**
  * The daily story: up to [MAX_REWIND_PAGES] memories from years ago (photos first), then a person spotlight, then the

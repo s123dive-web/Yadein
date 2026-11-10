@@ -58,4 +58,34 @@
     <string name="first_story_progress">%2$d में से %1$d फ़ोटो सुरक्षित रखी गईं</string>
     <string name="first_story_continue">मेरी टाइमलाइन पर जाएँ</string>
     <string name="first_story_new">अभी जोड़ा गया</string>
+    <string name="story_rings_title">कहानियाँ</string>
+    <string name="story_ring_today">आज</string>
+    <string name="story_ring_new_cd">%1$s, आज नई</string>
+    <string name="story_ring_seen_cd">%1$s, देखी जा चुकी</string>
+    <string name="story_close">कहानी बंद करें</string>
+    <string name="story_next_page">अगला पृष्ठ</string>
+    <string name="story_previous_page">पिछला पृष्ठ</string>
+    <string name="story_next_story">अगली कहानी</string>
+    <string name="story_previous_story">पिछली कहानी</string>
+    <string name="story_mute">संगीत बंद करें</string>
+    <string name="story_unmute">संगीत चालू करें</string>
+    <string name="story_music">संगीत चुनें</string>
+    <string name="story_music_bundled">Yaadein का संगीत</string>
+    <string name="story_music_add">फ़ोन से जोड़ें</string>
+    <string name="story_music_help">आपके फ़ोन का कोई गाना आपकी कहानियों के साथ बज सकता है। इसे यहीं पढ़ा जाता है, कहीं कॉपी या भेजा नहीं जाता।</string>
+    <string name="story_add_note">जो याद है वह जोड़ें</string>
+    <string name="story_add_note_hint">एक पंक्ति, एक नाम, कोई ख़ुशबू… जो भी याद हो</string>
+    <string name="story_add_note_save">इस याद में सहेजें</string>
+    <string name="story_add_note_voice">इसके बजाय आवाज़ रिकॉर्ड करें</string>
+    <string name="story_make_reel">इस कहानी से रील बनाएँ</string>
+    <string name="story_then">तब</string>
+    <string name="story_now">अब</string>
+    <string name="story_then_now">%1$s, तब और अब</string>
+    <plurals name="story_years_apart"><item quantity="one">%1$d साल का फ़ासला</item><item quantity="other">%1$d साल का फ़ासला</item></plurals>
+    <string name="story_milestone_count">%1$d यादें सहेजी गईं</string>
+    <string name="story_milestone_count_sub">हर एक इस फ़ोन पर सुरक्षित है।</string>
+    <plurals name="story_years_with"><item quantity="one">%2$s के साथ %1$d साल</item><item quantity="other">%2$s के साथ %1$d साल</item></plurals>
+    <string name="story_years_with_sub">आपकी पहली साझा याद से।</string>
+    <string name="story_empty">इस कहानी में अभी दिखाने को कुछ नहीं है</string>
+    <string name="story_ring_this_year">इस साल</string>
 </resources>

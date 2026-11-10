@@ -74,7 +74,7 @@ class BackupManager(
     @Serializable data class PersonRow(val id: Long, val name: String, val nickname: String?, val relation: String, val birthdayEpochDay: Long?, val profileMediaId: Long?, val notes: String, val avatarColorIndex: Int, val createdAt: Long, val kinTerm: String? = null, val relationText: String? = null)
     @Serializable data class FaceRow(val id: Long, val mediaId: Long, val embedding: String, val modelVersion: Int, val quality: Float, val left: Float, val top: Float, val right: Float, val bottom: Float, val personId: Long?, val state: String, val similarity: Float?, val createdAt: Long)
     @Serializable data class GroupRow(val id: Long, val name: String, val emoji: String, val createdAt: Long)
-    @Serializable data class MemoryRow(val id: Long, val type: String, val title: String, val description: String, val dateKind: String, val startEpochDay: Long, val endEpochDay: Long?, val fuzzyLabel: String?, val place: String, val mood: String?, val coverMediaId: Long?, val coverStyle: String, val createdAt: Long, val updatedAt: Long, val voice: Boolean = false)
+    @Serializable data class MemoryRow(val id: Long, val type: String, val title: String, val description: String, val dateKind: String, val startEpochDay: Long, val endEpochDay: Long?, val fuzzyLabel: String?, val place: String, val mood: String?, val coverMediaId: Long?, val coverStyle: String, val createdAt: Long, val updatedAt: Long, val voice: Boolean = false, val favorite: Boolean = false)
     @Serializable data class MediaRow(val id: Long, val memoryId: Long?, val kind: String, val file: String, val thumb: String, val takenAt: Long?, val durationMs: Long?, val sizeBytes: Long, val caption: String, val width: Int, val height: Int, val sha256: String, val position: Int, val createdAt: Long, val latitude: Double? = null, val longitude: Double? = null)
 
     sealed interface Progress { data class Working(val done: Int, val total: Int) : Progress; data object Done : Progress }
@@ -222,7 +222,7 @@ class BackupManager(
                     }
                 }
                 val memoryIds = HashMap<Long, Long>()
-                d.memories.forEach { mm -> memoryIds[mm.id] = db.memoryDao().insert(MemoryEntity(0, mm.type, mm.title, mm.description, mm.dateKind, mm.startEpochDay, mm.endEpochDay, mm.fuzzyLabel, mm.place, mm.mood, null, mm.coverStyle, newVoice[mm.id], mm.createdAt, mm.updatedAt)) }
+                d.memories.forEach { mm -> memoryIds[mm.id] = db.memoryDao().insert(MemoryEntity(0, mm.type, mm.title, mm.description, mm.dateKind, mm.startEpochDay, mm.endEpochDay, mm.fuzzyLabel, mm.place, mm.mood, null, mm.coverStyle, newVoice[mm.id], mm.createdAt, mm.updatedAt, favorite = mm.favorite)) }
                 val mediaIds = HashMap<Long, Long>()
                 d.media.forEach { r ->
                     val paths = newMedia[r.id] ?: return@forEach
@@ -284,7 +284,7 @@ class BackupManager(
                 d.groups.forEach { g -> groupIds[g.id] = db.groupDao().upsert(GroupEntity(0, g.name, g.emoji, g.createdAt)) }
                 db.groupDao().insertMembers(d.groupMembers.mapNotNull { (g, p) -> val gi = groupIds[g]; val pi = personIds[p]; if (gi != null && pi != null) GroupMemberEntity(gi, pi) else null })
                 val memoryIds = HashMap<Long, Long>()
-                d.memories.forEach { mm -> memoryIds[mm.id] = db.memoryDao().insert(MemoryEntity(0, mm.type, mm.title, mm.description, mm.dateKind, mm.startEpochDay, mm.endEpochDay, mm.fuzzyLabel, mm.place, mm.mood, null, mm.coverStyle, voicePaths[mm.id], mm.createdAt, mm.updatedAt)) }
+                d.memories.forEach { mm -> memoryIds[mm.id] = db.memoryDao().insert(MemoryEntity(0, mm.type, mm.title, mm.description, mm.dateKind, mm.startEpochDay, mm.endEpochDay, mm.fuzzyLabel, mm.place, mm.mood, null, mm.coverStyle, voicePaths[mm.id], mm.createdAt, mm.updatedAt, favorite = mm.favorite)) }
                 val mediaIds = HashMap<Long, Long>()
                 d.media.forEach { r ->
                     val paths = newPaths[r.id] ?: return@forEach
@@ -392,7 +392,7 @@ class BackupManager(
             persons = persons,
             groups = groups.map { GroupRow(it.group.id, it.group.name, it.group.emoji, it.group.createdAt) },
             groupMembers = groups.flatMap { g -> g.members.map { g.group.id to it.id } },
-            memories = memories.map { r -> r.memory.let { MemoryRow(it.id, it.type, it.title, it.description, it.dateKind, it.startEpochDay, it.endEpochDay, it.fuzzyLabel, it.place, it.mood, it.coverMediaId, it.coverStyle, it.createdAt, it.updatedAt, voice = it.voiceNotePath != null) } },
+            memories = memories.map { r -> r.memory.let { MemoryRow(it.id, it.type, it.title, it.description, it.dateKind, it.startEpochDay, it.endEpochDay, it.fuzzyLabel, it.place, it.mood, it.coverMediaId, it.coverStyle, it.createdAt, it.updatedAt, voice = it.voiceNotePath != null, favorite = it.favorite) } },
             media = media.map { MediaRow(it.id, it.memoryId, it.kind, it.encryptedPath, it.thumbPath, it.takenAt, it.durationMs, it.sizeBytes, it.caption, it.width, it.height, it.sha256, it.position, it.createdAt, it.latitude, it.longitude) },
             mediaPersons = mediaPersons,
             memoryPersons = memories.flatMap { r -> r.people.map { r.memory.id to it.id } },

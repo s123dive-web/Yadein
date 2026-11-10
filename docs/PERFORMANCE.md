@@ -66,4 +66,5 @@ setup (target 500 ms, never below 32 MiB / 2 passes) without changing the file f
 | First run: screens before the user's own memories | ≤ 3 (welcome → Photo Picker → first story) | `AppSmokeTest` (welcome has four controls; picker opens from the first button), `OnboardingViewModelTest` |
 | First run: welcome → memories playing | ≤ 60 s including the pick | Memory rows are written before any file is copied (`OnboardingViewModel.onPicked`), the story shows a page as soon as one photo of a memory is stored (`FirstStoryStateTest`); stopwatch on a phone |
 | Cold start | unchanged budget (≤ 1.0 s phone, ≤ 2.0 s CI emulator) | The first frame is now one static screen instead of a pager; nothing new runs before it |
-| APK size | unchanged budget (≤ 64,790,000 bytes) | CI "APK size" step; the round adds Compose code and strings only |
+| APK size | unchanged budget (≤ 64,790,000 bytes) | CI "APK size" step; the round adds Compose code and strings only || Relive: tap a ring → story on screen | one tap; pages load off the main thread | `StoryLoader` queries per ring on open, not for every ring up front; `StoryPlayerScreenTest` |
+| Story music | no audio work before the player opens; one `ExoPlayer` for music, one per video page | The player and its music exist only while `Route.StoryPlayer` is on screen and pause on stop |

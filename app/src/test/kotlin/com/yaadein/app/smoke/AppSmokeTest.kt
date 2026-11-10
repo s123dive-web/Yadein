@@ -226,6 +226,25 @@ class AppSmokeTest {
     }
 
     @Test
+    fun `a story ring on relive opens the full-screen player and close comes back`() {
+        runBlocking { seeder.seed() }
+        // Animations off, as on a phone with "Remove animations": the story then waits for taps instead of playing on,
+        // which also keeps the test clock from running through every story.
+        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        android.provider.Settings.Global.putFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
+        scenario.recreate()
+        compose.waitForIdle()
+        tab("Relive")
+        compose.waitUntil(10_000) { compose.onAllNodes(hasContentDescription("Today, new today")).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(hasContentDescription("Today, new today")).performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(20_000) { compose.onAllNodes(hasContentDescription("Close story")).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithContentDescription("Close story").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("Your reels").fetchSemanticsNodes().isNotEmpty() }
+        // Watching it once is remembered for the day.
+        compose.waitUntil(10_000) { runBlocking { settings.current() }.storySeen.contains("today") }
+    }
+
+    @Test
     fun `plus opens the system photo picker and long-press opens the hub`() {
         // Tap: the Photo Picker (Quick Save's first and only choice before Save).
         createButton().performClick()

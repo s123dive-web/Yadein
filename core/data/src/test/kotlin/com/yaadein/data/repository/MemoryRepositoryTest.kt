@@ -194,4 +194,54 @@ class MemoryRepositoryTest {
         assertEquals("Lonavala", places.single().name)
         assertEquals(18.75, places.single().latitude, 1e-9)
     }
+
+    private suspend fun photo(memoryId: Long, name: String): Long =
+        db.mediaDao().insert(com.yaadein.data.db.entity.MediaEntity(memoryId = memoryId, kind = "PHOTO", encryptedPath = "m-$name", thumbPath = "t-$name", takenAt = null, durationMs = null, sizeBytes = 1, caption = "", width = 1, height = 1, sha256 = name, position = 0, createdAt = 1, latitude = null, longitude = null))
+
+    @Test
+    fun `a favourite and the last opened time have their own setters and survive an edit`() = runTest {
+        val id = memories.create(memory("Aaji's 80th", LocalDate.of(2022, 5, 5)), emptyList())
+        assertEquals(false, memories.get(id)!!.favorite)
+        assertNull(memories.get(id)!!.lastOpenedAt)
+
+        memories.setFavorite(id, true)
+        memories.markOpened(id)
+        val marked = memories.get(id)!!
+        assertTrue(marked.favorite)
+        assertNotNull(marked.lastOpenedAt)
+
+        // An edit made from a copy that predates the heart must not take it away.
+        memories.update(marked.copy(title = "Aaji turns 80", favorite = false, lastOpenedAt = null), emptyList())
+        val edited = memories.observeCard(id).first()!!.memory
+        assertEquals("Aaji turns 80", edited.title)
+        assertTrue(edited.favorite)
+        assertEquals(marked.lastOpenedAt, edited.lastOpenedAt)
+
+        memories.setFavorite(id, false)
+        assertEquals(false, memories.get(id)!!.favorite)
+    }
+
+    @Test
+    fun `story rings count memories with photos per person, and then-and-now photos carry their memory's day`() = runTest {
+        val aaji = people.upsert(Person(name = "Aaji"))
+        val rahul = people.upsert(Person(name = "Rahul"))
+        val old = memories.create(memory("Wedding", LocalDate.of(2010, 2, 14), place = "Pune "), listOf(aaji))
+        val recent = memories.create(memory("Diwali", LocalDate.of(2025, 10, 20), place = "pune"), listOf(aaji, rahul))
+        val words = memories.create(memory("A story she told", LocalDate.of(2024, 1, 1)), listOf(aaji))
+        val fuzzy = memories.create(memory("Summers", LocalDate.of(2001, 5, 1)).copy(date = Dates.fuzzy("Summer 2001", 2001, 5)), listOf(aaji))
+        val p1 = photo(old, "a"); val p2 = photo(old, "b"); val p3 = photo(recent, "c"); photo(fuzzy, "d")
+
+        // Aaji: three memories with a photo (the fuzzy one counts as a memory with photos); the words-only one does not.
+        assertEquals(mapOf(aaji to 3, rahul to 1), people.photoMemoryCounts())
+
+        val ofAaji = memories.datedPhotosOfPerson(aaji)
+        assertEquals(listOf(p1, p2, p3), ofAaji.map { it.mediaId })
+        assertEquals(listOf(old, old, recent), ofAaji.map { it.memoryId })
+        assertEquals(LocalDate.of(2010, 2, 14).toEpochDay(), ofAaji.first().epochDay)
+        assertEquals(listOf(p3), memories.datedPhotosOfPerson(rahul).map { it.mediaId })
+        // Places match trimmed and without case.
+        assertEquals(listOf(p1, p2, p3), memories.datedPhotosAtPlace("PUNE").map { it.mediaId })
+        assertTrue(memories.datedPhotosAtPlace("Goa").isEmpty())
+        assertNotNull(words)
+    }
 }

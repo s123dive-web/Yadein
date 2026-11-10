@@ -77,6 +77,10 @@ data class Memory(
     val voiceNotePath: String? = null,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
+    /** Marked with the heart: stories and the memory of the day lean towards favourites. */
+    val favorite: Boolean = false,
+    /** When the memory's page was last opened (epoch millis), null if never; recently opened memories come back sooner. */
+    val lastOpenedAt: Long? = null,
 )
 
 @Serializable
