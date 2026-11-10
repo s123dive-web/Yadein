@@ -253,6 +253,8 @@ class AppSmokeTest {
         compose.waitUntil(10_000) { compose.onAllNodes(hasContentDescription("Today, new today")).fetchSemanticsNodes().isNotEmpty() }
         compose.onNode(hasContentDescription("Today, new today")).performSemanticsAction(SemanticsActions.OnClick)
         compose.waitUntil(20_000) { compose.onAllNodes(hasContentDescription("Close story")).fetchSemanticsNodes().isNotEmpty() }
+        // Let the story load its pages: closing before anything was shown does not count as watching it.
+        compose.waitUntil(20_000) { compose.onAllNodes(hasContentDescription("Story, page", substring = true)).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithContentDescription("Close story").performClick()
         compose.waitUntil(10_000) { compose.onAllNodesWithText("Your reels").fetchSemanticsNodes().isNotEmpty() }
         // Watching it once is remembered for the day.
