@@ -14,6 +14,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +24,7 @@ import javax.inject.Singleton
  * dot product. CPU with XNNPACK only: no delegates, nothing downloaded, nothing leaves the phone.
  */
 @Singleton
-class FaceEmbedder @Inject constructor(private val context: Context) {
+class FaceEmbedder @Inject constructor(@ApplicationContext private val context: Context) {
     private val interpreter: Interpreter by lazy {
         val model = loadModel()
         val options = Interpreter.Options().apply {

@@ -28,7 +28,9 @@ class PersonRepositoryImpl @Inject constructor(
     override suspend fun get(id: Long): Person? = dao.get(id)?.toDomain()
 
     override suspend fun upsert(person: Person): Long {
-        val entity = person.toEntity().let { if (it.createdAt == 0L) it.copy(createdAt = clock()) else it }
+        var entity = person.toEntity().let { if (it.createdAt == 0L) it.copy(createdAt = clock()) else it }
+        // The face centroid is not part of the domain Person; an edit must not reset it.
+        if (person.id != 0L) dao.get(person.id)?.let { old -> entity = entity.copy(centroid = old.centroid, centroidModel = old.centroidModel, confirmedFaces = old.confirmedFaces) }
         val id = dao.upsert(entity)
         return if (person.id != 0L) person.id else id
     }

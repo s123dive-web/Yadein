@@ -65,7 +65,7 @@ class FaceSuggester @Inject constructor(
         val media = db.mediaDao().get(mediaId) ?: return@withContext 0
         if (media.kind != "PHOTO") { db.faceDao().markScanned(mediaId, FaceModel.VERSION); return@withContext 0 }
         val bytes = runCatching { mediaStore.crypto.decryptToBytes(mediaStore.file(media.encryptedPath)) }.getOrNull()
-            ?: return@withContext 0
+            ?: run { db.faceDao().markScanned(mediaId, FaceModel.VERSION); return@withContext 0 }
         val bmp = decode(bytes) ?: run { db.faceDao().markScanned(mediaId, FaceModel.VERSION); return@withContext 0 }
         try {
             val started = SystemClock.elapsedRealtime()
@@ -143,7 +143,7 @@ class FaceSuggester @Inject constructor(
             if (face.state == FaceState.CONFIRMED && face.personId == personId) {
                 // Undo of a confirmation: take the face back out of the centroid.
                 val person = db.personDao().get(personId)
-                val current = person?.centroid?.takeIf { person.centroidModel == FaceModel.VERSION }?.let { PersonCentroid(personId, it.toFloats(), person.confirmedFaces) }
+                val current = person?.let { p -> p.centroid?.takeIf { p.centroidModel == FaceModel.VERSION }?.let { PersonCentroid(personId, it.toFloats(), p.confirmedFaces) } }
                 val next = current?.let { FaceMatcher.removeFromCentroid(it, face.embedding.toFloats()) }
                 db.faceDao().setCentroid(personId, next?.centroid?.toBytes(), next?.let { FaceModel.VERSION }, next?.count ?: 0)
                 untag(face.mediaId, personId)

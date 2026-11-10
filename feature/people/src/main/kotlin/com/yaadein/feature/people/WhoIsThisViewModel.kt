@@ -57,7 +57,7 @@ class WhoIsThisViewModel @Inject constructor(
     private val db: AppDatabase,
     private val personRepository: PersonRepository,
 ) : ViewModel() {
-    private class Session(
+    private data class Session(
         val loading: Boolean = true,
         val groups: List<FaceGroup> = emptyList(),
         val index: Int = 0,
