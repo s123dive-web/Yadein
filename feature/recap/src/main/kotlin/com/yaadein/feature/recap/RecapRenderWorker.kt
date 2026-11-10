@@ -74,9 +74,16 @@ class RecapRenderWorker @AssistedInject constructor(
                 library.add(output, title, ReelKind.USER, plan.totalDurationMs, ReelRendering.coverMediaId(plan), plan.theme.name)
             }.onFailure { CrashLog.recordNonFatal(context, "reel library", it) }.getOrNull()
             val fileName = title.replace(Regex("[^\\p{L}\\p{N} _-]"), "").trim().ifBlank { "Yaadein" } + "-" + System.currentTimeMillis() / 1000
+            // Size before save(): on Android 10+ the rendered file is moved into MediaStore and deleted.
+            val sizeBytes = output.length()
             val uri = RecapOutput.save(context, output, fileName)
             notifyDone(context, uri.toString(), title)
-            Result.success(workDataOf(KEY_OUTPUT_URI to uri.toString(), KEY_REEL_ID to entry?.id))
+            Result.success(
+                workDataOf(
+                    KEY_OUTPUT_URI to uri.toString(), KEY_REEL_ID to entry?.id,
+                    KEY_SIZE_BYTES to sizeBytes, KEY_DURATION_MS to plan.totalDurationMs,
+                ),
+            )
         } catch (e: kotlinx.coroutines.CancellationException) {
             output.delete()
             throw e
@@ -129,6 +136,9 @@ class RecapRenderWorker @AssistedInject constructor(
         const val KEY_PLAN = "plan"
         const val KEY_PLAN_FILE = "planFile"
         const val KEY_REEL_ID = "reelId"
+        /** Output: the MP4's size in bytes and length in ms (for the file-size line and the WhatsApp status check). */
+        const val KEY_SIZE_BYTES = "sizeBytes"
+        const val KEY_DURATION_MS = "durationMs"
         const val KEY_TITLE = "title"
         const val KEY_MUSIC_KIND = "musicKind"
         const val KEY_MUSIC_RES = "musicRes"

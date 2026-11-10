@@ -47,4 +47,13 @@
     <string name="relive_story_open">Open</string>
     <string name="relive_story_see_person">See their story</string>
     <string name="relive_story_page">Story, page %1$d of %2$d</string>
+    <!-- Festivals (Fast & Rich, Phase 3) -->
+    <string name="relive_festival_rewind">This %1$s, years ago</string>
+    <plurals name="relive_festival_upcoming">
+        <item quantity="one">%1$s is tomorrow</item>
+        <item quantity="other">%1$s in %2$d days</item>
+    </plurals>
+    <string name="relive_festival_upcoming_help">%1$s photos from earlier years will show up here.</string>
+    <string name="reminder_festival_today">Happy %1$s! Add today\'s photos to Yaadein</string>
+    <string name="reminder_festival_today_text">A year from now, this is the day you\'ll want to see again.</string>
 </resources>

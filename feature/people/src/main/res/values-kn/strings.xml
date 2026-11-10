@@ -74,4 +74,13 @@
     <string name="who_undo">ರದ್ದುಮಾಡಿ</string>
     <string name="who_empty_title">ಪ್ರತಿ ಮುಖಕ್ಕೂ ಹೆಸರಿದೆ</string>
     <string name="who_empty_message">ಫೋಟೋಗಳನ್ನು ಸೇರಿಸುತ್ತಾ ಹೋದಂತೆ ಹೊಸ ಮುಖಗಳು ಇಲ್ಲಿ ಕಾಯುತ್ತವೆ. ಇನ್ನಷ್ಟು ಹುಡುಕಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಮುಖದ ಸಲಹೆಗಳನ್ನು ಆನ್ ಮಾಡಿ.</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="person_kin_title">ಇವರು ನಿಮಗೆ ಯಾರು?</string>
+    <string name="person_kin_other">ಇತರೆ…</string>
+    <string name="person_kin_other_label">ಸಂಬಂಧ</string>
+    <string name="person_kin_other_hint">ಉದಾ. ನೆರೆಹೊರೆಯವರು, ಗುರೂಜಿ</string>
+    <string name="kin_side_maternal">ಅಮ್ಮನ ಕಡೆ</string>
+    <string name="kin_side_paternal">ಅಪ್ಪನ ಕಡೆ</string>
+    <string name="kin_side_own">ಸ್ವಂತ ಕುಟುಂಬ</string>
+    <string name="kin_side_in_law">ಅತ್ತೆ-ಮಾವನ ಕಡೆ</string>
 </resources>

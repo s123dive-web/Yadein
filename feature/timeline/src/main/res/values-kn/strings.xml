@@ -53,4 +53,5 @@
         <item quantity="other">%1$d ವೀಡಿಯೊಗಳಿಗೆ ಫೋನ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಖಾಲಿ ಜಾಗ ಬೇಕು.</item>
     </plurals>
     <string name="import_failed_hint">ನೆನಪನ್ನು ತೆರೆದು “ಫೋಟೋ ಸೇರಿಸಿ” ಬಳಸಿ ಅವನ್ನು ಮತ್ತೆ ಆರಿಸಿ.</string>
+    <string name="filter_festival">ಹಬ್ಬ</string>
 </resources>

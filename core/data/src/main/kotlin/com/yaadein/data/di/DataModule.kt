@@ -41,6 +41,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
+import com.yaadein.domain.relive.Festivals
 import javax.inject.Singleton
 
 @Qualifier
@@ -54,6 +55,9 @@ object DataModule {
     @Provides
     @Singleton
     fun clock(): () -> Long = { System.currentTimeMillis() }
+
+    /** The bundled festival calendar 2010–2035 (core/domain resource); loaded once. */
+    @Provides @Singleton fun festivals(): Festivals = Festivals.bundled()
 
     @Provides
     @Singleton

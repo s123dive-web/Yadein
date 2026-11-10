@@ -33,6 +33,13 @@
     <string name="music_licence">Bundled tracks are original and free to use in your reels.</string>
     <string name="recap_length">Length</string>
     <string name="recap_length_seconds">~%1$d s</string>
+    <string name="recap_length_status">WhatsApp status · 30 s</string>
+    <string name="recap_status_help">Kept under 30 seconds and about 16 MB so it posts as a status without being cut.</string>
+    <string name="recap_send_whatsapp">Send to WhatsApp</string>
+    <string name="recap_whatsapp_missing">WhatsApp is not installed on this phone</string>
+    <string name="recap_file_size">%1$s</string>
+    <string name="recap_whatsapp_too_big">Over 16 MB: WhatsApp may compress it. The WhatsApp status length keeps it smaller.</string>
+    <string name="reel_whatsapp_named">Send %1$s to WhatsApp</string>
     <string name="recap_include_videos">Include video clips</string>
     <string name="recap_paused">Paused — tap to play</string>
     <string name="render_channel">Reel creation</string>

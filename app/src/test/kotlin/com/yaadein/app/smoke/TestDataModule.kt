@@ -32,6 +32,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import java.io.File
 import java.security.MessageDigest
+import com.yaadein.domain.relive.Festivals
 import javax.inject.Singleton
 
 /** JVM stand-in for the Keystore: reversible XOR so wrap != plain. */
@@ -46,6 +47,9 @@ class XorKeyWrapper : KeyWrapper {
 @TestInstallIn(components = [SingletonComponent::class], replaces = [DataModule::class])
 object TestDataModule {
     @Provides @Singleton fun clock(): () -> Long = { System.currentTimeMillis() }
+
+    /** The bundled festival calendar 2010–2035 (core/domain resource); loaded once. */
+    @Provides @Singleton fun festivals(): Festivals = Festivals.bundled()
     @Provides @Singleton fun keyWrapper(): KeyWrapper = XorKeyWrapper()
     @Provides @Singleton fun secretStore(): SecretStore = InMemorySecretStore()
     private val fastKdf = object : PinHasher {

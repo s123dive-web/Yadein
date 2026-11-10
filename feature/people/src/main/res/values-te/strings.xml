@@ -74,4 +74,13 @@
     <string name="who_undo">రద్దు చేయండి</string>
     <string name="who_empty_title">ప్రతి ముఖానికీ పేరు ఉంది</string>
     <string name="who_empty_message">మీరు ఫోటోలు జోడించే కొద్దీ కొత్త ముఖాలు ఇక్కడ వేచి ఉంటాయి. మరిన్ని కనుగొనడానికి సెట్టింగ్‌లలో ముఖాల సూచనలను ఆన్ చేయండి.</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="person_kin_title">వీరు మీకు ఎవరు?</string>
+    <string name="person_kin_other">ఇతర…</string>
+    <string name="person_kin_other_label">బంధం</string>
+    <string name="person_kin_other_hint">ఉదా. పక్కింటివారు, గురూజీ</string>
+    <string name="kin_side_maternal">అమ్మ వైపు</string>
+    <string name="kin_side_paternal">నాన్న వైపు</string>
+    <string name="kin_side_own">సొంత కుటుంబం</string>
+    <string name="kin_side_in_law">అత్తవారి తరఫు</string>
 </resources>

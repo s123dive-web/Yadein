@@ -47,4 +47,10 @@
     <string name="relive_story_open">తెరవండి</string>
     <string name="relive_story_see_person">వారి కథ చూడండి</string>
     <string name="relive_story_page">కథ, పేజీ %1$d / %2$d</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="relive_festival_rewind">ఈ %1$s, సంవత్సరాల క్రితం</string>
+    <plurals name="relive_festival_upcoming"><item quantity="one">రేపు %1$s</item><item quantity="other">%2$d రోజుల్లో %1$s</item></plurals>
+    <string name="relive_festival_upcoming_help">గత సంవత్సరాల %1$s ఫోటోలు ఇక్కడ కనిపిస్తాయి.</string>
+    <string name="reminder_festival_today">%1$s శుభాకాంక్షలు! ఈరోజు ఫోటోలను Yaadein లో జోడించండి</string>
+    <string name="reminder_festival_today_text">ఒక సంవత్సరం తర్వాత, మళ్ళీ చూడాలనుకునే రోజు ఇదే.</string>
 </resources>

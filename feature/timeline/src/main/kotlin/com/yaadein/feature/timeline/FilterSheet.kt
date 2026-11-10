@@ -30,17 +30,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import com.yaadein.core.ui.components.PersonAvatar
+import com.yaadein.core.ui.components.festivalName
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.domain.model.Group
 import com.yaadein.domain.model.MemoryType
 import com.yaadein.domain.model.Person
+import com.yaadein.domain.relive.Festival
 import com.yaadein.domain.repository.TimelineFilter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import com.yaadein.core.ui.R as CoreR
 
-/** Bottom sheet with every timeline filter: people, groups, place, date range, type. */
+/** Bottom sheet with every timeline filter: people, groups, place, festival, date range, type. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterSheet(
@@ -87,6 +89,11 @@ fun FilterSheet(
                     places.take(24).forEach { place ->
                         FilterChip(selected = draft.place == place, onClick = { draft = draft.copy(place = if (draft.place == place) null else place) }, label = { Text(place) })
                     }
+                }
+            }
+            Section(stringResource(R.string.filter_festival)) {
+                Festival.entries.forEach { f ->
+                    FilterChip(selected = draft.festival == f, onClick = { draft = draft.copy(festival = if (draft.festival == f) null else f) }, label = { Text(festivalName(f)) })
                 }
             }
             Section(stringResource(R.string.filter_type)) {

@@ -1,6 +1,16 @@
 package com.yaadein.feature.people
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import com.yaadein.domain.people.KinSide
+import com.yaadein.domain.people.KinTerm
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -144,6 +154,7 @@ fun RelationshipsScreen(state: RelationshipsUiState, onBack: () -> Unit, onOpenP
             return
         }
         Text(stringResource(R.string.relationships_hint), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = spacing.gutter))
+        KinSideLegend(modifier = Modifier.padding(horizontal = spacing.gutter, vertical = spacing.sm))
         BubbleGraph(state = state, onOpenPerson = onOpenPerson, modifier = Modifier.fillMaxSize().padding(spacing.md))
     }
 }
@@ -154,6 +165,7 @@ fun BubbleGraph(state: RelationshipsUiState, onOpenPerson: (Long) -> Unit, modif
     val lineColor = MaterialTheme.colorScheme.outlineVariant
     val labelColor = MaterialTheme.colorScheme.onSurface
     val surface = MaterialTheme.colorScheme.surface
+    val sideColors = kinSideColors()
     val textSizePx = with(androidx.compose.ui.platform.LocalDensity.current) { 12.sp.toPx() }
     val maxWeight = max(1, state.nodes.maxOfOrNull { it.weight } ?: 1)
     val maxEdge = max(1, state.edges.maxOfOrNull { it.weight } ?: 1)
@@ -187,7 +199,9 @@ fun BubbleGraph(state: RelationshipsUiState, onOpenPerson: (Long) -> Unit, modif
                 val r = radiusFor(n.weight, maxWeight, minOf(w, h))
                 val c = Offset(n.x * w, n.y * h)
                 drawCircle(palette[Math.floorMod(n.person.avatarColorIndex, palette.size)], radius = r, center = c)
-                drawCircle(surface, radius = r, center = c, style = Stroke(width = 3f))
+                val side = KinTerm.fromName(n.person.kinTerm)?.side ?: KinSide.NONE
+                val ring = sideColors[side] ?: surface
+                drawCircle(ring, radius = r, center = c, style = Stroke(width = if (side == KinSide.NONE) 3f else 6f))
                 drawContext.canvas.nativeCanvas.drawText(n.person.displayName, c.x, c.y + r + textSizePx * 1.1f, labelPaint)
                 val initialsPaint = android.graphics.Paint(labelPaint).apply { color = Color.White.toArgb(); textSize = r * 0.8f }
                 drawContext.canvas.nativeCanvas.drawText(n.person.initials, c.x, c.y + r * 0.3f, initialsPaint)
@@ -197,4 +211,42 @@ fun BubbleGraph(state: RelationshipsUiState, onOpenPerson: (Long) -> Unit, modif
 }
 
 private fun radiusFor(weight: Int, maxWeight: Int, minDim: Float): Float = minDim * (0.035f + 0.07f * weight / maxWeight)
+
+/** Ring colour per side of the family; [KinSide.NONE] (friends, colleagues, no kin term) keeps the plain surface ring. */
+@Composable
+private fun kinSideColors(): Map<KinSide, Color> {
+    val scheme = MaterialTheme.colorScheme
+    return mapOf(
+        KinSide.MATERNAL to scheme.primary,
+        KinSide.PATERNAL to scheme.secondary,
+        KinSide.OWN to scheme.tertiary,
+        KinSide.IN_LAW to scheme.outline,
+    )
+}
+
+@Composable
+private fun kinSideLabel(side: KinSide): String? = when (side) {
+    KinSide.MATERNAL -> stringResource(R.string.kin_side_maternal)
+    KinSide.PATERNAL -> stringResource(R.string.kin_side_paternal)
+    KinSide.OWN -> stringResource(R.string.kin_side_own)
+    KinSide.IN_LAW -> stringResource(R.string.kin_side_in_law)
+    KinSide.NONE -> null
+}
+
+/** Tiny legend: a coloured dot and the side name for each family side. */
+@Composable
+private fun KinSideLegend(modifier: Modifier = Modifier) {
+    val spacing = Yaadein.spacing
+    val colors = kinSideColors()
+    FlowRow(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(spacing.md), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+        KinSide.entries.forEach { side ->
+            val label = kinSideLabel(side) ?: return@forEach
+            val color = colors[side] ?: return@forEach
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.xs)) {
+                Box(modifier = Modifier.size(Yaadein.sizes.timelineDot).clip(CircleShape).background(color))
+                Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+}
 

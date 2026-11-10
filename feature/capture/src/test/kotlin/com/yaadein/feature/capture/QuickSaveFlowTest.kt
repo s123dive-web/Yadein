@@ -107,6 +107,7 @@ class QuickSaveFlowTest {
         captureStats = stats,
         faceSuggester = FaceSuggester(db, store, com.yaadein.data.faces.FaceEmbedder(context)),
         lockState = AppLockState(),
+        festivals = com.yaadein.domain.relive.Festivals.bundled(),
     )
 
     private lateinit var serve: (String, ByteArray) -> Uri

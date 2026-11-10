@@ -62,6 +62,13 @@ build. See [docs/IOS.md](docs/IOS.md) and the parity checklist [docs/IOS_PARITY.
 - **Come back daily**: home-screen widget, birthday reminders with a one-tap reel, Relive "For you" feed with the newest
   reel playing, places.
 - **Bring your history**: import a Google Photos Takeout or WhatsApp chat export with real dates.
+- **Quick Save, three taps**: + opens the Photo Picker, the memory is pre-filled from the photos (date, title, people, place)
+  and Save returns at once while the photos are encrypted in the background.
+- **Faces that learn** (off by default): a bundled face-recognition model runs on the phone; name a face once and the person
+  is suggested on later photos, auto-tagged when very sure, with "Who is this?" for the rest. No download, nothing leaves the phone.
+- **Festivals and family words**: a bundled 2010–2035 festival calendar titles memories ("Diwali 2024 with Aai"), shows
+  "This Diwali, years ago" in Relive and filters the timeline; people carry the word you call them (Aai, Mama, Nani…).
+- **WhatsApp status reel**: a 30-second, under-16 MB preset with a "Send to WhatsApp" button.
 
 - **Three ways in, one + button**: event-first, photo-first (auto-grouped by date), or just words with
   a rule-based *Polish* step that turns "goa trip 2024" into a proper card.

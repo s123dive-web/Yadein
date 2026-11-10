@@ -11,6 +11,7 @@ import com.yaadein.domain.model.MemoryDetail
 import com.yaadein.domain.model.MemoryType
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.model.PersonStory
+import com.yaadein.domain.relive.Festival
 import com.yaadein.domain.settings.UserSettings
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
@@ -26,10 +27,12 @@ data class TimelineFilter(
     val toEpochDay: Long? = null,
     val types: Set<MemoryType> = emptySet(),
     val query: String = "",
+    /** Only memories dated within this festival's window in any year (Festivals.windows). */
+    val festival: Festival? = null,
 ) {
     val isEmpty: Boolean
         get() = personIds.isEmpty() && groupId == null && place.isNullOrBlank() &&
-            fromEpochDay == null && toEpochDay == null && types.isEmpty() && query.isBlank()
+            fromEpochDay == null && toEpochDay == null && types.isEmpty() && query.isBlank() && festival == null
 }
 
 interface PersonRepository {

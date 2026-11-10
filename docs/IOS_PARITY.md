@@ -69,6 +69,9 @@
 | Check my memories | ✅ | ✅ | |
 | Erase everything | ✅ | ✅ | |
 | Picture card sharing | ✅ | ✅ | |
+| Festivals: bundled 2010–2035 table, "This Diwali, years ago" in Relive, festival titles on Quick Save, festival-day reminder, timeline festival filter (Fast & Rich, Phase 3) | ✅ | ⬜ deferred | `Festivals.kt` + `festivals.csv` are pure; port to YaadeinKit with `FestivalsTest` |
+| Kinship terms ("Aaji", "Mama"…) on people, side-of-family colours on the relationships map (Fast & Rich, Phase 3) | ✅ | ⬜ deferred | `Relations.kt` is pure; `persons.kin_term` / `relation_text` restore from backups with null defaults |
+| WhatsApp status reel preset (30 s hard cap, ≈3.5 Mbit/s, "Send to WhatsApp") (Fast & Rich, Phase 3) | ✅ | ⬜ deferred | iPhone shares through the system sheet |
 | PDF book | ✅ | ✅ | |
 | Problem log | ✅ | ⬜ | iOS has its own crash reports |
 | Update app (sideload) | ✅ | n/a | iPhone apps update through TestFlight / App Store |

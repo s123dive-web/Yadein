@@ -19,8 +19,10 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.yaadein.data.reminders.ReminderDigestStore
 import com.yaadein.domain.reminders.Reminders
+import com.yaadein.domain.relive.Festivals
 import com.yaadein.domain.repository.SettingsRepository
 import com.yaadein.domain.settings.UserSettings
+import com.yaadein.core.ui.components.festivalNameRes
 import com.yaadein.feature.relive.R
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -32,8 +34,8 @@ import java.util.concurrent.TimeUnit
 import com.yaadein.core.ui.R as CoreR
 
 /**
- * The daily reminder run (class name kept so work queued by older versions still resolves): "On this day", birthdays
- * today or tomorrow, and on Sundays a story prompt. Scheduled as a one-time job at the user's chosen minute and re-armed
+ * The daily reminder run (class name kept so work queued by older versions still resolves): "On this day", a festival
+ * falling today ("Happy Diwali! Add today's photos"), birthdays today or tomorrow, and on Sundays a story prompt. Scheduled as a one-time job at the user's chosen minute and re-armed
  * after each run, so changing the time takes effect immediately and nothing fires while every reminder is off.
  *
  * Reads the [ReminderDigestStore], not the database, so it works when Android starts the app in the background while
@@ -45,6 +47,7 @@ class OnThisDayWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val digestStore: ReminderDigestStore,
     private val settingsRepository: SettingsRepository,
+    private val festivals: Festivals,
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
@@ -53,6 +56,14 @@ class OnThisDayWorker @AssistedInject constructor(
         val digest = digestStore.refreshOrLoad()
         val today = LocalDate.now()
         val context = applicationContext
+        if (settings.onThisDayEnabled) {
+            // The festival table is bundled, so this needs neither the digest nor the (possibly locked) vault.
+            Reminders.festivalToday(festivals, today)?.let { festival ->
+                val name = context.getString(festivalNameRes(festival.festival))
+                notify(context, FESTIVAL_ID, context.getString(R.string.reminder_festival_today, name),
+                    context.getString(R.string.reminder_festival_today_text), Intent())
+            }
+        }
         if (digest != null) {
             if (settings.onThisDayEnabled) {
                 Reminders.onThisDay(digest, today).firstOrNull()?.let { match ->
@@ -95,6 +106,7 @@ class OnThisDayWorker @AssistedInject constructor(
         const val ACTION_REMINDERS_REFRESHED = "com.yaadein.app.REMINDERS_REFRESHED"
         private const val BIRTHDAY_ID_BASE = 500_000
         private const val PROMPT_ID = 499_999
+        private const val FESTIVAL_ID = 499_998
 
         fun anyEnabled(s: UserSettings) = s.onThisDayEnabled || s.birthdayReminders || s.storyPrompts
 

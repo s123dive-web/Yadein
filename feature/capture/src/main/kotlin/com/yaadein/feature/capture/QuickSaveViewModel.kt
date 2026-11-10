@@ -13,6 +13,7 @@ import com.yaadein.data.media.ImportFailure
 import com.yaadein.data.media.MediaImporter
 import com.yaadein.data.media.PickedMedia
 import com.yaadein.data.media.SharedMediaInbox
+import com.yaadein.core.ui.components.festivalNameRes
 import com.yaadein.domain.capture.CaptureEntry
 import com.yaadein.domain.capture.CaptureTimer
 import com.yaadein.domain.capture.DateSource
@@ -20,12 +21,14 @@ import com.yaadein.domain.capture.KnownPlace
 import com.yaadein.domain.capture.QuickSavePrefill
 import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.grouping.PickedItem
+import com.yaadein.domain.model.DateKind
 import com.yaadein.domain.model.Memory
 import com.yaadein.domain.model.MemoryDate
 import com.yaadein.domain.model.MemoryType
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.polish.PolishEngine
 import com.yaadein.domain.polish.PolishResult
+import com.yaadein.domain.relive.Festivals
 import com.yaadein.domain.repository.CaptureStatsRepository
 import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.PersonRepository
@@ -91,6 +94,7 @@ class QuickSaveViewModel @Inject constructor(
     private val captureStats: CaptureStatsRepository,
     private val faceSuggester: FaceSuggester,
     private val lockState: AppLockState,
+    private val festivals: Festivals,
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuickSaveUiState())
     val state: StateFlow<QuickSaveUiState> = _state.asStateFlow()
@@ -163,7 +167,10 @@ class QuickSaveViewModel @Inject constructor(
         if (s.items.isEmpty()) return
         val picked = s.items.map { PickedItem(it.uri.toString(), it.takenAtMillis, it.isVideo, latitude = it.latitude, longitude = it.longitude) }
         val names = s.people.filter { it.id in s.selectedPeople }.map { it.displayName }
-        val suggestion = QuickSavePrefill.suggest(picked, LocalDate.now(), knownPlaces = knownPlaces, peopleNames = names)
+        val today = LocalDate.now()
+        // A pick on a festival day is titled after it ("Diwali 2024 with Aai"); only an exact date can name a festival.
+        val festival = festivalName(if (s.dateEdited) s.date else QuickSavePrefill.date(picked, today).first)
+        val suggestion = QuickSavePrefill.suggest(picked, today, knownPlaces = knownPlaces, peopleNames = names, festival = festival)
         _state.update {
             it.copy(
                 date = if (it.dateEdited) it.date else suggestion.date,
@@ -171,12 +178,19 @@ class QuickSaveViewModel @Inject constructor(
                 splitInto = suggestion.splitInto,
                 place = it.place.ifBlank { suggestion.place },
                 suggestedTitle = if (it.dateEdited || it.selectedPeople.isNotEmpty() || it.place != suggestion.place) {
-                    PolishEngine.titleFor(it.date, it.place.ifBlank { suggestion.place }, names)
+                    PolishEngine.titleFor(it.date, it.place.ifBlank { suggestion.place }, names, festival)
                 } else {
                     suggestion.title
                 },
             )
         }
+    }
+
+    /** The festival whose window holds [date] (exact dates only), named in the user's language; null otherwise. */
+    private fun festivalName(date: MemoryDate): String? {
+        if (date.kind != DateKind.EXACT) return null
+        val festival = festivals.primary(LocalDate.ofEpochDay(date.startEpochDay)) ?: return null
+        return context.getString(festivalNameRes(festival.festival))
     }
 
     private fun suggestFaces(items: List<PickedMedia>) {
@@ -239,7 +253,7 @@ class QuickSaveViewModel @Inject constructor(
                     date = if (s.dateEdited) s.date else polished.date, place = s.place.ifBlank { polished.place }, mood = polished.mood, coverStyle = polished.coverStyle,
                 )
             } else {
-                val fallback = s.suggestedTitle.ifBlank { PolishEngine.titleFor(s.date, s.place) }
+                val fallback = s.suggestedTitle.ifBlank { PolishEngine.titleFor(s.date, s.place, festival = festivalName(s.date)) }
                 Memory(
                     type = MemoryType.EVENT, title = s.title.ifBlank { fallback }, description = s.words.trim(),
                     date = s.date, place = s.place.trim(),

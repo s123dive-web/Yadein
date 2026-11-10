@@ -99,7 +99,7 @@ class RecapRenderer(
             var attempt = 0
             while (true) {
                 try {
-                    withContext(Dispatchers.Main) { export(composition, output, onProgress) }
+                    withContext(Dispatchers.Main) { export(plan, composition, output, onProgress) }
                     break
                 } catch (e: RenderException) {
                     if (++attempt >= MAX_ATTEMPTS || !isTransientCodecFailure(e)) throw e
@@ -112,7 +112,7 @@ class RecapRenderer(
         }
     }
 
-    private suspend fun export(composition: Composition, output: File, onProgress: (Int) -> Unit) {
+    private suspend fun export(plan: RecapPlan, composition: Composition, output: File, onProgress: (Int) -> Unit) {
         val dataSourceFactory = VaultDataSourceFactory(context, db, mediaStore)
         val bitmapExecutor = Executors.newSingleThreadExecutor()
         val bitmapLoader = DataSourceBitmapLoader.Builder(context)
@@ -128,18 +128,18 @@ class RecapRenderer(
             bitmapLoader,
         )
         try {
-            awaitExport(assetLoaderFactory, composition, output, onProgress)
+            awaitExport(plan, assetLoaderFactory, composition, output, onProgress)
         } finally {
             bitmapExecutor.shutdown()
         }
     }
 
-    private suspend fun awaitExport(assetLoaderFactory: DefaultAssetLoaderFactory, composition: Composition, output: File, onProgress: (Int) -> Unit) {
+    private suspend fun awaitExport(plan: RecapPlan, assetLoaderFactory: DefaultAssetLoaderFactory, composition: Composition, output: File, onProgress: (Int) -> Unit) {
         suspendCancellableCoroutine { cont ->
             val transformer = Transformer.Builder(context)
                 .setVideoMimeType(MimeTypes.VIDEO_H264)
                 .setAudioMimeType(MimeTypes.AUDIO_AAC)
-                .setEncoderFactory(encoderFactory())
+                .setEncoderFactory(encoderFactory(plan))
                 .setAssetLoaderFactory(assetLoaderFactory)
                 .setMaxDelayBetweenMuxerSamplesMs(maxDelayBetweenMuxerSamplesMs)
                 .addListener(object : Transformer.Listener {
@@ -276,10 +276,10 @@ class RecapRenderer(
      * hardware encoders; reel apps re-encode on upload, so a clean source matters. Fallback stays on so a phone
      * that cannot do this still gets the closest supported setting instead of a failure.
      */
-    private fun encoderFactory(): DefaultEncoderFactory =
+    private fun encoderFactory(plan: RecapPlan): DefaultEncoderFactory =
         DefaultEncoderFactory.Builder(context)
-            .setRequestedVideoEncoderSettings(VideoEncoderSettings.Builder().setBitrate(VIDEO_BITRATE).build())
-            .setRequestedAudioEncoderSettings(AudioEncoderSettings.Builder().setBitrate(AUDIO_BITRATE).build())
+            .setRequestedVideoEncoderSettings(VideoEncoderSettings.Builder().setBitrate(plan.videoBitrate ?: VIDEO_BITRATE).build())
+            .setRequestedAudioEncoderSettings(AudioEncoderSettings.Builder().setBitrate(plan.audioBitrate ?: AUDIO_BITRATE).build())
             .setEnableFallback(true)
             .build()
 

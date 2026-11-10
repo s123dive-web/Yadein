@@ -28,6 +28,9 @@
         <intent>
             <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
         </intent>
+        <!-- "Send to WhatsApp" on a status reel: only visibility of the two WhatsApp packages, no new permission. -->
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
     </queries>
 
     <application

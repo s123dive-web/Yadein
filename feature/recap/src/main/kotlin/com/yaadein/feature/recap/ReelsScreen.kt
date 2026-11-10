@@ -1,6 +1,7 @@
 package com.yaadein.feature.recap
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Delete
@@ -85,6 +87,12 @@ fun ReelsRoute(
         onShare = { entry -> viewModel.share(entry, shareTitle) { intent: Intent -> context.startActivity(intent) } },
         onDelete = viewModel::delete,
         modifier = modifier,
+        whatsAppAvailable = rememberWhatsAppAvailable(),
+        onSendWhatsApp = { entry ->
+            viewModel.export(entry) { uri ->
+                if (!WhatsAppShare.sendToWhatsApp(context, uri, shareTitle)) Toast.makeText(context, R.string.recap_whatsapp_missing, Toast.LENGTH_SHORT).show()
+            }
+        },
     )
 }
 
@@ -98,6 +106,9 @@ fun ReelsScreen(
     onShare: (ReelEntry) -> Unit,
     onDelete: (String) -> Unit,
     modifier: Modifier = Modifier,
+    /** WhatsApp (or WhatsApp Business) is installed: every card gets a "Send to WhatsApp" action. */
+    whatsAppAvailable: Boolean = false,
+    onSendWhatsApp: (ReelEntry) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     var confirmDelete by remember { mutableStateOf<ReelEntry?>(null) }
@@ -139,6 +150,7 @@ fun ReelsScreen(
                                 val reel = state.auto[i]
                                 ReelCard(
                                     reel = reel, sharing = state.sharing == reel.id, onPlay = { onPlay(reel.id) }, onShare = { onShare(reel) },
+                                    onSendWhatsApp = if (whatsAppAvailable) ({ onSendWhatsApp(reel) }) else null,
                                     onDelete = null, modifier = Modifier.width(AUTO_CARD_WIDTH),
                                 )
                             }
@@ -164,6 +176,7 @@ fun ReelsScreen(
                         rows[r].forEach { reel ->
                             ReelCard(
                                 reel = reel, sharing = state.sharing == reel.id, onPlay = { onPlay(reel.id) }, onShare = { onShare(reel) },
+                                onSendWhatsApp = if (whatsAppAvailable) ({ onSendWhatsApp(reel) }) else null,
                                 onDelete = { confirmDelete = reel }, modifier = Modifier.weight(1f),
                             )
                         }
@@ -198,9 +211,17 @@ private fun PreparingCard() {
     }
 }
 
-/** 9:16 cover with play badge, title, date and actions. */
+/** 9:16 cover with play badge, title, date and actions. [onSendWhatsApp] is null when WhatsApp is not installed. */
 @Composable
-private fun ReelCard(reel: ReelEntry, sharing: Boolean, onPlay: () -> Unit, onShare: () -> Unit, onDelete: (() -> Unit)?, modifier: Modifier = Modifier) {
+private fun ReelCard(
+    reel: ReelEntry,
+    sharing: Boolean,
+    onPlay: () -> Unit,
+    onShare: () -> Unit,
+    onDelete: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+    onSendWhatsApp: (() -> Unit)? = null,
+) {
     val spacing = Yaadein.spacing
     val playLabel = stringResource(R.string.reel_play_named, reel.title)
     Column(modifier) {
@@ -226,6 +247,9 @@ private fun ReelCard(reel: ReelEntry, sharing: Boolean, onPlay: () -> Unit, onSh
                 Box(Modifier.size(Yaadein.sizes.touchTarget), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(Yaadein.sizes.iconSm)) }
             } else {
                 IconButton(onClick = onShare) { Icon(Icons.Rounded.Share, contentDescription = stringResource(R.string.reel_share_named, reel.title)) }
+                if (onSendWhatsApp != null) {
+                    IconButton(onClick = onSendWhatsApp) { Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = stringResource(R.string.reel_whatsapp_named, reel.title)) }
+                }
             }
             if (onDelete != null) IconButton(onClick = onDelete) { Icon(Icons.Rounded.Delete, contentDescription = stringResource(R.string.reel_delete_named, reel.title)) }
         }

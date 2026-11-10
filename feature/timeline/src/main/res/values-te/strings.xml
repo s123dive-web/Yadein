@@ -53,4 +53,5 @@
         <item quantity="other">%1$d వీడియోలకు ఫోన్‌లో మరింత ఖాళీ స్థలం కావాలి.</item>
     </plurals>
     <string name="import_failed_hint">జ్ఞాపకం తెరిచి “ఫోటోలు జోడించండి” ద్వారా వాటిని మళ్లీ ఎంచుకోండి.</string>
+    <string name="filter_festival">పండుగ</string>
 </resources>

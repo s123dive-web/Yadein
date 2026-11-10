@@ -23,13 +23,13 @@ internal fun PersonEntity.toDomain() = Person(
     id = id, name = name, nickname = nickname,
     relation = Relation.entries.firstOrNull { it.name == relation } ?: Relation.OTHER,
     birthdayEpochDay = birthdayEpochDay, profileMediaId = profileMediaId, notes = notes,
-    avatarColorIndex = avatarColorIndex, createdAt = createdAt,
+    avatarColorIndex = avatarColorIndex, createdAt = createdAt, kinTerm = kinTerm, relationText = relationText,
 )
 
 internal fun Person.toEntity() = PersonEntity(
     id = id, name = name.trim(), nickname = nickname?.trim()?.takeIf { it.isNotEmpty() }, relation = relation.name,
     birthdayEpochDay = birthdayEpochDay, profileMediaId = profileMediaId, notes = notes,
-    avatarColorIndex = avatarColorIndex, createdAt = createdAt,
+    avatarColorIndex = avatarColorIndex, createdAt = createdAt, kinTerm = kinTerm, relationText = relationText?.trim()?.takeIf { it.isNotEmpty() },
 )
 
 internal fun GroupWithMembers.toDomain() = Group(

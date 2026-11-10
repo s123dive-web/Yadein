@@ -74,4 +74,13 @@
     <string name="who_undo">செயல்தவிர்</string>
     <string name="who_empty_title">எல்லா முகங்களுக்கும் பெயர் உள்ளது</string>
     <string name="who_empty_message">படங்களைச் சேர்க்கும்போது புதிய முகங்கள் இங்கே காத்திருக்கும். மேலும் கண்டறிய அமைப்புகளில் முகப் பரிந்துரைகளை இயக்குங்கள்.</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="person_kin_title">இவர் உங்களுக்கு யார்?</string>
+    <string name="person_kin_other">மற்றவை…</string>
+    <string name="person_kin_other_label">உறவு</string>
+    <string name="person_kin_other_hint">எ.கா. பக்கத்து வீட்டார், குருஜி</string>
+    <string name="kin_side_maternal">அம்மா வழி</string>
+    <string name="kin_side_paternal">அப்பா வழி</string>
+    <string name="kin_side_own">சொந்தக் குடும்பம்</string>
+    <string name="kin_side_in_law">மாமியார் வீட்டார்</string>
 </resources>

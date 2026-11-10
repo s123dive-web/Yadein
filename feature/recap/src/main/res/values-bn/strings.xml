@@ -104,4 +104,12 @@
     <string name="music_song_missing">“%1$s” আর খোলা যাচ্ছে না, তাই আপনার গান থেকে সরানো হয়েছে।</string>
     <string name="music_dismiss">ঠিক আছে</string>
     <string name="music_remove_named">%1$s আপনার গান থেকে সরান</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="recap_length_status">WhatsApp স্ট্যাটাস · 30 সে.</string>
+    <string name="recap_status_help">30 সেকেন্ড ও প্রায় 16 MB-এর মধ্যে রাখা হয়, যাতে না কেটে স্ট্যাটাসে দেওয়া যায়।</string>
+    <string name="recap_send_whatsapp">WhatsApp-এ পাঠান</string>
+    <string name="recap_whatsapp_missing">এই ফোনে WhatsApp নেই</string>
+    <string name="recap_file_size">%1$s</string>
+    <string name="recap_whatsapp_too_big">16 MB-এর বেশি: WhatsApp এটি কমপ্রেস করতে পারে। WhatsApp স্ট্যাটাস দৈর্ঘ্য এটিকে ছোট রাখে।</string>
+    <string name="reel_whatsapp_named">%1$s WhatsApp-এ পাঠান</string>
 </resources>

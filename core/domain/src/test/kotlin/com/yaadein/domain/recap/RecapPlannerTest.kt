@@ -123,4 +123,19 @@ class RecapPlannerTest {
         assertEquals(1_000L, RecapPlanner.snapToBeat(300L, 500L))
         assertEquals(2_345L, RecapPlanner.snapToBeat(2_345L, null))
     }
+
+    @Test
+    fun `the status preset never runs past 30 seconds and lowers the bitrate`() {
+        val many = memory(1, LocalDate.of(2024, 1, 1), (1L..60L).map { media(it, 1) })
+        val p = RecapPlanner.plan(listOf(many), RecapTheme.WARM, RecapLength.STATUS, "T", "S", "Made", { "d" }, selectedMediaIds = (1L..60L).toSet())
+        assertTrue(p.totalDurationMs <= 30_000L, "status reel is ${p.totalDurationMs} ms")
+        assertTrue(p.segments.filterIsInstance<RecapSegment.Photo>().all { it.durationMs >= RecapPlanner.MIN_PHOTO_MS })
+        assertTrue(p.segments.filterIsInstance<RecapSegment.Photo>().size < 60)
+        assertEquals(STATUS_BITRATE, p.videoBitrate)
+        assertEquals(STATUS_AUDIO_BITRATE, p.audioBitrate)
+        // The other presets keep the renderer's quality default and may grow with a long selection.
+        val long = RecapPlanner.plan(listOf(many), RecapTheme.WARM, RecapLength.SHORT, "T", "S", "Made", { "d" }, selectedMediaIds = (1L..60L).toSet())
+        assertEquals(null, long.videoBitrate)
+        assertTrue(long.totalDurationMs > 30_000L)
+    }
 }

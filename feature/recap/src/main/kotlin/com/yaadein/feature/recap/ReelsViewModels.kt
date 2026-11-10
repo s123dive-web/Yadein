@@ -2,6 +2,7 @@ package com.yaadein.feature.recap
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -73,6 +74,18 @@ class ReelsViewModel @Inject constructor(
         }
     }
 
+    /** Decrypts [entry] to the exports folder and hands its shareable URI to [send] (used by "Send to WhatsApp"). */
+    fun export(entry: ReelEntry, send: (Uri) -> Unit) {
+        if (sharing.value != null) return
+        sharing.value = entry.id
+        viewModelScope.launch {
+            runCatching { library.shareUri(entry) }
+                .onSuccess(send)
+                .onFailure { CrashLog.recordNonFatal(context, "reel share", it) }
+            sharing.value = null
+        }
+    }
+
     private companion object {
         val AUTO_SLOT_ORDER = listOf("recent", "person", "throwback")
     }
@@ -101,6 +114,19 @@ class ReelPlayerViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { library.shareIntent(reel, chooserTitle) }
                 .onSuccess(launch)
+                .onFailure { CrashLog.recordNonFatal(context, "reel share", it) }
+            _state.update { it.copy(sharing = false) }
+        }
+    }
+
+    /** Decrypts the reel to the exports folder and hands its shareable URI to [send] (used by "Send to WhatsApp"). */
+    fun export(send: (Uri) -> Unit) {
+        val reel = _state.value.reel ?: return
+        if (_state.value.sharing) return
+        _state.update { it.copy(sharing = true) }
+        viewModelScope.launch {
+            runCatching { library.shareUri(reel) }
+                .onSuccess(send)
                 .onFailure { CrashLog.recordNonFatal(context, "reel share", it) }
             _state.update { it.copy(sharing = false) }
         }

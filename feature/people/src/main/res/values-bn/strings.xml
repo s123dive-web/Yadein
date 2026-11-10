@@ -74,4 +74,13 @@
     <string name="who_undo">ফিরিয়ে নিন</string>
     <string name="who_empty_title">প্রতিটি মুখেরই নাম আছে</string>
     <string name="who_empty_message">ছবি যোগ করলে নতুন মুখ এখানে অপেক্ষা করবে। আরও খুঁজতে সেটিংসে মুখ চেনার পরামর্শ চালু করুন।</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="person_kin_title">ইনি আপনার কে?</string>
+    <string name="person_kin_other">অন্য…</string>
+    <string name="person_kin_other_label">সম্পর্ক</string>
+    <string name="person_kin_other_hint">যেমন প্রতিবেশী, গুরুজি</string>
+    <string name="kin_side_maternal">মায়ের দিক</string>
+    <string name="kin_side_paternal">বাবার দিক</string>
+    <string name="kin_side_own">নিজের পরিবার</string>
+    <string name="kin_side_in_law">শ্বশুরবাড়ি</string>
 </resources>

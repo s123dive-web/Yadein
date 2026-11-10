@@ -10,7 +10,17 @@ import kotlin.math.min
 enum class RecapTheme { WARM, MINIMAL, FESTIVE, CLASSIC_FILM }
 
 /** Target length presets; the planner trims or pads segment durations to land near the target. */
-enum class RecapLength(val targetSeconds: Int) { SHORT(30), MEDIUM(60), LONG(120) }
+/**
+ * Reel length presets. [STATUS] is the WhatsApp status preset: a hard 30 s ceiling (the selection is trimmed, never
+ * stretched) and a lower bitrate so the file stays under WhatsApp's ~16 MB media limit.
+ */
+enum class RecapLength(val targetSeconds: Int, val hardCap: Boolean = false, val videoBitrate: Int? = null) {
+    STATUS(30, hardCap = true, videoBitrate = STATUS_BITRATE), SHORT(30), MEDIUM(60), LONG(120),
+}
+
+/** ≈ 3.5 Mbit/s video + 128 kbit/s audio × 30 s ≈ 13.6 MB, under WhatsApp's 16 MB status/media ceiling with headroom. */
+const val STATUS_BITRATE = 3_500_000
+const val STATUS_AUDIO_BITRATE = 128_000
 
 const val REEL_WIDTH = 1080
 const val REEL_HEIGHT = 1920
@@ -40,6 +50,9 @@ data class RecapPlan(
     // Vertical 9:16 reel (Instagram Reels / YouTube Shorts / WhatsApp status size).
     val width: Int = REEL_WIDTH,
     val height: Int = REEL_HEIGHT,
+    /** Encoder bitrates for this reel; null = the renderer's quality default. */
+    val videoBitrate: Int? = null,
+    val audioBitrate: Int? = null,
 ) {
     val totalDurationMs: Long get() = segments.sumOf { it.durationMs }
     val mediaCount: Int get() = segments.count { it is RecapSegment.Photo || it is RecapSegment.Clip }
@@ -64,6 +77,7 @@ object RecapPlanner {
 
     /** How many photos and clips are picked automatically for each length (the user can add or remove any). */
     fun defaultItemCount(length: RecapLength): Int = when (length) {
+        RecapLength.STATUS -> 12
         RecapLength.SHORT -> 20
         RecapLength.MEDIUM -> 40
         RecapLength.LONG -> 80
@@ -155,6 +169,22 @@ object RecapPlanner {
         val rawPhotoMs = if (photoCount == 0) 0L else (mediaBudget - clipMs * clipCount).let { left -> (left / photoCount).coerceIn(MIN_PHOTO_MS, MAX_PHOTO_MS) }
         val photoMs = snapToBeat(rawPhotoMs, beatMs)
 
+        // Status preset: never longer than the target. Drop media from the end until the minimum photo length fits.
+        if (length.hardCap) {
+            while (merged.size > 1) {
+                val cards = merged.count { it.second == null }
+                val clips = merged.count { it.second?.kind == MediaKind.VIDEO }
+                val photos = merged.size - cards - clips
+                if (cards * TEXT_CARD_MS + clips * MIN_CLIP_MS + photos * MIN_PHOTO_MS <= targetMs) break
+                merged.removeAt(merged.lastIndex)
+            }
+        }
+        val cappedPhotoMs = if (length.hardCap && photoMs > 0) {
+            val cards = merged.count { it.second == null }; val clips = merged.count { it.second?.kind == MediaKind.VIDEO }
+            val photos = merged.size - cards - clips
+            if (photos == 0) photoMs else min(photoMs, ((targetMs - cards * TEXT_CARD_MS - clips * clipMs) / photos).coerceAtLeast(MIN_PHOTO_MS))
+        } else photoMs
+
         items += RecapSegment.TitleCard(title, subtitle, INTRO_MS)
         var lastMemoryId = -1L
         for ((m, item) in merged) {
@@ -177,11 +207,11 @@ object RecapPlanner {
                     val cy = 0.5f + (nextRandom() - 0.5f) * 0.2f
                     val a = Framing(cx, cy, if (zoomIn) 1.0f else 1.18f)
                     val b = Framing(1f - cx, 1f - cy, if (zoomIn) 1.18f else 1.0f)
-                    items += RecapSegment.Photo(item.id, if (photoMs == 0L) DEFAULT_PHOTO_MS else photoMs, a, b, caption, date)
+                    items += RecapSegment.Photo(item.id, if (cappedPhotoMs == 0L) DEFAULT_PHOTO_MS else cappedPhotoMs, a, b, caption, date)
                 }
             }
         }
         items += RecapSegment.TitleCard(outroText, outroSubtitle, OUTRO_MS, isOutro = true)
-        return RecapPlan(theme, items)
+        return RecapPlan(theme, items, videoBitrate = length.videoBitrate, audioBitrate = if (length.hardCap) STATUS_AUDIO_BITRATE else null)
     }
 }

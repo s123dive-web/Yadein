@@ -74,4 +74,13 @@
     <string name="who_undo">પાછું વાળો</string>
     <string name="who_empty_title">દરેક ચહેરાનું નામ છે</string>
     <string name="who_empty_message">ફોટા ઉમેરતાં નવા ચહેરા અહીં રાહ જોશે. વધુ શોધવા સેટિંગ્સમાં ચહેરાનાં સૂચનો ચાલુ કરો.</string>
+    <!-- Fast & Rich round, Phase 3 (machine-assisted translation) -->
+    <string name="person_kin_title">એ તમારા કોણ છે?</string>
+    <string name="person_kin_other">અન્ય…</string>
+    <string name="person_kin_other_label">સંબંધ</string>
+    <string name="person_kin_other_hint">દા.ત. પાડોશી, ગુરુજી</string>
+    <string name="kin_side_maternal">માતૃપક્ષ</string>
+    <string name="kin_side_paternal">પિતૃપક્ષ</string>
+    <string name="kin_side_own">પોતાનું કુટુંબ</string>
+    <string name="kin_side_in_law">સાસરિયાં</string>
 </resources>

@@ -91,6 +91,18 @@ class MemoryRepositoryTest {
     }
 
     @Test
+    fun `festival filter matches the festival window in any year`() = runTest {
+        memories.create(memory("Diwali 2024", LocalDate.of(2024, 10, 31)), emptyList()) // Diwali day
+        memories.create(memory("Bhai Dooj 2024", LocalDate.of(2024, 11, 3)), emptyList()) // +3 days, still inside Diwali's window
+        memories.create(memory("Diwali 2023", LocalDate.of(2023, 11, 12)), emptyList())
+        memories.create(memory("Monsoon trek", LocalDate.of(2024, 7, 14)), emptyList())
+        val diwali = memories.observeCards(TimelineFilter(festival = com.yaadein.domain.relive.Festival.DIWALI)).first()
+        assertEquals(listOf("Bhai Dooj 2024", "Diwali 2024", "Diwali 2023"), diwali.map { it.memory.title })
+        assertEquals(0, memories.observeCards(TimelineFilter(festival = com.yaadein.domain.relive.Festival.HOLI)).first().size)
+        assertEquals(1, memories.observeCards(TimelineFilter(festival = com.yaadein.domain.relive.Festival.DIWALI, query = "bhai")).first().size)
+    }
+
+    @Test
     fun `update replaces people and reindexes`() = runTest {
         val a = people.upsert(Person(name = "Aai"))
         val b = people.upsert(Person(name = "Baba"))

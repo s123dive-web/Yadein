@@ -53,4 +53,5 @@
         <item quantity="other">%1$d वीडियो के लिए फ़ोन में और खाली जगह चाहिए।</item>
     </plurals>
     <string name="import_failed_hint">याद खोलें और “फ़ोटो जोड़ें” से उन्हें फिर चुनें।</string>
+    <string name="filter_festival">त्योहार</string>
 </resources>

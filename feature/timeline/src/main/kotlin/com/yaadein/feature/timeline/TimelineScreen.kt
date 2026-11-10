@@ -283,7 +283,7 @@ private fun FilterButton(active: Boolean, onClick: () -> Unit) {
 @Composable
 private fun ActiveFilterRow(state: TimelineUiState, onClearFilter: () -> Unit) {
     val f = state.filter
-    if (f.isEmpty || (f.query.isNotBlank() && f.personIds.isEmpty() && f.groupId == null && f.place == null && f.types.isEmpty() && f.fromEpochDay == null)) return
+    if (f.isEmpty || (f.query.isNotBlank() && f.personIds.isEmpty() && f.groupId == null && f.place == null && f.types.isEmpty() && f.fromEpochDay == null && f.festival == null)) return
     val spacing = Yaadein.spacing
     Row(
         modifier = Modifier
@@ -298,6 +298,8 @@ private fun ActiveFilterRow(state: TimelineUiState, onClearFilter: () -> Unit) {
         }
         val place = f.place
         if (place != null) FilterChip(selected = true, onClick = onClearFilter, label = { Text(place) })
+        val festival = f.festival
+        if (festival != null) FilterChip(selected = true, onClick = onClearFilter, label = { Text(com.yaadein.core.ui.components.festivalName(festival)) })
         if (f.types.isNotEmpty() || f.fromEpochDay != null || f.groupId != null) {
             FilterChip(selected = true, onClick = onClearFilter, label = { Text(stringResource(R.string.timeline_filters)) })
         }

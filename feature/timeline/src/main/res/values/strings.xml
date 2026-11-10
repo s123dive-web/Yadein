@@ -22,6 +22,7 @@
     <string name="filter_type">Kind</string>
     <string name="filter_quick">Quick notes</string>
     <string name="filter_dates">Dates</string>
+    <string name="filter_festival">Festival</string>
     <string name="filter_from">From</string>
     <string name="filter_to">To</string>
     <string name="filter_apply">Show memories</string>
