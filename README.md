@@ -54,6 +54,12 @@ build. See [docs/IOS.md](docs/IOS.md) and the parity checklist [docs/IOS_PARITY.
 
 ## Features
 
+- **First minute (photos first)**: one welcome screen (the promise in two lines, a language picker for the eight
+  languages, *Pick photos to start*, *See a sample family*, *Skip*). Picked photos become memories by day and play as a
+  story while they are still being encrypted. No person form and no PIN first: a lock is offered after the first real
+  memory ("Protect these memories?", then a Home card until one is set), people come from face suggestions or a gentle
+  "Add someone" card, and the sample family is labelled on Home with a one-tap "Clear sample and start mine".
+
 - **Voice memories**: record a grandparent telling the story in their own voice; weekly story prompts
   ("Ask Aaji how she met Ajoba") open the recorder.
 - **Never lose them**: weekly automatic encrypted backup to a file you choose (e.g. in Google Drive), a home banner

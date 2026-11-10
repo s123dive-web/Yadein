@@ -42,6 +42,13 @@ change nothing need no PR. If the session branch's earlier PR is already merged,
 | 3 | Festivals, kinship, WhatsApp reel | ✅ done | Festival table 2010–2035, Relive festival card, kin terms, 30 s / 16 MB preset, Room v4 |
 | 4 | Measure, harden, ship | ✅ done | Settings → How I use Yaadein, Easy mode / TalkBack pass, regression, docs |
 
+**First Minute & Relive 2 round** (November 2026; STOP reports under "First Minute & Relive 2" at the bottom):
+
+| Phase | Name | Status | Notes |
+|-------|------|--------|-------|
+| 1 | Photos-first onboarding | ✅ done | One welcome screen (language, pick photos / sample / skip), first story from the picked photos, lock offered after value, people from faces, sample banner with one-tap clear; no schema change |
+| 2 | Relive 2: story rings with music | see report | Rings, full-screen player, music, Then & Now, milestones, favourites (Room v5) |
+
 Phase STOP reports are appended at the bottom of this file under "Phase reports". The owner asked
 for the build to proceed autonomously while they are offline, so each STOP report is recorded here
 and work continues to the next phase; every phase is still a separate commit so any phase can be
@@ -234,8 +241,10 @@ Timeline, People, Create (opens hub), Relive, Settings.
 
 ```
 RootGraph
-├── Onboarding (3 pages → "Add your first person" → PersonEdit(new) → Home)      [first run only]
-├── LockSetup (choose PIN → confirm → enable biometrics?)                           [first run after onboarding]
+├── Onboarding (one welcome screen: language, "Pick photos to start" / "See a sample family" / "Skip")   [first run only]
+│     pick ──► system Photo Picker ──► FirstStory (the new memories as a story while they import) ──► Home
+│     sample / skip ──► Home (sample: banner "Clear sample and start mine")
+├── LockSetup (choose PIN → confirm → enable biometrics?)       [from Home: "Protect these memories?" sheet / lock card, or Settings → Security]
 ├── Lock (biometric prompt auto-shows; PIN pad fallback; lockout timer)            [overlay whenever locked]
 └── Home (scaffold with bottom nav + FAB; two-pane on expanded width)
     ├── Timeline            (filters sheet, search bar) ──► MemoryDetail(id) ──► MediaViewer(memoryId, index)
@@ -1167,3 +1176,89 @@ festival and kinship words); on-device checks still pending for the owner: `embe
 first festival-day reminder.
 
 **Open questions**: none. **Next**: the owner's phone test; see the final session report.
+
+---
+
+## First Minute & Relive 2 round — phase reports
+
+### First Minute — Phase 1: photos-first onboarding (STOP report)
+
+**Built**
+- **One welcome screen** (`feature/onboarding/OnboardingScreen.kt` `WelcomeScreen`, `OnboardingViewModel`) replaces the three
+  slides, the mandatory person form and the forced PIN setup: the promise in two lines, a **language picker** (the eight
+  languages in their own script plus "Phone language"), **Pick photos to start**, **See a sample family**, a small **Skip**.
+  Three screens before value: welcome → system Photo Picker → the user's memories playing.
+- **Language** (`core/ui/util/AppLanguage`): Android 13+ uses the per-app language (`LocaleManager`, the same setting as
+  Settings → Apps → Yaadein → Language); older phones keep the tag in a small preferences file that
+  `MainActivity.attachBaseContext` applies. Null = follow the phone.
+- **Pick photos** → `PickMultipleVisualMedia` → `OnboardingViewModel.onPicked`: inspect + size limits, `PhotoGrouper` groups by
+  day / consecutive days, one memory row per group is written at once (title from `PolishEngine.titleFor`, undated photos
+  → today), files go to `ImportCoordinator.enqueue` (copy-first, encryption in the background), `onboardingDone = true`,
+  then `Route.FirstStory`.
+- **First story** (`feature/relive/FirstStoryScreen.kt`): the new memories as story pages (`DailyStoryCard`, label "Just
+  added"); a page appears as soon as one photo of a memory is stored, with "N of M photos safely stored" underneath and
+  "Go to my timeline". Nothing waits for the import to finish.
+- **Sample family**: `DemoSeeder.seed()` + `demoMode = true` → Home shows the banner "This is a sample family" with
+  **Clear sample and start mine** (`DemoSeeder.clear()`: removes the seed's memories by title + day, its people by full
+  name, its groups and photo files, plus automatic reels made from it; anything the user added stays).
+- **PIN after value** (`app/ui/HomeNudges.kt`, pure rule `HomeNudges.decide`): with a real memory and no lock, a
+  non-blocking **"Protect these memories?"** sheet appears once over the timeline; "Not now" (or opening setup) sets
+  `lockPromptPostponed` and leaves a Home card "Your memories have no lock yet" until a lock is set. The vault stays in
+  the existing Keystore-only mode meanwhile. `startRoute()`: only `!onboardingDone` shows the welcome screen; nobody is
+  sent to LockSetup at start any more. Share → Yaadein, automatic reels and reminders no longer wait for a PIN.
+- **People from faces**: with no person yet, Home offers **"Who is in these photos?"** with the existing face privacy text
+  and "Find faces" (turns face suggestions on and starts `FaceReindexWorker`); once faces are found the card becomes
+  "Who is this? N faces to name" → `Route.WhoIsThis`; with no photos, or faces on and none found, a gentle
+  "Add someone you love" card. Dismissible (`peopleNudgeDismissed`). Home shows at most one of these cards at a time.
+- **Skip** → Home with the existing empty state; no prompts on an empty vault.
+
+**Files**: core/domain `settings/Settings.kt` (`lockPromptPostponed`, `peopleNudgeDismissed`). core/data
+`settings/SettingsStore.kt`, `seed/DemoSeeder.kt` (`clear`), `db/dao/Daos.kt` (`idsByTitleAndDay`, `idsByName`). core/ui
+`util/AppLanguage.kt`. feature/onboarding `OnboardingScreen.kt`, `OnboardingViewModel.kt`, `build.gradle.kts` (core:data),
+strings `welcome_*`. feature/relive `FirstStoryScreen.kt`, `DailyStoryCard.kt` (`momentLabel`), strings `first_story_*`.
+app `ui/HomeNudges.kt`, `ui/HomeScaffold.kt`, `ui/YaadeinApp.kt`, `navigation/Routes.kt` (`FirstStory`, `startRoute`),
+`navigation/AppNavHost.kt`, `MainActivity.kt` (`attachBaseContext`), strings `sample_banner_*`, `lock_prompt_*`,
+`lock_banner_*`, `people_nudge_*`, `nudge_not_now`. benchmark `BaselineProfileGenerator.kt` (comment). Docs: README,
+docs/PERFORMANCE.md, docs/SCREENSHOTS.md, docs/IOS_PARITY.md.
+
+**Schema**: none (Room stays at 4). Two new settings flags with `false` defaults; a settings file from before the round
+reads exactly as before.
+
+**Tests**: `OnboardingViewModelTest` (Robolectric, real importer + DB: photos → one memory per day and the story is next,
+undated → today, cancelled picker, unreadable files, sample seeded + cleared keeping the user's own memory, skip),
+`HomeNudgesTest` (existing user sees nothing new, `startRoute`, lock offer once then card, sample, people cards),
+`FirstStoryStateTest`, `EncryptedSettingsSerializerTest` (pre-round file keeps its meaning), `AppSmokeTest` ×6 new
+(existing user straight to Home and asked nothing; first run → Skip → empty Home without a lock; first button opens the
+Photo Picker; sample labelled and cleared in one tap; lock offer over the timeline; lock card opens LockSetup),
+`AccessibilityTest` ×5 new (welcome, welcome while importing, first story ×2, Home cards + lock prompt).
+
+**Self-check**: INTERNET absent, no new permission ✔ · 8 locales (machine-assisted), lint MissingTranslation 0 ✔ · no
+migration needed ✔ · accessibility tests pass ✔ · existing users: no data touched, no re-onboarding ✔ · frozen folders
+untouched (iOS strings regenerated only; parity rows added) ✔ · budgets: Compose code and strings only; the first frame
+is a simpler screen than before.
+
+**Budgets**: APK and cold start are printed by CI on the merge to main ("APK size" step, device-tests benchmark).
+
+**Rules established**
+- A lock is offered, never forced: gate features on `onboardingDone` and on the vault being open, not on `pinConfigured`.
+- Home shows at most one nudge card (`HomeCard`); new nudges go through `HomeNudges.decide` so they stay unit-tested.
+- Cold-start tests relaunch the activity (`relaunchWith` in `AppSmokeTest`); `scenario.recreate()` restores the old back
+  stack and never re-evaluates the start screen.
+
+**Findings (not fixed)**
+- Not verified on a real device: the Photo Picker hand-over and the 60-second target (stopwatch), the language switch on
+  Android 13+ (activity recreation) and on Android 8–12 (`attachBaseContext` path), the "Find faces" card with real
+  faces, and tapping **Not now** inside the "Protect these memories?" sheet (under Robolectric the tap inside that sheet
+  did not register, so the smoke tests check the sheet's appearance and the follow-up card separately; the ViewModel
+  path is one settings write).
+- The old strings `onboarding_1_title` … `onboarding_add_first_person` are unused on Android now (the iPhone app still
+  uses them; lint UnusedResources warnings only).
+- A share received while the welcome screen is still open is kept in the inbox and opens Quick Save without Home below
+  it in the back stack; saving then returns to the first story rather than Home.
+- Screenshot reference PNGs for the new previews need a machine with the SDK (docs/SCREENSHOTS.md).
+- Sample clearing matches by the seed's titles, days and full names: a user memory with exactly the same title and day
+  as a sample memory would be removed with it.
+
+**Open questions**: none blocking.
+
+**Next**: Phase 2 — Relive 2 (story rings, full-screen player with music, Then & Now, milestones, favourites).

@@ -10,7 +10,8 @@
 | 5 palettes, light/dark, Easy mode | ✅ | ✅ | Material You (dynamic colour) is Android-only |
 | Fonts Fraunces + Manrope, type scale | ✅ | ✅ | same font files |
 | Illustrations, cover art, avatars, memory card | ✅ | ✅ | same geometry and colours |
-| Onboarding → first person → PIN → home | ✅ | ✅ | |
+| Onboarding → first person → PIN → home | replaced (First Minute, Phase 1) | ✅ | Android now starts photos-first; the iPhone app keeps the slides → person → PIN flow |
+| Photos-first welcome (language picker, pick photos → first story, sample family with one-tap clear, lock offered after the first memory, people from faces) (First Minute, Phase 1) | ✅ | ⬜ deferred | iOS is frozen this round; the new strings are generated for it |
 | PIN lock, lockout 30 s…1 h, wipe after 10 | ✅ | ✅ | |
 | Biometric unlock | ✅ fingerprint/face | ✅ Face ID / Touch ID | copy invalidated by new enrolment on both |
 | Phone screen lock mode | ✅ | ✅ | |
