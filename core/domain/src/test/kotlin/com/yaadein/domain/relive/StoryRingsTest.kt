@@ -85,4 +85,20 @@ class StoryRingsTest {
         assertEquals(setOf("place-pune"), StorySeen.seenToday(StorySeen.mark(stored, "place-pune", day.plusDays(1)), day.plusDays(1)))
         assertTrue(StorySeen.seenToday("garbage", day).isEmpty())
     }
+
+    @Test
+    fun `no two rings share a cover photo`() {
+        fun cover(media: Long?) = CoverPick(memoryId = media ?: 0, mediaId = media, coverStyle = "plain_plum")
+        // Today and two people all appear in the newest memory (photo 1); the people have other photos too.
+        val covers = StoryRings.distinctCovers(
+            listOf(
+                listOf(cover(1)),
+                listOf(cover(1), cover(2), cover(3)),
+                listOf(cover(1), cover(2), cover(4)),
+                listOf(cover(null), cover(1)),
+                emptyList(),
+            ),
+        )
+        assertEquals(listOf(1L, 2L, 4L, null, null), covers.map { it?.mediaId })
+    }
 }

@@ -1357,3 +1357,28 @@ start: nothing new before the first frame; the story loader and both players are
 open it on the memory on screen)?
 
 **Next**: the owner's phone test of both phases (stopwatch on the first minute; a story with music).
+
+### Story rings showed the same photo (owner's phone, Build 100)
+
+- Cause: Today took the newest year's cover and each person took their newest memory's cover, so people tagged together in
+  the newest memory (and Today, and This year) all showed one picture.
+- Fix: `StoryRings.distinctCovers` (pure, tested) gives each ring its first candidate photo that no earlier ring has taken.
+  `StoryLoader.rings` supplies the candidates: a person's profile photo first, then their memories newest first; a year's
+  and a place's other memories after their usual cover. With nothing unused left a person shows their avatar and other
+  rings show cover art. Rule: anything shown side by side on Relive picks its pictures together, not one by one.
+
+### A person's story showed photos without them (owner's phone, Build 100)
+
+- Cause: a tag on a memory says the person was part of it, not that they are in each photo; the story showed the
+  memory's cover, which in a big album is usually someone else.
+- Fix: `core/domain/relive/PersonPhotos` (pure, tested) ranks a person's memories by evidence. **Shown**: a photo they
+  are tagged on, or where their face is confirmed or recognised (`MemoryRepository.photosShowingPerson`: `media_persons`
+  plus `faces` in state CONFIRMED / AUTO); the story shows that photo instead of the cover (`StoryPage.Moment.mediaId`).
+  **Unknown**: memories never scanned for faces, fewest tagged people first. **Probably not shown**: memories where
+  faces were found and none is theirs (`memoriesWithFaces`), used only when there is nothing else. With three or more
+  "shown" memories only those are used. The ring cover and Then & Now prefer the same known photos.
+- What the owner should know: this is only as good as the evidence. With face suggestions off and no photo-level tags,
+  every memory is "unknown" and the story can still show a photo without the person (it then prefers memories about
+  one or two people). Turning on Settings → Face suggestions and naming a face once in "Who is this?" is what makes
+  the stories exact.
+- Rule: never treat a memory-level tag as "this person is in this photo".

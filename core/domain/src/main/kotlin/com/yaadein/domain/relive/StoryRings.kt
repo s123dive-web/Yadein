@@ -81,6 +81,18 @@ object StoryRings {
         return eligible[Math.floorMod(today.toEpochDay(), eligible.size.toLong()).toInt()].place
     }
 
+    /**
+     * One cover per ring so that no two rings show the same picture: each ring takes its first candidate (in its own
+     * order of preference) that no earlier ring has taken. A ring whose candidates are all taken gets null, and the
+     * caller decides what stands in (a person's avatar, cover art). Candidates without a photo are skipped.
+     */
+    fun distinctCovers(candidates: List<List<CoverPick>>): List<CoverPick?> {
+        val taken = HashSet<Long>()
+        return candidates.map { options ->
+            options.firstOrNull { it.mediaId != null && it.mediaId !in taken }?.also { taken += it.mediaId!! }
+        }
+    }
+
     const val TODAY_KEY = "today"
     fun personKey(id: Long) = "person-$id"
     fun yearKey(year: Int) = "year-$year"

@@ -311,7 +311,7 @@ private fun StoryIconButton(icon: ImageVector, label: String, onClick: () -> Uni
 @Composable
 private fun StoryPageView(page: StoryPage, progress: Float, playing: Boolean, video: (@Composable (Media, Boolean) -> Unit)?) {
     when (page) {
-        is StoryPage.Moment -> StoryMedia(page.card, progress, playing, video)
+        is StoryPage.Moment -> StoryMedia(page.card, progress, playing, video, photoId = page.mediaId)
         is StoryPage.Spotlight -> Box(Modifier.fillMaxSize()) {
             StoryMedia(page.card, progress, playing, video)
             PersonAvatar(person = page.person, size = Yaadein.sizes.avatarXl, modifier = Modifier.align(Alignment.Center))
@@ -351,9 +351,21 @@ private fun ThenNowHalf(mediaId: Long, label: String, epochDay: Long, modifier: 
  * direction depends on the memory, driven by the page's own progress so pausing the story pauses the drift.
  */
 @Composable
-private fun StoryMedia(card: MemoryCard?, progress: Float, playing: Boolean, video: (@Composable (Media, Boolean) -> Unit)?) {
+private fun StoryMedia(card: MemoryCard?, progress: Float, playing: Boolean, video: (@Composable (Media, Boolean) -> Unit)?, photoId: Long? = null) {
     val cover = card?.cover
     when {
+        // A chosen photo (in a person's story: one that shows them) replaces the memory's cover.
+        photoId != null && photoId != cover?.id -> EncryptedMediaImage(
+            mediaId = photoId,
+            thumbnail = false,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize().graphicsLayer {
+                val zoom = 1f + KEN_BURNS_ZOOM * progress
+                scaleX = zoom
+                scaleY = zoom
+                translationX = (if (photoId % 2L == 0L) 1f else -1f) * size.width * KEN_BURNS_PAN * progress
+            },
+        )
         cover == null -> CoverArt(style = card?.memory?.coverStyle ?: CoverStyle.DEFAULT, seed = card?.memory?.id ?: 0L, modifier = Modifier.fillMaxSize())
         cover.kind == MediaKind.VIDEO && video != null -> Box(Modifier.fillMaxSize()) { video(cover, playing) }
         else -> {

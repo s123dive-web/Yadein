@@ -386,6 +386,26 @@ interface MediaDao {
     )
     suspend fun datedPhotosOfPerson(personId: Long, limit: Int): List<DatedPhotoRow>
 
+    /**
+     * Photos [personId] is known to be in: tagged on the photo itself, or their face confirmed or recognised in it.
+     * (A memory-level tag alone says they were part of the memory, not that they are in each photo.)
+     */
+    @Query(
+        """
+        SELECT md.id AS mediaId, md.memory_id AS memoryId, m.start_epoch_day AS epochDay FROM media md JOIN memories m ON m.id = md.memory_id
+        WHERE md.kind = 'PHOTO' AND (
+            md.id IN (SELECT media_id FROM media_persons WHERE person_id = :personId)
+            OR md.id IN (SELECT media_id FROM faces WHERE person_id = :personId AND state IN ('CONFIRMED', 'AUTO'))
+        )
+        ORDER BY md.memory_id, md.position, md.id LIMIT :limit
+        """,
+    )
+    suspend fun photosShowingPerson(personId: Long, limit: Int): List<DatedPhotoRow>
+
+    /** Memories in which face recognition has found at least one face. */
+    @Query("SELECT DISTINCT md.memory_id FROM faces f JOIN media md ON md.id = f.media_id WHERE md.memory_id IS NOT NULL")
+    suspend fun memoryIdsWithFaces(): List<Long>
+
     /** Photos of memories at [place] (trimmed, case ignored) with their memory's day, for Then & Now. */
     @Query(
         """
