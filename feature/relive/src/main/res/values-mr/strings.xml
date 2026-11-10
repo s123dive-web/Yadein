@@ -53,4 +53,39 @@
     <string name="relive_festival_upcoming_help">आधीच्या वर्षांतले %1$sचे फोटो इथे दिसतील.</string>
     <string name="reminder_festival_today">%1$sच्या शुभेच्छा! आजचे फोटो Yaadein मध्ये जोडा</string>
     <string name="reminder_festival_today_text">वर्षभरानंतर, हाच तो दिवस असेल जो तुम्हाला पुन्हा पाहायचा असेल.</string>
+    <string name="first_story_title">तुमच्या आठवणी आल्या</string>
+    <string name="first_story_preparing">तुमचे फोटो तयार होत आहेत…</string>
+    <string name="first_story_progress">%2$d पैकी %1$d फोटो सुरक्षित ठेवले</string>
+    <string name="first_story_continue">माझ्या टाइमलाइनवर जा</string>
+    <string name="first_story_new">आत्ताच जोडले</string>
+    <string name="story_rings_title">गोष्टी</string>
+    <string name="story_ring_today">आज</string>
+    <string name="story_ring_new_cd">%1$s, आज नवीन</string>
+    <string name="story_ring_seen_cd">%1$s, पाहिली</string>
+    <string name="story_close">गोष्ट बंद करा</string>
+    <string name="story_next_page">पुढचे पान</string>
+    <string name="story_previous_page">मागचे पान</string>
+    <string name="story_next_story">पुढची गोष्ट</string>
+    <string name="story_previous_story">मागची गोष्ट</string>
+    <string name="story_mute">संगीत बंद करा</string>
+    <string name="story_unmute">संगीत सुरू करा</string>
+    <string name="story_music">संगीत निवडा</string>
+    <string name="story_music_bundled">Yaadein चे संगीत</string>
+    <string name="story_music_add">फोनमधून जोडा</string>
+    <string name="story_music_help">तुमच्या फोनमधील गाणे तुमच्या गोष्टींसोबत वाजू शकते. ते इथेच वाचले जाते, कुठेही कॉपी किंवा पाठवले जात नाही.</string>
+    <string name="story_add_note">जे आठवते ते जोडा</string>
+    <string name="story_add_note_hint">एक ओळ, एक नाव, एखादा सुगंध… जे काही आठवते</string>
+    <string name="story_add_note_save">या आठवणीत जतन करा</string>
+    <string name="story_add_note_voice">त्याऐवजी आवाज रेकॉर्ड करा</string>
+    <string name="story_make_reel">या गोष्टीची रील बनवा</string>
+    <string name="story_then">तेव्हा</string>
+    <string name="story_now">आता</string>
+    <string name="story_then_now">%1$s, तेव्हा आणि आता</string>
+    <plurals name="story_years_apart"><item quantity="one">%1$d वर्षाचे अंतर</item><item quantity="other">%1$d वर्षांचे अंतर</item></plurals>
+    <string name="story_milestone_count">%1$d आठवणी जतन केल्या</string>
+    <string name="story_milestone_count_sub">प्रत्येक आठवण या फोनवर सुरक्षित आहे.</string>
+    <plurals name="story_years_with"><item quantity="one">%2$s सोबत %1$d वर्ष</item><item quantity="other">%2$s सोबत %1$d वर्षे</item></plurals>
+    <string name="story_years_with_sub">तुमच्या पहिल्या एकत्र आठवणीपासून.</string>
+    <string name="story_empty">या गोष्टीत अजून दाखवण्यासारखे काही नाही</string>
+    <string name="story_ring_this_year">या वर्षी</string>
 </resources>

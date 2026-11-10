@@ -36,4 +36,19 @@
     </plurals>
     <!-- Fast & Rich round, Phase 1 (machine-assisted translation) -->
     <string name="nav_create_more_ways">স্মৃতি যোগ করার আরও উপায়</string>
+    <string name="sample_banner_title">এটি একটি নমুনা পরিবার</string>
+    <string name="sample_banner_text">ঘুরে দেখুন, তারপর এটি মুছে নিজের স্মৃতি দিয়ে শুরু করুন।</string>
+    <string name="sample_banner_clear">নমুনা মুছে আমারটা শুরু করুন</string>
+    <string name="lock_prompt_title">এই স্মৃতিগুলো সুরক্ষিত করবেন?</string>
+    <string name="lock_prompt_text">একটি PIN সেট করুন, চাইলে ফিঙ্গারপ্রিন্টও, যাতে শুধু আপনিই Yaadein খুলতে পারেন। আপনার স্মৃতি এই ফোনে আগে থেকেই এনক্রিপ্ট করা আছে।</string>
+    <string name="lock_prompt_action">PIN সেট করুন</string>
+    <string name="nudge_not_now">এখন নয়</string>
+    <string name="lock_banner_title">আপনার স্মৃতিতে এখনও কোনো লক নেই</string>
+    <string name="lock_banner_text">যে কেউ এই ফোন খুললে Yaadein খুলতে পারে। PIN সেট করতে কয়েক সেকেন্ড লাগে।</string>
+    <string name="people_nudge_faces_title">এই ছবিগুলোতে কে আছেন?</string>
+    <string name="people_nudge_faces_action">মুখ খুঁজুন</string>
+    <string name="people_nudge_who_action">নাম দিন</string>
+    <string name="people_nudge_add_title">প্রিয় কাউকে যোগ করুন</string>
+    <string name="people_nudge_add_text">পরিবার ও বন্ধুদের ট্যাগ করুন আর প্রত্যেকের সঙ্গে আপনার গল্প দেখুন।</string>
+    <string name="people_nudge_add_action">কাউকে যোগ করুন</string>
 </resources>

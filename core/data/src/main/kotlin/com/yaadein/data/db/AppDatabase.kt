@@ -54,8 +54,10 @@ abstract class AppDatabase : RoomDatabase() {
          * v2 (Fast & Rich round, Phase 1): capture_stats, media GPS columns, import_jobs.picked_json.
          * v3 (Phase 2): per-face embeddings (`faces`, `face_rejections`), person centroids, media.face_scan_version;
          * the LBP `face_clusters` table is dropped.
+         * v4 (Phase 3): persons.kin_term, persons.relation_text.
+         * v5 (Relive 2): memories.favorite, memories.last_opened_at.
          */
-        const val VERSION = 4
+        const val VERSION = 5
         const val NAME = "yaadein.db"
     }
 }

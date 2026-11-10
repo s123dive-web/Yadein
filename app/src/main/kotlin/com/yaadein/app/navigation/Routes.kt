@@ -5,12 +5,14 @@ import kotlinx.serialization.Serializable
 /** Type-safe navigation routes. Keep in sync with the navigation map in CLAUDE.md §6. */
 sealed interface Route {
     @Serializable data object Onboarding : Route
+    /** Right after the first photos are picked: those memories as a story while they are still being stored. */
+    @Serializable data object FirstStory : Route
     @Serializable data object LockSetup : Route
     @Serializable data object Home : Route
     @Serializable data class MemoryDetail(val memoryId: Long) : Route
     @Serializable data class MediaViewer(val memoryId: Long, val index: Int) : Route
     @Serializable data class PersonDetail(val personId: Long) : Route
-    @Serializable data class PersonEdit(val personId: Long = 0L, val fromOnboarding: Boolean = false) : Route
+    @Serializable data class PersonEdit(val personId: Long = 0L) : Route
     @Serializable data class GroupEdit(val groupId: Long = 0L) : Route
     @Serializable data class Together(val personId: Long = 0L) : Route
     @Serializable data object RelationshipsMap : Route
@@ -39,7 +41,15 @@ sealed interface Route {
     /** Reels kept in the app: three made automatically plus the user's last ten. */
     @Serializable data object Reels : Route
     @Serializable data class ReelPlayer(val reelId: String) : Route
+    /** The full-screen story player, opened on the ring with this key ("today", "person-12", "year-2026"…). */
+    @Serializable data class StoryPlayer(val ringKey: String = "today") : Route
     @Serializable data class Settings(val page: String) : Route
 }
+
+/**
+ * Where the app opens, decided once per process. Only a first run sees the welcome screen; anyone who finished
+ * onboarding, with or without a lock, lands on Home (a lock is offered there, never forced).
+ */
+fun startRoute(onboardingDone: Boolean): Route = if (onboardingDone) Route.Home else Route.Onboarding
 
 enum class HomeTab { TIMELINE, PEOPLE, CREATE, RELIVE, SETTINGS }

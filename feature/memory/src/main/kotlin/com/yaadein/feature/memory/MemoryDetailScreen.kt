@@ -57,6 +57,8 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -132,6 +134,7 @@ fun MemoryDetailRoute(
         onSetCover = viewModel::setCover,
         modifier = modifier,
         onRecordVoice = { onRecordVoice(viewModel.memoryId) },
+        onToggleFavorite = viewModel::toggleFavorite,
         voicePlayer = { path -> VoiceNoteCard(path = path, voiceNotes = viewModel.voiceNotes, onRemove = viewModel::removeVoice) },
         onShareCard = {
             state.detail?.let { d ->
@@ -194,6 +197,7 @@ fun MemoryDetailScreen(
     suggestions: List<FaceSuggestionUi> = emptyList(),
     onConfirmSuggestion: (faceId: Long, personId: Long) -> Unit = { _, _ -> },
     onRejectSuggestion: (faceId: Long, personId: Long) -> Unit = { _, _ -> },
+    onToggleFavorite: () -> Unit = {},
 ) {
     val detail = state.detail
     if (state.loading || detail == null) {
@@ -204,7 +208,7 @@ fun MemoryDetailScreen(
     var confirmDelete by remember { mutableStateOf(false) }
     LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = spacing.xxxl)) {
         item(key = "hero") {
-            Hero(detail = detail, onBack = onBack, onEdit = onEdit, onDelete = { confirmDelete = true }, onRecap = onRecap, onOpenCover = { index -> onOpenMedia(index) }, onRecordVoice = onRecordVoice, onShareCard = onShareCard, onSavePdf = onSavePdf, onSendPack = onSendPack, onDownloadAll = onDownloadAll)
+            Hero(detail = detail, onBack = onBack, onEdit = onEdit, onDelete = { confirmDelete = true }, onRecap = onRecap, onOpenCover = { index -> onOpenMedia(index) }, onRecordVoice = onRecordVoice, onToggleFavorite = onToggleFavorite, onShareCard = onShareCard, onSavePdf = onSavePdf, onSendPack = onSendPack, onDownloadAll = onDownloadAll)
         }
         item(key = "body") {
             Column(modifier = Modifier.padding(horizontal = spacing.gutter)) {
@@ -371,6 +375,7 @@ private fun Hero(
     onSavePdf: () -> Unit = {},
     onSendPack: () -> Unit = {},
     onDownloadAll: () -> Unit = {},
+    onToggleFavorite: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val cover = detail.media.firstOrNull { it.id == detail.memory.coverMediaId } ?: detail.media.firstOrNull()
@@ -394,6 +399,12 @@ private fun Hero(
                 Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(CoreR.string.action_back))
             }
             Spacer(Modifier.weight(1f))
+            FilledTonalIconButton(onClick = onToggleFavorite, colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = Color.Black.copy(alpha = 0.35f), contentColor = Color.White)) {
+                Icon(
+                    if (detail.memory.favorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                    contentDescription = stringResource(if (detail.memory.favorite) CoreR.string.favorite_remove else CoreR.string.favorite_add),
+                )
+            }
             FilledTonalIconButton(onClick = onRecap, colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = Color.Black.copy(alpha = 0.35f), contentColor = Color.White)) {
                 Icon(Icons.Rounded.Movie, contentDescription = stringResource(R.string.memory_make_recap))
             }

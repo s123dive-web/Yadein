@@ -39,6 +39,8 @@ import com.yaadein.feature.people.GroupEditRoute
 import com.yaadein.feature.people.RelationshipsRoute
 import com.yaadein.feature.people.TogetherRoute
 import com.yaadein.feature.people.WhoIsThisRoute
+import com.yaadein.feature.relive.FirstStoryRoute
+import com.yaadein.feature.relive.StoryPlayerRoute
 import com.yaadein.feature.relive.YearlySummaryRoute
 import com.yaadein.feature.recap.RecapRoute
 import com.yaadein.feature.recap.ReelPlayerRoute
@@ -53,6 +55,15 @@ import com.yaadein.feature.settings.UpdateRoute
 import com.yaadein.feature.settings.AppInfoScreen
 import com.yaadein.feature.settings.SecurityRoute
 import com.yaadein.feature.settings.SettingsPage
+
+/** The calm ones among the app's own tracks (they live with the reel maker); each story ring gets one in turn. */
+private val STORY_TRACKS = listOf(
+    com.yaadein.feature.recap.R.raw.track_warm,
+    com.yaadein.feature.recap.R.raw.track_acoustic,
+    com.yaadein.feature.recap.R.raw.track_lullaby,
+    com.yaadein.feature.recap.R.raw.track_minimal,
+    com.yaadein.feature.recap.R.raw.track_classic,
+)
 
 @Composable
 fun AppNavHost(
@@ -73,7 +84,16 @@ fun AppNavHost(
         popExitTransition = { fadeOut(tween(motion.fastMs)) + slideOutHorizontally(tween(motion.normalMs)) { it / 8 } },
     ) {
         composable<Route.Onboarding> {
-            OnboardingRoute(onAddFirstPerson = { navController.navigate(Route.PersonEdit(fromOnboarding = true)) })
+            OnboardingRoute(
+                onStory = { navController.navigate(Route.FirstStory) { popUpTo(0) { inclusive = true } } },
+                onHome = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
+            )
+        }
+        composable<Route.FirstStory> {
+            FirstStoryRoute(
+                onDone = { navController.navigate(Route.Home) { popUpTo(0) { inclusive = true } } },
+                onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
+            )
         }
         composable<Route.LockSetup> {
             LockSetupRoute(
@@ -110,18 +130,8 @@ fun AppNavHost(
                 onRecap = { navController.navigate(Route.RecapSetup(personId = it)) },
             )
         }
-        composable<Route.PersonEdit> { entry ->
-            val route = entry.toRoute<Route.PersonEdit>()
-            PersonEditRoute(
-                onBack = { navController.popBackStack() },
-                onSaved = {
-                    if (route.fromOnboarding) {
-                        navController.navigate(Route.LockSetup) { popUpTo(0) { inclusive = true } }
-                    } else {
-                        navController.popBackStack()
-                    }
-                },
-            )
+        composable<Route.PersonEdit> {
+            PersonEditRoute(onBack = { navController.popBackStack() }, onSaved = { navController.popBackStack() })
         }
         composable<Route.MediaViewer> {
             MediaViewerRoute(onBack = { navController.popBackStack() })
@@ -218,6 +228,16 @@ fun AppNavHost(
                 onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
                 onOpenPerson = { navController.navigate(Route.PersonDetail(it)) },
                 onRecap = { personId, year -> navController.navigate(Route.RecapSetup(personId = personId, year = year)) },
+            )
+        }
+        composable<Route.StoryPlayer> {
+            StoryPlayerRoute(
+                // The player also closes itself after the last story: pop only while it is still on the stack.
+                onClose = { navController.popBackStack<Route.StoryPlayer>(inclusive = true) },
+                onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
+                onRecordVoice = { navController.navigate(Route.VoiceCapture(memoryId = it)) },
+                onMakeReel = { scope -> navController.navigate(Route.RecapSetup(personId = scope.personId, memoryId = scope.memoryId, year = scope.year)) },
+                bundledTracks = STORY_TRACKS,
             )
         }
         composable<Route.RecapSetup> {

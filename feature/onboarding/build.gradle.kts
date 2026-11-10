@@ -43,6 +43,7 @@ tasks.withType<Test>().configureEach {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
+    implementation(project(":core:data"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
@@ -82,4 +83,5 @@ dependencies {
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.test.manifest)
+    testImplementation(libs.exifinterface)
 }

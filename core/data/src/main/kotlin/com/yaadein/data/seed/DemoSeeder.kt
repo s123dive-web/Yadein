@@ -118,11 +118,7 @@ class DemoSeeder @Inject constructor(
                 ),
             )
         }
-        val groups = listOf(
-            "Family" to listOf(0, 1, 2, 3, 4, 7, 9),
-            "College friends" to listOf(5, 6),
-            "Aai's side" to listOf(4, 7),
-        )
+        val groups = GROUP_NAMES.zip(listOf(listOf(0, 1, 2, 3, 4, 7, 9), listOf(5, 6), listOf(4, 7)))
         val groupEmoji = listOf("👨‍👩‍👧‍👦", "🎓", "🏡")
         groups.forEachIndexed { gi, (name, members) ->
             val gid = db.groupDao().upsert(GroupEntity(name = name, emoji = groupEmoji[gi], createdAt = now))
@@ -149,6 +145,26 @@ class DemoSeeder @Inject constructor(
                 memoryRepository.reindex(memoryId)
             }
         }
+    }
+
+    /**
+     * "Clear sample and start mine": removes the sample family (its memories by title and day, its people by full name,
+     * its groups by name) and the files of its generated photos. Anything the user added in the meantime is kept.
+     * Returns how many memories were removed.
+     */
+    suspend fun clear(): Int {
+        var removed = 0
+        for (m in memories) {
+            for (id in db.memoryDao().idsByTitleAndDay(m.title, m.date.toEpochDay())) {
+                memoryRepository.delete(id)
+                removed++
+            }
+        }
+        val names = people.map { it.name }.toSet()
+        db.personDao().getAll().filter { it.name in names }.forEach { db.personDao().delete(it.id) }
+        for (name in GROUP_NAMES) db.groupDao().idsByName(name).forEach { db.groupDao().delete(it) }
+        mediaStore.pruneOrphans(db.mediaDao().allPaths().toSet())
+        return removed
     }
 
     /** Adds [count] text-only memories spread over 15 years; used to verify timeline performance. */
@@ -257,5 +273,9 @@ class DemoSeeder @Inject constructor(
         val shift = (seed % 5) * 12
         return Color.argb(255, (Color.red(base.first) + shift).coerceAtMost(255), Color.green(base.first), Color.blue(base.first)) to
             Color.argb(255, Color.red(base.second), (Color.green(base.second) + shift).coerceAtMost(255), Color.blue(base.second))
+    }
+
+    private companion object {
+        val GROUP_NAMES = listOf("Family", "College friends", "Aai's side")
     }
 }

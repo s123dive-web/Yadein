@@ -107,6 +107,12 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
         Column(Modifier.fillMaxSize()) {
             if (tab == HomeTab.TIMELINE) {
                 CrashNoticeBanner()
+                // Photos-first start: the sample-family banner, the lock card or the people card, and "Protect these memories?".
+                HomeNudges(
+                    onSetUpLock = { navController.navigate(Route.LockSetup) },
+                    onWhoIsThis = { navController.navigate(Route.WhoIsThis) },
+                    onAddPerson = { navController.navigate(Route.PersonEdit()) },
+                )
                 BackupNudgeBanner(onSetUp = { navController.navigate(Route.Settings(SettingsPage.BACKUP.name)) })
             }
             when (tab) {
@@ -133,8 +139,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                 onOpenPerson = { navController.navigate(Route.PersonDetail(it)) },
                 onRecap = { navController.navigate(Route.RecapSetup()) },
                 onReels = { navController.navigate(Route.Reels) },
-                onPlayReel = { navController.navigate(Route.ReelPlayer(it)) },
-                onRecordPrompt = { text, personId -> navController.navigate(Route.VoiceCapture(prompt = text, personId = personId)) },
+                onOpenStory = { ringKey -> navController.navigate(Route.StoryPlayer(ringKey)) },
                 onPlace = { place -> placeFilter = place; tab = HomeTab.TIMELINE },
                 onYear = { year -> navController.navigate(Route.YearlySummary(0L, year)) },
                 onBirthdayReel = { personId -> navController.navigate(Route.RecapSetup(personId = personId)) },

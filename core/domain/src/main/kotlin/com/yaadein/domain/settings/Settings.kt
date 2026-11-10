@@ -55,4 +55,14 @@ data class UserSettings(
     val autoBackupFailed: Boolean = false,
     /** The "shake for a random memory" tip on Relive was closed. */
     val shakeHintDismissed: Boolean = false,
+    /** "Protect these memories?" was shown once and put off (or opened); Home keeps a banner until a lock is set. */
+    val lockPromptPostponed: Boolean = false,
+    /** The Home card that offers to name the people in the photos was closed. */
+    val peopleNudgeDismissed: Boolean = false,
+    /** Story music is switched off (the speaker button in the story player); remembered between stories. */
+    val storyMuted: Boolean = false,
+    /** The song from "Your songs" that plays under stories (a document URI), or null for the bundled music. */
+    val storyMusicUri: String? = null,
+    /** Which story rings were watched today, as written by [com.yaadein.domain.relive.StorySeen]. */
+    val storySeen: String = "",
 )

@@ -5,7 +5,7 @@ numbers come from `.github/workflows/device-tests.yml` (KVM-accelerated x86_64 A
 
 | What | Budget | How it is measured |
 |------|--------|--------------------|
-| Cold start to first frame (lock screen or onboarding), baseline profile applied | ≤ 1.0 s phone, ≤ 2.0 s CI emulator | `StartupBenchmark.coldStartWithProfile`; CI fails above 2.0 s |
+| Cold start to first frame (lock screen or the welcome screen), baseline profile applied | ≤ 1.0 s phone, ≤ 2.0 s CI emulator | `StartupBenchmark.coldStartWithProfile`; CI fails above 2.0 s |
 | PIN entered → timeline visible | ≤ 1.5 s | One Argon2id run (64 MiB, t = 3) opens the vault; fingerprint unlock skips Argon2 entirely |
 | Timeline scroll | < 5 % janky frames | Macrobenchmark `FrameTimingMetric` (add a scroll test once CI seeds demo data) |
 | Import 20 phone photos | ≤ 30 s | Encrypt + thumbnail + verify per photo, on the import queue |
@@ -58,3 +58,13 @@ setup (target 500 ms, never below 32 MiB / 2 passes) without changing the file f
 ./gradlew :core:data:connectedDebugAndroidTest          # vault migration on real crypto
 ./gradlew :feature:recap:connectedDebugAndroidTest      # reel rendering on real MediaCodec
 ```
+
+## First Minute & Relive 2 round
+
+| Budget | Target | How it is checked |
+|--------|--------|-------------------|
+| First run: screens before the user's own memories | ≤ 3 (welcome → Photo Picker → first story) | `AppSmokeTest` (welcome has four controls; picker opens from the first button), `OnboardingViewModelTest` |
+| First run: welcome → memories playing | ≤ 60 s including the pick | Memory rows are written before any file is copied (`OnboardingViewModel.onPicked`), the story shows a page as soon as one photo of a memory is stored (`FirstStoryStateTest`); stopwatch on a phone |
+| Cold start | unchanged budget (≤ 1.0 s phone, ≤ 2.0 s CI emulator) | The first frame is now one static screen instead of a pager; nothing new runs before it |
+| APK size | unchanged budget (≤ 64,790,000 bytes) | CI "APK size" step; the round adds Compose code and strings only || Relive: tap a ring → story on screen | one tap; pages load off the main thread | `StoryLoader` queries per ring on open, not for every ring up front; `StoryPlayerScreenTest` |
+| Story music | no audio work before the player opens; one `ExoPlayer` for music, one per video page | The player and its music exist only while `Route.StoryPlayer` is on screen and pause on stop |

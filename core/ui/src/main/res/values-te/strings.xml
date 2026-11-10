@@ -110,4 +110,6 @@
     <string name="kin_FATHER_IN_LAW">మామగారు</string>
     <string name="kin_FRIEND">స్నేహితుడు</string>
     <string name="kin_COLLEAGUE">సహోద్యోగి</string>
+    <string name="favorite_add">ఇష్టమైనవాటికి జోడించు</string>
+    <string name="favorite_remove">ఇష్టమైనవాటి నుండి తీసివేయి</string>
 </resources>

@@ -17,7 +17,8 @@ import com.yaadein.feature.lock.LockScreen
 import com.yaadein.feature.lock.LockUiState
 import com.yaadein.feature.memory.MemoryDetailScreen
 import com.yaadein.feature.memory.MemoryDetailUiState
-import com.yaadein.feature.onboarding.OnboardingScreen
+import com.yaadein.feature.onboarding.OnboardingUiState
+import com.yaadein.feature.onboarding.WelcomeScreen
 import com.yaadein.feature.people.PeopleScreen
 import com.yaadein.feature.people.PeopleUiState
 import com.yaadein.feature.people.PersonDetailScreen
@@ -151,7 +152,40 @@ fun LockPhone() = ScreenshotTheme {
 @PreviewTest
 @Preview(name = "Onboarding", device = PHONE, showBackground = true)
 @Composable
-fun OnboardingPhone() = ScreenshotTheme { OnboardingScreen(onFinish = {}) }
+fun OnboardingPhone() = ScreenshotTheme {
+    WelcomeScreen(state = OnboardingUiState(), language = null, onLanguage = {}, onPick = {}, onSample = {}, onSkip = {})
+}
+
+@PreviewTest
+@Preview(name = "First story", device = PHONE, showBackground = true)
+@Composable
+fun FirstStoryPhone() = ScreenshotTheme {
+    com.yaadein.feature.relive.FirstStoryScreen(
+        state = com.yaadein.feature.relive.FirstStoryUiState(
+            loading = false,
+            pages = Fixtures.cards.take(3).map { com.yaadein.domain.relive.StoryPage.Moment(it, yearsAgo = null) },
+            photosStored = 7, photosTotal = 12,
+        ),
+        onDone = {}, onOpenMemory = {},
+    )
+}
+
+@PreviewTest
+@Preview(name = "Home nudges", device = PHONE, showBackground = true)
+@Composable
+fun HomeNudgesPhone() = ScreenshotTheme {
+    Surface {
+        androidx.compose.foundation.layout.Column {
+            listOf(com.yaadein.app.ui.HomeCard.Sample, com.yaadein.app.ui.HomeCard.Lock, com.yaadein.app.ui.HomeCard.OfferFaces).forEach { card ->
+                com.yaadein.app.ui.HomeNudgeCard(
+                    state = com.yaadein.app.ui.HomeNudgesUiState(card = card),
+                    onClearSample = {}, onSetUpLock = {}, onEnableFaces = {}, onWhoIsThis = {}, onAddPerson = {}, onDismissPeople = {},
+                )
+            }
+            com.yaadein.app.ui.LockPromptContent(onSetUp = {}, onLater = {})
+        }
+    }
+}
 
 @PreviewTest
 @Preview(name = "Empty timeline", device = PHONE, showBackground = true)

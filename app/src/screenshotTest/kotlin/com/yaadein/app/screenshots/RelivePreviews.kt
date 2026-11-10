@@ -40,11 +40,33 @@ fun Relive() = ScreenshotTheme {
                 places = listOf(PlaceHighlight("Pune", 12), PlaceHighlight("Goa", 5)),
                 upcomingBirthdays = listOf(Fixtures.rahul to 3, Fixtures.aai to 25),
                 totalMemories = 33,
-                showShakeHint = true,
+                rings = storyRings,
             ),
             onOpenMemory = {}, onOpenPerson = {}, onSurprise = {}, onDismissRandom = {}, onRecap = {}, onYear = {}, contentPadding = PaddingValues(),
         )
     }
+}
+
+private val storyRings = listOf(
+    com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.TODAY, "today"), null, seen = false),
+    com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.PERSON, "person-1", person = Fixtures.aai), null, seen = false),
+    com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.PERSON, "person-3", person = Fixtures.rahul), null, seen = true),
+    com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.YEAR, "year-2026", year = 2026), null, seen = false),
+    com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.PLACE, "place-pune", place = "Pune"), null, seen = true),
+)
+
+@PreviewTest
+@Preview(name = "Story player", device = PHONE, showBackground = true)
+@Composable
+fun StoryPlayer() = ScreenshotTheme {
+    com.yaadein.feature.relive.StoryPlayerScreen(
+        state = com.yaadein.feature.relive.StoryPlayerUiState(
+            loading = false, rings = storyRings, ringIndex = 1, pagesLoading = false,
+            pages = Fixtures.cards.take(3).map { com.yaadein.domain.relive.StoryPage.Moment(it, yearsAgo = null) },
+        ),
+        actions = com.yaadein.feature.relive.StoryPlayerActions(),
+        motion = false,
+    )
 }
 
 @PreviewTest

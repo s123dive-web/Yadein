@@ -202,4 +202,132 @@ class AccessibilityTest {
         compose.setContent { YaadeinTheme { UsageScreen(summary = UsageSummary.from(emptyList(), 0L), onBack = {}) } }
         assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
     }
+
+    @Test
+    fun `welcome screen clickables are labelled`() {
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.onboarding.WelcomeScreen(
+                    state = com.yaadein.feature.onboarding.OnboardingUiState(nothingAdded = true), language = "mr",
+                    onLanguage = {}, onPick = {}, onSample = {}, onSkip = {},
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+        // Three ways on and the language: nothing else stands between a new user and their photos.
+        org.junit.Assert.assertEquals(4, compose.onAllNodes(hasClickAction()).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun `welcome screen while importing has no dead buttons`() {
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.onboarding.WelcomeScreen(
+                    state = com.yaadein.feature.onboarding.OnboardingUiState(busy = com.yaadein.feature.onboarding.OnboardingBusy.IMPORTING), language = null,
+                    onLanguage = {}, onPick = {}, onSample = {}, onSkip = {},
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
+
+    @Test
+    fun `first story clickables are labelled`() {
+        val pages = cards.map { com.yaadein.domain.relive.StoryPage.Moment(it, yearsAgo = null) }
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.relive.FirstStoryScreen(
+                    state = com.yaadein.feature.relive.FirstStoryUiState(loading = false, pages = pages, photosStored = 3, photosTotal = 12), onDone = {}, onOpenMemory = {},
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
+
+    @Test
+    fun `first story while photos are still arriving is labelled`() {
+        compose.setContent {
+            YaadeinTheme { com.yaadein.feature.relive.FirstStoryScreen(state = com.yaadein.feature.relive.FirstStoryUiState(loading = false, photosStored = 0, photosTotal = 12), onDone = {}, onOpenMemory = {}) }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
+
+    @Test
+    fun `home nudge cards and the lock prompt are labelled`() {
+        val cardsToShow = listOf(
+            com.yaadein.app.ui.HomeCard.Sample, com.yaadein.app.ui.HomeCard.Lock, com.yaadein.app.ui.HomeCard.OfferFaces,
+            com.yaadein.app.ui.HomeCard.NameFaces(3), com.yaadein.app.ui.HomeCard.AddSomeone,
+        )
+        compose.setContent {
+            YaadeinTheme {
+                androidx.compose.foundation.layout.Column {
+                    cardsToShow.forEach { card ->
+                        com.yaadein.app.ui.HomeNudgeCard(
+                            state = com.yaadein.app.ui.HomeNudgesUiState(card = card),
+                            onClearSample = {}, onSetUpLock = {}, onEnableFaces = {}, onWhoIsThis = {}, onAddPerson = {}, onDismissPeople = {},
+                        )
+                    }
+                    com.yaadein.app.ui.LockPromptContent(onSetUp = {}, onLater = {})
+                }
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
+
+    private val storyRings = listOf(
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.TODAY, "today"), null, seen = false),
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.PERSON, "person-1", person = people[0]), null, seen = true),
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.YEAR, "year-2026", year = 2026), null, seen = false),
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.FESTIVAL, "festival-diwali", festival = com.yaadein.domain.relive.Festival.DIWALI), null, seen = false),
+        com.yaadein.feature.relive.RingUi(com.yaadein.domain.relive.StoryRing(com.yaadein.domain.relive.RingKind.PLACE, "place-pune", place = "Pune"), null, seen = false),
+    )
+
+    @Test
+    fun `relive story rings say what they are and whether they are new`() {
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.relive.ReliveScreen(
+                    state = com.yaadein.feature.relive.ReliveUiState(loading = false, rings = storyRings, totalMemories = 12, upcomingBirthdays = listOf(people[1] to 3)),
+                    onOpenMemory = {}, onOpenPerson = {}, onSurprise = {}, onDismissRandom = {}, onRecap = {}, onYear = {}, contentPadding = PaddingValues(),
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+        val descriptions = compose.onAllNodes(hasClickAction()).fetchSemanticsNodes().flatMap { it.config.getOrNull(SemanticsProperties.ContentDescription).orEmpty() }
+        assertTrue("an unseen ring is announced as new: $descriptions", "Today, new today" in descriptions)
+        assertTrue("a watched ring is announced as watched: $descriptions", "Aai, watched" in descriptions)
+    }
+
+    @Test
+    fun `story player clickables are labelled and its gestures have TalkBack actions`() {
+        val pages = cards.map { com.yaadein.domain.relive.StoryPage.Moment(it, yearsAgo = 2) }
+        compose.setContent {
+            YaadeinTheme {
+                com.yaadein.feature.relive.StoryPlayerScreen(
+                    state = com.yaadein.feature.relive.StoryPlayerUiState(loading = false, rings = storyRings, ringIndex = 0, pages = pages, pagesLoading = false),
+                    actions = com.yaadein.feature.relive.StoryPlayerActions(), motion = false,
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+        val actions = compose.onAllNodes(androidx.compose.ui.test.SemanticsMatcher.keyIsDefined(androidx.compose.ui.semantics.SemanticsActions.CustomActions))
+            .fetchSemanticsNodes().flatMap { it.config[androidx.compose.ui.semantics.SemanticsActions.CustomActions].map { a -> a.label } }
+        assertTrue("page and story moves are available without gestures: $actions", actions.containsAll(listOf("Next page", "Previous page", "Next story", "Previous story")))
+    }
+
+    @Test
+    fun `story note and music sheets are labelled`() {
+        compose.setContent {
+            YaadeinTheme {
+                androidx.compose.foundation.layout.Column {
+                    com.yaadein.feature.relive.AddNoteContent(onSave = {}, onRecordVoice = {})
+                    com.yaadein.feature.relive.StoryMusicContent(
+                        state = com.yaadein.feature.relive.StoryPlayerUiState(songs = listOf(com.yaadein.data.recap.OwnSong(uri = "content://songs/1", title = "Lag Jaa Gale", artist = "Lata Mangeshkar"))),
+                        onChoose = {}, onAdd = {},
+                    )
+                }
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
 }

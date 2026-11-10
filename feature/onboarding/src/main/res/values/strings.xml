@@ -7,4 +7,14 @@
     <string name="onboarding_3_title">Stories about the people you love</string>
     <string name="onboarding_3_body">Tag family and friends, see your story with each of them, and make reels to share on birthdays.</string>
     <string name="onboarding_add_first_person">Add your first person</string>
+    <string name="welcome_title">Your family’s memories, playing in a minute</string>
+    <string name="welcome_body">Pick a few photos and watch them become your story. Everything stays on this phone: no account, no internet.</string>
+    <string name="welcome_language">Language: %1$s</string>
+    <string name="welcome_language_system">Phone language</string>
+    <string name="welcome_pick">Pick photos to start</string>
+    <string name="welcome_pick_hint">10 to 20 favourites are plenty to begin</string>
+    <string name="welcome_sample">See a sample family</string>
+    <string name="welcome_importing">Bringing your photos in…</string>
+    <string name="welcome_sample_loading">Setting up the sample family…</string>
+    <string name="welcome_none_added">Those files could not be added. Try other photos.</string>
 </resources>

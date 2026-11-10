@@ -51,6 +51,8 @@ class AppSmokeTest {
     @Inject lateinit var lockState: AppLockState
     @Inject lateinit var pinManager: PinManager
     @Inject lateinit var seeder: DemoSeeder
+    @Inject lateinit var memories: com.yaadein.domain.repository.MemoryRepository
+    @Inject lateinit var persons: com.yaadein.domain.repository.PersonRepository
 
     private lateinit var scenario: ActivityScenario<MainActivity>
 
@@ -64,6 +66,114 @@ class AppSmokeTest {
         lockState.unlock()
         scenario = ActivityScenario.launch(MainActivity::class.java)
         compose.waitForIdle()
+    }
+
+    /** A cold start with other settings (a recreate would restore the old back stack instead of choosing a start screen). */
+    private fun relaunchWith(transform: (com.yaadein.domain.settings.UserSettings) -> com.yaadein.domain.settings.UserSettings) {
+        scenario.close()
+        runBlocking { settings.update(transform) }
+        scenario = ActivityScenario.launch(MainActivity::class.java)
+        compose.waitForIdle()
+    }
+
+    /**
+     * Waits for a settings write made by the app. The write resumes on the main thread, which Robolectric only runs when
+     * the test touches the UI, so each poll idles Compose first (a bare `runBlocking` poll would wait for ever).
+     */
+    private fun awaitSetting(condition: (com.yaadein.domain.settings.UserSettings) -> Boolean) {
+        compose.waitUntil(10_000) {
+            compose.waitForIdle()
+            org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle()
+            condition(runBlocking { settings.current() })
+        }
+    }
+
+    private fun shown(text: String) = compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+
+    @Test
+    fun `an existing user opens straight to home and is asked nothing new`() {
+        runBlocking {
+            val aai = persons.upsert(com.yaadein.domain.model.Person(name = "Sunita Deshmukh", nickname = "Aai"))
+            memories.create(com.yaadein.domain.model.Memory(type = com.yaadein.domain.model.MemoryType.TEXT_ONLY, title = "Diwali at home", date = com.yaadein.domain.dates.Dates.year(2024)), listOf(aai))
+        }
+        relaunchWith { it }
+        compose.onAllNodesWithText("Timeline")[0].assertIsDisplayed()
+        compose.waitUntil(10_000) { shown("Diwali at home") }
+        compose.onAllNodesWithText("Pick photos to start").assertCountEquals(0)
+        compose.onAllNodesWithText("Protect these memories?").assertCountEquals(0)
+        compose.onAllNodesWithText("Your memories have no lock yet").assertCountEquals(0)
+        compose.onAllNodesWithText("This is a sample family").assertCountEquals(0)
+        val s = runBlocking { settings.current() }
+        org.junit.Assert.assertTrue(s.onboardingDone && s.pinConfigured)
+    }
+
+    @Test
+    fun `a first run shows one welcome screen and skip lands on the empty home without a lock`() {
+        relaunchWith { com.yaadein.domain.settings.UserSettings() }
+        compose.onNodeWithText("Pick photos to start").assertExists()
+        compose.onNodeWithText("See a sample family").assertExists()
+        compose.onNode(hasText("Skip") and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(10_000) { shown("Timeline") }
+        val s = runBlocking { settings.current() }
+        org.junit.Assert.assertTrue(s.onboardingDone)
+        org.junit.Assert.assertFalse(s.pinConfigured)
+        // No person form, no PIN screen, no prompts on an empty vault.
+        compose.onAllNodesWithText("Welcome back").assertCountEquals(0)
+        compose.onAllNodesWithText("Protect these memories?").assertCountEquals(0)
+        compose.onAllNodesWithText("Pick photos to start").assertCountEquals(0)
+    }
+
+    @Test
+    fun `pick photos on the welcome screen opens the system photo picker`() {
+        relaunchWith { com.yaadein.domain.settings.UserSettings() }
+        compose.onNode(hasText("Pick photos to start") and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitForIdle()
+        var started: android.content.Intent? = null
+        scenario.onActivity { started = org.robolectric.Shadows.shadowOf(it).nextStartedActivityForResult?.intent }
+        org.junit.Assert.assertNotNull("the welcome screen's first button must open a picker", started)
+    }
+
+    @Test
+    fun `the sample family is labelled on home and one tap clears it`() {
+        relaunchWith { com.yaadein.domain.settings.UserSettings() }
+        compose.onNode(hasText("See a sample family") and hasClickAction()).performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(60_000) { shown("This is a sample family") }
+        org.junit.Assert.assertTrue(runBlocking { settings.current() }.demoMode)
+        org.junit.Assert.assertTrue(runBlocking { memories.count() } > 10)
+        compose.onAllNodesWithText("Protect these memories?").assertCountEquals(0)
+        compose.onNode(hasText("Clear sample and start mine") and hasClickAction()).performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(60_000) { !shown("This is a sample family") && !runBlocking { settings.current() }.demoMode }
+        org.junit.Assert.assertEquals(0, runBlocking { memories.count() })
+        org.junit.Assert.assertEquals(0, runBlocking { persons.count() })
+    }
+
+    private fun oneMemoryWithAPerson() = runBlocking {
+        val aai = persons.upsert(com.yaadein.domain.model.Person(name = "Sunita Deshmukh", nickname = "Aai"))
+        memories.create(com.yaadein.domain.model.Memory(type = com.yaadein.domain.model.MemoryType.TEXT_ONLY, title = "Diwali at home", date = com.yaadein.domain.dates.Dates.year(2024)), listOf(aai))
+    }
+
+    @Test
+    fun `without a lock the first memory offers protection over the timeline`() {
+        oneMemoryWithAPerson()
+        relaunchWith { it.copy(pinConfigured = false) }
+        compose.waitUntil(10_000) { shown("Protect these memories?") }
+        // The timeline is already there underneath: the sheet does not block the first look, and no lock screen is forced.
+        org.junit.Assert.assertTrue(shown("Diwali at home"))
+        compose.onAllNodesWithText("Choose a 6-digit PIN").assertCountEquals(0)
+        // "Not now" puts it off once: the sheet goes and a card stays on Home.
+        compose.onNode(hasText("Not now") and hasClickAction()).performClick()
+        awaitSetting { it.lockPromptPostponed }
+        compose.waitUntil(10_000) { !shown("Protect these memories?") && shown("Your memories have no lock yet") }
+    }
+
+    @Test
+    fun `after the lock offer is put off a home card stays and opens lock setup`() {
+        oneMemoryWithAPerson()
+        relaunchWith { it.copy(pinConfigured = false, lockPromptPostponed = true) }
+        compose.waitUntil(10_000) { shown("Your memories have no lock yet") }
+        compose.onAllNodesWithText("Protect these memories?").assertCountEquals(0)
+        compose.onNode(hasText("Set a PIN") and hasClickAction()).performClick()
+        compose.waitUntil(10_000) { shown("Choose a 6-digit PIN") }
     }
 
     /** The + button inside the bottom bar's Create item (its own node: a long-press target with a TalkBack action). */
@@ -128,6 +238,27 @@ class AppSmokeTest {
         compose.onNodeWithContentDescription("Back").performClick()
         compose.waitForIdle()
         compose.onAllNodesWithText("Relive")[0].assertIsDisplayed()
+    }
+
+    @Test
+    fun `a story ring on relive opens the full-screen player and close comes back`() {
+        runBlocking { seeder.seed() }
+        // Animations off, as on a phone with "Remove animations": the story then waits for taps instead of playing on,
+        // which also keeps the test clock from running through every story.
+        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        android.provider.Settings.Global.putFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
+        scenario.recreate()
+        compose.waitForIdle()
+        tab("Relive")
+        compose.waitUntil(10_000) { compose.onAllNodes(hasContentDescription("Today, new today")).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNode(hasContentDescription("Today, new today")).performSemanticsAction(SemanticsActions.OnClick)
+        compose.waitUntil(20_000) { compose.onAllNodes(hasContentDescription("Close story")).fetchSemanticsNodes().isNotEmpty() }
+        // Let the story load its pages: closing before anything was shown does not count as watching it.
+        compose.waitUntil(20_000) { compose.onAllNodes(hasContentDescription("Story, page", substring = true)).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithContentDescription("Close story").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("Your reels").fetchSemanticsNodes().isNotEmpty() }
+        // Watching it once is remembered for the day.
+        awaitSetting { it.storySeen.contains("today") }
     }
 
     @Test

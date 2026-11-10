@@ -45,6 +45,11 @@ class MainActivity : FragmentActivity() {
     /** Where a reminder notification asked to go, opened once unlocked. */
     private val pendingNav = MutableStateFlow<PendingNav?>(null)
 
+    /** The language chosen on the welcome screen, on phones before Android 13 (newer ones keep it themselves). */
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.yaadein.core.ui.util.AppLanguage.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
         super.onCreate(savedInstanceState)

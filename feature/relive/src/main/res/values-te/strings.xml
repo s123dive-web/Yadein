@@ -53,4 +53,39 @@
     <string name="relive_festival_upcoming_help">గత సంవత్సరాల %1$s ఫోటోలు ఇక్కడ కనిపిస్తాయి.</string>
     <string name="reminder_festival_today">%1$s శుభాకాంక్షలు! ఈరోజు ఫోటోలను Yaadein లో జోడించండి</string>
     <string name="reminder_festival_today_text">ఒక సంవత్సరం తర్వాత, మళ్ళీ చూడాలనుకునే రోజు ఇదే.</string>
+    <string name="first_story_title">మీ జ్ఞాపకాలు వచ్చేశాయి</string>
+    <string name="first_story_preparing">మీ ఫోటోలు సిద్ధమవుతున్నాయి…</string>
+    <string name="first_story_progress">%2$d లో %1$d ఫోటోలు సురక్షితంగా భద్రపరచబడ్డాయి</string>
+    <string name="first_story_continue">నా టైమ్‌లైన్‌కు వెళ్లు</string>
+    <string name="first_story_new">ఇప్పుడే జోడించారు</string>
+    <string name="story_rings_title">కథలు</string>
+    <string name="story_ring_today">ఈ రోజు</string>
+    <string name="story_ring_new_cd">%1$s, ఈ రోజు కొత్తది</string>
+    <string name="story_ring_seen_cd">%1$s, చూశారు</string>
+    <string name="story_close">కథను మూసివేయి</string>
+    <string name="story_next_page">తదుపరి పేజీ</string>
+    <string name="story_previous_page">మునుపటి పేజీ</string>
+    <string name="story_next_story">తదుపరి కథ</string>
+    <string name="story_previous_story">మునుపటి కథ</string>
+    <string name="story_mute">సంగీతాన్ని ఆపు</string>
+    <string name="story_unmute">సంగీతాన్ని ప్లే చేయి</string>
+    <string name="story_music">సంగీతాన్ని ఎంచుకోండి</string>
+    <string name="story_music_bundled">Yaadein సంగీతం</string>
+    <string name="story_music_add">ఫోన్ నుండి జోడించు</string>
+    <string name="story_music_help">మీ ఫోన్‌లోని పాట మీ కథలతో పాటు వినిపించవచ్చు. అది ఇక్కడే చదవబడుతుంది, ఎక్కడికీ కాపీ కాదు, పంపబడదు.</string>
+    <string name="story_add_note">మీకు గుర్తున్నది జోడించండి</string>
+    <string name="story_add_note_hint">ఒక వాక్యం, ఒక పేరు, ఒక వాసన… మీకు గుర్తున్న ఏదైనా</string>
+    <string name="story_add_note_save">ఈ జ్ఞాపకంలో సేవ్ చేయి</string>
+    <string name="story_add_note_voice">బదులుగా వాయిస్ రికార్డ్ చేయండి</string>
+    <string name="story_make_reel">ఈ కథ నుండి రీల్ చేయండి</string>
+    <string name="story_then">అప్పుడు</string>
+    <string name="story_now">ఇప్పుడు</string>
+    <string name="story_then_now">%1$s, అప్పుడు ఇప్పుడు</string>
+    <plurals name="story_years_apart"><item quantity="one">%1$d సంవత్సరం తేడా</item><item quantity="other">%1$d సంవత్సరాల తేడా</item></plurals>
+    <string name="story_milestone_count">%1$d జ్ఞాపకాలు భద్రపరిచారు</string>
+    <string name="story_milestone_count_sub">ప్రతి ఒక్కటీ ఈ ఫోన్‌లో సురక్షితంగా ఉంది.</string>
+    <plurals name="story_years_with"><item quantity="one">%2$s తో %1$d సంవత్సరం</item><item quantity="other">%2$s తో %1$d సంవత్సరాలు</item></plurals>
+    <string name="story_years_with_sub">మీ మొదటి ఉమ్మడి జ్ఞాపకం నుండి.</string>
+    <string name="story_empty">ఈ కథలో చూపడానికి ఇంకా ఏమీ లేదు</string>
+    <string name="story_ring_this_year">ఈ సంవత్సరం</string>
 </resources>

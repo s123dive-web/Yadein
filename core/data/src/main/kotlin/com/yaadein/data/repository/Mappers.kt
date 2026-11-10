@@ -50,6 +50,7 @@ internal fun MemoryEntity.toDomain() = Memory(
     place = place, mood = mood?.let { m -> Mood.entries.firstOrNull { it.name == m } },
     coverMediaId = coverMediaId, coverStyle = coverStyle, voiceNotePath = voiceNotePath,
     createdAt = createdAt, updatedAt = updatedAt,
+    favorite = favorite, lastOpenedAt = lastOpenedAt,
 )
 
 internal fun Memory.toEntity() = MemoryEntity(
@@ -57,6 +58,7 @@ internal fun Memory.toEntity() = MemoryEntity(
     dateKind = date.kind.name, startEpochDay = date.startEpochDay, endEpochDay = date.endEpochDay,
     fuzzyLabel = date.label, place = place.trim(), mood = mood?.name, coverMediaId = coverMediaId,
     coverStyle = coverStyle, voiceNotePath = voiceNotePath, createdAt = createdAt, updatedAt = updatedAt,
+    favorite = favorite, lastOpenedAt = lastOpenedAt,
 )
 
 internal fun MediaEntity.toDomain() = Media(

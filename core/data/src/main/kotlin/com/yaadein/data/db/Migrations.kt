@@ -65,5 +65,13 @@ object Migrations {
         }
     }
 
-    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+    /** Relive 2: a favourite flag and a "last opened" time on memories (stories lean towards both). */
+    val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `memories` ADD COLUMN `favorite` INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE `memories` ADD COLUMN `last_opened_at` INTEGER")
+        }
+    }
+
+    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
 }

@@ -74,6 +74,8 @@ fun DailyStoryCard(
     onOpenMemory: (Long) -> Unit,
     onOpenPerson: (Long) -> Unit,
     modifier: Modifier = Modifier,
+    /** Label for pages that are not "N years ago"; null means "Memory of the day". The first story says "Just added". */
+    momentLabel: String? = null,
 ) {
     if (pages.isEmpty()) return
     val pagerState = rememberPagerState { pages.size }
@@ -119,7 +121,7 @@ fun DailyStoryCard(
                     )
                 },
             ) {
-                StoryPageContent(page = pages[index], onOpenMemory = onOpenMemory, onOpenPerson = onOpenPerson)
+                StoryPageContent(page = pages[index], onOpenMemory = onOpenMemory, onOpenPerson = onOpenPerson, momentLabel = momentLabel)
             }
         }
         // Progress segments, one per page.
@@ -144,14 +146,19 @@ fun DailyStoryCard(
 private fun pageKey(page: StoryPage): String = when (page) {
     is StoryPage.Moment -> "m-${page.card.memory.id}-${page.yearsAgo}"
     is StoryPage.Spotlight -> "p-${page.person.id}"
+    is StoryPage.ThenNow -> "t-${page.pair.then.mediaId}-${page.pair.now.mediaId}"
+    is StoryPage.Milestone -> "s-${page.milestone}"
 }
 
 @Composable
-private fun StoryPageContent(page: StoryPage, onOpenMemory: (Long) -> Unit, onOpenPerson: (Long) -> Unit) {
+private fun StoryPageContent(page: StoryPage, onOpenMemory: (Long) -> Unit, onOpenPerson: (Long) -> Unit, momentLabel: String?) {
     val spacing = Yaadein.spacing
     val card = when (page) {
         is StoryPage.Moment -> page.card
         is StoryPage.Spotlight -> page.card
+        // Then & Now and milestones belong to the full-screen player; this card only ever gets the two kinds above.
+        is StoryPage.ThenNow -> null
+        is StoryPage.Milestone -> page.card
     }
     Box(Modifier.fillMaxSize()) {
         StoryBackground(card)
@@ -167,7 +174,7 @@ private fun StoryPageContent(page: StoryPage, onOpenMemory: (Long) -> Unit, onOp
             when (page) {
                 is StoryPage.Moment -> {
                     Text(
-                        page.yearsAgo?.let { pluralStringResource(R.plurals.relive_years_ago, it, it) } ?: stringResource(R.string.relive_story_memory_of_day),
+                        page.yearsAgo?.let { pluralStringResource(R.plurals.relive_years_ago, it, it) } ?: momentLabel ?: stringResource(R.string.relive_story_memory_of_day),
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White.copy(alpha = 0.9f),
                     )
@@ -191,6 +198,7 @@ private fun StoryPageContent(page: StoryPage, onOpenMemory: (Long) -> Unit, onOp
                     Spacer(Modifier.height(spacing.xs))
                     StoryButton(stringResource(R.string.relive_story_see_person)) { onOpenPerson(page.person.id) }
                 }
+                is StoryPage.ThenNow, is StoryPage.Milestone -> Unit
             }
         }
     }

@@ -403,6 +403,38 @@
             <string>%1$d వీడియోలు</string>
         </dict>
     </dict>
+    <key>story_years_apart</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d సంవత్సరం తేడా</string>
+            <key>other</key>
+            <string>%1$d సంవత్సరాల తేడా</string>
+        </dict>
+    </dict>
+    <key>story_years_with</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%2$@ తో %1$d సంవత్సరం</string>
+            <key>other</key>
+            <string>%2$@ తో %1$d సంవత్సరాలు</string>
+        </dict>
+    </dict>
     <key>usage_captures</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

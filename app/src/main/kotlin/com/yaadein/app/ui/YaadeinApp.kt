@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.yaadein.app.navigation.AppNavHost
 import com.yaadein.app.navigation.Route
+import com.yaadein.app.navigation.startRoute
 import com.yaadein.core.ui.theme.YaadeinTheme
 import com.yaadein.feature.lock.BiometricLauncher
 import com.yaadein.feature.lock.DeviceLockLauncher
@@ -52,13 +53,7 @@ fun YaadeinApp(
         }
         val navController = rememberNavController()
         // Start destination is decided once per process from persisted state.
-        val start: Route = remember {
-            when {
-                !settings.onboardingDone -> Route.Onboarding
-                !settings.pinConfigured -> Route.LockSetup
-                else -> Route.Home
-            }
-        }
+        val start: Route = remember { startRoute(settings.onboardingDone) }
         val unlocked = !locked || !settings.pinConfigured
         // Open what a reminder notification pointed at, once the vault is unlocked.
         LaunchedEffect(pendingNav, unlocked, start) {
@@ -72,17 +67,18 @@ fun YaadeinApp(
                 onPendingConsumed()
             }
         }
-        // Photos/videos shared from a gallery app: open Quick Save with them, but only once unlocked and set up.
-        LaunchedEffect(hasSharedMedia, unlocked, settings.onboardingDone, settings.pinConfigured) {
-            if (hasSharedMedia && unlocked && settings.onboardingDone && settings.pinConfigured) {
+        // Photos/videos shared from a gallery app: open Quick Save with them, but only once unlocked and past the welcome screen.
+        LaunchedEffect(hasSharedMedia, unlocked, settings.onboardingDone) {
+            if (hasSharedMedia && unlocked && settings.onboardingDone) {
                 navController.navigate(Route.QuickSave(fromShare = true))
             }
         }
         // Keep the three automatic reels ready (queues background work only when they are missing or a day old).
         val autoReels: AutoReelsViewModel = hiltViewModel()
         val session: SessionViewModel = hiltViewModel()
-        LaunchedEffect(unlocked, settings.onboardingDone, settings.pinConfigured) {
-            if (unlocked && settings.onboardingDone && settings.pinConfigured) {
+        LaunchedEffect(unlocked, settings.onboardingDone) {
+            // A lock is optional now (offered on Home after the first memory), so only onboarding gates this.
+            if (unlocked && settings.onboardingDone) {
                 autoReels.ensure()
                 session.onUnlocked(settings)
             }
