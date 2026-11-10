@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "00000000000000000000000000000004",
+    "identityHash": "09eaf412c57d99d9353a2c4cd037927d",
     "entities": [
       {
         "tableName": "persons",
@@ -986,7 +986,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '00000000000000000000000000000004')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '09eaf412c57d99d9353a2c4cd037927d')"
     ]
   }
 }
