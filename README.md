@@ -168,7 +168,7 @@ storage permission to the merged manifest; `ManifestPermissionsTest` checks the 
 | Does your app collect or share any of the required user data types? | **No.** |
 | Is all of the user data collected by your app encrypted in transit? | Not applicable — the app has no network access (no INTERNET permission). |
 | Do you provide a way for users to request that their data is deleted? | Yes — uninstalling the app or using *Settings → Storage → Erase everything* deletes all data; nothing is stored off-device. |
-| Data types | None collected, none shared. Photos, videos and text the user adds are stored only on the device, encrypted. |
+| Data types | None collected, none shared. Photos, videos and text the user adds are stored only on the device, encrypted. Face suggestions (optional, off by default) compute face measurements on the device with a bundled model; they are stored only in the encrypted vault, never collected or shared, and deleted with the person or via Settings → Face suggestions → Delete all face data. |
 | Security practices | Data encrypted at rest (SQLCipher + AES-256). No data sent to third parties. Independent security review: no. |
 | Permissions | `USE_BIOMETRIC`/`USE_FINGERPRINT` (app lock), `POST_NOTIFICATIONS` (reminders), `CAMERA` (optional in-app capture), `RECORD_AUDIO` (voice memories, only while recording), `VIBRATE` (haptics). WorkManager adds `WAKE_LOCK`, `FOREGROUND_SERVICE` and `RECEIVE_BOOT_COMPLETED` for background video rendering and daily reminders. Photos are imported with the Android Photo Picker, which needs no storage permission. |
 
@@ -177,4 +177,8 @@ See [PRIVACY.md](PRIVACY.md) for the user-facing policy.
 ## Licences
 
 Fraunces and Manrope are bundled under the SIL Open Font License 1.1. Material Symbols are Apache 2.0.
+The face-recognition model `core/data/src/main/assets/faces/ghostfacenet_v1_w1.3_s1_int8.tflite` is GhostFaceNetV1
+(width 1.3, stride 1, ArcFace) from [HamadYA/GhostFaceNets](https://github.com/HamadYA/GhostFaceNets), MIT License,
+Copyright (c) 2022 HamadYA (full text in `scripts/faces/LICENSE.GhostFaceNets.txt`), converted with
+`scripts/faces/convert_ghostfacenet.py` (int8 dynamic-range quantisation; 4.5 MB). It runs with LiteRT on the CPU only.
 Bundled recap tracks are original, generated for this project and free to use within the app.

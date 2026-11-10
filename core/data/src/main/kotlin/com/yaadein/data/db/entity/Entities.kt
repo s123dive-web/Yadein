@@ -33,7 +33,17 @@ data class PersonEntity(
     val notes: String,
     @ColumnInfo(name = "avatar_color_index") val avatarColorIndex: Int,
     @ColumnInfo(name = "created_at") val createdAt: Long,
-)
+    /** Mean of this person's confirmed face embeddings (schema v3), little-endian float32; null until a face is confirmed. */
+    val centroid: ByteArray? = null,
+    @ColumnInfo(name = "centroid_model") val centroidModel: Int? = null,
+    @ColumnInfo(name = "confirmed_faces", defaultValue = "0") val confirmedFaces: Int = 0,
+) {
+    override fun equals(other: Any?): Boolean = other is PersonEntity && other.id == id && other.name == name && other.nickname == nickname &&
+        other.relation == relation && other.birthdayEpochDay == birthdayEpochDay && other.profileMediaId == profileMediaId && other.notes == notes &&
+        other.avatarColorIndex == avatarColorIndex && other.createdAt == createdAt && other.confirmedFaces == confirmedFaces &&
+        other.centroidModel == centroidModel && (other.centroid?.contentEquals(centroid) ?: (centroid == null))
+    override fun hashCode(): Int = id.hashCode()
+}
 
 @Entity(tableName = "groups")
 data class GroupEntity(
@@ -112,6 +122,8 @@ data class MediaEntity(
     /** EXIF GPS position (schema v2); null when the photo has none. */
     val latitude: Double? = null,
     val longitude: Double? = null,
+    /** The face model version that last scanned this photo (schema v3); 0 = never. */
+    @ColumnInfo(name = "face_scan_version", defaultValue = "0") val faceScanVersion: Int = 0,
 )
 
 @Entity(
@@ -142,30 +154,53 @@ data class MemoryPersonEntity(
     @ColumnInfo(name = "person_id") val personId: Long,
 )
 
+/** One detected face (schema v3): its embedding, where it sits in the photo, and who it is, if known. */
 @Entity(
-    tableName = "face_clusters",
-    indices = [Index("sample_media_id"), Index("suggested_person_id")],
+    tableName = "faces",
+    indices = [Index("media_id"), Index("person_id"), Index("state")],
     foreignKeys = [
-        ForeignKey(entity = MediaEntity::class, parentColumns = ["id"], childColumns = ["sample_media_id"], onDelete = ForeignKey.CASCADE),
-        ForeignKey(entity = PersonEntity::class, parentColumns = ["id"], childColumns = ["suggested_person_id"], onDelete = ForeignKey.SET_NULL),
+        ForeignKey(entity = MediaEntity::class, parentColumns = ["id"], childColumns = ["media_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = PersonEntity::class, parentColumns = ["id"], childColumns = ["person_id"], onDelete = ForeignKey.SET_NULL),
     ],
 )
-data class FaceClusterEntity(
+data class FaceEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "media_id") val mediaId: Long,
+    /** Unit-length embedding, little-endian float32 (FaceModel.EMBEDDING_SIZE values). */
     val embedding: ByteArray,
-    @ColumnInfo(name = "sample_media_id") val sampleMediaId: Long?,
-    @ColumnInfo(name = "sample_left") val sampleLeft: Float,
-    @ColumnInfo(name = "sample_top") val sampleTop: Float,
-    @ColumnInfo(name = "sample_right") val sampleRight: Float,
-    @ColumnInfo(name = "sample_bottom") val sampleBottom: Float,
-    @ColumnInfo(name = "suggested_person_id") val suggestedPersonId: Long?,
-    @ColumnInfo(defaultValue = "0") val confirmed: Boolean,
-    @ColumnInfo(name = "face_count", defaultValue = "1") val faceCount: Int,
+    @ColumnInfo(name = "model_version") val modelVersion: Int,
+    /** Face box size relative to the photo's longest side (bigger = sharper = more trustworthy). */
+    val quality: Float,
+    @ColumnInfo(name = "box_left") val boxLeft: Float,
+    @ColumnInfo(name = "box_top") val boxTop: Float,
+    @ColumnInfo(name = "box_right") val boxRight: Float,
+    @ColumnInfo(name = "box_bottom") val boxBottom: Float,
+    /** Who this is (confirmed or suggested); null while unknown. */
+    @ColumnInfo(name = "person_id") val personId: Long?,
+    /** UNKNOWN | SUGGESTED | AUTO | CONFIRMED (FaceState). */
+    val state: String,
+    /** Similarity to the person's centroid when suggested or auto-tagged. */
+    val similarity: Float?,
     @ColumnInfo(name = "created_at") val createdAt: Long,
 ) {
-    override fun equals(other: Any?): Boolean = other is FaceClusterEntity && other.id == id
+    override fun equals(other: Any?): Boolean = other is FaceEntity && other.id == id
     override fun hashCode(): Int = id.hashCode()
 }
+
+/** "Not this person": a face the user said is not [personId]; never suggested again for them. */
+@Entity(
+    tableName = "face_rejections",
+    primaryKeys = ["face_id", "person_id"],
+    indices = [Index("person_id")],
+    foreignKeys = [
+        ForeignKey(entity = FaceEntity::class, parentColumns = ["id"], childColumns = ["face_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = PersonEntity::class, parentColumns = ["id"], childColumns = ["person_id"], onDelete = ForeignKey.CASCADE),
+    ],
+)
+data class FaceRejectionEntity(
+    @ColumnInfo(name = "face_id") val faceId: Long,
+    @ColumnInfo(name = "person_id") val personId: Long,
+)
 
 /** Denormalised full-text index: one row per memory. docid == memory id. */
 @Fts4(tokenizer = FtsOptions.TOKENIZER_UNICODE61)

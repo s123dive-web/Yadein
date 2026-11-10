@@ -113,6 +113,13 @@ jobs:
       - name: Warn when still signed with the public debug key
         if: env.HAS_RELEASE_KEY != 'true'
         run: echo "::warning::APK is signed with the public debug key. Add the KEYSTORE_* secrets (docs/RELEASE_SIGNING.md) to finish securing updates."
+      - name: APK size (Fast & Rich budget, at most 6 MB over the 58.5 MB Phase 0 baseline)
+        run: |
+          APK=$(ls app/build/outputs/apk/beta/Yaadein-*.apk)
+          SIZE=$(stat -c %s "$APK")
+          echo "APK_SIZE_BYTES=$SIZE ($(( SIZE / 1048576 )) MiB) $APK"
+          echo "### Beta APK: $(( SIZE / 1048576 )) MiB ($SIZE bytes)" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$SIZE" -gt 64790000 ]; then echo "::error::APK is $SIZE bytes, over the 6 MB round budget (baseline 58,499,460)"; exit 1; fi
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:

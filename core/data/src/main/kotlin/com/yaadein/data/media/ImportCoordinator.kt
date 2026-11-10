@@ -110,6 +110,12 @@ class ImportCoordinator @Inject constructor(
 
     fun clearFailures() = _progress.update { it.copy(failures = emptyList()) }
 
+    /** Runs [block] while no import is encrypting (the face re-index worker shares the one heavy-work slot). */
+    suspend fun <T> withImportLock(block: suspend () -> T): T = mutex.withLock { block() }
+
+    /** True while photos are still being encrypted (the re-index worker steps aside). */
+    val importing: Boolean get() = _progress.value.running
+
     companion object {
         val ImportFailure.kind: ImportFailureKind
             get() = when (this) {

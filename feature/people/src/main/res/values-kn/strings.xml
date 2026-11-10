@@ -45,4 +45,33 @@
     <string name="relationships_empty_message">ಒಂದೇ ನೆನಪುಗಳಲ್ಲಿ ಇಬ್ಬರು ಅಥವಾ ಹೆಚ್ಚು ಜನರನ್ನು ಟ್ಯಾಗ್ ಮಾಡಿ, ನಕ್ಷೆ ಬೆಳೆಯುತ್ತದೆ.</string>
     <string name="relationships_hint">ದೊಡ್ಡ ಗುಳ್ಳೆಗಳು ಹೆಚ್ಚು ನೆನಪುಗಳಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ. ದಪ್ಪ ಗೆರೆಗಳು ಎಂದರೆ ಒಟ್ಟಿಗೆ ಹೆಚ್ಚು ನೆನಪುಗಳು.</string>
     <string name="person_stat_memories">ನೆನಪುಗಳು</string>
+    <plurals name="people_faces_banner">
+        <item quantity="one">ಹೆಸರಿಸಲು %1$d ಮುಖ</item>
+        <item quantity="other">ಹೆಸರಿಸಲು %1$d ಮುಖಗಳು</item>
+    </plurals>
+    <string name="people_faces_banner_hint">ನಿಮ್ಮ ಫೋಟೋಗಳಲ್ಲಿ Yaadein ಗೆ ಇನ್ನೂ ಗೊತ್ತಿಲ್ಲದ ಜನರು ಸಿಕ್ಕಿದ್ದಾರೆ.</string>
+    <string name="people_faces_banner_action">ಇವರು ಯಾರು?</string>
+    <string name="who_title">ಇವರು ಯಾರು?</string>
+    <string name="who_intro">ಈ ಮುಖಗಳು ಒಬ್ಬರೇ ವ್ಯಕ್ತಿಯವು ಎನಿಸುತ್ತದೆ. ಯಾರು ಎಂದು ಆರಿಸಿ, ಪ್ರತಿ ಫೋಟೋ ಒಮ್ಮೆಗೇ ಟ್ಯಾಗ್ ಆಗುತ್ತದೆ. ನೀವು ಹೇಳುವವರೆಗೆ ಏನೂ ಟ್ಯಾಗ್ ಆಗುವುದಿಲ್ಲ.</string>
+    <plurals name="who_seen_in">
+        <item quantity="one">%1$d ಫೋಟೋದಲ್ಲಿ ಕಾಣಿಸಿದೆ</item>
+        <item quantity="other">%1$d ಫೋಟೋಗಳಲ್ಲಿ ಕಾಣಿಸಿದೆ</item>
+    </plurals>
+    <plurals name="who_remaining">
+        <item quantity="one">ಇನ್ನೂ %1$d ಬಾಕಿ</item>
+        <item quantity="other">ಇನ್ನೂ %1$d ಬಾಕಿ</item>
+    </plurals>
+    <string name="who_face_cd">%2$d ರಲ್ಲಿ %1$dನೇ ಮುಖ</string>
+    <string name="who_pick_person">ಇವರು ಯಾರು?</string>
+    <string name="who_add_person">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ</string>
+    <string name="who_name_them">ಹೆಸರಿಸಿ</string>
+    <string name="who_name_as">ಇವರು %1$s</string>
+    <string name="who_not_same">ಒಬ್ಬರೇ ವ್ಯಕ್ತಿ ಅಲ್ಲ</string>
+    <plurals name="who_named">
+        <item quantity="one">%1$d ಮುಖಕ್ಕೆ %2$s ಎಂದು ಹೆಸರಿಸಲಾಗಿದೆ</item>
+        <item quantity="other">%1$d ಮುಖಗಳಿಗೆ %2$s ಎಂದು ಹೆಸರಿಸಲಾಗಿದೆ</item>
+    </plurals>
+    <string name="who_undo">ರದ್ದುಮಾಡಿ</string>
+    <string name="who_empty_title">ಪ್ರತಿ ಮುಖಕ್ಕೂ ಹೆಸರಿದೆ</string>
+    <string name="who_empty_message">ಫೋಟೋಗಳನ್ನು ಸೇರಿಸುತ್ತಾ ಹೋದಂತೆ ಹೊಸ ಮುಖಗಳು ಇಲ್ಲಿ ಕಾಯುತ್ತವೆ. ಇನ್ನಷ್ಟು ಹುಡುಕಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಮುಖದ ಸಲಹೆಗಳನ್ನು ಆನ್ ಮಾಡಿ.</string>
 </resources>

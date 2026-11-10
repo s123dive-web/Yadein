@@ -45,4 +45,33 @@
     <string name="relationships_empty_message">একই স্মৃতিতে দুই বা তার বেশি মানুষকে ট্যাগ করুন, মানচিত্রটা বড় হতে থাকবে।</string>
     <string name="relationships_hint">বড় বুদবুদ মানে বেশি স্মৃতিতে আছেন। মোটা রেখা মানে একসঙ্গে বেশি স্মৃতি।</string>
     <string name="person_stat_memories">স্মৃতি</string>
+    <plurals name="people_faces_banner">
+        <item quantity="one">%1$dটি মুখের নাম দিতে হবে</item>
+        <item quantity="other">%1$dটি মুখের নাম দিতে হবে</item>
+    </plurals>
+    <string name="people_faces_banner_hint">Yaadein আপনার ছবিতে এমন মানুষ পেয়েছে যাঁদের সে এখনও চেনে না।</string>
+    <string name="people_faces_banner_action">ইনি কে?</string>
+    <string name="who_title">ইনি কে?</string>
+    <string name="who_intro">এই মুখগুলো একই মানুষের বলে মনে হচ্ছে। কে, তা বেছে নিন, প্রতিটি ছবি একসঙ্গে ট্যাগ হয়ে যাবে। আপনি না বললে কিছুই ট্যাগ হয় না।</string>
+    <plurals name="who_seen_in">
+        <item quantity="one">%1$dটি ছবিতে দেখা গেছে</item>
+        <item quantity="other">%1$dটি ছবিতে দেখা গেছে</item>
+    </plurals>
+    <plurals name="who_remaining">
+        <item quantity="one">আরও %1$dটি বাকি</item>
+        <item quantity="other">আরও %1$dটি বাকি</item>
+    </plurals>
+    <string name="who_face_cd">%2$dটির মধ্যে %1$d নম্বর মুখ</string>
+    <string name="who_pick_person">ইনি কে?</string>
+    <string name="who_add_person">মানুষ যোগ করুন</string>
+    <string name="who_name_them">নাম দিন</string>
+    <string name="who_name_as">ইনি %1$s</string>
+    <string name="who_not_same">একই মানুষ নন</string>
+    <plurals name="who_named">
+        <item quantity="one">%1$dটি মুখের নাম দেওয়া হল %2$s</item>
+        <item quantity="other">%1$dটি মুখের নাম দেওয়া হল %2$s</item>
+    </plurals>
+    <string name="who_undo">ফিরিয়ে নিন</string>
+    <string name="who_empty_title">প্রতিটি মুখেরই নাম আছে</string>
+    <string name="who_empty_message">ছবি যোগ করলে নতুন মুখ এখানে অপেক্ষা করবে। আরও খুঁজতে সেটিংসে মুখ চেনার পরামর্শ চালু করুন।</string>
 </resources>

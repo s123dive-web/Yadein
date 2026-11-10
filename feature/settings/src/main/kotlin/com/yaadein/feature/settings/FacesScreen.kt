@@ -1,24 +1,24 @@
 package com.yaadein.feature.settings
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Face
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -34,30 +34,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import com.yaadein.core.ui.components.PersonAvatar
-import com.yaadein.core.ui.media.ThumbnailImage
+import androidx.work.WorkInfo
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.data.db.AppDatabase
-import com.yaadein.data.db.entity.FaceClusterEntity
 import com.yaadein.data.faces.FaceSuggester
-import com.yaadein.domain.model.Person
-import com.yaadein.domain.repository.MediaRepository
-import com.yaadein.domain.repository.PersonRepository
+import com.yaadein.domain.faces.FaceModel
 import com.yaadein.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -66,125 +59,158 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.yaadein.core.ui.R as CoreR
 
-data class FaceSuggestion(val cluster: FaceClusterEntity, val suggested: Person?)
-
 data class FacesUiState(
     val enabled: Boolean = false,
-    val people: List<Person> = emptyList(),
-    val suggestions: List<FaceSuggestion> = emptyList(),
-    val scanning: Boolean = false,
-    val scanned: Int = 0,
-    val scanTotal: Int = 0,
+    /** Faces nobody has named yet (the "Who is this?" queue). */
+    val unknownFaces: Int = 0,
+    /** Photos the current model has not looked at. */
+    val unscannedPhotos: Int = 0,
+    val indexing: Boolean = false,
+    val indexDone: Int = 0,
+    val indexTotal: Int = 0,
 )
 
+/**
+ * Settings → Face suggestions: the opt-in switch with a plain explanation, the state of the background index, the way
+ * into "Who is this?", and "Delete all face data". Recognition never runs until the switch is on.
+ */
 @HiltViewModel
 class FacesViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
-    private val personRepository: PersonRepository,
-    private val mediaRepository: MediaRepository,
     private val suggester: FaceSuggester,
-    private val db: AppDatabase,
+    db: AppDatabase,
 ) : ViewModel() {
-    private val scan = MutableStateFlow(Triple(false, 0, 0))
-
-    val state: StateFlow<FacesUiState> = combine(settingsRepository.settings, personRepository.observeAll(), db.faceDao().observeAll(), scan) { s, people, clusters, sc ->
+    val state: StateFlow<FacesUiState> = combine(
+        settingsRepository.settings,
+        db.faceDao().observeUnknownCount(),
+        db.faceDao().observeUnscannedCount(FaceModel.VERSION),
+        FaceReindexWorker.observe(context),
+    ) { s, unknown, unscanned, work ->
+        val running = work.firstOrNull { it.state == WorkInfo.State.RUNNING || it.state == WorkInfo.State.ENQUEUED }
         FacesUiState(
-            enabled = s.faceSuggestions, people = people,
-            suggestions = clusters.filter { !it.confirmed }.map { c -> FaceSuggestion(c, people.firstOrNull { it.id == c.suggestedPersonId }) },
-            scanning = sc.first, scanned = sc.second, scanTotal = sc.third,
+            enabled = s.faceSuggestions,
+            unknownFaces = unknown,
+            unscannedPhotos = unscanned,
+            indexing = running != null,
+            indexDone = running?.progress?.getInt(FaceReindexWorker.KEY_DONE, 0) ?: 0,
+            indexTotal = running?.progress?.getInt(FaceReindexWorker.KEY_TOTAL, 0) ?: 0,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FacesUiState())
 
-    fun setEnabled(v: Boolean) { viewModelScope.launch { settingsRepository.update { it.copy(faceSuggestions = v) }; if (!v) suggester.clearAll() } }
-
-    fun scanLibrary() {
+    /** Turning it on starts the index straight away; turning it off stops it (face data stays until deleted). */
+    fun setEnabled(v: Boolean) {
         viewModelScope.launch {
-            val all = db.mediaDao().all().filter { it.kind == "PHOTO" }
-            scan.value = Triple(true, 0, all.size)
-            all.forEachIndexed { i, m -> runCatching { suggester.scan(m.id) }; scan.value = Triple(true, i + 1, all.size) }
-            scan.value = Triple(false, all.size, all.size)
+            settingsRepository.update { it.copy(faceSuggestions = v) }
+            if (v) FaceReindexWorker.enqueue(context, now = true) else FaceReindexWorker.cancel(context)
         }
     }
 
-    /** "Yes, this is Rahul": confirm and tag the sample photo with the person. */
-    fun confirm(cluster: FaceClusterEntity, person: Person) {
+    fun scanNow() = FaceReindexWorker.enqueue(context, now = true)
+
+    /** Every embedding, rejection and centroid goes; tags already on photos stay. */
+    fun deleteAll() {
         viewModelScope.launch {
-            db.faceDao().assign(cluster.id, person.id, confirmed = true)
-            cluster.sampleMediaId?.let { mediaId ->
-                val existing = db.mediaDao().personIds(mediaId)
-                if (person.id !in existing) mediaRepository.setPeople(mediaId, existing + person.id)
-            }
+            FaceReindexWorker.cancel(context)
+            suggester.deleteAll()
         }
     }
-
-    fun dismiss(cluster: FaceClusterEntity) { viewModelScope.launch { db.faceDao().delete(cluster.id) } }
 }
 
 @Composable
-fun FacesRoute(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: FacesViewModel = hiltViewModel()) {
+fun FacesRoute(onBack: () -> Unit, onWhoIsThis: () -> Unit, modifier: Modifier = Modifier, viewModel: FacesViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    FacesScreen(state = state, onBack = onBack, onEnabled = viewModel::setEnabled, onScan = viewModel::scanLibrary, onConfirm = viewModel::confirm, onDismiss = viewModel::dismiss, modifier = modifier)
+    FacesScreen(state = state, onBack = onBack, onEnabled = viewModel::setEnabled, onScan = viewModel::scanNow, onWhoIsThis = onWhoIsThis, onDeleteAll = viewModel::deleteAll, modifier = modifier)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FacesScreen(state: FacesUiState, onBack: () -> Unit, onEnabled: (Boolean) -> Unit, onScan: () -> Unit, onConfirm: (FaceClusterEntity, Person) -> Unit, onDismiss: (FaceClusterEntity) -> Unit, modifier: Modifier = Modifier) {
+fun FacesScreen(
+    state: FacesUiState,
+    onBack: () -> Unit,
+    onEnabled: (Boolean) -> Unit,
+    onScan: () -> Unit,
+    onWhoIsThis: () -> Unit,
+    onDeleteAll: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val spacing = Yaadein.spacing
+    var confirmDelete by remember { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text(stringResource(R.string.settings_faces), modifier = Modifier.semantics { heading() }) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(CoreR.string.action_back)) } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
         )
-        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = spacing.xxxl), verticalArrangement = Arrangement.spacedBy(spacing.md)) {
+        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = spacing.xxxl), verticalArrangement = Arrangement.spacedBy(spacing.md)) {
             item(key = "toggle") {
                 Column {
                     SettingsSwitchRow(icon = Icons.Rounded.Face, title = stringResource(R.string.faces_enable), subtitle = stringResource(R.string.faces_enable_help), checked = state.enabled, onCheckedChange = onEnabled)
                     Text(stringResource(R.string.faces_privacy), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = spacing.gutter))
                 }
             }
-            if (state.enabled) {
-                item(key = "scan") {
-                    Column(Modifier.padding(horizontal = spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                        if (state.scanning) {
-                            Text(stringResource(R.string.faces_scanning, state.scanned, state.scanTotal), style = MaterialTheme.typography.bodyMedium)
-                            LinearProgressIndicator(progress = { if (state.scanTotal == 0) 0f else state.scanned / state.scanTotal.toFloat() }, modifier = Modifier.fillMaxWidth())
-                        } else {
-                            OutlinedButton(onClick = onScan) { Text(stringResource(R.string.faces_scan)) }
+            if (!state.enabled) {
+                item(key = "explain") {
+                    Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.padding(horizontal = spacing.gutter).fillMaxWidth()) {
+                        Column(Modifier.padding(spacing.lg), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                            Text(stringResource(R.string.faces_optin_title), style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.faces_optin_body), style = MaterialTheme.typography.bodyMedium)
+                            Button(onClick = { onEnabled(true) }) { Text(stringResource(R.string.faces_optin_action)) }
                         }
-                        Text(if (state.suggestions.isEmpty()) stringResource(R.string.faces_none) else pluralStringResource(R.plurals.faces_pending, state.suggestions.size, state.suggestions.size), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
                     }
                 }
-                items(state.suggestions.size, key = { state.suggestions[it].cluster.id }) { i ->
-                    SuggestionCard(s = state.suggestions[i], people = state.people, onConfirm = onConfirm, onDismiss = onDismiss, modifier = Modifier.padding(horizontal = spacing.gutter))
+            } else {
+                item(key = "index") {
+                    Column(Modifier.padding(horizontal = spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                        when {
+                            state.indexing -> {
+                                Text(
+                                    if (state.indexTotal > 0) stringResource(R.string.faces_scanning, state.indexDone, state.indexTotal) else stringResource(R.string.faces_reindex_waiting),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                                LinearProgressIndicator(progress = { if (state.indexTotal == 0) 0f else state.indexDone / state.indexTotal.toFloat() }, modifier = Modifier.fillMaxWidth())
+                            }
+                            state.unscannedPhotos > 0 -> {
+                                Text(pluralStringResource(R.plurals.faces_unscanned, state.unscannedPhotos, state.unscannedPhotos), style = MaterialTheme.typography.bodyMedium)
+                                OutlinedButton(onClick = onScan) { Text(stringResource(R.string.faces_scan)) }
+                            }
+                            else -> Text(stringResource(R.string.faces_all_scanned), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+                item(key = "who") {
+                    Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.padding(horizontal = spacing.gutter).fillMaxWidth()) {
+                        Row(Modifier.padding(spacing.lg), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    if (state.unknownFaces == 0) stringResource(R.string.faces_none) else pluralStringResource(R.plurals.faces_pending, state.unknownFaces, state.unknownFaces),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                Text(stringResource(R.string.faces_who_help), style = MaterialTheme.typography.bodySmall)
+                            }
+                            if (state.unknownFaces > 0) Button(onClick = onWhoIsThis) { Text(stringResource(R.string.faces_who)) }
+                        }
+                    }
+                }
+            }
+            item(key = "delete") {
+                Column(Modifier.padding(horizontal = spacing.gutter), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                    Spacer(Modifier.height(spacing.md))
+                    Text(stringResource(R.string.faces_delete_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    OutlinedButton(onClick = { confirmDelete = true }, colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                        Text(stringResource(R.string.faces_delete))
+                    }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun SuggestionCard(s: FaceSuggestion, people: List<Person>, onConfirm: (FaceClusterEntity, Person) -> Unit, onDismiss: (FaceClusterEntity) -> Unit, modifier: Modifier = Modifier) {
-    val spacing = Yaadein.spacing
-    var picked by remember(s.cluster.id) { mutableStateOf(s.suggested) }
-    Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = modifier.fillMaxWidth()) {
-        Column(Modifier.padding(spacing.lg), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                s.cluster.sampleMediaId?.let { ThumbnailImage(mediaId = it, contentDescription = null, modifier = Modifier.size(72.dp).clip(RoundedCornerShape(Yaadein.radius.md))) }
-                Spacer(Modifier.width(spacing.md))
-                Column {
-                    Text(picked?.let { stringResource(R.string.faces_is_this, it.displayName) } ?: stringResource(R.string.faces_who), style = MaterialTheme.typography.titleMedium)
-                    Text(pluralStringResource(R.plurals.faces_seen, s.cluster.faceCount, s.cluster.faceCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.xs), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
-                people.forEach { p -> FilterChip(selected = picked?.id == p.id, onClick = { picked = p }, label = { Text(p.displayName) }, leadingIcon = { PersonAvatar(person = p, size = Yaadein.sizes.iconLg) }) }
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                Button(enabled = picked != null, onClick = { picked?.let { onConfirm(s.cluster, it) } }) { Text(stringResource(R.string.faces_yes)) }
-                TextButton(onClick = { onDismiss(s.cluster) }) { Text(stringResource(R.string.faces_not_sure)) }
-            }
-            Spacer(Modifier.height(0.dp))
-        }
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text(stringResource(R.string.faces_delete)) },
+            text = { Text(stringResource(R.string.faces_delete_confirm)) },
+            confirmButton = { TextButton(onClick = { onDeleteAll(); confirmDelete = false }) { Text(stringResource(CoreR.string.action_delete)) } },
+            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(CoreR.string.action_cancel)) } },
+        )
     }
 }

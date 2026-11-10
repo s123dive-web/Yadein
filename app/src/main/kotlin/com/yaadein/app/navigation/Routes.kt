@@ -14,6 +14,8 @@ sealed interface Route {
     @Serializable data class GroupEdit(val groupId: Long = 0L) : Route
     @Serializable data class Together(val personId: Long = 0L) : Route
     @Serializable data object RelationshipsMap : Route
+    /** "Who is this?": name groups of unknown faces, one group at a time. */
+    @Serializable data object WhoIsThis : Route
     @Serializable data class YearlySummary(val personId: Long, val year: Int) : Route
     @Serializable data object CaptureHub : Route
     /**

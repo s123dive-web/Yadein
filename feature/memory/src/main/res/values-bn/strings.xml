@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="memory_who_was_there">কে কে ছিলেন</string>
+    <string name="memory_face_suggested_title">ইনি কি…?</string>
+    <string name="memory_face_suggested_badge">পরামর্শ</string>
+    <string name="memory_face_not_them">%1$s নন</string>
     <string name="memory_photos">ছবি ও ভিডিও</string>
     <string name="memory_add_photos">যোগ করুন</string>
     <string name="memory_no_photos_hint">এখনও কোনো ছবি নেই। ছবি বা ভিডিও যোগ করতে ট্যাপ করুন — গল্পটা নিজেই আরও সুন্দর হয়ে উঠবে।</string>

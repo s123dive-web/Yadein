@@ -3,6 +3,9 @@ package com.yaadein.feature.memory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yaadein.data.db.AppDatabase
+import com.yaadein.data.faces.FaceState
+import com.yaadein.data.faces.FaceSuggester
 import com.yaadein.data.media.MediaDownloader
 import com.yaadein.data.media.VoiceNotes
 import com.yaadein.data.backup.BackupManager
@@ -11,8 +14,11 @@ import com.yaadein.data.share.MemoryExporter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import com.yaadein.domain.model.MemoryDetail
+import com.yaadein.domain.model.Person
 import com.yaadein.domain.repository.MediaRepository
 import com.yaadein.domain.repository.MemoryRepository
+import com.yaadein.domain.repository.PersonRepository
+import kotlinx.coroutines.flow.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +31,9 @@ data class MemoryDetailUiState(
     val loading: Boolean = true,
     val detail: MemoryDetail? = null,
 )
+
+/** "Is this Aaji?": a face on one of this memory's photos that looks like [person]; [auto] when it was tagged automatically. */
+data class FaceSuggestionUi(val faceId: Long, val person: Person, val auto: Boolean)
 
 /** Progress and outcome of a share/export started from the memory screen. */
 sealed interface ShareStatus {
@@ -43,6 +52,9 @@ class MemoryDetailViewModel @Inject constructor(
     private val exporter: MemoryExporter,
     private val backup: BackupManager,
     downloader: MediaDownloader,
+    private val personRepository: PersonRepository,
+    private val suggester: FaceSuggester,
+    db: AppDatabase,
 ) : ViewModel() {
     /** Saves this memory's photos and videos to the phone (gallery, or a picked folder on Android 8–9). */
     val download = DownloadController(viewModelScope, downloader)
@@ -88,6 +100,30 @@ class MemoryDetailViewModel @Inject constructor(
     val uiState: StateFlow<MemoryDetailUiState> = memoryRepository.observeDetail(memoryId)
         .map { MemoryDetailUiState(loading = false, detail = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MemoryDetailUiState())
+
+    /** Face suggestions for this memory's photos, one chip per person (the best-matching face), best first. */
+    val suggestions: StateFlow<List<FaceSuggestionUi>> = combine(
+        db.faceDao().observeSuggestionsForMemory(memoryId),
+        personRepository.observeAll(),
+    ) { faces, people ->
+        val byId = people.associateBy { it.id }
+        faces.sortedByDescending { it.similarity ?: 0f }
+            .distinctBy { it.personId }
+            .mapNotNull { face ->
+                val person = face.personId?.let { byId[it] } ?: return@mapNotNull null
+                FaceSuggestionUi(faceId = face.id, person = person, auto = face.state == FaceState.AUTO)
+            }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** "Yes, that's them": tags the person and teaches the model. */
+    fun confirmSuggestion(faceId: Long, personId: Long) {
+        viewModelScope.launch { runCatching { suggester.confirm(faceId, personId) } }
+    }
+
+    /** "Not them": the suggestion goes away for good (an automatic tag is removed). */
+    fun rejectSuggestion(faceId: Long, personId: Long) {
+        viewModelScope.launch { runCatching { suggester.reject(faceId, personId) } }
+    }
 
     fun delete(onDone: () -> Unit) {
         viewModelScope.launch {

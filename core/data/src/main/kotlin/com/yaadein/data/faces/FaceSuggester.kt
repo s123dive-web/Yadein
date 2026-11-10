@@ -2,173 +2,265 @@ package com.yaadein.data.faces
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.SystemClock
+import android.util.Log
+import androidx.room.withTransaction
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import com.yaadein.data.db.AppDatabase
-import com.yaadein.data.db.entity.FaceClusterEntity
-import com.yaadein.data.media.MediaStore
-import com.yaadein.domain.faces.Cluster
-import com.yaadein.domain.faces.FaceClustering
-import com.yaadein.domain.faces.FaceFeatures
 import com.google.mlkit.vision.face.FaceLandmark
-import com.yaadein.domain.faces.FaceSample
+import com.yaadein.data.db.AppDatabase
+import com.yaadein.data.db.entity.FaceEntity
+import com.yaadein.data.db.entity.FaceRejectionEntity
+import com.yaadein.data.db.entity.MediaPersonEntity
+import com.yaadein.data.db.entity.MemoryPersonEntity
+import com.yaadein.data.media.MediaStore
+import com.yaadein.domain.faces.FaceAlign
+import com.yaadein.domain.faces.FaceMatch
+import com.yaadein.domain.faces.FaceMatcher
+import com.yaadein.domain.faces.FaceModel
+import com.yaadein.domain.faces.PersonCentroid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** States of a `faces` row. */
+object FaceState {
+    const val UNKNOWN = "UNKNOWN"
+    const val SUGGESTED = "SUGGESTED"
+    const val AUTO = "AUTO"
+    const val CONFIRMED = "CONFIRMED"
+}
+
 /**
- * Optional, off by default. Detects faces with ML Kit's bundled on-device model, builds a small
- * appearance descriptor (eye-aligned 64×64 crop, uniform LBP histograms; see FaceFeatures) and clusters them. Nothing is tagged
- * until the user confirms "Is this Rahul?" in Settings → Face suggestions.
+ * Face recognition, entirely on the phone and off by default: ML Kit's bundled detector finds faces and landmarks,
+ * [FaceAlign] maps them to the 112×112 template, [FaceEmbedder] turns the crop into a 512-d embedding and
+ * [FaceMatcher] compares it with each person's centroid of confirmed faces. Matches at or above AUTO are tagged with a
+ * visible badge (one tap undoes); SUGGEST matches become chips; the rest wait in "Who is this?".
  */
 @Singleton
-class FaceSuggester @Inject constructor(private val db: AppDatabase, private val mediaStore: MediaStore) {
+class FaceSuggester @Inject constructor(
+    private val db: AppDatabase,
+    private val mediaStore: MediaStore,
+    private val embedder: FaceEmbedder,
+) {
     private val detector by lazy {
         FaceDetection.getClient(
             FaceDetectorOptions.Builder()
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
                 .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
-                .setMinFaceSize(0.08f)
+                .setMinFaceSize(MIN_FACE_FRACTION)
                 .build(),
         )
     }
 
-    /** Scans one media item (thumbnail-sized decode keeps it cheap) and folds its faces into the clusters. */
+    /** Detects, embeds and matches every face of one vault photo; records the scan. Returns the number of faces found. */
     suspend fun scan(mediaId: Long): Int = withContext(Dispatchers.Default) {
         val media = db.mediaDao().get(mediaId) ?: return@withContext 0
-        if (media.kind != "PHOTO") return@withContext 0
-        val bytes = runCatching { mediaStore.crypto.decryptToBytes(mediaStore.file(media.encryptedPath)) }.getOrNull() ?: return@withContext 0
-        val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
-        var sample = 1
-        while (maxOf(opts.outWidth, opts.outHeight) / sample > 1024) sample *= 2
-        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = sample }) ?: return@withContext 0
+        if (media.kind != "PHOTO") { db.faceDao().markScanned(mediaId, FaceModel.VERSION); return@withContext 0 }
+        val bytes = runCatching { mediaStore.crypto.decryptToBytes(mediaStore.file(media.encryptedPath)) }.getOrNull()
+            ?: run { db.faceDao().markScanned(mediaId, FaceModel.VERSION); return@withContext 0 }
+        val bmp = decode(bytes) ?: run { db.faceDao().markScanned(mediaId, FaceModel.VERSION); return@withContext 0 }
         try {
-            val faces = detector.process(InputImage.fromBitmap(bmp, 0)).await()
-            // Suggestions made with the older pixel descriptor cannot be compared with LBP ones: start them afresh
-            // (tags already confirmed on photos are kept; they live on the photos, not here).
-            db.faceDao().all().filter { it.embedding.size != FaceFeatures.DIMENSIONS * 4 }.forEach { db.faceDao().delete(it.id) }
-            var clusters = db.faceDao().all().map { it.toCluster() }
-            var nextId = (clusters.maxOfOrNull { it.id } ?: 0L) + 1
-            var added = 0
-            for (face in faces) {
-                val box = face.boundingBox
-                if (box.width() < 24 || box.height() < 24) continue
-                val leftEye = face.getLandmark(FaceLandmark.LEFT_EYE)?.position
-                val rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE)?.position
-                val emb = if (leftEye != null && rightEye != null) alignedEmbedding(bmp, leftEye.x, leftEye.y, rightEye.x, rightEye.y)
-                else embed(bmp, box.left, box.top, box.right, box.bottom)
-                val s = FaceSample(mediaId, emb, box.left / bmp.width.toFloat(), box.top / bmp.height.toFloat(), box.right / bmp.width.toFloat(), box.bottom / bmp.height.toFloat())
-                val (updated, id) = FaceClustering.assign(s, clusters, nextId, FaceFeatures.THRESHOLD)
-                clusters = updated
-                if (id == nextId) nextId++
-                added++
+            val started = SystemClock.elapsedRealtime()
+            val found = embedAll(bmp)
+            val centroids = centroids()
+            val tagged = db.mediaDao().personIds(mediaId).toSet()
+            db.withTransaction {
+                db.faceDao().deleteForMedia(mediaId)
+                for (f in found) {
+                    val match = FaceMatcher.match(f.embedding, centroids)
+                    val row = FaceEntity(
+                        mediaId = mediaId, embedding = f.embedding.toBytes(), modelVersion = FaceModel.VERSION, quality = f.quality,
+                        boxLeft = f.box[0], boxTop = f.box[1], boxRight = f.box[2], boxBottom = f.box[3],
+                        personId = match.personId, state = stateOf(match, alreadyTagged = match.personId in tagged),
+                        similarity = (match as? FaceMatch.Auto)?.similarity ?: (match as? FaceMatch.Suggest)?.similarity,
+                        createdAt = System.currentTimeMillis(),
+                    )
+                    db.faceDao().insert(row)
+                    if (row.state == FaceState.AUTO && row.personId != null) tag(mediaId, media.memoryId, row.personId)
+                }
+                db.faceDao().markScanned(mediaId, FaceModel.VERSION)
             }
-            persist(clusters)
-            added
+            if (found.isNotEmpty()) {
+                Log.i(TAG, "embed_ms=${(SystemClock.elapsedRealtime() - started) / found.size} faces=${found.size} media=$mediaId")
+            }
+            found.size
         } finally {
             bmp.recycle()
         }
     }
 
     /**
-     * People whose confirmed face cluster matches a face in a photo that is not in the vault yet (Quick Save's chips).
-     * [open] gives the photo's bytes (a content URI the user just picked). Nothing is stored; the user still taps to tag.
+     * People likely in a photo that is not in the vault yet (Quick Save's chips). [open] gives the photo's bytes.
+     * Nothing is stored; the user still taps to tag.
      */
-    suspend fun suggestPeople(open: () -> java.io.InputStream?): Set<Long> = withContext(Dispatchers.Default) {
-        val known = db.faceDao().all().filter { it.confirmed && it.suggestedPersonId != null && it.embedding.size == FaceFeatures.DIMENSIONS * 4 }
-        if (known.isEmpty()) return@withContext emptySet()
+    suspend fun suggestPeople(open: () -> InputStream?): Set<Long> = withContext(Dispatchers.Default) {
+        val centroids = centroids()
+        if (centroids.isEmpty()) return@withContext emptySet()
         val bytes = runCatching { open()?.use { it.readBytes() } }.getOrNull() ?: return@withContext emptySet()
-        val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
-        var sample = 1
-        while (maxOf(opts.outWidth, opts.outHeight) / sample > 1024) sample *= 2
-        val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = sample }) ?: return@withContext emptySet()
+        val bmp = decode(bytes) ?: return@withContext emptySet()
         try {
-            val faces = runCatching { detector.process(InputImage.fromBitmap(bmp, 0)).await() }.getOrNull() ?: return@withContext emptySet()
-            val found = HashSet<Long>()
-            for (face in faces) {
-                val box = face.boundingBox
-                if (box.width() < 24 || box.height() < 24) continue
-                val leftEye = face.getLandmark(FaceLandmark.LEFT_EYE)?.position
-                val rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE)?.position
-                val emb = if (leftEye != null && rightEye != null) alignedEmbedding(bmp, leftEye.x, leftEye.y, rightEye.x, rightEye.y)
-                else embed(bmp, box.left, box.top, box.right, box.bottom)
-                val best = known.minByOrNull { FaceClustering.cosineDistance(it.embedding.toFloats(), emb) } ?: continue
-                if (FaceClustering.cosineDistance(best.embedding.toFloats(), emb) <= FaceFeatures.THRESHOLD) best.suggestedPersonId?.let(found::add)
-            }
-            found
+            embedAll(bmp).mapNotNullTo(HashSet()) { FaceMatcher.match(it.embedding, centroids).personId }
         } finally {
             bmp.recycle()
         }
     }
 
-    /**
-     * Rotates and scales the face so the eyes are level and a fixed distance apart, then describes the 64×64 grey crop
-     * with [FaceFeatures]. Alignment matters more than anything else for telling people apart.
-     */
-    private fun alignedEmbedding(bmp: Bitmap, lx: Float, ly: Float, rx: Float, ry: Float): FloatArray {
-        val n = FaceFeatures.SIZE
-        val eyeDist = kotlin.math.hypot(rx - lx, ry - ly).coerceAtLeast(1f)
-        val angle = Math.toDegrees(kotlin.math.atan2((ry - ly).toDouble(), (rx - lx).toDouble())).toFloat()
-        val midX = (lx + rx) / 2f; val midY = (ly + ry) / 2f
-        // Eyes land at 30% / 70% across and 38% down the crop.
-        val scale = (n * 0.4f) / eyeDist
-        val m = android.graphics.Matrix().apply {
-            postTranslate(-midX, -midY)
-            postRotate(-angle)
-            postScale(scale, scale)
-            postTranslate(n / 2f, n * 0.38f)
+    /** "Yes, this is Aaji": confirms the face, folds it into the centroid, tags the photo and re-scores pending faces. */
+    suspend fun confirm(faceId: Long, personId: Long) = withContext(Dispatchers.Default) {
+        val face = db.faceDao().get(faceId) ?: return@withContext
+        val media = db.mediaDao().get(face.mediaId)
+        db.withTransaction {
+            db.faceDao().assign(faceId, personId, FaceState.CONFIRMED, 1f)
+            val person = db.personDao().get(personId) ?: return@withTransaction
+            val current = person.centroid?.takeIf { person.centroidModel == FaceModel.VERSION }?.let { PersonCentroid(personId, it.toFloats(), person.confirmedFaces) }
+            val next = FaceMatcher.addToCentroid(current, personId, face.embedding.toFloats())
+            db.faceDao().setCentroid(personId, next.centroid.toBytes(), FaceModel.VERSION, next.count)
+            tag(face.mediaId, media?.memoryId, personId)
         }
-        val out = Bitmap.createBitmap(n, n, Bitmap.Config.ARGB_8888)
-        android.graphics.Canvas(out).drawBitmap(bmp, m, android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG))
-        val grey = greyOf(out)
-        out.recycle()
-        return FaceFeatures.embed(grey)
+        rescore(personId)
     }
 
-    /** Fallback when the eyes were not found: the face box, squashed to 64×64. */
-    private fun embed(bmp: Bitmap, l: Int, t: Int, r: Int, b: Int): FloatArray {
-        val left = l.coerceIn(0, bmp.width - 1); val top = t.coerceIn(0, bmp.height - 1)
-        val w = (r - l).coerceIn(1, bmp.width - left); val h = (b - t).coerceIn(1, bmp.height - top)
-        val crop = Bitmap.createBitmap(bmp, left, top, w, h)
-        val small = Bitmap.createScaledBitmap(crop, FaceFeatures.SIZE, FaceFeatures.SIZE, true)
-        val grey = greyOf(small)
-        crop.recycle(); small.recycle()
-        return FaceFeatures.embed(grey)
+    /** Names every face of a "Who is this?" group in one go. */
+    suspend fun confirmAll(faceIds: List<Long>, personId: Long) { faceIds.forEach { confirm(it, personId) } }
+
+    /** "Not this person": remembers the rejection; an automatic tag is undone. */
+    suspend fun reject(faceId: Long, personId: Long) = withContext(Dispatchers.Default) {
+        val face = db.faceDao().get(faceId) ?: return@withContext
+        db.withTransaction {
+            db.faceDao().reject(FaceRejectionEntity(faceId, personId))
+            if (face.personId == personId && face.state != FaceState.CONFIRMED) {
+                if (face.state == FaceState.AUTO) untag(face.mediaId, personId)
+                db.faceDao().assign(faceId, null, FaceState.UNKNOWN, null)
+            }
+            if (face.state == FaceState.CONFIRMED && face.personId == personId) {
+                // Undo of a confirmation: take the face back out of the centroid.
+                val person = db.personDao().get(personId)
+                val current = person?.let { p -> p.centroid?.takeIf { p.centroidModel == FaceModel.VERSION }?.let { PersonCentroid(personId, it.toFloats(), p.confirmedFaces) } }
+                val next = current?.let { FaceMatcher.removeFromCentroid(it, face.embedding.toFloats()) }
+                db.faceDao().setCentroid(personId, next?.centroid?.toBytes(), next?.let { FaceModel.VERSION }, next?.count ?: 0)
+                untag(face.mediaId, personId)
+                db.faceDao().assign(faceId, null, FaceState.UNKNOWN, null)
+            }
+        }
     }
 
-    private fun greyOf(bmp: Bitmap): IntArray {
-        val n = bmp.width * bmp.height
-        val px = IntArray(n); bmp.getPixels(px, 0, bmp.width, 0, 0, bmp.width, bmp.height)
-        return IntArray(n) { i -> val p = px[i]; (0.299f * ((p shr 16) and 0xFF) + 0.587f * ((p shr 8) and 0xFF) + 0.114f * (p and 0xFF)).toInt() }
+    /** Groups of unknown faces that look alike (largest first), for "Who is this?". */
+    suspend fun unknownGroups(): List<List<FaceEntity>> {
+        val unknown = db.faceDao().byState(FaceState.UNKNOWN).filter { it.modelVersion == FaceModel.VERSION }
+        val byId = unknown.associateBy { it.id }
+        return FaceMatcher.cluster(unknown.map { it.id to it.embedding.toFloats() }).map { ids -> ids.mapNotNull { byId[it] } }
     }
 
-    private suspend fun persist(clusters: List<Cluster>) {
-        val existing = db.faceDao().all().associateBy { it.id }
-        clusters.forEach { c ->
-            val old = existing[c.id]
-            db.faceDao().upsert(
-                FaceClusterEntity(
-                    id = c.id, embedding = c.centroid.toBytes(), sampleMediaId = c.sampleMediaId,
-                    sampleLeft = c.sampleBox[0], sampleTop = c.sampleBox[1], sampleRight = c.sampleBox[2], sampleBottom = c.sampleBox[3],
-                    suggestedPersonId = old?.suggestedPersonId, confirmed = old?.confirmed ?: false, faceCount = c.count, createdAt = old?.createdAt ?: System.currentTimeMillis(),
-                ),
+    /** Re-scores faces that are not confirmed against [personId]'s centroid (after a confirm or reject). */
+    suspend fun rescore(personId: Long) = withContext(Dispatchers.Default) {
+        val person = db.personDao().get(personId) ?: return@withContext
+        val centroid = person.centroid?.takeIf { person.centroidModel == FaceModel.VERSION }?.let { PersonCentroid(personId, it.toFloats(), person.confirmedFaces) }
+        val pending = db.faceDao().pendingFor(personId)
+        db.withTransaction {
+            for (f in pending) {
+                val rejected = db.faceDao().rejectedPeople(f.id).toSet()
+                val match = centroid?.let { FaceMatcher.match(f.embedding.toFloats(), listOf(it), rejected) } ?: FaceMatch.Unknown
+                val media = db.mediaDao().get(f.mediaId)
+                when (match) {
+                    is FaceMatch.Auto -> {
+                        db.faceDao().assign(f.id, personId, FaceState.AUTO, match.similarity)
+                        tag(f.mediaId, media?.memoryId, personId)
+                    }
+                    is FaceMatch.Suggest -> {
+                        if (f.state == FaceState.AUTO && f.personId == personId) untag(f.mediaId, personId)
+                        db.faceDao().assign(f.id, personId, FaceState.SUGGESTED, match.similarity)
+                    }
+                    FaceMatch.Unknown -> if (f.personId == personId) {
+                        if (f.state == FaceState.AUTO) untag(f.mediaId, personId)
+                        db.faceDao().assign(f.id, null, FaceState.UNKNOWN, null)
+                    }
+                }
+            }
+        }
+    }
+
+    /** Settings → Privacy → Delete all face data: every embedding, rejection and centroid; photos are scanned again only if asked. */
+    suspend fun deleteAll() = db.withTransaction {
+        db.faceDao().clearRejections()
+        db.faceDao().clear()
+        db.faceDao().clearCentroids()
+        db.faceDao().resetScanLedger()
+    }
+
+    suspend fun unscannedCount(): Int = db.faceDao().unscannedCount(FaceModel.VERSION)
+
+    // ---- internals ----
+
+    private class Found(val embedding: FloatArray, val quality: Float, val box: FloatArray)
+
+    private suspend fun embedAll(bmp: Bitmap): List<Found> {
+        val faces: List<Face> = runCatching { detector.process(InputImage.fromBitmap(bmp, 0)).await() }.getOrNull() ?: return emptyList()
+        val longest = maxOf(bmp.width, bmp.height).toFloat()
+        return faces.mapNotNull { face ->
+            val box = face.boundingBox
+            if (maxOf(box.width(), box.height()) < FaceModel.MIN_FACE_PX) return@mapNotNull null
+            val points = listOf(FaceLandmark.LEFT_EYE, FaceLandmark.RIGHT_EYE, FaceLandmark.NOSE_BASE, FaceLandmark.MOUTH_LEFT, FaceLandmark.MOUTH_RIGHT)
+                .map { face.getLandmark(it)?.position }
+            val align = if (points.all { it != null }) {
+                FaceAlign.similarity(points.map { it!!.x to it.y })
+            } else {
+                val l = points[0]; val r = points[1]
+                if (l != null && r != null) FaceAlign.fromEyes(l.x, l.y, r.x, r.y) else boxAlign(box.left.toFloat(), box.top.toFloat(), box.right.toFloat(), box.bottom.toFloat())
+            } ?: return@mapNotNull null
+            val embedding = runCatching { embedder.embed(bmp, align) }.getOrNull() ?: return@mapNotNull null
+            Found(
+                embedding = embedding,
+                quality = (maxOf(box.width(), box.height()) / longest).coerceIn(0f, 1f),
+                box = floatArrayOf(box.left / bmp.width.toFloat(), box.top / bmp.height.toFloat(), box.right / bmp.width.toFloat(), box.bottom / bmp.height.toFloat()),
             )
         }
     }
 
-    suspend fun clearAll() = db.faceDao().clear()
+    /** No landmarks: scale the box onto the 112 square (eyes roughly where the template expects them). */
+    private fun boxAlign(l: Float, t: Float, r: Float, b: Float) =
+        FaceAlign.similarity(listOf(l to t, r to t), listOf(8f to 8f, 104f to 8f))
+
+    private suspend fun centroids(): List<PersonCentroid> =
+        db.faceDao().peopleWithCentroids(FaceModel.VERSION).mapNotNull { p -> p.centroid?.let { PersonCentroid(p.id, it.toFloats(), p.confirmedFaces) } }
+
+    private fun stateOf(match: FaceMatch, alreadyTagged: Boolean): String = when (match) {
+        is FaceMatch.Auto -> if (alreadyTagged) FaceState.CONFIRMED else FaceState.AUTO
+        is FaceMatch.Suggest -> if (alreadyTagged) FaceState.CONFIRMED else FaceState.SUGGESTED
+        FaceMatch.Unknown -> FaceState.UNKNOWN
+    }
+
+    private suspend fun tag(mediaId: Long, memoryId: Long?, personId: Long) {
+        db.mediaDao().insertPeople(listOf(MediaPersonEntity(mediaId, personId)))
+        if (memoryId != null) db.memoryDao().insertPeople(listOf(MemoryPersonEntity(memoryId, personId)))
+    }
+
+    private suspend fun untag(mediaId: Long, personId: Long) {
+        val remaining = db.mediaDao().personIds(mediaId).filter { it != personId }
+        db.mediaDao().clearPeople(mediaId)
+        db.mediaDao().insertPeople(remaining.map { MediaPersonEntity(mediaId, it) })
+    }
+
+    private fun decode(bytes: ByteArray): Bitmap? {
+        val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
+        var sample = 1
+        while (maxOf(opts.outWidth, opts.outHeight) / sample > MAX_DECODE_PX) sample *= 2
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = sample })
+    }
 
     companion object {
-        const val SIZE = 32
+        private const val TAG = "Yaadein.Faces"
+        private const val MIN_FACE_FRACTION = 0.05f
+        private const val MAX_DECODE_PX = 1600
         fun FloatArray.toBytes(): ByteArray { val bb = ByteBuffer.allocate(size * 4).order(ByteOrder.LITTLE_ENDIAN); forEach { bb.putFloat(it) }; return bb.array() }
         fun ByteArray.toFloats(): FloatArray { val bb = ByteBuffer.wrap(this).order(ByteOrder.LITTLE_ENDIAN); return FloatArray(size / 4) { bb.getFloat() } }
-        fun FaceClusterEntity.toCluster() = Cluster(id, embedding.toFloats(), faceCount, sampleMediaId ?: 0L, floatArrayOf(sampleLeft, sampleTop, sampleRight, sampleBottom))
     }
 }

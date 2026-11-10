@@ -78,9 +78,9 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%1$dটি মুখ নিশ্চিত করতে হবে</string>
+            <string>%1$dটি মুখের নাম দিতে হবে</string>
             <key>other</key>
-            <string>%1$dটি মুখ নিশ্চিত করতে হবে</string>
+            <string>%1$dটি মুখের নাম দিতে হবে</string>
         </dict>
     </dict>
     <key>faces_seen</key>
@@ -97,6 +97,22 @@
             <string>%1$dটি ছবিতে দেখা গেছে</string>
             <key>other</key>
             <string>%1$dটি ছবিতে দেখা গেছে</string>
+        </dict>
+    </dict>
+    <key>faces_unscanned</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি ছবি এখনও দেখা হয়নি।</string>
+            <key>other</key>
+            <string>%1$dটি ছবি এখনও দেখা হয়নি।</string>
         </dict>
     </dict>
     <key>import_failed_integrity</key>
@@ -275,6 +291,22 @@
             <string>এই বছরের %1$dটি স্মৃতি আগে থেকেই আছে।</string>
         </dict>
     </dict>
+    <key>people_faces_banner</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি মুখের নাম দিতে হবে</string>
+            <key>other</key>
+            <string>%1$dটি মুখের নাম দিতে হবে</string>
+        </dict>
+    </dict>
     <key>photos_grouped</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -353,6 +385,54 @@
             <string>%1$dটি ভিডিও</string>
             <key>other</key>
             <string>%1$dটি ভিডিও</string>
+        </dict>
+    </dict>
+    <key>who_named</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি মুখের নাম দেওয়া হল %2$@</string>
+            <key>other</key>
+            <string>%1$dটি মুখের নাম দেওয়া হল %2$@</string>
+        </dict>
+    </dict>
+    <key>who_remaining</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>আরও %1$dটি বাকি</string>
+            <key>other</key>
+            <string>আরও %1$dটি বাকি</string>
+        </dict>
+    </dict>
+    <key>who_seen_in</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি ছবিতে দেখা গেছে</string>
+            <key>other</key>
+            <string>%1$dটি ছবিতে দেখা গেছে</string>
         </dict>
     </dict>
     <key>widget_memories_waiting</key>

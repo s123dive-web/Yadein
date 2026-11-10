@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="memory_who_was_there">ಯಾರೆಲ್ಲ ಇದ್ದರು</string>
+    <string name="memory_face_suggested_title">ಇವರು…?</string>
+    <string name="memory_face_suggested_badge">ಸೂಚಿಸಲಾಗಿದೆ</string>
+    <string name="memory_face_not_them">%1$s ಅಲ್ಲ</string>
     <string name="memory_photos">ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳು</string>
     <string name="memory_add_photos">ಸೇರಿಸಿ</string>
     <string name="memory_no_photos_hint">ಇನ್ನೂ ಫೋಟೋಗಳಿಲ್ಲ. ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊ ಸೇರಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ — ಈ ಕಥೆ ತಾನಾಗಿಯೇ ಇನ್ನಷ್ಟು ಚೆಂದವಾಗುತ್ತದೆ.</string>

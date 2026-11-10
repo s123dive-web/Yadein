@@ -12,7 +12,8 @@ import androidx.room.Update
 import androidx.room.Upsert
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.yaadein.data.db.entity.CaptureStatEntity
-import com.yaadein.data.db.entity.FaceClusterEntity
+import com.yaadein.data.db.entity.FaceEntity
+import com.yaadein.data.db.entity.FaceRejectionEntity
 import com.yaadein.data.db.entity.GroupEntity
 import com.yaadein.data.db.entity.GroupMemberEntity
 import com.yaadein.data.db.entity.GroupWithMembers
@@ -364,23 +365,87 @@ interface CaptureStatDao {
 
 @Dao
 interface FaceDao {
-    @Query("SELECT * FROM face_clusters ORDER BY face_count DESC")
-    fun observeAll(): Flow<List<FaceClusterEntity>>
+    @Insert
+    suspend fun insert(face: FaceEntity): Long
 
-    @Query("SELECT * FROM face_clusters")
-    suspend fun all(): List<FaceClusterEntity>
+    @Query("SELECT * FROM faces WHERE id = :id")
+    suspend fun get(id: Long): FaceEntity?
 
-    @Upsert
-    suspend fun upsert(cluster: FaceClusterEntity): Long
+    @Query("SELECT * FROM faces WHERE id IN (:ids)")
+    suspend fun getByIds(ids: List<Long>): List<FaceEntity>
 
-    @Query("UPDATE face_clusters SET suggested_person_id = :personId, confirmed = :confirmed WHERE id = :id")
-    suspend fun assign(id: Long, personId: Long?, confirmed: Boolean)
+    @Query("SELECT * FROM faces WHERE media_id = :mediaId ORDER BY quality DESC")
+    suspend fun forMedia(mediaId: Long): List<FaceEntity>
 
-    @Query("DELETE FROM face_clusters WHERE id = :id")
-    suspend fun delete(id: Long)
+    /** Faces on any photo of [memoryId] that point at a person without being confirmed (suggestion chips). */
+    @Query("SELECT f.* FROM faces f JOIN media m ON m.id = f.media_id WHERE m.memory_id = :memoryId AND f.state IN ('SUGGESTED', 'AUTO') ORDER BY f.similarity DESC")
+    fun observeSuggestionsForMemory(memoryId: Long): Flow<List<FaceEntity>>
 
-    @Query("DELETE FROM face_clusters")
+    @Query("SELECT * FROM faces WHERE state = :state ORDER BY quality DESC")
+    suspend fun byState(state: String): List<FaceEntity>
+
+    @Query("SELECT COUNT(*) FROM faces WHERE state = 'UNKNOWN'")
+    fun observeUnknownCount(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM faces WHERE state = 'UNKNOWN'")
+    suspend fun unknownCount(): Int
+
+    @Query("SELECT COUNT(*) FROM faces")
+    suspend fun count(): Int
+
+    /** Faces not confirmed yet whose current suggestion is [personId] or none (candidates to re-score). */
+    @Query("SELECT * FROM faces WHERE state != 'CONFIRMED' AND (person_id = :personId OR person_id IS NULL)")
+    suspend fun pendingFor(personId: Long): List<FaceEntity>
+
+    @Query("SELECT * FROM faces WHERE person_id = :personId AND state = 'CONFIRMED'")
+    suspend fun confirmedFor(personId: Long): List<FaceEntity>
+
+    @Query("UPDATE faces SET person_id = :personId, state = :state, similarity = :similarity WHERE id = :id")
+    suspend fun assign(id: Long, personId: Long?, state: String, similarity: Float?)
+
+    @Query("DELETE FROM faces WHERE media_id = :mediaId")
+    suspend fun deleteForMedia(mediaId: Long)
+
+    @Query("DELETE FROM faces")
     suspend fun clear()
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun reject(rejection: FaceRejectionEntity)
+
+    @Query("SELECT person_id FROM face_rejections WHERE face_id = :faceId")
+    suspend fun rejectedPeople(faceId: Long): List<Long>
+
+    @Query("SELECT * FROM face_rejections")
+    suspend fun allRejections(): List<FaceRejectionEntity>
+
+    @Query("DELETE FROM face_rejections")
+    suspend fun clearRejections()
+
+    // ---- person centroids and the scan ledger live on their own tables ----
+
+    @Query("UPDATE persons SET centroid = :centroid, centroid_model = :model, confirmed_faces = :count WHERE id = :personId")
+    suspend fun setCentroid(personId: Long, centroid: ByteArray?, model: Int?, count: Int)
+
+    @Query("UPDATE persons SET centroid = NULL, centroid_model = NULL, confirmed_faces = 0")
+    suspend fun clearCentroids()
+
+    @Query("SELECT * FROM persons WHERE centroid IS NOT NULL AND centroid_model = :model")
+    suspend fun peopleWithCentroids(model: Int): List<PersonEntity>
+
+    @Query("SELECT * FROM media WHERE kind = 'PHOTO' AND face_scan_version < :model ORDER BY id DESC LIMIT :limit")
+    suspend fun nextUnscanned(model: Int, limit: Int): List<MediaEntity>
+
+    @Query("SELECT COUNT(*) FROM media WHERE kind = 'PHOTO' AND face_scan_version < :model")
+    fun observeUnscannedCount(model: Int): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM media WHERE kind = 'PHOTO' AND face_scan_version < :model")
+    suspend fun unscannedCount(model: Int): Int
+
+    @Query("UPDATE media SET face_scan_version = :model WHERE id = :mediaId")
+    suspend fun markScanned(mediaId: Long, model: Int)
+
+    @Query("UPDATE media SET face_scan_version = 0")
+    suspend fun resetScanLedger()
 }
 
 @Dao

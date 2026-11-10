@@ -23,8 +23,11 @@ fingerprint. Data is excluded from Android cloud backup and device-to-device tra
 ## Optional on-device features
 
 - **Voice memories** use the microphone only while you press record. Recordings are encrypted on the phone.
-- **Face suggestions** (off by default) run ML Kit face detection locally. No images or face data
-  leave the device, and nothing is tagged until you confirm it.
+- **Face suggestions** (off by default) find faces with ML Kit's bundled detector and compare them with a bundled
+  on-device model (GhostFaceNet, MIT licence). Face measurements are stored only inside your encrypted vault, travel with
+  your encrypted backups, are deleted together with a person, and can be wiped at any time with Settings → Face
+  suggestions → Delete all face data. No image or face data leaves the device. A very sure match is tagged with a visible
+  "suggested" badge that one tap undoes; everything else waits for you in "Who is this?".
 - **Smart polish** uses Gemini Nano through Android's on-device AICore service, only on phones where that model is
   already installed. Your text goes to the on-phone model, not to the internet.
 - **Reminders** ("On this day", birthdays, weekly story prompts) are scheduled on the device and hidden on the lock

@@ -38,6 +38,7 @@ import com.yaadein.feature.memory.MediaViewerRoute
 import com.yaadein.feature.people.GroupEditRoute
 import com.yaadein.feature.people.RelationshipsRoute
 import com.yaadein.feature.people.TogetherRoute
+import com.yaadein.feature.people.WhoIsThisRoute
 import com.yaadein.feature.relive.YearlySummaryRoute
 import com.yaadein.feature.recap.RecapRoute
 import com.yaadein.feature.recap.ReelPlayerRoute
@@ -207,6 +208,9 @@ fun AppNavHost(
         composable<Route.RelationshipsMap> {
             RelationshipsRoute(onBack = { navController.popBackStack() }, onOpenPerson = { navController.navigate(Route.PersonDetail(it)) })
         }
+        composable<Route.WhoIsThis> {
+            WhoIsThisRoute(onBack = { navController.popBackStack() }, onAddPerson = { navController.navigate(Route.PersonEdit()) })
+        }
         composable<Route.YearlySummary> {
             YearlySummaryRoute(
                 onBack = { navController.popBackStack() },
@@ -238,7 +242,7 @@ fun AppNavHost(
                 SettingsPage.STORAGE -> StorageRoute(onBack = { navController.popBackStack() })
                 SettingsPage.NOTIFICATIONS -> NotificationsRoute(onBack = { navController.popBackStack() })
                 SettingsPage.BACKUP -> BackupRoute(onBack = { navController.popBackStack() })
-                SettingsPage.FACES -> FacesRoute(onBack = { navController.popBackStack() })
+                SettingsPage.FACES -> FacesRoute(onBack = { navController.popBackStack() }, onWhoIsThis = { navController.navigate(Route.WhoIsThis) })
                 SettingsPage.PRIVACY -> PrivacyScreen(onBack = { navController.popBackStack() })
                 SettingsPage.CRASH_LOG -> CrashLogScreen(onBack = { navController.popBackStack() })
                 SettingsPage.UPDATE -> if (BuildConfig.SIDELOAD_UPDATES) UpdateRoute(onBack = { navController.popBackStack() }) else AboutRoute(onBack = { navController.popBackStack() }, versionName = BuildConfig.VERSION_NAME, debugBuild = false)

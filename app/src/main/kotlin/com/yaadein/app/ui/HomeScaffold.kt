@@ -126,6 +126,7 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                 onAddGroup = { navController.navigate(Route.GroupEdit()) },
                 onOpenRelationships = { navController.navigate(Route.RelationshipsMap) },
                 contentPadding = padding,
+                onWhoIsThis = { navController.navigate(Route.WhoIsThis) },
             )
             HomeTab.RELIVE -> ReliveRoute(
                 onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },

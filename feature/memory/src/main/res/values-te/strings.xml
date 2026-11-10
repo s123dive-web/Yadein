@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="memory_who_was_there">ఎవరెవరు ఉన్నారు</string>
+    <string name="memory_face_suggested_title">ఇది…?</string>
+    <string name="memory_face_suggested_badge">సూచించబడింది</string>
+    <string name="memory_face_not_them">%1$s కాదు</string>
     <string name="memory_photos">ఫోటోలు, వీడియోలు</string>
     <string name="memory_add_photos">జోడించండి</string>
     <string name="memory_no_photos_hint">ఇంకా ఫోటోలు లేవు. ఫోటోలు లేదా వీడియోలు జోడించడానికి నొక్కండి — ఈ కథ దానంతట అదే మెరుగవుతుంది.</string>

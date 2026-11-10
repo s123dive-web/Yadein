@@ -47,7 +47,7 @@ fun Backup() = ScreenshotTheme { Surface { BackupScreen(status = BackupStatus.Id
 @PreviewTest
 @Preview(name = "Face suggestions", device = PHONE, showBackground = true)
 @Composable
-fun Faces() = ScreenshotTheme { Surface { FacesScreen(state = FacesUiState(enabled = true, people = Fixtures.people), onBack = {}, onEnabled = {}, onScan = {}, onConfirm = { _, _ -> }, onDismiss = {}) } }
+fun Faces() = ScreenshotTheme { Surface { FacesScreen(state = FacesUiState(enabled = true, unknownFaces = 3, unscannedPhotos = 0), onBack = {}, onEnabled = {}, onScan = {}, onWhoIsThis = {}, onDeleteAll = {}) } }
 
 @PreviewTest
 @Preview(name = "Privacy", device = PHONE, showBackground = true)

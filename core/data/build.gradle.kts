@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.media3.effect)
     implementation(libs.media3.muxer)
     implementation(libs.mlkit.face)
+    implementation(libs.litert)
     // Optional on-device Gemini Nano for Smart polish (AICore). Talks to the system service only, never the network.
     implementation(libs.mlkit.genai.prompt)
     implementation(libs.kotlinx.coroutines.play.services)

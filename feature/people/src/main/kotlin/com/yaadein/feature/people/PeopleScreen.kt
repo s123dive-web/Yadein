@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -19,9 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.rounded.Face
 import androidx.compose.material.icons.rounded.Hub
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -60,6 +64,7 @@ fun PeopleRoute(
     onOpenRelationships: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    onWhoIsThis: () -> Unit = {},
     viewModel: PeopleViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -72,6 +77,7 @@ fun PeopleRoute(
         onOpenRelationships = onOpenRelationships,
         contentPadding = contentPadding,
         modifier = modifier,
+        onWhoIsThis = onWhoIsThis,
     )
 }
 
@@ -86,6 +92,7 @@ fun PeopleScreen(
     onOpenRelationships: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    onWhoIsThis: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
@@ -111,14 +118,23 @@ fun PeopleScreen(
         )
         when {
             state.loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-            state.people.isEmpty() -> EmptyState(
-                illustration = IllustrationKind.PEOPLE_CIRCLE,
-                title = stringResource(R.string.people_empty_title),
-                message = stringResource(R.string.people_empty_message),
-                actionLabel = stringResource(R.string.people_add),
-                onAction = onAddPerson,
-                modifier = Modifier.fillMaxSize().padding(contentPadding),
-            )
+            state.people.isEmpty() -> Column(Modifier.fillMaxSize().padding(contentPadding)) {
+                if (state.unknownFaces > 0) {
+                    FacesBanner(
+                        count = state.unknownFaces,
+                        onWhoIsThis = onWhoIsThis,
+                        modifier = Modifier.padding(horizontal = spacing.gutter, vertical = spacing.sm),
+                    )
+                }
+                EmptyState(
+                    illustration = IllustrationKind.PEOPLE_CIRCLE,
+                    title = stringResource(R.string.people_empty_title),
+                    message = stringResource(R.string.people_empty_message),
+                    actionLabel = stringResource(R.string.people_add),
+                    onAction = onAddPerson,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             else -> LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 112.dp),
                 modifier = Modifier.fillMaxSize(),
@@ -129,12 +145,56 @@ fun PeopleScreen(
                 horizontalArrangement = Arrangement.spacedBy(spacing.md),
                 verticalArrangement = Arrangement.spacedBy(spacing.md),
             ) {
+                if (state.unknownFaces > 0) {
+                    item(span = { GridItemSpan(maxLineSpan) }, key = "faces") {
+                        FacesBanner(count = state.unknownFaces, onWhoIsThis = onWhoIsThis)
+                    }
+                }
                 item(span = { GridItemSpan(maxLineSpan) }, key = "groups") {
                     GroupsRow(groups = state.groups, onOpenGroup = onOpenGroup, onAddGroup = onAddGroup)
                 }
                 items(state.people, key = { it.person.id }) { tile ->
                     PersonTileView(tile = tile, onClick = { onOpenPerson(tile.person.id) })
                 }
+            }
+        }
+    }
+}
+
+/** "N faces to name": unknown faces are waiting in "Who is this?". Shown only while there is at least one. */
+@Composable
+private fun FacesBanner(count: Int, onWhoIsThis: () -> Unit, modifier: Modifier = Modifier) {
+    val spacing = Yaadein.spacing
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(Yaadein.radius.lg),
+        color = MaterialTheme.colorScheme.secondaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(spacing.md),
+        ) {
+            Icon(
+                Icons.Rounded.Face,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(Yaadein.sizes.iconLg),
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = pluralStringResource(R.plurals.people_faces_banner, count, count),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                Text(
+                    text = stringResource(R.string.people_faces_banner_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            }
+            Button(onClick = onWhoIsThis, modifier = Modifier.heightIn(min = Yaadein.sizes.touchTarget)) {
+                Text(stringResource(R.string.people_faces_banner_action))
             }
         }
     }

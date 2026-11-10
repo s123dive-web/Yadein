@@ -66,9 +66,13 @@ class BackupManager(
     data class Dump(
         val persons: List<PersonRow>, val groups: List<GroupRow>, val groupMembers: List<Pair<Long, Long>>,
         val memories: List<MemoryRow>, val media: List<MediaRow>, val mediaPersons: List<Pair<Long, Long>>, val memoryPersons: List<Pair<Long, Long>>,
+        /** Face embeddings (Fast & Rich, Phase 2). Older backups have none: the re-index worker rebuilds them. */
+        val faces: List<FaceRow> = emptyList(),
+        val faceRejections: List<Pair<Long, Long>> = emptyList(),
     )
 
     @Serializable data class PersonRow(val id: Long, val name: String, val nickname: String?, val relation: String, val birthdayEpochDay: Long?, val profileMediaId: Long?, val notes: String, val avatarColorIndex: Int, val createdAt: Long)
+    @Serializable data class FaceRow(val id: Long, val mediaId: Long, val embedding: String, val modelVersion: Int, val quality: Float, val left: Float, val top: Float, val right: Float, val bottom: Float, val personId: Long?, val state: String, val similarity: Float?, val createdAt: Long)
     @Serializable data class GroupRow(val id: Long, val name: String, val emoji: String, val createdAt: Long)
     @Serializable data class MemoryRow(val id: Long, val type: String, val title: String, val description: String, val dateKind: String, val startEpochDay: Long, val endEpochDay: Long?, val fuzzyLabel: String?, val place: String, val mood: String?, val coverMediaId: Long?, val coverStyle: String, val createdAt: Long, val updatedAt: Long, val voice: Boolean = false)
     @Serializable data class MediaRow(val id: Long, val memoryId: Long?, val kind: String, val file: String, val thumb: String, val takenAt: Long?, val durationMs: Long?, val sizeBytes: Long, val caption: String, val width: Int, val height: Int, val sha256: String, val position: Int, val createdAt: Long, val latitude: Double? = null, val longitude: Double? = null)
@@ -298,12 +302,46 @@ class BackupManager(
                 }
                 db.memoryDao().insertPeople(d.memoryPersons.mapNotNull { (mId, pId) -> val a = memoryIds[mId]; val b = personIds[pId]; if (a != null && b != null) MemoryPersonEntity(a, b) else null })
                 db.mediaDao().insertPeople(d.mediaPersons.mapNotNull { (mId, pId) -> val a = mediaIds[mId]; val b = personIds[pId]; if (a != null && b != null) MediaPersonEntity(a, b) else null })
+                restoreFaces(d, mediaIds, personIds)
                 memoryRepository.reindexAll()
             }
             oldPaths.forEach { runCatching { mediaStore.file(it).delete() } }
             onProgress(Progress.Done)
         } finally {
             staging.deleteRecursively()
+        }
+    }
+
+    /** Face rows come back with remapped ids; person centroids are rebuilt from the confirmed faces. */
+    private suspend fun restoreFaces(d: Dump, mediaIds: Map<Long, Long>, personIds: Map<Long, Long>) {
+        val faceIds = HashMap<Long, Long>()
+        val centroids = HashMap<Long, com.yaadein.domain.faces.PersonCentroid>()
+        d.faces.forEach { f ->
+            val mediaId = mediaIds[f.mediaId] ?: return@forEach
+            val personId = f.personId?.let { personIds[it] }
+            val embedding = runCatching { android.util.Base64.decode(f.embedding, android.util.Base64.NO_WRAP) }.getOrNull() ?: return@forEach
+            val newId = db.faceDao().insert(
+                com.yaadein.data.db.entity.FaceEntity(
+                    mediaId = mediaId, embedding = embedding, modelVersion = f.modelVersion, quality = f.quality, boxLeft = f.left, boxTop = f.top,
+                    boxRight = f.right, boxBottom = f.bottom, personId = personId, state = if (personId == null && f.state != "UNKNOWN") "UNKNOWN" else f.state,
+                    similarity = f.similarity, createdAt = f.createdAt,
+                ),
+            )
+            faceIds[f.id] = newId
+            if (personId != null && f.state == "CONFIRMED" && f.modelVersion == com.yaadein.domain.faces.FaceModel.VERSION) {
+                val floats = java.nio.ByteBuffer.wrap(embedding).order(java.nio.ByteOrder.LITTLE_ENDIAN).let { bb -> FloatArray(embedding.size / 4) { bb.getFloat() } }
+                centroids[personId] = com.yaadein.domain.faces.FaceMatcher.addToCentroid(centroids[personId], personId, floats)
+            }
+            // Photos these faces were scanned from keep their ledger entry.
+            db.faceDao().markScanned(mediaId, f.modelVersion)
+        }
+        d.faceRejections.forEach { (faceId, personId) ->
+            val a = faceIds[faceId]; val b = personIds[personId]
+            if (a != null && b != null) db.faceDao().reject(com.yaadein.data.db.entity.FaceRejectionEntity(a, b))
+        }
+        centroids.forEach { (personId, c) ->
+            val bb = java.nio.ByteBuffer.allocate(c.centroid.size * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN); c.centroid.forEach { bb.putFloat(it) }
+            db.faceDao().setCentroid(personId, bb.array(), com.yaadein.domain.faces.FaceModel.VERSION, c.count)
         }
     }
 
@@ -358,6 +396,10 @@ class BackupManager(
             media = media.map { MediaRow(it.id, it.memoryId, it.kind, it.encryptedPath, it.thumbPath, it.takenAt, it.durationMs, it.sizeBytes, it.caption, it.width, it.height, it.sha256, it.position, it.createdAt, it.latitude, it.longitude) },
             mediaPersons = mediaPersons,
             memoryPersons = memories.flatMap { r -> r.people.map { r.memory.id to it.id } },
+            faces = if (onlyMemoryIds != null) emptyList() else db.faceDao().byState(com.yaadein.data.faces.FaceState.CONFIRMED).plus(db.faceDao().byState(com.yaadein.data.faces.FaceState.AUTO))
+                .plus(db.faceDao().byState(com.yaadein.data.faces.FaceState.SUGGESTED)).plus(db.faceDao().byState(com.yaadein.data.faces.FaceState.UNKNOWN))
+                .map { FaceRow(it.id, it.mediaId, android.util.Base64.encodeToString(it.embedding, android.util.Base64.NO_WRAP), it.modelVersion, it.quality, it.boxLeft, it.boxTop, it.boxRight, it.boxBottom, it.personId, it.state, it.similarity, it.createdAt) },
+            faceRejections = if (onlyMemoryIds != null) emptyList() else db.faceDao().allRejections().map { it.faceId to it.personId },
         )
     }
 

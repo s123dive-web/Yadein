@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -22,6 +23,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Edit
@@ -55,6 +58,7 @@ import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -102,6 +106,7 @@ fun MemoryDetailRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val share by viewModel.share.collectAsStateWithLifecycle()
+    val suggestions by viewModel.suggestions.collectAsStateWithLifecycle()
     val downloadStatus by viewModel.download.status.collectAsStateWithLifecycle()
     val download = rememberDownloadAction(viewModel.download)
     val context = LocalContext.current
@@ -135,6 +140,9 @@ fun MemoryDetailRoute(
         onSavePdf = { state.detail?.let { pdfPicker.launch(safeName(it.memory.title) + ".pdf") } },
         onSendPack = { state.detail?.let { packPicker.launch(safeName(it.memory.title) + "." + BackupManager.EXTENSION) } },
         onDownloadAll = { state.detail?.let { d -> download(d.media.map { it.id }) } },
+        suggestions = suggestions,
+        onConfirmSuggestion = viewModel::confirmSuggestion,
+        onRejectSuggestion = viewModel::rejectSuggestion,
     )
     DownloadStatusDialog(downloadStatus, onDismiss = viewModel.download::reset)
     askPackPassword?.let { uri ->
@@ -181,6 +189,10 @@ fun MemoryDetailScreen(
     onSavePdf: () -> Unit = {},
     onSendPack: () -> Unit = {},
     onDownloadAll: () -> Unit = {},
+    /** "Is this …?" chips from face recognition; tap confirms, × rejects. */
+    suggestions: List<FaceSuggestionUi> = emptyList(),
+    onConfirmSuggestion: (faceId: Long, personId: Long) -> Unit = { _, _ -> },
+    onRejectSuggestion: (faceId: Long, personId: Long) -> Unit = { _, _ -> },
 ) {
     val detail = state.detail
     if (state.loading || detail == null) {
@@ -218,19 +230,25 @@ fun MemoryDetailScreen(
                     Spacer(Modifier.height(spacing.lg))
                     voicePlayer(path)
                 }
-                if (detail.people.isNotEmpty()) {
+                if (detail.people.isNotEmpty() || suggestions.isNotEmpty()) {
                     Spacer(Modifier.height(spacing.xl))
                     Text(text = stringResource(R.string.memory_who_was_there), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
                     Spacer(Modifier.height(spacing.sm))
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.md)) {
-                        items(detail.people.size, key = { detail.people[it].id }) { i ->
-                            val p = detail.people[i]
-                            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { onOpenPerson(p.id) }.padding(spacing.xs)) {
-                                PersonAvatar(person = p, size = Yaadein.sizes.avatarLg)
-                                Spacer(Modifier.height(spacing.xs))
-                                Text(text = p.displayName, style = MaterialTheme.typography.labelMedium, maxLines = 1)
+                    if (detail.people.isNotEmpty()) {
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.md)) {
+                            items(detail.people.size, key = { detail.people[it].id }) { i ->
+                                val p = detail.people[i]
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { onOpenPerson(p.id) }.padding(spacing.xs)) {
+                                    PersonAvatar(person = p, size = Yaadein.sizes.avatarLg)
+                                    Spacer(Modifier.height(spacing.xs))
+                                    Text(text = p.displayName, style = MaterialTheme.typography.labelMedium, maxLines = 1)
+                                }
                             }
                         }
+                    }
+                    if (suggestions.isNotEmpty()) {
+                        Spacer(Modifier.height(spacing.sm))
+                        FaceSuggestionRow(suggestions = suggestions, onConfirm = onConfirmSuggestion, onReject = onRejectSuggestion)
                     }
                 }
                 Spacer(Modifier.height(spacing.xl))
@@ -284,6 +302,55 @@ fun MemoryDetailScreen(
             confirmButton = { TextButton(onClick = { confirmDelete = false; onDelete() }) { Text(stringResource(CoreR.string.action_delete)) } },
             dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(CoreR.string.action_cancel)) } },
         )
+    }
+}
+
+/** "Is this …?": one chip per suggested person. Tap = yes (tags and teaches), × = not them. */
+@Composable
+private fun FaceSuggestionRow(
+    suggestions: List<FaceSuggestionUi>,
+    onConfirm: (faceId: Long, personId: Long) -> Unit,
+    onReject: (faceId: Long, personId: Long) -> Unit,
+) {
+    val spacing = Yaadein.spacing
+    val sizes = Yaadein.sizes
+    Text(
+        text = stringResource(R.string.memory_face_suggested_title),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Spacer(Modifier.height(spacing.xs))
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.xs)) {
+        items(suggestions.size, key = { suggestions[it].faceId }) { i ->
+            val s = suggestions[i]
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                FilterChip(
+                    selected = s.auto,
+                    onClick = { onConfirm(s.faceId, s.person.id) },
+                    label = { Text(s.person.displayName) },
+                    leadingIcon = { PersonAvatar(person = s.person, size = sizes.avatarSm) },
+                    trailingIcon = if (s.auto) {
+                        {
+                            Icon(
+                                Icons.Rounded.AutoAwesome,
+                                contentDescription = stringResource(R.string.memory_face_suggested_badge),
+                                modifier = Modifier.size(sizes.iconSm),
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    modifier = Modifier.heightIn(min = sizes.touchTarget),
+                )
+                IconButton(onClick = { onReject(s.faceId, s.person.id) }, modifier = Modifier.size(sizes.touchTarget)) {
+                    Icon(
+                        Icons.Rounded.Close,
+                        contentDescription = stringResource(R.string.memory_face_not_them, s.person.displayName),
+                        modifier = Modifier.size(sizes.iconSm),
+                    )
+                }
+            }
+        }
     }
 }
 

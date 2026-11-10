@@ -45,4 +45,33 @@
     <string name="relationships_empty_message">ఒకే జ్ఞాపకాల్లో ఇద్దరు లేదా ఎక్కువ మందిని ట్యాగ్ చేయండి, మ్యాప్ పెరుగుతుంది.</string>
     <string name="relationships_hint">పెద్ద బుడగలు ఎక్కువ జ్ఞాపకాల్లో కనిపిస్తాయి. మందమైన గీతలు అంటే కలిసి ఎక్కువ జ్ఞాపకాలు.</string>
     <string name="person_stat_memories">జ్ఞాపకాలు</string>
+    <plurals name="people_faces_banner">
+        <item quantity="one">పేరు పెట్టాల్సిన ముఖం %1$d</item>
+        <item quantity="other">పేరు పెట్టాల్సిన ముఖాలు %1$d</item>
+    </plurals>
+    <string name="people_faces_banner_hint">మీ ఫోటోల్లో Yaadein కి ఇంకా తెలియని వ్యక్తులు కనిపించారు.</string>
+    <string name="people_faces_banner_action">ఇది ఎవరు?</string>
+    <string name="who_title">ఇది ఎవరు?</string>
+    <string name="who_intro">ఈ ముఖాలు ఒకే వ్యక్తివిలా ఉన్నాయి. ఎవరో ఎంచుకోండి, ప్రతి ఫోటో ఒకేసారి ట్యాగ్ అవుతుంది. మీరు చెప్పే వరకు ఏదీ ట్యాగ్ అవ్వదు.</string>
+    <plurals name="who_seen_in">
+        <item quantity="one">%1$d ఫోటోలో కనిపించారు</item>
+        <item quantity="other">%1$d ఫోటోలలో కనిపించారు</item>
+    </plurals>
+    <plurals name="who_remaining">
+        <item quantity="one">ఇంకా %1$d ఉంది</item>
+        <item quantity="other">ఇంకా %1$d ఉన్నాయి</item>
+    </plurals>
+    <string name="who_face_cd">%2$d లో %1$dవ ముఖం</string>
+    <string name="who_pick_person">ఇది ఎవరు?</string>
+    <string name="who_add_person">వ్యక్తిని జోడించండి</string>
+    <string name="who_name_them">పేరు పెట్టండి</string>
+    <string name="who_name_as">ఇది %1$s</string>
+    <string name="who_not_same">ఒకే వ్యక్తి కాదు</string>
+    <plurals name="who_named">
+        <item quantity="one">%1$d ముఖానికి %2$s అని పేరు పెట్టారు</item>
+        <item quantity="other">%1$d ముఖాలకు %2$s అని పేరు పెట్టారు</item>
+    </plurals>
+    <string name="who_undo">రద్దు చేయండి</string>
+    <string name="who_empty_title">ప్రతి ముఖానికీ పేరు ఉంది</string>
+    <string name="who_empty_message">మీరు ఫోటోలు జోడించే కొద్దీ కొత్త ముఖాలు ఇక్కడ వేచి ఉంటాయి. మరిన్ని కనుగొనడానికి సెట్టింగ్‌లలో ముఖాల సూచనలను ఆన్ చేయండి.</string>
 </resources>

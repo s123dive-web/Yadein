@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="memory_who_was_there">કોણ કોણ હતું</string>
+    <string name="memory_face_suggested_title">શું આ…?</string>
+    <string name="memory_face_suggested_badge">સૂચવેલું</string>
+    <string name="memory_face_not_them">%1$s નથી</string>
     <string name="memory_photos">ફોટા અને વીડિયો</string>
     <string name="memory_add_photos">ઉમેરો</string>
     <string name="memory_no_photos_hint">હજી કોઈ ફોટા નથી. ફોટા કે વીડિયો ઉમેરવા ટેપ કરો — આ વાર્તા જાતે જ વધુ સુંદર બની જશે.</string>
