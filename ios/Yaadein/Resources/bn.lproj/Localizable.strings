@@ -329,6 +329,7 @@
 "memory_cover_badge" = "কভার";
 "memory_cover_cd" = "%1$@-এর কভার ছবি";
 "memory_delete_message" = "স্মৃতি আর তার ছবিগুলো এই ফোন থেকে মুছে যাবে। এটা আর ফেরানো যাবে না।";
+"memory_delete_selected_message" = "এগুলো এই স্মৃতি থেকে এবং এই ফোনের Yaadein থেকে সরে যাবে। ফোনের গ্যালারির কপি থেকে যাবে। এটি ফিরিয়ে আনা যাবে না।";
 "memory_delete_title" = "এই স্মৃতিটি মুছবেন?";
 "memory_face_not_them" = "%1$@ নন";
 "memory_face_suggested_badge" = "পরামর্শ";
@@ -339,6 +340,10 @@
 "memory_play_video" = "ভিডিও চালান";
 "memory_record_voice" = "ভয়েস নোট রেকর্ড করুন";
 "memory_rerecord_voice" = "ভয়েস নোট আবার রেকর্ড করুন";
+"memory_select" = "বেছে নিন";
+"memory_select_all" = "সব বেছে নিন";
+"memory_select_none" = "বাছাই মুছুন";
+"memory_selected_count" = "%1$dটি বাছা হয়েছে";
 "memory_set_cover" = "কভার হিসেবে রাখুন";
 "memory_voice_pause" = "ভয়েস নোট থামান";
 "memory_voice_play" = "ভয়েস নোট চালান";

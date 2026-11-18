@@ -42,4 +42,13 @@
     <string name="download_saved_folder">Saved to the folder you chose.</string>
     <string name="download_partial">Saved %1$d of %2$d. The rest could not be saved.</string>
     <string name="download_none">There are no photos or videos in this memory.</string>
+    <string name="memory_select">Select</string>
+    <string name="memory_selected_count">%1$d selected</string>
+    <string name="memory_select_all">Select all</string>
+    <string name="memory_select_none">Clear</string>
+    <plurals name="memory_delete_selected_title">
+        <item quantity="one">Delete this photo?</item>
+        <item quantity="other">Delete %1$d photos?</item>
+    </plurals>
+    <string name="memory_delete_selected_message">They will be removed from this memory and from Yaadein on this phone. Copies in your phone\'s gallery stay. This cannot be undone.</string>
 </resources>

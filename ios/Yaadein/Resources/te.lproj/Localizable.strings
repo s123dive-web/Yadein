@@ -329,6 +329,7 @@
 "memory_cover_badge" = "కవర్";
 "memory_cover_cd" = "%1$@ కవర్ ఫోటో";
 "memory_delete_message" = "ఈ జ్ఞాపకం, దాని ఫోటోలు ఈ ఫోన్ నుండి తీసివేయబడతాయి. దీన్ని తిరిగి తీసుకురాలేము.";
+"memory_delete_selected_message" = "ఇవి ఈ జ్ఞాపకం నుండి, ఈ ఫోన్‌లోని Yaadein నుండి తొలగిపోతాయి. ఫోన్ గ్యాలరీలోని కాపీలు అలాగే ఉంటాయి. దీన్ని తిరిగి తేలేరు.";
 "memory_delete_title" = "ఈ జ్ఞాపకాన్ని తొలగించాలా?";
 "memory_face_not_them" = "%1$@ కాదు";
 "memory_face_suggested_badge" = "సూచించబడింది";
@@ -339,6 +340,10 @@
 "memory_play_video" = "వీడియో ప్లే చేయండి";
 "memory_record_voice" = "వాయిస్ నోట్ రికార్డ్ చేయండి";
 "memory_rerecord_voice" = "వాయిస్ నోట్ మళ్ళీ రికార్డ్ చేయండి";
+"memory_select" = "ఎంచుకోండి";
+"memory_select_all" = "అన్నీ ఎంచుకోండి";
+"memory_select_none" = "ఎంపిక తీసేయండి";
+"memory_selected_count" = "%1$d ఎంచుకున్నారు";
 "memory_set_cover" = "కవర్‌గా పెట్టండి";
 "memory_voice_pause" = "వాయిస్ నోట్ ఆపండి";
 "memory_voice_play" = "వాయిస్ నోట్ ప్లే చేయండి";

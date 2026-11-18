@@ -329,6 +329,7 @@
 "memory_cover_badge" = "ಮುಖಪುಟ";
 "memory_cover_cd" = "%1$@ ಗಾಗಿ ಮುಖಪುಟ ಫೋಟೋ";
 "memory_delete_message" = "ಈ ನೆನಪು ಮತ್ತು ಅದರ ಫೋಟೋಗಳು ಈ ಫೋನ್‌ನಿಂದ ತೆಗೆಯಲ್ಪಡುತ್ತವೆ. ಇದನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ.";
+"memory_delete_selected_message" = "ಇವು ಈ ನೆನಪಿನಿಂದ ಮತ್ತು ಈ ಫೋನ್‌ನ Yaadein ನಿಂದ ತೆಗೆಯಲ್ಪಡುತ್ತವೆ. ಫೋನ್ ಗ್ಯಾಲರಿಯ ಪ್ರತಿಗಳು ಹಾಗೆಯೇ ಇರುತ್ತವೆ. ಇದನ್ನು ಮರಳಿ ತರಲಾಗದು.";
 "memory_delete_title" = "ಈ ನೆನಪನ್ನು ಅಳಿಸಬೇಕೆ?";
 "memory_face_not_them" = "%1$@ ಅಲ್ಲ";
 "memory_face_suggested_badge" = "ಸೂಚಿಸಲಾಗಿದೆ";
@@ -339,6 +340,10 @@
 "memory_play_video" = "ವೀಡಿಯೊ ಪ್ಲೇ ಮಾಡಿ";
 "memory_record_voice" = "ಧ್ವನಿ ಟಿಪ್ಪಣಿ ರೆಕಾರ್ಡ್ ಮಾಡಿ";
 "memory_rerecord_voice" = "ಧ್ವನಿ ಟಿಪ್ಪಣಿಯನ್ನು ಮತ್ತೆ ರೆಕಾರ್ಡ್ ಮಾಡಿ";
+"memory_select" = "ಆಯ್ಕೆಮಾಡಿ";
+"memory_select_all" = "ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ";
+"memory_select_none" = "ಆಯ್ಕೆ ತೆಗೆಯಿರಿ";
+"memory_selected_count" = "%1$d ಆಯ್ಕೆಯಾಗಿವೆ";
 "memory_set_cover" = "ಮುಖಪುಟವಾಗಿ ಬಳಸಿ";
 "memory_voice_pause" = "ಧ್ವನಿ ಟಿಪ್ಪಣಿ ನಿಲ್ಲಿಸಿ";
 "memory_voice_play" = "ಧ್ವನಿ ಟಿಪ್ಪಣಿ ಪ್ಲೇ ಮಾಡಿ";

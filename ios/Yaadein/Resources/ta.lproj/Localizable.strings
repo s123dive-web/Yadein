@@ -329,6 +329,7 @@
 "memory_cover_badge" = "அட்டைப் படம்";
 "memory_cover_cd" = "%1$@-க்கான அட்டைப் படம்";
 "memory_delete_message" = "இந்த நினைவும் அதன் படங்களும் இந்த ஃபோனிலிருந்து நீக்கப்படும். இதைத் திரும்பப் பெற முடியாது.";
+"memory_delete_selected_message" = "இவை இந்த நினைவிலிருந்தும் இந்த ஃபோனில் உள்ள Yaadein-இலிருந்தும் நீக்கப்படும். ஃபோன் கேலரியில் உள்ள நகல்கள் அப்படியே இருக்கும். இதைத் திரும்பப் பெற முடியாது.";
 "memory_delete_title" = "இந்த நினைவை நீக்கவா?";
 "memory_face_not_them" = "%1$@ இல்லை";
 "memory_face_suggested_badge" = "பரிந்துரை";
@@ -339,6 +340,10 @@
 "memory_play_video" = "வீடியோவை இயக்கு";
 "memory_record_voice" = "குரல் குறிப்பைப் பதிவுசெய்";
 "memory_rerecord_voice" = "குரல் குறிப்பை மீண்டும் பதிவுசெய்";
+"memory_select" = "தேர்ந்தெடு";
+"memory_select_all" = "அனைத்தையும் தேர்ந்தெடு";
+"memory_select_none" = "தேர்வை நீக்கு";
+"memory_selected_count" = "%1$d தேர்ந்தெடுக்கப்பட்டன";
 "memory_set_cover" = "அட்டைப் படமாக வை";
 "memory_voice_pause" = "குரல் குறிப்பை இடைநிறுத்து";
 "memory_voice_play" = "குரல் குறிப்பை இயக்கு";

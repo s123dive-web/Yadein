@@ -329,6 +329,7 @@
 "memory_cover_badge" = "Cover";
 "memory_cover_cd" = "Cover photo for %1$@";
 "memory_delete_message" = "The memory and its photos will be removed from this phone. This cannot be undone.";
+"memory_delete_selected_message" = "They will be removed from this memory and from Yaadein on this phone. Copies in your phone's gallery stay. This cannot be undone.";
 "memory_delete_title" = "Delete this memory?";
 "memory_face_not_them" = "Not %1$@";
 "memory_face_suggested_badge" = "Suggested";
@@ -339,6 +340,10 @@
 "memory_play_video" = "Play video";
 "memory_record_voice" = "Record a voice note";
 "memory_rerecord_voice" = "Record the voice note again";
+"memory_select" = "Select";
+"memory_select_all" = "Select all";
+"memory_select_none" = "Clear";
+"memory_selected_count" = "%1$d selected";
 "memory_set_cover" = "Use as cover";
 "memory_voice_pause" = "Pause voice note";
 "memory_voice_play" = "Play voice note";

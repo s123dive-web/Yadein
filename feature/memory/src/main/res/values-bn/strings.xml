@@ -42,4 +42,13 @@
     <string name="download_saved_folder">আপনার বেছে নেওয়া ফোল্ডারে সেভ হয়েছে।</string>
     <string name="download_partial">%2$d-এর মধ্যে %1$d সেভ হয়েছে। বাকিগুলো সেভ করা যায়নি।</string>
     <string name="download_none">এই স্মৃতিতে কোনো ছবি বা ভিডিও নেই।</string>
+    <string name="memory_select">বেছে নিন</string>
+    <string name="memory_selected_count">%1$dটি বাছা হয়েছে</string>
+    <string name="memory_select_all">সব বেছে নিন</string>
+    <string name="memory_select_none">বাছাই মুছুন</string>
+    <plurals name="memory_delete_selected_title">
+        <item quantity="one">এই ছবিটি মুছবেন?</item>
+        <item quantity="other">%1$dটি ছবি মুছবেন?</item>
+    </plurals>
+    <string name="memory_delete_selected_message">এগুলো এই স্মৃতি থেকে এবং এই ফোনের Yaadein থেকে সরে যাবে। ফোনের গ্যালারির কপি থেকে যাবে। এটি ফিরিয়ে আনা যাবে না।</string>
 </resources>

@@ -243,6 +243,22 @@
             <string>%1$d memories</string>
         </dict>
     </dict>
+    <key>memory_delete_selected_title</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Delete this photo?</string>
+            <key>other</key>
+            <string>Delete %1$d photos?</string>
+        </dict>
+    </dict>
     <key>notification_years_ago</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>

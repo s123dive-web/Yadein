@@ -42,4 +42,13 @@
     <string name="download_saved_folder">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.</string>
     <string name="download_partial">%2$d ರಲ್ಲಿ %1$d ಉಳಿಸಲಾಗಿದೆ. ಉಳಿದವನ್ನು ಉಳಿಸಲಾಗಲಿಲ್ಲ.</string>
     <string name="download_none">ಈ ನೆನಪಿನಲ್ಲಿ ಫೋಟೋಗಳು ಅಥವಾ ವೀಡಿಯೊಗಳಿಲ್ಲ.</string>
+    <string name="memory_select">ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="memory_selected_count">%1$d ಆಯ್ಕೆಯಾಗಿವೆ</string>
+    <string name="memory_select_all">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="memory_select_none">ಆಯ್ಕೆ ತೆಗೆಯಿರಿ</string>
+    <plurals name="memory_delete_selected_title">
+        <item quantity="one">ಈ ಫೋಟೋ ಅಳಿಸಬೇಕೇ?</item>
+        <item quantity="other">%1$d ಫೋಟೋಗಳನ್ನು ಅಳಿಸಬೇಕೇ?</item>
+    </plurals>
+    <string name="memory_delete_selected_message">ಇವು ಈ ನೆನಪಿನಿಂದ ಮತ್ತು ಈ ಫೋನ್‌ನ Yaadein ನಿಂದ ತೆಗೆಯಲ್ಪಡುತ್ತವೆ. ಫೋನ್ ಗ್ಯಾಲರಿಯ ಪ್ರತಿಗಳು ಹಾಗೆಯೇ ಇರುತ್ತವೆ. ಇದನ್ನು ಮರಳಿ ತರಲಾಗದು.</string>
 </resources>

@@ -42,4 +42,13 @@
     <string name="download_saved_folder">நீங்கள் தேர்ந்தெடுத்த கோப்புறையில் சேமிக்கப்பட்டது.</string>
     <string name="download_partial">%2$d இல் %1$d சேமிக்கப்பட்டன. மீதியைச் சேமிக்க முடியவில்லை.</string>
     <string name="download_none">இந்த நினைவில் படங்கள் அல்லது வீடியோக்கள் இல்லை.</string>
+    <string name="memory_select">தேர்ந்தெடு</string>
+    <string name="memory_selected_count">%1$d தேர்ந்தெடுக்கப்பட்டன</string>
+    <string name="memory_select_all">அனைத்தையும் தேர்ந்தெடு</string>
+    <string name="memory_select_none">தேர்வை நீக்கு</string>
+    <plurals name="memory_delete_selected_title">
+        <item quantity="one">இந்தப் படத்தை நீக்கவா?</item>
+        <item quantity="other">%1$d படங்களை நீக்கவா?</item>
+    </plurals>
+    <string name="memory_delete_selected_message">இவை இந்த நினைவிலிருந்தும் இந்த ஃபோனில் உள்ள Yaadein-இலிருந்தும் நீக்கப்படும். ஃபோன் கேலரியில் உள்ள நகல்கள் அப்படியே இருக்கும். இதைத் திரும்பப் பெற முடியாது.</string>
 </resources>

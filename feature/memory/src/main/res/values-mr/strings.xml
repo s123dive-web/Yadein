@@ -42,4 +42,13 @@
     <string name="download_saved_folder">तुम्ही निवडलेल्या फोल्डरमध्ये जतन झाले.</string>
     <string name="download_partial">%2$d पैकी %1$d जतन झाले. बाकीचे जतन होऊ शकले नाहीत.</string>
     <string name="download_none">या आठवणीत एकही फोटो किंवा व्हिडिओ नाही.</string>
+    <string name="memory_select">निवडा</string>
+    <string name="memory_selected_count">%1$d निवडले</string>
+    <string name="memory_select_all">सर्व निवडा</string>
+    <string name="memory_select_none">निवड काढा</string>
+    <plurals name="memory_delete_selected_title">
+        <item quantity="one">हा फोटो हटवायचा?</item>
+        <item quantity="other">%1$d फोटो हटवायचे?</item>
+    </plurals>
+    <string name="memory_delete_selected_message">ते या आठवणीतून आणि या फोनवरील Yaadein मधून काढले जातील. फोनच्या गॅलरीतील प्रती तशाच राहतील. हे परत आणता येणार नाही.</string>
 </resources>
