@@ -254,7 +254,7 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>ಈ ಫೋಟೋ ಅಳಿಸಬೇಕೇ?</string>
+            <string>%1$d ಫೋಟೋಗಳನ್ನು ಅಳಿಸಬೇಕೇ?</string>
             <key>other</key>
             <string>%1$d ಫೋಟೋಗಳನ್ನು ಅಳಿಸಬೇಕೇ?</string>
         </dict>

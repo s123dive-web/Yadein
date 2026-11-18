@@ -47,7 +47,7 @@
     <string name="memory_select_all">সব বেছে নিন</string>
     <string name="memory_select_none">বাছাই মুছুন</string>
     <plurals name="memory_delete_selected_title">
-        <item quantity="one">এই ছবিটি মুছবেন?</item>
+        <item quantity="one">%1$dটি ছবি মুছবেন?</item>
         <item quantity="other">%1$dটি ছবি মুছবেন?</item>
     </plurals>
     <string name="memory_delete_selected_message">এগুলো এই স্মৃতি থেকে এবং এই ফোনের Yaadein থেকে সরে যাবে। ফোনের গ্যালারির কপি থেকে যাবে। এটি ফিরিয়ে আনা যাবে না।</string>

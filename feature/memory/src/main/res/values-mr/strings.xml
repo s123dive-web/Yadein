@@ -47,7 +47,7 @@
     <string name="memory_select_all">सर्व निवडा</string>
     <string name="memory_select_none">निवड काढा</string>
     <plurals name="memory_delete_selected_title">
-        <item quantity="one">हा फोटो हटवायचा?</item>
+        <item quantity="one">%1$d फोटो हटवायचे?</item>
         <item quantity="other">%1$d फोटो हटवायचे?</item>
     </plurals>
     <string name="memory_delete_selected_message">ते या आठवणीतून आणि या फोनवरील Yaadein मधून काढले जातील. फोनच्या गॅलरीतील प्रती तशाच राहतील. हे परत आणता येणार नाही.</string>

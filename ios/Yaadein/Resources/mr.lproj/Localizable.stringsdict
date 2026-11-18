@@ -254,7 +254,7 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>हा फोटो हटवायचा?</string>
+            <string>%1$d फोटो हटवायचे?</string>
             <key>other</key>
             <string>%1$d फोटो हटवायचे?</string>
         </dict>

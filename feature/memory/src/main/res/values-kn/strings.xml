@@ -47,7 +47,7 @@
     <string name="memory_select_all">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ</string>
     <string name="memory_select_none">ಆಯ್ಕೆ ತೆಗೆಯಿರಿ</string>
     <plurals name="memory_delete_selected_title">
-        <item quantity="one">ಈ ಫೋಟೋ ಅಳಿಸಬೇಕೇ?</item>
+        <item quantity="one">%1$d ಫೋಟೋಗಳನ್ನು ಅಳಿಸಬೇಕೇ?</item>
         <item quantity="other">%1$d ಫೋಟೋಗಳನ್ನು ಅಳಿಸಬೇಕೇ?</item>
     </plurals>
     <string name="memory_delete_selected_message">ಇವು ಈ ನೆನಪಿನಿಂದ ಮತ್ತು ಈ ಫೋನ್‌ನ Yaadein ನಿಂದ ತೆಗೆಯಲ್ಪಡುತ್ತವೆ. ಫೋನ್ ಗ್ಯಾಲರಿಯ ಪ್ರತಿಗಳು ಹಾಗೆಯೇ ಇರುತ್ತವೆ. ಇದನ್ನು ಮರಳಿ ತರಲಾಗದು.</string>
