@@ -158,7 +158,8 @@ class MemoryDetailViewModel @Inject constructor(
         viewModelScope.launch { voiceNotes.attach(memoryId, null) }
     }
 
-    fun removeMedia(mediaId: Long) {
-        viewModelScope.launch { mediaRepository.delete(mediaId) }
+    /** Removes the chosen photos and videos (rows and encrypted files); the memory picks a new cover when its cover goes. */
+    fun removeMedia(mediaIds: Set<Long>) {
+        viewModelScope.launch { mediaIds.forEach { id -> runCatching { mediaRepository.delete(id) } } }
     }
 }

@@ -329,6 +329,7 @@
 "memory_cover_badge" = "कव्हर";
 "memory_cover_cd" = "%1$@ चा कव्हर फोटो";
 "memory_delete_message" = "ही आठवण आणि तिचे फोटो या फोनवरून काढले जातील. हे परत आणता येणार नाही.";
+"memory_delete_selected_message" = "ते या आठवणीतून आणि या फोनवरील Yaadein मधून काढले जातील. फोनच्या गॅलरीतील प्रती तशाच राहतील. हे परत आणता येणार नाही.";
 "memory_delete_title" = "ही आठवण हटवायची?";
 "memory_face_not_them" = "%1$@ नाही";
 "memory_face_suggested_badge" = "सुचवलेलं";
@@ -339,6 +340,10 @@
 "memory_play_video" = "व्हिडिओ चालवा";
 "memory_record_voice" = "आवाजात नोंद रेकॉर्ड करा";
 "memory_rerecord_voice" = "आवाजातील नोंद पुन्हा रेकॉर्ड करा";
+"memory_select" = "निवडा";
+"memory_select_all" = "सर्व निवडा";
+"memory_select_none" = "निवड काढा";
+"memory_selected_count" = "%1$d निवडले";
 "memory_set_cover" = "कव्हर म्हणून वापरा";
 "memory_voice_pause" = "आवाजातील नोंद थांबवा";
 "memory_voice_play" = "आवाजातील नोंद ऐका";

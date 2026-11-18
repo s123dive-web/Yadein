@@ -24,6 +24,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.RadioButtonUnchecked
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.ui.semantics.selected
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Download
@@ -133,6 +138,7 @@ fun MemoryDetailRoute(
         onDelete = { viewModel.delete(onBack) },
         onSetCover = viewModel::setCover,
         modifier = modifier,
+        onDeleteMedia = viewModel::removeMedia,
         onRecordVoice = { onRecordVoice(viewModel.memoryId) },
         onToggleFavorite = viewModel::toggleFavorite,
         voicePlayer = { path -> VoiceNoteCard(path = path, voiceNotes = viewModel.voiceNotes, onRemove = viewModel::removeVoice) },
@@ -198,6 +204,8 @@ fun MemoryDetailScreen(
     onConfirmSuggestion: (faceId: Long, personId: Long) -> Unit = { _, _ -> },
     onRejectSuggestion: (faceId: Long, personId: Long) -> Unit = { _, _ -> },
     onToggleFavorite: () -> Unit = {},
+    /** Removes the chosen photos and videos from the memory (asked after the confirmation). */
+    onDeleteMedia: (Set<Long>) -> Unit = {},
 ) {
     val detail = state.detail
     if (state.loading || detail == null) {
@@ -206,7 +214,15 @@ fun MemoryDetailScreen(
     }
     val spacing = Yaadein.spacing
     var confirmDelete by remember { mutableStateOf(false) }
-    LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = spacing.xxxl)) {
+    // Choosing several photos to delete: null = not choosing. Ids that are gone (deleted meanwhile) are ignored.
+    var picked by remember { mutableStateOf<Set<Long>?>(null) }
+    var confirmDeleteMedia by remember { mutableStateOf(false) }
+    val selecting = picked != null && detail.media.isNotEmpty()
+    val chosen = picked.orEmpty().intersect(detail.media.mapTo(HashSet()) { it.id })
+    val toggle: (Long) -> Unit = { id -> picked = if (id in chosen) chosen - id else chosen + id }
+    if (selecting) BackHandler { picked = null }
+    Box(modifier = modifier.fillMaxSize()) {
+    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = if (selecting) Yaadein.sizes.avatarXl else spacing.xxxl)) {
         item(key = "hero") {
             Hero(detail = detail, onBack = onBack, onEdit = onEdit, onDelete = { confirmDelete = true }, onRecap = onRecap, onOpenCover = { index -> onOpenMedia(index) }, onRecordVoice = onRecordVoice, onToggleFavorite = onToggleFavorite, onShareCard = onShareCard, onSavePdf = onSavePdf, onSendPack = onSendPack, onDownloadAll = onDownloadAll)
         }
@@ -266,7 +282,10 @@ fun MemoryDetailScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f).semantics { heading() },
                     )
-                    TextButton(onClick = onAddMedia) { Text(stringResource(R.string.memory_add_photos)) }
+                    if (detail.media.isNotEmpty() && !selecting) {
+                        TextButton(onClick = { picked = emptySet() }) { Text(stringResource(R.string.memory_select)) }
+                    }
+                    if (!selecting) TextButton(onClick = onAddMedia) { Text(stringResource(R.string.memory_add_photos)) }
                 }
                 Spacer(Modifier.height(spacing.sm))
             }
@@ -295,12 +314,42 @@ fun MemoryDetailScreen(
                 ) {
                     rows[r].forEachIndexed { c, media ->
                         val index = r * 3 + c
-                        MediaThumb(media = media, isCover = media.id == detail.memory.coverMediaId, onClick = { onOpenMedia(index) }, onSetCover = { onSetCover(media.id) }, modifier = Modifier.weight(1f))
+                        MediaThumb(
+                            media = media,
+                            label = media.caption.ifBlank { stringResource(R.string.viewer_of, index + 1, detail.media.size) },
+                            isCover = media.id == detail.memory.coverMediaId,
+                            onClick = { if (selecting) toggle(media.id) else onOpenMedia(index) },
+                            onSetCover = { onSetCover(media.id) },
+                            modifier = Modifier.weight(1f),
+                            selecting = selecting,
+                            selected = media.id in chosen,
+                            onSelect = { picked = chosen + media.id },
+                        )
                     }
                     repeat(3 - rows[r].size) { Spacer(Modifier.weight(1f)) }
                 }
             }
         }
+    }
+    if (selecting) {
+        SelectionBar(
+            count = chosen.size,
+            allSelected = chosen.size == detail.media.size,
+            onClose = { picked = null },
+            onSelectAll = { picked = if (chosen.size == detail.media.size) emptySet() else detail.media.mapTo(HashSet()) { it.id } },
+            onDelete = { confirmDeleteMedia = true },
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
+    }
+    }
+    if (confirmDeleteMedia && chosen.isNotEmpty()) {
+        AlertDialog(
+            onDismissRequest = { confirmDeleteMedia = false },
+            title = { Text(pluralStringResource(R.plurals.memory_delete_selected_title, chosen.size, chosen.size)) },
+            text = { Text(stringResource(R.string.memory_delete_selected_message)) },
+            confirmButton = { TextButton(onClick = { confirmDeleteMedia = false; onDeleteMedia(chosen); picked = null }) { Text(stringResource(CoreR.string.action_delete)) } },
+            dismissButton = { TextButton(onClick = { confirmDeleteMedia = false }) { Text(stringResource(CoreR.string.action_cancel)) } },
+        )
     }
     if (confirmDelete) {
         AlertDialog(
@@ -310,6 +359,34 @@ fun MemoryDetailScreen(
             confirmButton = { TextButton(onClick = { confirmDelete = false; onDelete() }) { Text(stringResource(CoreR.string.action_delete)) } },
             dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(CoreR.string.action_cancel)) } },
         )
+    }
+}
+
+/** Shown at the bottom while photos are being chosen: close, how many, select all, delete. */
+@Composable
+private fun SelectionBar(count: Int, allSelected: Boolean, onClose: () -> Unit, onSelectAll: () -> Unit, onDelete: () -> Unit, modifier: Modifier = Modifier) {
+    val spacing = Yaadein.spacing
+    Surface(modifier = modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerHigh, shadowElevation = Yaadein.elevation.raised) {
+        Row(
+            modifier = Modifier.navigationBarsPadding().padding(horizontal = spacing.sm, vertical = spacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(onClick = onClose, modifier = Modifier.size(Yaadein.sizes.touchTarget)) {
+                Icon(Icons.Rounded.Close, contentDescription = stringResource(CoreR.string.action_cancel))
+            }
+            Text(
+                text = stringResource(R.string.memory_selected_count, count),
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                modifier = Modifier.weight(1f).padding(horizontal = spacing.xs),
+            )
+            TextButton(onClick = onSelectAll) { Text(stringResource(if (allSelected) R.string.memory_select_none else R.string.memory_select_all)) }
+            TextButton(onClick = onDelete, enabled = count > 0) {
+                Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(Yaadein.sizes.iconSm))
+                Spacer(Modifier.width(spacing.xs))
+                Text(stringResource(CoreR.string.action_delete))
+            }
+        }
     }
 }
 
@@ -462,20 +539,49 @@ private fun Hero(
     }
 }
 
-/** Tap opens the photo; long-press (or TalkBack's actions menu) offers "Set as cover". No menu dots on every tile. */
+/**
+ * Tap opens the photo; long-press (or TalkBack's actions menu) offers "Use as cover" and "Select". No menu dots on every tile.
+ * While [selecting], tap and long-press tick or untick the photo.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun MediaThumb(media: Media, isCover: Boolean, onClick: () -> Unit, onSetCover: () -> Unit, modifier: Modifier = Modifier) {
+private fun MediaThumb(
+    media: Media,
+    label: String,
+    isCover: Boolean,
+    onClick: () -> Unit,
+    onSetCover: () -> Unit,
+    modifier: Modifier = Modifier,
+    selecting: Boolean = false,
+    selected: Boolean = false,
+    onSelect: () -> Unit = {},
+) {
     val radius = Yaadein.radius
     var menu by remember { mutableStateOf(false) }
     val setCoverLabel = stringResource(R.string.memory_set_cover)
+    val selectLabel = stringResource(R.string.memory_select)
     val haptics = LocalHapticFeedback.current
     Box(
         modifier = modifier.aspectRatio(1f).clip(RoundedCornerShape(radius.sm))
-            .combinedClickable(onClick = onClick, onLongClick = { haptics.performHapticFeedback(HapticFeedbackType.LongPress); menu = true })
-            .semantics { customActions = listOf(CustomAccessibilityAction(setCoverLabel) { onSetCover(); true }) },
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    if (selecting) onClick() else menu = true
+                },
+            )
+            .semantics {
+                if (selecting) {
+                    this.selected = selected
+                } else {
+                    customActions = listOf(
+                        CustomAccessibilityAction(setCoverLabel) { onSetCover(); true },
+                        CustomAccessibilityAction(selectLabel) { onSelect(); true },
+                    )
+                }
+            },
     ) {
-        ThumbnailImage(mediaId = media.id, contentDescription = media.caption.ifBlank { null }, modifier = Modifier.fillMaxSize())
+        ThumbnailImage(mediaId = media.id, contentDescription = label, modifier = Modifier.fillMaxSize())
         if (media.kind == MediaKind.VIDEO) {
             Icon(Icons.Rounded.PlayCircle, contentDescription = null, tint = Color.White, modifier = Modifier.align(Alignment.Center).size(Yaadein.sizes.iconLg))
         }
@@ -487,8 +593,19 @@ private fun MediaThumb(media: Media, isCover: Boolean, onClick: () -> Unit, onSe
                 Text(stringResource(R.string.memory_cover_badge), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onPrimary)
             }
         }
+        if (selecting) {
+            if (selected) Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)))
+            Icon(
+                imageVector = if (selected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.align(Alignment.TopEnd).padding(Yaadein.spacing.xs).size(Yaadein.sizes.icon)
+                    .background(if (selected) MaterialTheme.colorScheme.primary else Color.Black.copy(alpha = 0.35f), CircleShape),
+            )
+        }
         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
             DropdownMenuItem(text = { Text(setCoverLabel) }, onClick = { menu = false; onSetCover() })
+            DropdownMenuItem(text = { Text(selectLabel) }, onClick = { menu = false; onSelect() })
         }
     }
 }

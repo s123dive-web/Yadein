@@ -1382,3 +1382,14 @@ open it on the memory on screen)?
   one or two people). Turning on Settings → Face suggestions and naming a face once in "Who is this?" is what makes
   the stories exact.
 - Rule: never treat a memory-level tag as "this person is in this photo".
+
+### Select and delete several photos in a memory (owner: "option to select and delete multiple photos")
+
+- Memory detail → **Select** (next to Add, or long-press a photo → Select) turns the grid into a picker: tap ticks a photo,
+  a bottom bar shows "N selected", **Select all / Clear**, **Delete** (confirmation first), × or Back leaves. The selection
+  is screen state in `MemoryDetailScreen`; `MemoryDetailViewModel.removeMedia(Set<Long>)` deletes each through
+  `MediaRepository.delete` (row + encrypted files, a new cover when the cover goes, search reindex). Deleting every photo
+  leaves the memory as a words-only card. Tiles now always carry a label ("2 of 9" when there is no caption).
+- Strings `memory_select*`, `memory_selected_count`, `memory_delete_selected_*` in all eight locales (non-English
+  machine-assisted); iOS strings regenerated (the iPhone screen itself is not changed). Test: `AccessibilityTest`
+  "memory photos can be selected and deleted together".

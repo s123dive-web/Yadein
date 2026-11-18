@@ -7,7 +7,13 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.yaadein.core.ui.media.ProvidePreviewImages
 import com.yaadein.core.ui.theme.YaadeinTheme
@@ -17,8 +23,11 @@ import com.yaadein.domain.capture.CaptureEntry
 import com.yaadein.domain.capture.CaptureStat
 import com.yaadein.domain.capture.DateSource
 import com.yaadein.domain.dates.Dates
+import com.yaadein.domain.model.Media
+import com.yaadein.domain.model.MediaKind
 import com.yaadein.domain.model.Memory
 import com.yaadein.domain.model.MemoryCard
+import com.yaadein.domain.model.MemoryDetail
 import com.yaadein.domain.model.MemoryType
 import com.yaadein.domain.model.Person
 import com.yaadein.domain.settings.UserSettings
@@ -27,6 +36,8 @@ import com.yaadein.feature.capture.QuickSaveScreen
 import com.yaadein.feature.capture.QuickSaveUiState
 import com.yaadein.feature.lock.LockScreen
 import com.yaadein.feature.lock.LockUiState
+import com.yaadein.feature.memory.MemoryDetailScreen
+import com.yaadein.feature.memory.MemoryDetailUiState
 import com.yaadein.feature.people.PeopleScreen
 import com.yaadein.feature.people.PeopleUiState
 import com.yaadein.feature.people.FaceGroup
@@ -329,5 +340,36 @@ class AccessibilityTest {
             }
         }
         assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+    }
+
+    @Test
+    @org.robolectric.annotation.Config(qualifiers = "w400dp-h1200dp")
+    fun `memory photos can be selected and deleted together`() {
+        val media = (1L..3L).map { Media(id = it, memoryId = 1, kind = MediaKind.PHOTO, encryptedPath = "e$it", thumbPath = "t$it", sizeBytes = 1, width = 4, height = 3, sha256 = "s$it") }
+        var deleted: Set<Long>? = null
+        var opened = 0
+        compose.setContent {
+            YaadeinTheme {
+                ProvidePreviewImages(painter = { ColorPainter(Color.Gray) }) {
+                    MemoryDetailScreen(
+                        state = MemoryDetailUiState(false, MemoryDetail(cards[0].memory, people, media)),
+                        onBack = {}, onOpenMedia = { opened++ }, onOpenPerson = {}, onEdit = {}, onAddMedia = {}, onRecap = {}, onDelete = {}, onSetCover = {},
+                        onDeleteMedia = { deleted = it },
+                    )
+                }
+            }
+        }
+        compose.onNodeWithText("Select").performClick()
+        compose.onNodeWithContentDescription("1 of 3").performClick()
+        compose.onNodeWithContentDescription("3 of 3").performClick()
+        compose.onNodeWithText("2 selected").assertExists()
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction()))
+        compose.onNodeWithText("Delete").performClick()
+        compose.onNodeWithText("Delete 2 photos?").assertExists()
+        compose.onNode(hasText("Delete") and hasAnyAncestor(isDialog())).performClick()
+        compose.waitForIdle()
+        assertTrue("deleted $deleted", deleted == setOf(1L, 3L))
+        assertTrue("choosing photos must not open the viewer", opened == 0)
+        compose.onNodeWithText("Select").assertExists()
     }
 }
