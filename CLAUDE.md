@@ -1401,3 +1401,7 @@ open it on the memory on screen)?
   event shows its first day. `CoverDateChip` (core/ui, `MemoryCardView.kt`) draws it top-right on the card cover (next
   to the import ring / failure badge) and on the timeline grid tile, where the title is on the cover. The chip is
   hidden from TalkBack (the card already reads the date). No new strings. iPhone app not changed.
+- CI note from this change: the unit-test step failed twice in a row with "Cannot create an instance of PeopleViewModel"
+  although `--no-parallel` was on. The log showed `:feature:people:kspDebugKotlin` running next to another module's KSP
+  task and producing no files (then `compileDebugJavaWithJavac NO-SOURCE`), with no warning. The root `build.gradle.kts`
+  now makes every `ksp*Kotlin` task use a one-slot shared build service (`kspQueue`), so KSP runs one module at a time.
