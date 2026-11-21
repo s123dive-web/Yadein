@@ -10,6 +10,21 @@ import java.util.Locale
 
 class DatesTest {
     @Test
+    fun `short label for a cover corner`() {
+        assertEquals("18th Nov 26", Dates.shortLabel(Dates.exact(LocalDate.of(2026, 11, 18)), Locale.ENGLISH))
+        assertEquals("1st Jan 99", Dates.shortLabel(Dates.exact(LocalDate.of(1999, 1, 1)), Locale.ENGLISH))
+        assertEquals("22nd Mar 24", Dates.shortLabel(Dates.exact(LocalDate.of(2024, 3, 22)), Locale.ENGLISH))
+        assertEquals("3rd Mar 24", Dates.shortLabel(Dates.exact(LocalDate.of(2024, 3, 3)), Locale.ENGLISH))
+        assertEquals("11th Mar 24", Dates.shortLabel(Dates.exact(LocalDate.of(2024, 3, 11)), Locale.ENGLISH))
+        assertEquals("20th Dec 24", Dates.shortLabel(Dates.exact(LocalDate.of(2024, 12, 20), LocalDate.of(2024, 12, 24)), Locale.ENGLISH))
+        assertEquals("Dec 24", Dates.shortLabel(Dates.month(YearMonth.of(2024, 12)), Locale.ENGLISH))
+        assertEquals("2015", Dates.shortLabel(Dates.year(2015), Locale.ENGLISH))
+        assertEquals("Summer 2015", Dates.shortLabel(Dates.fuzzy("Summer 2015", 2015, 5), Locale.ENGLISH))
+        // Other languages have no "th": the plain day number.
+        assertEquals(true, Dates.shortLabel(Dates.exact(LocalDate.of(2026, 11, 18)), Locale.forLanguageTag("hi")).startsWith("18 "))
+    }
+
+    @Test
     fun `year-only memory anchors to 1 January`() {
         val d = Dates.year(2015)
         assertEquals(LocalDate.of(2015, 1, 1), Dates.start(d))

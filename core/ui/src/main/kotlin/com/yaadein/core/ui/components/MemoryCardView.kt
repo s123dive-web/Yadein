@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,9 +40,12 @@ import androidx.compose.ui.unit.dp
 import com.yaadein.core.ui.R
 import com.yaadein.core.ui.media.ThumbnailImage
 import com.yaadein.core.ui.theme.Yaadein
+import com.yaadein.core.ui.util.currentLocale
 import com.yaadein.core.ui.util.memoryDateText
+import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.model.MediaKind
 import com.yaadein.domain.model.MemoryCard
+import com.yaadein.domain.model.MemoryDate
 import com.yaadein.domain.model.MemoryType
 
 /**
@@ -122,12 +126,14 @@ fun MemoryCardView(
                         .padding(spacing.md),
                 )
             }
-            ImportStatusBadge(
-                progress = importProgress,
-                failed = importFailed,
-                onFailuresClick = onImportFailuresClick,
+            Row(
                 modifier = Modifier.align(Alignment.TopEnd).padding(spacing.sm),
-            )
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+            ) {
+                ImportStatusBadge(progress = importProgress, failed = importFailed, onFailuresClick = onImportFailuresClick)
+                CoverDateChip(date = card.memory.date)
+            }
         }
         Column(modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md)) {
             Text(
@@ -172,6 +178,24 @@ fun MemoryCardView(
             }
         }
     }
+}
+
+/** The memory's date in the top corner of its cover: "18th Nov 26". Decorative for TalkBack (the card says the date). */
+@Composable
+fun CoverDateChip(date: MemoryDate, modifier: Modifier = Modifier, small: Boolean = false) {
+    val spacing = Yaadein.spacing
+    Text(
+        text = Dates.shortLabel(date, currentLocale()),
+        style = if (small) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium,
+        color = Color.White,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier
+            .clip(RoundedCornerShape(Yaadein.radius.pill))
+            .background(Color.Black.copy(alpha = 0.45f))
+            .padding(horizontal = if (small) spacing.xs else spacing.sm, vertical = if (small) spacing.xxs else spacing.xs)
+            .clearAndSetSemantics { },
+    )
 }
 
 @Composable

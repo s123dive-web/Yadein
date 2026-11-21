@@ -77,6 +77,38 @@ object Dates {
         }
     }
 
+    private val shortDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM yy")
+    private val shortMonthYearFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM yy")
+
+    /**
+     * The date as it is written in a corner of a cover: "18th Nov 26" (English; "18 नोव्हें 26" style elsewhere),
+     * "Nov 26" for a month, "2026" for a year, the user's own words for a fuzzy date. A multi-day event shows its
+     * first day.
+     */
+    fun shortLabel(date: MemoryDate, locale: Locale = Locale.getDefault()): String {
+        val start = start(date)
+        return when (date.kind) {
+            DateKind.EXACT ->
+                if (locale.language == "en") {
+                    "${start.dayOfMonth}${ordinalSuffix(start.dayOfMonth)} " + start.format(shortMonthYearFormatter.withLocale(locale))
+                } else {
+                    start.format(shortDayFormatter.withLocale(locale))
+                }
+            DateKind.MONTH -> start.format(shortMonthYearFormatter.withLocale(locale))
+            DateKind.YEAR -> start.year.toString()
+            DateKind.FUZZY -> date.label ?: start.year.toString()
+        }
+    }
+
+    /** English "st", "nd", "rd", "th" for a day of the month. */
+    fun ordinalSuffix(day: Int): String = when {
+        day % 100 in 11..13 -> "th"
+        day % 10 == 1 -> "st"
+        day % 10 == 2 -> "nd"
+        day % 10 == 3 -> "rd"
+        else -> "th"
+    }
+
     fun monthName(month: Month, locale: Locale = Locale.getDefault()): String =
         month.getDisplayName(TextStyle.FULL, locale)
 

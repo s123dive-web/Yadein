@@ -28,3 +28,19 @@ subprojects {
         }
     }
 }
+
+// One KSP task at a time. KSP hands its work to background workers, so even with --no-parallel two modules were
+// processed at once, and now and then one of them (usually feature:people) came out with no generated Hilt code and no
+// error: the app then failed with "Cannot create an instance of PeopleViewModel". A shared service with one slot makes
+// the KSP tasks queue up; everything else still runs as before.
+abstract class KspQueue : BuildService<BuildServiceParameters.None>
+
+val kspQueue = gradle.sharedServices.registerIfAbsent("kspQueue", KspQueue::class) {
+    maxParallelUsages.set(1)
+}
+
+subprojects {
+    tasks.matching { it.name.startsWith("ksp") && it.name.endsWith("Kotlin") }.configureEach {
+        usesService(kspQueue)
+    }
+}
