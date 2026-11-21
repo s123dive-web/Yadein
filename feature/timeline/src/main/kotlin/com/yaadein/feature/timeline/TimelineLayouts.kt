@@ -32,6 +32,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yaadein.core.ui.components.CoverArt
+import com.yaadein.core.ui.components.CoverDateChip
 import com.yaadein.core.ui.components.FaceStack
 import com.yaadein.core.ui.media.ThumbnailImage
 import com.yaadein.core.ui.theme.Yaadein
@@ -119,6 +120,7 @@ fun TimelineGrid(items: PagedItems<TimelineItem>, onOpenMemory: (Long) -> Unit, 
 private fun GridTile(card: MemoryCard, onClick: () -> Unit) {
     Box(Modifier.aspectRatio(1f).clip(RoundedCornerShape(Yaadein.radius.sm)).clickable(onClick = onClick)) {
         Cover(card, Modifier.fillMaxSize())
+        CoverDateChip(date = card.memory.date, small = true, modifier = Modifier.align(Alignment.TopEnd).padding(Yaadein.spacing.xs))
         Box(Modifier.align(Alignment.BottomStart).fillMaxWidth().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.55f))))) {
             Text(
                 card.memory.title,

@@ -1393,3 +1393,11 @@ open it on the memory on screen)?
 - Strings `memory_select*`, `memory_selected_count`, `memory_delete_selected_*` in all eight locales (non-English
   machine-assisted); iOS strings regenerated (the iPhone screen itself is not changed). Test: `AccessibilityTest`
   "memory photos can be selected and deleted together".
+
+### Date on every cover (owner: "on right top do show date, like 18th Nov 26")
+
+- `Dates.shortLabel` (core/domain, tested in `DatesTest`): "18th Nov 26" in English (ordinal day), "18 MMM yy" in the
+  other languages, "Nov 26" for a month-only date, "2026" for a year, the user's words for a fuzzy date; a multi-day
+  event shows its first day. `CoverDateChip` (core/ui, `MemoryCardView.kt`) draws it top-right on the card cover (next
+  to the import ring / failure badge) and on the timeline grid tile, where the title is on the cover. The chip is
+  hidden from TalkBack (the card already reads the date). No new strings. iPhone app not changed.

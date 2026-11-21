@@ -77,3 +77,4 @@
 | PDF book | ✅ | ✅ | |
 | Problem log | ✅ | ⬜ | iOS has its own crash reports |
 | Update app (sideload) | ✅ | n/a | iPhone apps update through TestFlight / App Store |
+| Date chip on memory covers ("18th Nov 26") | ✅ | ⬜ | Android card cover and grid tile; iOS shows the date under the title only |
