@@ -104,6 +104,11 @@
 "bulk_split_year" = "বছর";
 "bulk_title" = "একসাথে আপলোড";
 "bulk_undated_sub" = "এগুলো একটি স্মৃতিতে সংরক্ষণ করুন এবং তারিখ বাছুন।";
+"camera_missing" = "এই ফোনে কোনো ক্যামেরা অ্যাপ পাওয়া যায়নি।";
+"camera_permission_needed" = "এখানে ছবি ও ভিডিও তুলতে Yaadein-কে ক্যামেরার অনুমতি দিন।";
+"camera_private_note" = "এখানে তোলা ছবি ও ভিডিও শুধু Yaadein-এ থাকে, ফোনের গ্যালারিতে নয়।";
+"camera_record_video" = "ভিডিও রেকর্ড করুন";
+"camera_take_photo" = "ছবি তুলুন";
 "cd_avatar_of" = "%1$@-এর ছবি";
 "cd_import_progress" = "ছবি যোগ হচ্ছে, %1$d%% হয়েছে";
 "cd_memory_card" = "স্মৃতি: %1$@, %2$@";

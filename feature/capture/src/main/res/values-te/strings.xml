@@ -190,4 +190,9 @@
     <string name="quick_save_remove">ఈ ఫోటోను తీసివేయండి</string>
     <string name="quick_save_photo_cd">ఫోటో %1$d, మొత్తం %2$dలో. కవర్‌గా పెట్టడానికి నొక్కి పట్టుకోండి.</string>
     <string name="quick_save_capped">మొదటి %1$d ఫోటోలు మాత్రమే ఉంచాం. సేవ్ చేసి, మిగతావి జ్ఞాపకం నుండి జోడించండి.</string>
+    <string name="camera_take_photo">ఫోటో తీయండి</string>
+    <string name="camera_record_video">వీడియో రికార్డ్ చేయండి</string>
+    <string name="camera_private_note">ఇక్కడ తీసినవి Yaadeinలో మాత్రమే ఉంటాయి, ఫోన్ గ్యాలరీలో కాదు.</string>
+    <string name="camera_permission_needed">ఇక్కడ ఫోటోలు, వీడియోలు తీయడానికి Yaadeinకు కెమెరా అనుమతి ఇవ్వండి.</string>
+    <string name="camera_missing">ఈ ఫోన్‌లో కెమెరా యాప్ కనబడలేదు.</string>
 </resources>

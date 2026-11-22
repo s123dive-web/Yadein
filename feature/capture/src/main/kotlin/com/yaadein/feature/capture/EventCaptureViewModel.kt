@@ -1,9 +1,12 @@
 package com.yaadein.feature.capture
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yaadein.data.lock.AppLockState
+import com.yaadein.data.media.CameraCapture
 import com.yaadein.data.media.ImportCoordinator
 import com.yaadein.data.media.SharedMediaInbox
 import com.yaadein.data.media.ImportFailure
@@ -21,6 +24,7 @@ import com.yaadein.domain.repository.MemoryRepository
 import com.yaadein.domain.repository.PersonRepository
 import com.yaadein.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,10 +63,13 @@ class EventCaptureViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val importer: MediaImporter,
     private val coordinator: ImportCoordinator,
+    private val lockState: AppLockState,
+    @ApplicationContext private val appContext: Context,
 ) : ViewModel() {
     private val memoryId: Long = savedStateHandle["memoryId"] ?: 0L
     private val _state = MutableStateFlow(EventCaptureUiState())
     val state: StateFlow<EventCaptureUiState> = _state.asStateFlow()
+    private var saved = false
 
     init {
         // Opened from "Share → Yaadein": attach the shared photos/videos straight away (once per screen).
@@ -100,7 +107,13 @@ class EventCaptureViewModel @Inject constructor(
     fun setCoverStyle(v: String) = _state.update { it.copy(coverStyle = v) }
     fun togglePerson(id: Long) = _state.update { it.copy(selectedPeople = if (id in it.selectedPeople) it.selectedPeople - id else it.selectedPeople + id) }
     fun setOptimize(v: Boolean) = _state.update { it.copy(optimize = v) }
-    fun removePending(uri: Uri) = _state.update { it.copy(pending = it.pending.filterNot { p -> p.uri == uri }) }
+    fun removePending(uri: Uri) {
+        _state.update { it.copy(pending = it.pending.filterNot { p -> p.uri == uri }) }
+        CameraCapture.discard(appContext, uri)
+    }
+
+    /** Call right before opening the Photo Picker or the camera from this screen (no PIN on return). */
+    fun beforeExternalScreen() = lockState.allowExternalScreen(System.currentTimeMillis())
     fun dismissRejected() = _state.update { it.copy(rejected = emptyList()) }
 
     /**
@@ -115,9 +128,9 @@ class EventCaptureViewModel @Inject constructor(
             val rejected = ArrayList<ImportFailure>()
             for (uri in fresh) {
                 val picked = importer.inspect(uri)
-                if (picked == null) { rejected += ImportFailure.Unsupported; continue }
+                if (picked == null) { rejected += ImportFailure.Unsupported; CameraCapture.discard(appContext, uri); continue }
                 val limit = importer.checkLimit(picked, optimize)
-                if (limit != null) rejected += limit else accepted += picked
+                if (limit != null) { rejected += limit; CameraCapture.discard(appContext, uri) } else accepted += picked
             }
             _state.update { s ->
                 val known = s.pending.map { it.uri.toString() }.toSet()
@@ -151,10 +164,16 @@ class EventCaptureViewModel @Inject constructor(
             val id = if (s.isNew) memoryRepository.create(memory, s.selectedPeople.toList()) else {
                 memoryRepository.update(memory, s.selectedPeople.toList()); s.memoryId
             }
+            saved = true
             if (s.pending.isNotEmpty()) coordinator.enqueue(id, s.pending, s.optimize, startPosition = s.existingMediaCount)
             _state.update { it.copy(saving = false) }
             onSaved(id)
         }
+    }
+
+    /** Closed without saving: shots taken from this screen are not kept as plain files. */
+    override fun onCleared() {
+        if (!saved) _state.value.pending.forEach { CameraCapture.discard(appContext, it.uri) }
     }
 
     private companion object {

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yaadein.data.faces.FaceSuggester
 import com.yaadein.data.lock.AppLockState
+import com.yaadein.data.media.CameraCapture
 import com.yaadein.data.media.ImportCoordinator
 import com.yaadein.data.media.ImportFailure
 import com.yaadein.data.media.MediaImporter
@@ -98,6 +99,7 @@ class QuickSaveViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuickSaveUiState())
     val state: StateFlow<QuickSaveUiState> = _state.asStateFlow()
+    private var saved = false
     private var timer = CaptureTimer(CaptureEntry.FAB, SystemClock.elapsedRealtime())
     private var knownPlaces: List<KnownPlace> = emptyList()
     private var recent: List<Person> = emptyList()
@@ -151,9 +153,9 @@ class QuickSaveViewModel @Inject constructor(
             for (uri in kept) {
                 if (uri in already) continue
                 val picked = importer.inspect(uri)
-                if (picked == null) { rejected += ImportFailure.Unsupported; continue }
+                if (picked == null) { rejected += ImportFailure.Unsupported; CameraCapture.discard(context, uri); continue }
                 val limit = importer.checkLimit(picked, optimize)
-                if (limit != null) rejected += limit else accepted += picked
+                if (limit != null) { rejected += limit; CameraCapture.discard(context, uri) } else accepted += picked
             }
             _state.update { it.copy(inspecting = false, items = it.items + accepted, rejected = it.rejected + rejected) }
             refill()
@@ -214,6 +216,7 @@ class QuickSaveViewModel @Inject constructor(
     fun openPlace() = _state.update { it.copy(placeOpen = true) }
     fun setCover(index: Int) = _state.update { if (index in it.items.indices) it.copy(coverIndex = index) else it }
     fun remove(uri: Uri) {
+        CameraCapture.discard(context, uri)
         _state.update { s ->
             val items = s.items.filterNot { it.uri == uri }
             s.copy(items = items, coverIndex = s.coverIndex.coerceIn(0, (items.size - 1).coerceAtLeast(0)))
@@ -232,6 +235,7 @@ class QuickSaveViewModel @Inject constructor(
         val items = _state.value.items
         if (items.isEmpty()) return false
         QuickSaveInbox.offerForSplit(items.map { it.uri })
+        saved = true
         return true
     }
 
@@ -259,6 +263,7 @@ class QuickSaveViewModel @Inject constructor(
                     date = s.date, place = s.place.trim(),
                 )
             }
+            saved = true
             val id = memoryRepository.create(memory, s.selectedPeople.toList())
             val statId = captureStats.record(timer.stat(itemCount = s.items.size, createdAt = System.currentTimeMillis()))
             if (s.items.isNotEmpty()) {
@@ -272,6 +277,11 @@ class QuickSaveViewModel @Inject constructor(
             _state.update { it.copy(saving = false) }
             onSaved(id)
         }
+    }
+
+    /** Closed without saving (and not handed to Photo-first): shots taken from this screen are not kept as plain files. */
+    override fun onCleared() {
+        if (!saved) _state.value.items.forEach { CameraCapture.discard(context, it.uri) }
     }
 
     private companion object {

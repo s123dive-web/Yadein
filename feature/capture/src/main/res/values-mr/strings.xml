@@ -190,4 +190,9 @@
     <string name="quick_save_remove">हा फोटो काढा</string>
     <string name="quick_save_photo_cd">फोटो %1$d, एकूण %2$d पैकी. कव्हर करण्यासाठी दाबून धरा.</string>
     <string name="quick_save_capped">फक्त पहिले %1$d फोटो ठेवले. जतन करा, मग उरलेले आठवणीतून जोडा.</string>
+    <string name="camera_take_photo">फोटो काढा</string>
+    <string name="camera_record_video">व्हिडिओ रेकॉर्ड करा</string>
+    <string name="camera_private_note">इथे काढलेले फोटो आणि व्हिडिओ फक्त Yaadein मध्ये राहतात, फोनच्या गॅलरीत नाही.</string>
+    <string name="camera_permission_needed">इथे फोटो आणि व्हिडिओ काढण्यासाठी Yaadein ला कॅमेऱ्याची परवानगी द्या.</string>
+    <string name="camera_missing">या फोनवर कॅमेरा अ‍ॅप सापडले नाही.</string>
 </resources>

@@ -71,6 +71,7 @@ fun EventCaptureRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(maxItems = 50)) { uris -> viewModel.onPicked(uris) }
+    val camera = rememberCameraActions(beforeLeave = viewModel::beforeExternalScreen) { uri -> viewModel.onPicked(listOf(uri)) }
     EventCaptureScreen(
         state = state,
         onBack = onBack,
@@ -88,6 +89,7 @@ fun EventCaptureRoute(
         onDismissRejected = viewModel::dismissRejected,
         onSave = { viewModel.save(onSaved) },
         modifier = modifier,
+        camera = camera,
     )
 }
 
@@ -110,6 +112,7 @@ fun EventCaptureScreen(
     onDismissRejected: () -> Unit,
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
+    camera: CameraActions = CameraActions(),
 ) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
@@ -137,7 +140,7 @@ fun EventCaptureScreen(
             PeoplePicker(people = state.people, selected = state.selectedPeople, onToggle = onTogglePerson, onAddPerson = onAddPerson)
             OutlinedTextField(value = state.description, onValueChange = onDescription, label = { Text(stringResource(R.string.event_description)) }, minLines = 3, modifier = Modifier.fillMaxWidth())
             MoodPicker(selected = state.mood, onSelect = onMood)
-            MediaSection(state = state, onPickMedia = onPickMedia, onRemovePending = onRemovePending, onOptimize = onOptimize)
+            MediaSection(state = state, onPickMedia = onPickMedia, camera = camera, onRemovePending = onRemovePending, onOptimize = onOptimize)
             if (state.pending.isEmpty() && state.existingMediaCount == 0) {
                 CoverStylePicker(selected = state.coverStyle, onSelect = onCoverStyle)
             }
@@ -151,7 +154,7 @@ fun EventCaptureScreen(
 }
 
 @Composable
-private fun MediaSection(state: EventCaptureUiState, onPickMedia: () -> Unit, onRemovePending: (android.net.Uri) -> Unit, onOptimize: (Boolean) -> Unit) {
+private fun MediaSection(state: EventCaptureUiState, onPickMedia: () -> Unit, camera: CameraActions, onRemovePending: (android.net.Uri) -> Unit, onOptimize: (Boolean) -> Unit) {
     val spacing = Yaadein.spacing
     Column {
         Text(stringResource(R.string.event_media), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
@@ -182,6 +185,7 @@ private fun MediaSection(state: EventCaptureUiState, onPickMedia: () -> Unit, on
             Spacer(Modifier.width(spacing.sm))
             Text(stringResource(R.string.event_add_media))
         }
+        CameraButtons(actions = camera, modifier = Modifier.padding(top = spacing.sm))
         Text(stringResource(R.string.event_media_limits), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = spacing.xs))
         if (state.pending.isNotEmpty()) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = spacing.sm)) {

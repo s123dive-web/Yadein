@@ -88,7 +88,7 @@ class PickMoreTest {
     fun `event capture keeps a photo picked twice only once`() {
         val a = photo("ev_a.jpg", "2024:12:20 10:00:00")
         val b = photo("ev_b.jpg", "2024:12:20 11:00:00")
-        val vm = EventCaptureViewModel(SavedStateHandle(), memories, people, settings, importer, coordinator)
+        val vm = EventCaptureViewModel(SavedStateHandle(), memories, people, settings, importer, coordinator, com.yaadein.data.lock.AppLockState(), context)
         await { !vm.state.value.loading }
         vm.onPicked(listOf(a, a, b))
         await { vm.state.value.pending.size == 2 }

@@ -104,6 +104,11 @@
 "bulk_split_year" = "సంవత్సరం";
 "bulk_title" = "బల్క్ అప్‌లోడ్";
 "bulk_undated_sub" = "వీటిని ఒకే జ్ఞాపకంగా సేవ్ చేసి దాని తేదీ ఎంచుకోండి.";
+"camera_missing" = "ఈ ఫోన్‌లో కెమెరా యాప్ కనబడలేదు.";
+"camera_permission_needed" = "ఇక్కడ ఫోటోలు, వీడియోలు తీయడానికి Yaadeinకు కెమెరా అనుమతి ఇవ్వండి.";
+"camera_private_note" = "ఇక్కడ తీసినవి Yaadeinలో మాత్రమే ఉంటాయి, ఫోన్ గ్యాలరీలో కాదు.";
+"camera_record_video" = "వీడియో రికార్డ్ చేయండి";
+"camera_take_photo" = "ఫోటో తీయండి";
 "cd_avatar_of" = "%1$@ ఫోటో";
 "cd_import_progress" = "ఫోటోలు జోడిస్తున్నాం, %1$d%% పూర్తయింది";
 "cd_memory_card" = "జ్ఞాపకం: %1$@, %2$@";
