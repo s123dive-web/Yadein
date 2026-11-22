@@ -83,4 +83,8 @@
     <string name="kin_side_paternal">बाबांकडचे</string>
     <string name="kin_side_own">स्वतःचे कुटुंब</string>
     <string name="kin_side_in_law">सासरचे</string>
+    <string name="person_search_hint">या आठवणींमध्ये शोधा</string>
+    <string name="person_search_clear">शोध पुसा</string>
+    <string name="person_search_none_title">काहीही जुळले नाही</string>
+    <string name="person_search_none_message">इथल्या कोणत्याही आठवणीत “%1$s” नाही. एखादे ठिकाण, शीर्षक किंवा दुसरा शब्द वापरून पहा.</string>
 </resources>

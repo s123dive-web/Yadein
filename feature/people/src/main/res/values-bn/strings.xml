@@ -83,4 +83,8 @@
     <string name="kin_side_paternal">বাবার দিক</string>
     <string name="kin_side_own">নিজের পরিবার</string>
     <string name="kin_side_in_law">শ্বশুরবাড়ি</string>
+    <string name="person_search_hint">এই স্মৃতিগুলোতে খুঁজুন</string>
+    <string name="person_search_clear">খোঁজা মুছুন</string>
+    <string name="person_search_none_title">কিছু মেলেনি</string>
+    <string name="person_search_none_message">এখানে কোনো স্মৃতিতে “%1$s” নেই। কোনো জায়গা, শিরোনাম বা অন্য শব্দ দিয়ে দেখুন।</string>
 </resources>

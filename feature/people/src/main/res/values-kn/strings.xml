@@ -83,4 +83,8 @@
     <string name="kin_side_paternal">ಅಪ್ಪನ ಕಡೆ</string>
     <string name="kin_side_own">ಸ್ವಂತ ಕುಟುಂಬ</string>
     <string name="kin_side_in_law">ಅತ್ತೆ-ಮಾವನ ಕಡೆ</string>
+    <string name="person_search_hint">ಈ ನೆನಪುಗಳಲ್ಲಿ ಹುಡುಕಿ</string>
+    <string name="person_search_clear">ಹುಡುಕಾಟ ಅಳಿಸಿ</string>
+    <string name="person_search_none_title">ಯಾವುದೂ ಹೊಂದಲಿಲ್ಲ</string>
+    <string name="person_search_none_message">ಇಲ್ಲಿ ಯಾವ ನೆನಪಿನಲ್ಲೂ “%1$s” ಇಲ್ಲ. ಒಂದು ಸ್ಥಳ, ಶೀರ್ಷಿಕೆ ಅಥವಾ ಬೇರೆ ಪದ ಪ್ರಯತ್ನಿಸಿ.</string>
 </resources>

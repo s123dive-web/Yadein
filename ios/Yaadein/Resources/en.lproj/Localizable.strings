@@ -469,6 +469,10 @@
 "person_photo_remove" = "Remove photo";
 "person_recap" = "Make a reel";
 "person_relation" = "Relation";
+"person_search_clear" = "Clear search";
+"person_search_hint" = "Search these memories";
+"person_search_none_message" = "No memory here mentions “%1$@”. Try a place, a title or another word.";
+"person_search_none_title" = "Nothing matches";
 "person_stat_memories" = "Memories";
 "person_together" = "Together with…";
 "person_year_with" = "%1$d with %2$@";

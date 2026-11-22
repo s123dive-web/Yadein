@@ -469,6 +469,10 @@
 "person_photo_remove" = "படத்தை நீக்கு";
 "person_recap" = "ரீல் உருவாக்கு";
 "person_relation" = "உறவு";
+"person_search_clear" = "தேடலை அழி";
+"person_search_hint" = "இந்த நினைவுகளில் தேடு";
+"person_search_none_message" = "இங்குள்ள எந்த நினைவிலும் “%1$@” இல்லை. ஒரு இடம், தலைப்பு அல்லது வேறு சொல்லை முயலுங்கள்.";
+"person_search_none_title" = "எதுவும் பொருந்தவில்லை";
 "person_stat_memories" = "நினைவுகள்";
 "person_together" = "இவருடன் சேர்ந்து…";
 "person_year_with" = "%2$@ உடன் %1$d";

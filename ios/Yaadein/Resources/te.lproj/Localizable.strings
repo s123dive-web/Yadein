@@ -469,6 +469,10 @@
 "person_photo_remove" = "ఫోటో తీసివేయండి";
 "person_recap" = "రీల్ తయారు చేయండి";
 "person_relation" = "బంధం";
+"person_search_clear" = "వెతుకులాట తుడిచివేయండి";
+"person_search_hint" = "ఈ జ్ఞాపకాలలో వెతకండి";
+"person_search_none_message" = "ఇక్కడ ఏ జ్ఞాపకంలోనూ “%1$@” లేదు. ఒక చోటు, శీర్షిక లేదా మరో పదం ప్రయత్నించండి.";
+"person_search_none_title" = "ఏదీ సరిపోలలేదు";
 "person_stat_memories" = "జ్ఞాపకాలు";
 "person_together" = "వీరితో కలిసి…";
 "person_year_with" = "%2$@తో %1$d";

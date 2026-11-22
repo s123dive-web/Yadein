@@ -469,6 +469,10 @@
 "person_photo_remove" = "ફોટો કાઢો";
 "person_recap" = "રીલ બનાવો";
 "person_relation" = "સંબંધ";
+"person_search_clear" = "શોધ ભૂંસો";
+"person_search_hint" = "આ યાદોમાં શોધો";
+"person_search_none_message" = "અહીં કોઈ યાદમાં “%1$@” નથી. કોઈ જગ્યા, શીર્ષક અથવા બીજો શબ્દ અજમાવો.";
+"person_search_none_title" = "કંઈ મળ્યું નથી";
 "person_stat_memories" = "યાદો";
 "person_together" = "આમની સાથે…";
 "person_year_with" = "%2$@ સાથે %1$d";

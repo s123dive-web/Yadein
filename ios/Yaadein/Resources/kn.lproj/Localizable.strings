@@ -469,6 +469,10 @@
 "person_photo_remove" = "ಫೋಟೋ ತೆಗೆಯಿರಿ";
 "person_recap" = "ರೀಲ್ ಮಾಡಿ";
 "person_relation" = "ಸಂಬಂಧ";
+"person_search_clear" = "ಹುಡುಕಾಟ ಅಳಿಸಿ";
+"person_search_hint" = "ಈ ನೆನಪುಗಳಲ್ಲಿ ಹುಡುಕಿ";
+"person_search_none_message" = "ಇಲ್ಲಿ ಯಾವ ನೆನಪಿನಲ್ಲೂ “%1$@” ಇಲ್ಲ. ಒಂದು ಸ್ಥಳ, ಶೀರ್ಷಿಕೆ ಅಥವಾ ಬೇರೆ ಪದ ಪ್ರಯತ್ನಿಸಿ.";
+"person_search_none_title" = "ಯಾವುದೂ ಹೊಂದಲಿಲ್ಲ";
 "person_stat_memories" = "ನೆನಪುಗಳು";
 "person_together" = "ಇವರ ಜೊತೆ…";
 "person_year_with" = "%2$@ ಜೊತೆ %1$d";

@@ -469,6 +469,10 @@
 "person_photo_remove" = "ছবি সরান";
 "person_recap" = "রিল বানান";
 "person_relation" = "সম্পর্ক";
+"person_search_clear" = "খোঁজা মুছুন";
+"person_search_hint" = "এই স্মৃতিগুলোতে খুঁজুন";
+"person_search_none_message" = "এখানে কোনো স্মৃতিতে “%1$@” নেই। কোনো জায়গা, শিরোনাম বা অন্য শব্দ দিয়ে দেখুন।";
+"person_search_none_title" = "কিছু মেলেনি";
 "person_stat_memories" = "স্মৃতি";
 "person_together" = "একসঙ্গে…";
 "person_year_with" = "%2$@-এর সঙ্গে %1$d";

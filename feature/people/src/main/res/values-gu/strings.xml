@@ -83,4 +83,8 @@
     <string name="kin_side_paternal">પિતૃપક્ષ</string>
     <string name="kin_side_own">પોતાનું કુટુંબ</string>
     <string name="kin_side_in_law">સાસરિયાં</string>
+    <string name="person_search_hint">આ યાદોમાં શોધો</string>
+    <string name="person_search_clear">શોધ ભૂંસો</string>
+    <string name="person_search_none_title">કંઈ મળ્યું નથી</string>
+    <string name="person_search_none_message">અહીં કોઈ યાદમાં “%1$s” નથી. કોઈ જગ્યા, શીર્ષક અથવા બીજો શબ્દ અજમાવો.</string>
 </resources>

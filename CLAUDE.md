@@ -1424,3 +1424,13 @@ open it on the memory on screen)?
 - Not verified on a phone. A few manufacturer camera apps are known to keep their own copy even when given an output
   file; the stock Google and Samsung cameras do not. Strings `camera_*` in all eight locales (non-English
   machine-assisted); iOS strings regenerated (the iPhone screens are not changed). Test: `CameraCaptureTest`.
+
+### Search inside a person's memories and Together (owner: "searchable option, see only the related ones")
+
+- Person story (`PersonDetailScreen`) and Together have a **Search these memories** field above the list
+  (`feature/people/MemorySearchField.kt`). It narrows the list to that person's (or those people's) memories whose
+  title, description, place, captions or tagged names match, through the existing `TimelineFilter.query` (FTS prefix
+  search), so no new query or schema. `PersonDetailViewModel.query` / `setQuery` (250 ms debounce, paging flow
+  re-created per query); `TogetherUiState.query`. The field shows once there is more than one memory; a search with no
+  match has its own empty state. New screen parameters have defaults, so previews and tests are unchanged.
+- Strings `person_search_*` in all eight locales (non-English machine-assisted); iOS strings regenerated only.
