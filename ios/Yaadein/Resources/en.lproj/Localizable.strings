@@ -104,6 +104,11 @@
 "bulk_split_year" = "Year";
 "bulk_title" = "Bulk upload";
 "bulk_undated_sub" = "Save them together as one memory and pick its date.";
+"camera_missing" = "No camera app was found on this phone.";
+"camera_permission_needed" = "Allow the camera for Yaadein to take photos and videos here.";
+"camera_private_note" = "Taken here, it stays only in Yaadein, not in your phone's gallery.";
+"camera_record_video" = "Record video";
+"camera_take_photo" = "Take photo";
 "cd_avatar_of" = "Photo of %1$@";
 "cd_import_progress" = "Adding photos, %1$d%% done";
 "cd_memory_card" = "Memory: %1$@, %2$@";
@@ -464,6 +469,10 @@
 "person_photo_remove" = "Remove photo";
 "person_recap" = "Make a reel";
 "person_relation" = "Relation";
+"person_search_clear" = "Clear search";
+"person_search_hint" = "Search these memories";
+"person_search_none_message" = "No memory here mentions “%1$@”. Try a place, a title or another word.";
+"person_search_none_title" = "Nothing matches";
 "person_stat_memories" = "Memories";
 "person_together" = "Together with…";
 "person_year_with" = "%1$d with %2$@";

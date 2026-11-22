@@ -83,4 +83,8 @@
     <string name="kin_side_paternal">அப்பா வழி</string>
     <string name="kin_side_own">சொந்தக் குடும்பம்</string>
     <string name="kin_side_in_law">மாமியார் வீட்டார்</string>
+    <string name="person_search_hint">இந்த நினைவுகளில் தேடு</string>
+    <string name="person_search_clear">தேடலை அழி</string>
+    <string name="person_search_none_title">எதுவும் பொருந்தவில்லை</string>
+    <string name="person_search_none_message">இங்குள்ள எந்த நினைவிலும் “%1$s” இல்லை. ஒரு இடம், தலைப்பு அல்லது வேறு சொல்லை முயலுங்கள்.</string>
 </resources>

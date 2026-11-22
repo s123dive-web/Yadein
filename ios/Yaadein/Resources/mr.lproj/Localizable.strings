@@ -104,6 +104,11 @@
 "bulk_split_year" = "वर्ष";
 "bulk_title" = "बल्क अपलोड";
 "bulk_undated_sub" = "त्यांना एका आठवणीत जतन करा आणि तिची तारीख निवडा.";
+"camera_missing" = "या फोनवर कॅमेरा अ‍ॅप सापडले नाही.";
+"camera_permission_needed" = "इथे फोटो आणि व्हिडिओ काढण्यासाठी Yaadein ला कॅमेऱ्याची परवानगी द्या.";
+"camera_private_note" = "इथे काढलेले फोटो आणि व्हिडिओ फक्त Yaadein मध्ये राहतात, फोनच्या गॅलरीत नाही.";
+"camera_record_video" = "व्हिडिओ रेकॉर्ड करा";
+"camera_take_photo" = "फोटो काढा";
 "cd_avatar_of" = "%1$@ चा फोटो";
 "cd_import_progress" = "फोटो जोडत आहोत, %1$d%% झाले";
 "cd_memory_card" = "आठवण: %1$@, %2$@";
@@ -464,6 +469,10 @@
 "person_photo_remove" = "फोटो काढा";
 "person_recap" = "रील बनवा";
 "person_relation" = "नाते";
+"person_search_clear" = "शोध पुसा";
+"person_search_hint" = "या आठवणींमध्ये शोधा";
+"person_search_none_message" = "इथल्या कोणत्याही आठवणीत “%1$@” नाही. एखादे ठिकाण, शीर्षक किंवा दुसरा शब्द वापरून पहा.";
+"person_search_none_title" = "काहीही जुळले नाही";
 "person_stat_memories" = "आठवणी";
 "person_together" = "सोबत…";
 "person_year_with" = "%2$@ सोबत %1$d";

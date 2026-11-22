@@ -190,4 +190,9 @@
     <string name="quick_save_remove">இந்தப் படத்தை நீக்கு</string>
     <string name="quick_save_photo_cd">படம் %1$d / %2$d. அட்டைப் படமாக்க அழுத்திப் பிடியுங்கள்.</string>
     <string name="quick_save_capped">முதல் %1$d படங்கள் மட்டும் வைக்கப்பட்டன. சேமித்து, மீதியை நினைவிலிருந்து சேருங்கள்.</string>
+    <string name="camera_take_photo">படம் எடு</string>
+    <string name="camera_record_video">வீடியோ பதிவு செய்</string>
+    <string name="camera_private_note">இங்கே எடுப்பவை Yaadein-இல் மட்டுமே இருக்கும், ஃபோனின் கேலரியில் அல்ல.</string>
+    <string name="camera_permission_needed">இங்கே படங்களும் வீடியோக்களும் எடுக்க Yaadein-க்கு கேமரா அனுமதி கொடுங்கள்.</string>
+    <string name="camera_missing">இந்த ஃபோனில் கேமரா ஆப் எதுவும் இல்லை.</string>
 </resources>

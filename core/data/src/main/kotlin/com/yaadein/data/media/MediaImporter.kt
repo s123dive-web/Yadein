@@ -168,6 +168,8 @@ class MediaImporter @Inject constructor(
             resolver.openInputStream(picked.uri)?.use { input -> FileOutputStream(temp).use { out -> input.copyTo(out) } }
                 ?: return@withContext StageOutcome.Failed(fail(job, ImportFailure.Unreadable("openInputStream returned null"), temp).failure)
             db.importJobDao().update(job.copy(tempPath = temp.path, stage = STAGE_COPIED))
+            // A shot taken from inside Yaadein: the temp copy is the only one that is needed from here on.
+            CameraCapture.discard(context, picked.uri)
             StageOutcome.Staged(StagedMedia(picked, job.id, temp, memoryId, optimize, position))
         } catch (e: Exception) {
             StageOutcome.Failed(fail(job, ImportFailure.Unreadable(e.message), temp).failure)

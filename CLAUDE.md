@@ -1405,3 +1405,32 @@ open it on the memory on screen)?
   although `--no-parallel` was on. The log showed `:feature:people:kspDebugKotlin` running next to another module's KSP
   task and producing no files (then `compileDebugJavaWithJavac NO-SOURCE`), with no warning. The root `build.gradle.kts`
   now makes every `ksp*Kotlin` task use a one-slot shared build service (`kspQueue`), so KSP runs one module at a time.
+
+### Take photo / Record video inside Yaadein (owner: "taken from there, stays only in Yaadein, not the gallery")
+
+- New memory / Edit memory (`EventCaptureScreen`) and Quick Save (photo strip and words-only) have **Take photo** and
+  **Record video** under "Add photos" (`feature/capture/CameraButtons.kt`: `rememberCameraActions`, `CameraButtons`,
+  `CameraActions` with no-op defaults so previews and tests need no change). They open the phone's own camera app
+  (`ActivityResultContracts.TakePicture` / `CaptureVideo`) with a file in `cache/camera/` as the output
+  (`core/data/media/CameraCapture`, FileProvider root `camera`), so the shot is written only into Yaadein's private
+  storage, never MediaStore. The result goes through the same `onPicked` → inspect → limits → `ImportCoordinator` path
+  as a picked file.
+- The plain file is deleted when `MediaImporter.stage()` has copied it, when the user drops it from the strip, when it is
+  rejected (size limit), when the screen closes without saving (`onCleared`, `saved` flag), and after 24 h otherwise
+  (pruned on the next shot). `CameraCapture.discard` ignores every URI that is not its own.
+- Because the manifest declares `CAMERA`, Android refuses the camera intent until it is granted: first use asks for the
+  permission (a toast explains a refusal). Both screens call `AppLockState.allowExternalScreen` first (no PIN on return);
+  the target URI is in `rememberSaveable` so it survives the process being closed behind the camera.
+- Not verified on a phone. A few manufacturer camera apps are known to keep their own copy even when given an output
+  file; the stock Google and Samsung cameras do not. Strings `camera_*` in all eight locales (non-English
+  machine-assisted); iOS strings regenerated (the iPhone screens are not changed). Test: `CameraCaptureTest`.
+
+### Search inside a person's memories and Together (owner: "searchable option, see only the related ones")
+
+- Person story (`PersonDetailScreen`) and Together have a **Search these memories** field above the list
+  (`feature/people/MemorySearchField.kt`). It narrows the list to that person's (or those people's) memories whose
+  title, description, place, captions or tagged names match, through the existing `TimelineFilter.query` (FTS prefix
+  search), so no new query or schema. `PersonDetailViewModel.query` / `setQuery` (250 ms debounce, paging flow
+  re-created per query); `TogetherUiState.query`. The field shows once there is more than one memory; a search with no
+  match has its own empty state. New screen parameters have defaults, so previews and tests are unchanged.
+- Strings `person_search_*` in all eight locales (non-English machine-assisted); iOS strings regenerated only.

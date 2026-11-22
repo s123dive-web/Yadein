@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -57,6 +58,7 @@ data class TogetherUiState(
     val people: List<Person> = emptyList(),
     val selected: Set<Long> = emptySet(),
     val cards: List<MemoryCard> = emptyList(),
+    val query: String = "",
 )
 
 /** Pick two or more people; show only memories where all of them appear. */
@@ -69,25 +71,31 @@ class TogetherViewModel @Inject constructor(
 ) : ViewModel() {
     private val selected = MutableStateFlow(setOfNotNull(savedStateHandle.get<Long>("personId")?.takeIf { it != 0L }))
 
+    private val query = MutableStateFlow("")
+
     val state: StateFlow<TogetherUiState> = combine(
         personRepository.observeAll(),
         selected,
-        selected.flatMapLatest { ids -> if (ids.size >= 2) memoryRepository.observeCards(TimelineFilter(personIds = ids, requireAllPeople = true)) else flowOf(emptyList()) },
-    ) { people, sel, cards -> TogetherUiState(people, sel, cards) }
+        combine(selected, query) { ids, q -> ids to q.trim() }.distinctUntilChanged().flatMapLatest { (ids, q) ->
+            if (ids.size >= 2) memoryRepository.observeCards(TimelineFilter(personIds = ids, requireAllPeople = true, query = q)) else flowOf(emptyList())
+        },
+        query,
+    ) { people, sel, cards, q -> TogetherUiState(people, sel, cards, q) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TogetherUiState())
 
     fun toggle(id: Long) = selected.update { if (id in it) it - id else it + id }
+    fun setQuery(value: String) { query.value = value }
 }
 
 @Composable
 fun TogetherRoute(onBack: () -> Unit, onOpenMemory: (Long) -> Unit, modifier: Modifier = Modifier, viewModel: TogetherViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    TogetherScreen(state = state, onBack = onBack, onToggle = viewModel::toggle, onOpenMemory = onOpenMemory, modifier = modifier)
+    TogetherScreen(state = state, onBack = onBack, onToggle = viewModel::toggle, onOpenMemory = onOpenMemory, modifier = modifier, onQuery = viewModel::setQuery)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TogetherScreen(state: TogetherUiState, onBack: () -> Unit, onToggle: (Long) -> Unit, onOpenMemory: (Long) -> Unit, modifier: Modifier = Modifier) {
+fun TogetherScreen(state: TogetherUiState, onBack: () -> Unit, onToggle: (Long) -> Unit, onOpenMemory: (Long) -> Unit, modifier: Modifier = Modifier, onQuery: (String) -> Unit = {}) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
         TopAppBar(
@@ -108,9 +116,16 @@ fun TogetherScreen(state: TogetherUiState, onBack: () -> Unit, onToggle: (Long) 
                     Spacer(Modifier.height(spacing.sm))
                 }
             }
+            if (state.selected.size >= 2 && (state.cards.size > 1 || state.query.isNotEmpty())) {
+                item(key = "search") { MemorySearchField(query = state.query, onQuery = onQuery) }
+            }
             if (state.selected.size >= 2 && state.cards.isEmpty()) {
                 item(key = "empty") {
-                    EmptyState(illustration = IllustrationKind.PEOPLE_CIRCLE, title = stringResource(R.string.together_empty_title), message = stringResource(R.string.together_empty_message))
+                    if (state.query.isNotBlank()) {
+                        EmptyState(illustration = IllustrationKind.PEOPLE_CIRCLE, title = stringResource(R.string.person_search_none_title), message = stringResource(R.string.person_search_none_message, state.query.trim()))
+                    } else {
+                        EmptyState(illustration = IllustrationKind.PEOPLE_CIRCLE, title = stringResource(R.string.together_empty_title), message = stringResource(R.string.together_empty_message))
+                    }
                 }
             }
             items(state.cards.size, key = { state.cards[it].memory.id }) { i ->

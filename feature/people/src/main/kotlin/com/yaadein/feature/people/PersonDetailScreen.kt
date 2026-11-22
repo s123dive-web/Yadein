@@ -66,9 +66,12 @@ fun PersonDetailRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val memories = viewModel.memories.collectAsLazyPagingItems().asPagedItems()
+    val query by viewModel.query.collectAsStateWithLifecycle()
     PersonDetailScreen(
         state = state,
         memories = memories,
+        query = query,
+        onQuery = viewModel::setQuery,
         onBack = onBack,
         onOpenMemory = onOpenMemory,
         onEdit = { onEdit(viewModel.personId) },
@@ -91,6 +94,8 @@ fun PersonDetailScreen(
     onYearSummary: (Int) -> Unit,
     onRecap: () -> Unit,
     modifier: Modifier = Modifier,
+    query: String = "",
+    onQuery: (String) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val story = state.story
@@ -127,13 +132,25 @@ fun PersonDetailScreen(
                     }
                 }
             }
+            // Worth showing once there is something to narrow down, and it stays while a search is typed.
+            if (story.memoryCount > 1 || query.isNotEmpty()) {
+                item(key = "search") { MemorySearchField(query = query, onQuery = onQuery) }
+            }
             if (memories.itemCount == 0) {
                 item(key = "empty") {
-                    EmptyState(
-                        illustration = IllustrationKind.BOX_CLOSED,
-                        title = stringResource(R.string.person_empty_title, story.person.displayName),
-                        message = stringResource(R.string.person_empty_message),
-                    )
+                    if (query.isNotBlank()) {
+                        EmptyState(
+                            illustration = IllustrationKind.BOX_CLOSED,
+                            title = stringResource(R.string.person_search_none_title),
+                            message = stringResource(R.string.person_search_none_message, query.trim()),
+                        )
+                    } else {
+                        EmptyState(
+                            illustration = IllustrationKind.BOX_CLOSED,
+                            title = stringResource(R.string.person_empty_title, story.person.displayName),
+                            message = stringResource(R.string.person_empty_message),
+                        )
+                    }
                 }
             }
             items(count = memories.itemCount, key = { index -> memories.keyAt(index) { it.memory.id } }) { index ->

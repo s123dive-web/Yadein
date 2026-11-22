@@ -191,4 +191,9 @@
     <string name="quick_save_remove">Remove this photo</string>
     <string name="quick_save_photo_cd">Photo %1$d of %2$d. Long-press to make it the cover.</string>
     <string name="quick_save_capped">Only the first %1$d photos were kept. Save, then add the rest from the memory.</string>
+    <string name="camera_take_photo">Take photo</string>
+    <string name="camera_record_video">Record video</string>
+    <string name="camera_private_note">Taken here, it stays only in Yaadein, not in your phone\'s gallery.</string>
+    <string name="camera_permission_needed">Allow the camera for Yaadein to take photos and videos here.</string>
+    <string name="camera_missing">No camera app was found on this phone.</string>
 </resources>

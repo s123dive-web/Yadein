@@ -82,4 +82,8 @@
     <string name="who_undo">Undo</string>
     <string name="who_empty_title">Every face has a name</string>
     <string name="who_empty_message">New faces will wait here as you add photos. Turn on face suggestions in Settings to find more.</string>
+    <string name="person_search_hint">Search these memories</string>
+    <string name="person_search_clear">Clear search</string>
+    <string name="person_search_none_title">Nothing matches</string>
+    <string name="person_search_none_message">No memory here mentions “%1$s”. Try a place, a title or another word.</string>
 </resources>

@@ -99,6 +99,7 @@ fun QuickSaveRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris -> viewModel.onPicked(uris) }
     var hubOpen by rememberSaveable { mutableStateOf(false) }
+    val camera = rememberCameraActions(beforeLeave = viewModel::beforePicker) { uri -> viewModel.onPicked(listOf(uri)) }
     QuickSaveScreen(
         state = state,
         onBack = onBack,
@@ -121,6 +122,7 @@ fun QuickSaveRoute(
         onDismissRejected = viewModel::dismissRejected,
         onSave = { viewModel.save(onSaved) },
         modifier = modifier,
+        camera = camera,
     )
     if (hubOpen) CaptureHubSheet(actions = hubActions, onDismiss = { hubOpen = false })
 }
@@ -146,6 +148,7 @@ fun QuickSaveScreen(
     onDismissRejected: () -> Unit,
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
+    camera: CameraActions = CameraActions(),
 ) {
     val spacing = Yaadein.spacing
     Column(modifier = modifier.fillMaxSize()) {
@@ -166,8 +169,10 @@ fun QuickSaveScreen(
                 }
             } else if (state.wordsOnly) {
                 WordsOnly(state = state, onWords = onWords, onAddPhotos = onAddPhotos, onSave = onSave)
+                CameraButtons(actions = camera)
             } else {
                 PhotoStrip(state = state, onSetCover = onSetCover, onRemove = onRemove, onAddPhotos = onAddPhotos)
+                CameraButtons(actions = camera)
                 state.cappedTo?.let { Text(stringResource(R.string.quick_save_capped, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 if (state.splitInto != null && !state.splitDismissed) {
                     SplitBanner(count = state.splitInto, onSplit = onSplit, onKeep = onDismissSplit)

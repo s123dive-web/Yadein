@@ -83,4 +83,8 @@
     <string name="kin_side_paternal">पिता की तरफ़ से</string>
     <string name="kin_side_own">अपना परिवार</string>
     <string name="kin_side_in_law">ससुराल</string>
+    <string name="person_search_hint">इन यादों में खोजें</string>
+    <string name="person_search_clear">खोज मिटाएँ</string>
+    <string name="person_search_none_title">कुछ नहीं मिला</string>
+    <string name="person_search_none_message">यहाँ किसी याद में “%1$s” नहीं है। कोई जगह, शीर्षक या दूसरा शब्द आज़माएँ।</string>
 </resources>

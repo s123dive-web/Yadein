@@ -104,6 +104,11 @@
 "bulk_split_year" = "ವರ್ಷ";
 "bulk_title" = "ಬಲ್ಕ್ ಅಪ್‌ಲೋಡ್";
 "bulk_undated_sub" = "ಇವನ್ನು ಒಂದು ನೆನಪಾಗಿ ಉಳಿಸಿ ಮತ್ತು ದಿನಾಂಕ ಆರಿಸಿ.";
+"camera_missing" = "ಈ ಫೋನ್‌ನಲ್ಲಿ ಕ್ಯಾಮೆರಾ ಆ್ಯಪ್ ಸಿಗಲಿಲ್ಲ.";
+"camera_permission_needed" = "ಇಲ್ಲಿ ಫೋಟೋ ಮತ್ತು ವೀಡಿಯೊ ತೆಗೆಯಲು Yaadein ಗೆ ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ನೀಡಿ.";
+"camera_private_note" = "ಇಲ್ಲಿ ತೆಗೆದದ್ದು Yaadein ನಲ್ಲಿ ಮಾತ್ರ ಇರುತ್ತದೆ, ಫೋನ್ ಗ್ಯಾಲರಿಯಲ್ಲಿ ಅಲ್ಲ.";
+"camera_record_video" = "ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮಾಡಿ";
+"camera_take_photo" = "ಫೋಟೋ ತೆಗೆಯಿರಿ";
 "cd_avatar_of" = "%1$@ ಅವರ ಫೋಟೋ";
 "cd_import_progress" = "ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ, %1$d%% ಆಗಿದೆ";
 "cd_memory_card" = "ನೆನಪು: %1$@, %2$@";
@@ -464,6 +469,10 @@
 "person_photo_remove" = "ಫೋಟೋ ತೆಗೆಯಿರಿ";
 "person_recap" = "ರೀಲ್ ಮಾಡಿ";
 "person_relation" = "ಸಂಬಂಧ";
+"person_search_clear" = "ಹುಡುಕಾಟ ಅಳಿಸಿ";
+"person_search_hint" = "ಈ ನೆನಪುಗಳಲ್ಲಿ ಹುಡುಕಿ";
+"person_search_none_message" = "ಇಲ್ಲಿ ಯಾವ ನೆನಪಿನಲ್ಲೂ “%1$@” ಇಲ್ಲ. ಒಂದು ಸ್ಥಳ, ಶೀರ್ಷಿಕೆ ಅಥವಾ ಬೇರೆ ಪದ ಪ್ರಯತ್ನಿಸಿ.";
+"person_search_none_title" = "ಯಾವುದೂ ಹೊಂದಲಿಲ್ಲ";
 "person_stat_memories" = "ನೆನಪುಗಳು";
 "person_together" = "ಇವರ ಜೊತೆ…";
 "person_year_with" = "%2$@ ಜೊತೆ %1$d";

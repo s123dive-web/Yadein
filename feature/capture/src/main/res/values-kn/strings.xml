@@ -190,4 +190,9 @@
     <string name="quick_save_remove">ಈ ಫೋಟೋ ತೆಗೆಯಿರಿ</string>
     <string name="quick_save_photo_cd">ಫೋಟೋ %1$d, ಒಟ್ಟು %2$d ರಲ್ಲಿ. ಮುಖಪುಟ ಮಾಡಲು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</string>
     <string name="quick_save_capped">ಮೊದಲ %1$d ಫೋಟೋಗಳನ್ನು ಮಾತ್ರ ಇಡಲಾಗಿದೆ. ಉಳಿಸಿ, ನಂತರ ಉಳಿದವನ್ನು ನೆನಪಿನಿಂದ ಸೇರಿಸಿ.</string>
+    <string name="camera_take_photo">ಫೋಟೋ ತೆಗೆಯಿರಿ</string>
+    <string name="camera_record_video">ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮಾಡಿ</string>
+    <string name="camera_private_note">ಇಲ್ಲಿ ತೆಗೆದದ್ದು Yaadein ನಲ್ಲಿ ಮಾತ್ರ ಇರುತ್ತದೆ, ಫೋನ್ ಗ್ಯಾಲರಿಯಲ್ಲಿ ಅಲ್ಲ.</string>
+    <string name="camera_permission_needed">ಇಲ್ಲಿ ಫೋಟೋ ಮತ್ತು ವೀಡಿಯೊ ತೆಗೆಯಲು Yaadein ಗೆ ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ನೀಡಿ.</string>
+    <string name="camera_missing">ಈ ಫೋನ್‌ನಲ್ಲಿ ಕ್ಯಾಮೆರಾ ಆ್ಯಪ್ ಸಿಗಲಿಲ್ಲ.</string>
 </resources>

@@ -5,4 +5,6 @@
     <cache-path name="exports" path="exports/" />
     <!-- Photos/videos shared into Yaadein, copied while the sender's grant is valid (SharedMediaInbox). -->
     <cache-path name="shared" path="shared/" />
+    <!-- Photos/videos taken with the camera app from inside Yaadein; deleted once imported (CameraCapture). -->
+    <cache-path name="camera" path="camera/" />
 </paths>

@@ -190,4 +190,9 @@
     <string name="quick_save_remove">यह फ़ोटो हटाएँ</string>
     <string name="quick_save_photo_cd">फ़ोटो %1$d, कुल %2$d में से। कवर बनाने के लिए देर तक दबाएँ।</string>
     <string name="quick_save_capped">सिर्फ़ पहली %1$d फ़ोटो रखी गईं। सहेजें, फिर बाकी याद से जोड़ें।</string>
+    <string name="camera_take_photo">फ़ोटो लें</string>
+    <string name="camera_record_video">वीडियो रिकॉर्ड करें</string>
+    <string name="camera_private_note">यहाँ ली गई फ़ोटो और वीडियो सिर्फ़ Yaadein में रहती हैं, फ़ोन की गैलरी में नहीं।</string>
+    <string name="camera_permission_needed">यहाँ फ़ोटो और वीडियो लेने के लिए Yaadein को कैमरे की अनुमति दें।</string>
+    <string name="camera_missing">इस फ़ोन में कोई कैमरा ऐप नहीं मिला।</string>
 </resources>
