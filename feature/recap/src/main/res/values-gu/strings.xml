@@ -112,4 +112,24 @@
     <string name="recap_file_size">%1$s</string>
     <string name="recap_whatsapp_too_big">16 MB થી વધુ: WhatsApp તેને કમ્પ્રેસ કરી શકે છે. WhatsApp સ્ટેટસ લંબાઈ તેને નાની રાખે છે.</string>
     <string name="reel_whatsapp_named">%1$s WhatsApp પર મોકલો</string>
+    <string name="recap_pick_memories">યાદો પસંદ કરો</string>
+    <string name="recap_pick_search">યાદો શોધો</string>
+    <string name="recap_pick_limit">એક રીલમાં વધુમાં વધુ %1$d યાદો આવી શકે છે.</string>
+    <string name="recap_pick_none_title">કંઈ મળ્યું નથી</string>
+    <string name="recap_pick_none_message">કોઈ જગ્યા, શીર્ષક અથવા બીજો શબ્દ અજમાવો.</string>
+    <string name="recap_journey_title">સફરની રીલ</string>
+    <string name="recap_journey_help">તમારી યાદો ક્રમમાં ચાલે છે, સૌથી જૂની પહેલા. દરેક યાદ પર તારીખ દેખાય છે અને ઉપરની રેખા બતાવે છે કે સફર ક્યાં સુધી પહોંચી.</string>
+    <string name="recap_journey_ending">અંતે પહેલો અને છેલ્લો ફોટો સાથે બતાવો</string>
+    <string name="recap_then_now">ત્યારે અને અત્યારે</string>
+    <string name="recap_then">ત્યારે</string>
+    <string name="recap_now">અત્યારે</string>
+    <string name="recap_title_journey">અમારી સફર</string>
+    <plurals name="recap_picked_memories">
+        <item quantity="one">%1$d યાદ પસંદ કરી</item>
+        <item quantity="other">%1$d યાદો પસંદ કરી</item>
+    </plurals>
+    <plurals name="recap_journey_memories">
+        <item quantity="one">%1$d યાદ</item>
+        <item quantity="other">%1$d યાદો</item>
+    </plurals>
 </resources>

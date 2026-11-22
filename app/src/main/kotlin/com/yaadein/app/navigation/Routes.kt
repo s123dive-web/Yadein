@@ -37,7 +37,8 @@ sealed interface Route {
     /** Google Photos Takeout / WhatsApp chat export zip. */
     @Serializable data object ImportExport : Route
     @Serializable data class VoiceCapture(val memoryId: Long = 0L, val prompt: String = "", val personId: Long = 0L) : Route
-    @Serializable data class RecapSetup(val personId: Long = 0L, val memoryId: Long = 0L, val year: Int = 0) : Route
+    /** [picked]: the memories ticked on the Timeline are waiting in ReelPickInbox (a journey reel). */
+    @Serializable data class RecapSetup(val personId: Long = 0L, val memoryId: Long = 0L, val year: Int = 0, val picked: Boolean = false) : Route
     /** Reels kept in the app: three made automatically plus the user's last ten. */
     @Serializable data object Reels : Route
     @Serializable data class ReelPlayer(val reelId: String) : Route

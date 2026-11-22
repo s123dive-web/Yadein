@@ -1,5 +1,14 @@
 package com.yaadein.feature.timeline
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Movie
+import androidx.compose.material.icons.rounded.RadioButtonUnchecked
+import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.graphics.Color
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -82,6 +91,8 @@ fun TimelineRoute(
     /** Opened from Relive → Places: show only memories from this place. */
     placeFilter: String? = null,
     onPlaceFilterConsumed: () -> Unit = {},
+    /** "Make a reel" with the memories ticked on the Timeline, in the order they were ticked. */
+    onMakeReel: (List<Long>) -> Unit = {},
     viewModel: TimelineViewModel = hiltViewModel(),
 ) {
     androidx.compose.runtime.LaunchedEffect(placeFilter) {
@@ -93,6 +104,8 @@ fun TimelineRoute(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val layout by viewModel.layout.collectAsStateWithLifecycle()
     val imports by viewModel.imports.collectAsStateWithLifecycle()
+    val selection by viewModel.selection.collectAsStateWithLifecycle()
+    val makeReel = { onMakeReel(selection.ids); viewModel.clearSelection() }
     val items = viewModel.items.collectAsLazyPagingItems().asPagedItems()
     if (twoPane) {
         Row(modifier = modifier.fillMaxSize()) {
@@ -120,6 +133,8 @@ fun TimelineRoute(
                 onCycleLayout = viewModel::cycleLayout,
                 imports = imports,
                 onDismissImportFailures = viewModel::dismissImportFailures,
+                selection = selection, onToggleSelected = viewModel::toggleSelected, onClearSelection = viewModel::clearSelection,
+                onSelectAll = viewModel::selectAllShown, onMakeReel = makeReel,
             )
         }
         return
@@ -142,6 +157,8 @@ fun TimelineRoute(
         onCycleLayout = viewModel::cycleLayout,
         imports = imports,
         onDismissImportFailures = viewModel::dismissImportFailures,
+        selection = selection, onToggleSelected = viewModel::toggleSelected, onClearSelection = viewModel::clearSelection,
+        onSelectAll = viewModel::selectAllShown, onMakeReel = makeReel,
     )
 }
 
@@ -167,16 +184,24 @@ fun TimelineScreen(
     /** Background import state per memory (ring while encrypting, badge when photos failed). */
     imports: Map<Long, MemoryImportProgress> = emptyMap(),
     onDismissImportFailures: (Long) -> Unit = {},
+    /** Memories ticked for a reel: long-press one to start, then tap to add or remove. */
+    selection: TimelineSelection = TimelineSelection(),
+    onToggleSelected: (Long) -> Unit = {},
+    onClearSelection: () -> Unit = {},
+    onSelectAll: () -> Unit = {},
+    onMakeReel: () -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val scope = rememberCoroutineScope()
+    if (selection.active) BackHandler(onBack = onClearSelection)
     var failuresFor by remember { mutableStateOf<Long?>(null) }
     failuresFor?.let { memoryId ->
         val failures = imports[memoryId]?.failures.orEmpty()
         ImportFailuresDialog(failures = failures, onDismiss = { onDismissImportFailures(memoryId); failuresFor = null })
     }
-    Column(modifier = modifier.fillMaxSize()) {
-        TopAppBar(
+    Box(modifier = modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        if (selection.active) SelectionTopBar(count = selection.ids.size, onClose = onClearSelection, onSelectAll = onSelectAll) else TopAppBar(
             title = {
                 Text(
                     text = stringResource(R.string.timeline_title),
@@ -249,13 +274,22 @@ fun TimelineScreen(
                 modifier = Modifier.fillMaxSize().padding(contentPadding),
             )
             else -> when (layout) {
-                TimelineLayout.GRID -> TimelineGrid(items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding)
+                TimelineLayout.GRID -> TimelineGrid(items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding, selection = selection, onToggleSelected = onToggleSelected)
                 else -> TimelineList(
                     items = items, onOpenMemory = onOpenMemory, contentPadding = contentPadding, listState = listState, dense = layout == TimelineLayout.COMPACT,
                     imports = imports, onImportFailures = { failuresFor = it },
+                    selection = selection, onToggleSelected = onToggleSelected,
                 )
             }
         }
+    }
+    if (selection.active) {
+        SelectionBottomBar(
+            selection = selection, onMakeReel = onMakeReel,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = spacing.gutter)
+                .padding(bottom = contentPadding.calculateBottomPadding() + spacing.xl),
+        )
+    }
     }
     if (state.filterSheetOpen) {
         FilterSheet(filter = state.filter, people = state.people, groups = state.groups, places = state.places, onApply = onFilterChange, onDismiss = onCloseFilters)
@@ -321,10 +355,13 @@ fun TimelineList(
     dense: Boolean = false,
     imports: Map<Long, MemoryImportProgress> = emptyMap(),
     onImportFailures: (Long) -> Unit = {},
+    selection: TimelineSelection = TimelineSelection(),
+    onToggleSelected: (Long) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
     val sizes = Yaadein.sizes
     val railColor = Yaadein.colors.timelineLine
+    val selectLabel = stringResource(R.string.timeline_select)
     LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize(),
@@ -344,19 +381,31 @@ fun TimelineList(
             when (val item = items[index]) {
                 is TimelineItem.YearHeader -> YearHeader(item)
                 is TimelineItem.MonthHeader -> MonthHeader(item)
-                is TimelineItem.Card -> if (dense) {
-                    CompactMemoryRow(card = item.card, onClick = { onOpenMemory(item.card.memory.id) })
-                } else {
+                is TimelineItem.Card -> {
                     val memoryId = item.card.memory.id
-                    val progress = imports[memoryId]
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        TimelineRail(color = railColor)
-                        MemoryCardView(
-                            card = item.card, onClick = { onOpenMemory(memoryId) }, compact = compact,
-                            importProgress = progress?.takeIf { it.running }?.fraction,
-                            importFailed = progress?.failures?.size ?: 0,
-                            onImportFailuresClick = { onImportFailures(memoryId) },
-                        )
+                    // While memories are being ticked a tap ticks; otherwise it opens the memory.
+                    val onTap = { if (selection.active) onToggleSelected(memoryId) else onOpenMemory(memoryId) }
+                    val ticked = if (selection.active) memoryId in selection.ids else null
+                    if (dense) {
+                        Box {
+                            CompactMemoryRow(card = item.card, onClick = onTap, onLongClick = { onToggleSelected(memoryId) }, onLongClickLabel = selectLabel)
+                            SelectionTick(ticked, Modifier.align(Alignment.TopStart))
+                        }
+                    } else {
+                        val progress = imports[memoryId]
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            TimelineRail(color = railColor)
+                            Box {
+                                MemoryCardView(
+                                    card = item.card, onClick = onTap, compact = compact,
+                                    importProgress = progress?.takeIf { it.running }?.fraction,
+                                    importFailed = progress?.failures?.size ?: 0,
+                                    onImportFailuresClick = { onImportFailures(memoryId) },
+                                    onLongClick = { onToggleSelected(memoryId) }, onLongClickLabel = selectLabel,
+                                )
+                                SelectionTick(ticked, Modifier.align(Alignment.TopStart))
+                            }
+                        }
                     }
                 }
                 null -> Unit
@@ -449,5 +498,55 @@ fun ImportFailuresDialog(failures: List<ImportFailureKind>, onDismiss: () -> Uni
             }
         },
         confirmButton = { androidx.compose.material3.TextButton(onClick = onDismiss) { Text(stringResource(com.yaadein.core.ui.R.string.action_done)) } },
+    )
+}
+
+/** Replaces the Timeline's title bar while memories are being ticked: how many, close, and "Select all" (what is shown). */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SelectionTopBar(count: Int, onClose: () -> Unit, onSelectAll: () -> Unit) {
+    TopAppBar(
+        title = { Text(pluralStringResource(R.plurals.timeline_selected_count, count, count), modifier = Modifier.semantics { heading() }) },
+        navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.timeline_selection_close)) } },
+        actions = { TextButton(onClick = onSelectAll) { Text(stringResource(R.string.timeline_select_all)) } },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
+    )
+}
+
+/** What to do with the ticked memories; floats above the list. */
+@Composable
+private fun SelectionBottomBar(selection: TimelineSelection, onMakeReel: () -> Unit, modifier: Modifier = Modifier) {
+    val spacing = Yaadein.spacing
+    Surface(
+        shape = RoundedCornerShape(Yaadein.radius.xl), color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shadowElevation = Yaadein.elevation.raised, modifier = modifier.fillMaxWidth(),
+    ) {
+        Column(Modifier.padding(horizontal = spacing.lg, vertical = spacing.md), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.md)) {
+                Text(stringResource(R.string.timeline_selection_hint), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                Button(onClick = onMakeReel) {
+                    Icon(Icons.Rounded.Movie, contentDescription = null)
+                    Spacer(Modifier.width(spacing.sm))
+                    Text(stringResource(R.string.timeline_make_reel))
+                }
+            }
+            if (selection.limitHit) {
+                Text(stringResource(R.string.timeline_select_limit, TimelineSelection.LIMIT), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            }
+        }
+    }
+}
+
+/** The tick on a memory while memories are being selected; nothing when [ticked] is null (not selecting). */
+@Composable
+internal fun SelectionTick(ticked: Boolean?, modifier: Modifier = Modifier) {
+    if (ticked == null) return
+    val state = stringResource(if (ticked) R.string.timeline_selected else R.string.timeline_not_selected)
+    Icon(
+        if (ticked) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+        contentDescription = state,
+        tint = if (ticked) MaterialTheme.colorScheme.primary else Color.White,
+        modifier = modifier.padding(Yaadein.spacing.sm)
+            .background(if (ticked) Color.White else Color.Black.copy(alpha = 0.35f), RoundedCornerShape(Yaadein.radius.pill)),
     )
 }

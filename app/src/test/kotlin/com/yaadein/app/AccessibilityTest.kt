@@ -95,6 +95,29 @@ class AccessibilityTest {
     }
 
     @Test
+    fun `timeline memories can be ticked and sent to a reel`() {
+        val toggled = ArrayList<Long>()
+        var made = false
+        compose.setContent {
+            YaadeinTheme {
+                val items = listOf<TimelineItem>(TimelineItem.Card(cards[0]), TimelineItem.Card(cards[1])).asPagedItems()
+                TimelineScreen(
+                    state = TimelineUiState(people = people, totalMemories = 2), items = items, onOpenMemory = { error("a tap opens nothing while selecting") },
+                    onCreate = {}, onQueryChange = {}, onSearchActive = {}, onFilterChange = {}, onClearFilter = {}, contentPadding = PaddingValues(),
+                    layout = com.yaadein.domain.settings.TimelineLayout.GRID,
+                    selection = com.yaadein.feature.timeline.TimelineSelection(listOf(cards[0].memory.id)),
+                    onToggleSelected = { toggled += it }, onMakeReel = { made = true },
+                )
+            }
+        }
+        assertAllClickablesLabelled(compose.onAllNodes(hasClickAction(), useUnmergedTree = false))
+        compose.onNodeWithText(cards[1].memory.title).performClick()
+        assertTrue(toggled == listOf(cards[1].memory.id))
+        compose.onNodeWithText("Make a reel").performClick()
+        assertTrue(made)
+    }
+
+    @Test
     fun `people clickables are labelled`() {
         compose.setContent {
             YaadeinTheme {

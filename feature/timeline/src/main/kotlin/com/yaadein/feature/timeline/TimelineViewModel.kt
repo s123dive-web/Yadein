@@ -10,6 +10,7 @@ import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.model.MemoryCard
 import com.yaadein.domain.model.Group
 import com.yaadein.domain.model.Person
+import com.yaadein.domain.recap.RecapPlanner
 import com.yaadein.domain.repository.GroupRepository
 import com.yaadein.domain.repository.ImportProgressSource
 import com.yaadein.domain.repository.MemoryImportProgress
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -48,6 +50,29 @@ sealed interface TimelineItem {
 
     data class Card(val card: MemoryCard) : TimelineItem {
         override val key get() = "memory-${card.memory.id}"
+    }
+}
+
+/**
+ * The memories ticked on the Timeline, in the order they were ticked. A reel holds at most [LIMIT] memories, so the
+ * selection stops there and [limitHit] says so.
+ */
+data class TimelineSelection(val ids: List<Long> = emptyList(), val limitHit: Boolean = false) {
+    val active: Boolean get() = ids.isNotEmpty()
+
+    fun toggle(id: Long): TimelineSelection = when {
+        id in ids -> TimelineSelection(ids - id)
+        ids.size >= LIMIT -> copy(limitHit = true)
+        else -> TimelineSelection(ids + id)
+    }
+
+    fun addAll(more: List<Long>): TimelineSelection {
+        val merged = (ids + more).distinct()
+        return TimelineSelection(merged.take(LIMIT), limitHit = merged.size > LIMIT)
+    }
+
+    companion object {
+        const val LIMIT = RecapPlanner.MAX_SELECTED_ITEMS
     }
 }
 
@@ -124,6 +149,21 @@ class TimelineViewModel @Inject constructor(
                 totalMemories.value = it
                 places.value = memoryRepository.distinctPlaces()
             }
+        }
+    }
+
+    private val _selection = MutableStateFlow(TimelineSelection())
+    /** Memories ticked for a reel (long-press a memory to start). */
+    val selection: StateFlow<TimelineSelection> = _selection.asStateFlow()
+
+    fun toggleSelected(memoryId: Long) = _selection.update { it.toggle(memoryId) }
+    fun clearSelection() = _selection.update { TimelineSelection() }
+
+    /** Ticks everything the Timeline is showing (the current search and filters), oldest pick first. */
+    fun selectAllShown() {
+        viewModelScope.launch {
+            val shown = memoryRepository.idsFor(filter.value)
+            _selection.update { it.addAll(shown) }
         }
     }
 

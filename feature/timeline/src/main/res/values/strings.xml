@@ -53,4 +53,16 @@
         <item quantity="other">%1$d videos need more free space on the phone.</item>
     </plurals>
     <string name="import_failed_hint">Open the memory and use “Add photos” to pick them again.</string>
+    <string name="timeline_select">Select</string>
+    <string name="timeline_select_all">Select all</string>
+    <string name="timeline_selection_close">Stop selecting</string>
+    <string name="timeline_selection_hint">Tap memories to add or remove them</string>
+    <string name="timeline_make_reel">Make a reel</string>
+    <string name="timeline_select_limit">A reel holds up to %1$d memories.</string>
+    <string name="timeline_selected">Selected</string>
+    <string name="timeline_not_selected">Not selected</string>
+    <plurals name="timeline_selected_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
 </resources>

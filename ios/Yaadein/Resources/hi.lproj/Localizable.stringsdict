@@ -339,6 +339,38 @@
             <string>हमने आपकी फ़ोटो को %1$d यादों में बाँटा है। नाम बदलें, मिलाएँ या बाँटें, फिर सहेजें।</string>
         </dict>
     </dict>
+    <key>recap_journey_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d याद</string>
+            <key>other</key>
+            <string>%1$d यादें</string>
+        </dict>
+    </dict>
+    <key>recap_picked_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d याद चुनी गई</string>
+            <key>other</key>
+            <string>%1$d यादें चुनी गईं</string>
+        </dict>
+    </dict>
     <key>relive_festival_upcoming</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -449,6 +481,22 @@
             <string>%2$@ के साथ %1$d साल</string>
             <key>other</key>
             <string>%2$@ के साथ %1$d साल</string>
+        </dict>
+    </dict>
+    <key>timeline_selected_count</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d चुनी गई</string>
+            <key>other</key>
+            <string>%1$d चुनी गईं</string>
         </dict>
     </dict>
     <key>usage_captures</key>

@@ -112,4 +112,24 @@
     <string name="recap_file_size">%1$s</string>
     <string name="recap_whatsapp_too_big">16 MB ಗಿಂತ ಹೆಚ್ಚು: WhatsApp ಇದನ್ನು ಕಂಪ್ರೆಸ್ ಮಾಡಬಹುದು. WhatsApp ಸ್ಟೇಟಸ್ ಉದ್ದ ಇದನ್ನು ಚಿಕ್ಕದಾಗಿ ಇಡುತ್ತದೆ.</string>
     <string name="reel_whatsapp_named">%1$s ಅನ್ನು WhatsApp ಗೆ ಕಳುಹಿಸಿ</string>
+    <string name="recap_pick_memories">ನೆನಪುಗಳನ್ನು ಆರಿಸಿ</string>
+    <string name="recap_pick_search">ನೆನಪುಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="recap_pick_limit">ಒಂದು ರೀಲ್‌ನಲ್ಲಿ ಗರಿಷ್ಠ %1$d ನೆನಪುಗಳು ಇರಬಹುದು.</string>
+    <string name="recap_pick_none_title">ಯಾವುದೂ ಹೊಂದಲಿಲ್ಲ</string>
+    <string name="recap_pick_none_message">ಒಂದು ಸ್ಥಳ, ಶೀರ್ಷಿಕೆ ಅಥವಾ ಬೇರೆ ಪದ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="recap_journey_title">ಪಯಣದ ರೀಲ್</string>
+    <string name="recap_journey_help">ನಿಮ್ಮ ನೆನಪುಗಳು ಕ್ರಮವಾಗಿ, ಹಳೆಯದು ಮೊದಲು ಓಡುತ್ತವೆ. ಪ್ರತಿಯೊಂದರ ಮೇಲೂ ದಿನಾಂಕ ಕಾಣುತ್ತದೆ; ಮೇಲಿನ ಗೆರೆ ಪಯಣ ಎಷ್ಟು ದೂರ ಬಂದಿದೆ ಎಂದು ತೋರಿಸುತ್ತದೆ.</string>
+    <string name="recap_journey_ending">ಕೊನೆಯಲ್ಲಿ ಮೊದಲ ಮತ್ತು ಕೊನೆಯ ಫೋಟೋವನ್ನು ಒಟ್ಟಿಗೆ ತೋರಿಸಿ</string>
+    <string name="recap_then_now">ಆಗ ಮತ್ತು ಈಗ</string>
+    <string name="recap_then">ಆಗ</string>
+    <string name="recap_now">ಈಗ</string>
+    <string name="recap_title_journey">ನಮ್ಮ ಪಯಣ</string>
+    <plurals name="recap_picked_memories">
+        <item quantity="one">%1$d ನೆನಪು ಆರಿಸಲಾಗಿದೆ</item>
+        <item quantity="other">%1$d ನೆನಪುಗಳನ್ನು ಆರಿಸಲಾಗಿದೆ</item>
+    </plurals>
+    <plurals name="recap_journey_memories">
+        <item quantity="one">%1$d ನೆನಪು</item>
+        <item quantity="other">%1$d ನೆನಪುಗಳು</item>
+    </plurals>
 </resources>

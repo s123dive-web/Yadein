@@ -339,6 +339,38 @@
             <string>আপনার ছবিগুলো %1$dটি স্মৃতিতে সাজানো হয়েছে। নাম বদলান, জুড়ুন বা ভাগ করুন, তারপর সেভ করুন।</string>
         </dict>
     </dict>
+    <key>recap_journey_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি স্মৃতি</string>
+            <key>other</key>
+            <string>%1$dটি স্মৃতি</string>
+        </dict>
+    </dict>
+    <key>recap_picked_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি স্মৃতি বাছা হয়েছে</string>
+            <key>other</key>
+            <string>%1$dটি স্মৃতি বাছা হয়েছে</string>
+        </dict>
+    </dict>
     <key>relive_festival_upcoming</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -449,6 +481,22 @@
             <string>%2$@-এর সঙ্গে %1$d বছর</string>
             <key>other</key>
             <string>%2$@-এর সঙ্গে %1$d বছর</string>
+        </dict>
+    </dict>
+    <key>timeline_selected_count</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$dটি বাছা হয়েছে</string>
+            <key>other</key>
+            <string>%1$dটি বাছা হয়েছে</string>
         </dict>
     </dict>
     <key>usage_captures</key>

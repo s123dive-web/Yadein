@@ -120,6 +120,10 @@ fun HomeScaffold(navController: NavHostController, settings: UserSettings) {
                 onOpenMemory = { navController.navigate(Route.MemoryDetail(it)) },
                 onCreate = { hubOpen = true },
                 onAbout = { navController.navigate(Route.Settings(SettingsPage.APP_INFO.name)) },
+                onMakeReel = { ids ->
+                    com.yaadein.domain.recap.ReelPickInbox.offer(ids)
+                    navController.navigate(Route.RecapSetup(picked = true))
+                },
                 contentPadding = padding,
                 twoPane = expanded && !easy,
                 placeFilter = placeFilter,

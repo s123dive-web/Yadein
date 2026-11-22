@@ -112,4 +112,24 @@
     <string name="recap_file_size">%1$s</string>
     <string name="recap_whatsapp_too_big">16 MB-এর বেশি: WhatsApp এটি কমপ্রেস করতে পারে। WhatsApp স্ট্যাটাস দৈর্ঘ্য এটিকে ছোট রাখে।</string>
     <string name="reel_whatsapp_named">%1$s WhatsApp-এ পাঠান</string>
+    <string name="recap_pick_memories">স্মৃতি বেছে নিন</string>
+    <string name="recap_pick_search">স্মৃতি খুঁজুন</string>
+    <string name="recap_pick_limit">একটি রিলে সর্বোচ্চ %1$dটি স্মৃতি রাখা যায়।</string>
+    <string name="recap_pick_none_title">কিছু মেলেনি</string>
+    <string name="recap_pick_none_message">কোনো জায়গা, শিরোনাম বা অন্য শব্দ দিয়ে দেখুন।</string>
+    <string name="recap_journey_title">যাত্রার রিল</string>
+    <string name="recap_journey_help">আপনার স্মৃতিগুলো ক্রম অনুযায়ী চলে, সবচেয়ে পুরোনোটি আগে। প্রতিটিতে তারিখ দেখা যায়, আর ওপরের রেখা দেখায় যাত্রা কত দূর এগিয়েছে।</string>
+    <string name="recap_journey_ending">শেষে প্রথম ও শেষ ছবি একসঙ্গে দেখান</string>
+    <string name="recap_then_now">তখন আর এখন</string>
+    <string name="recap_then">তখন</string>
+    <string name="recap_now">এখন</string>
+    <string name="recap_title_journey">আমাদের যাত্রা</string>
+    <plurals name="recap_picked_memories">
+        <item quantity="one">%1$dটি স্মৃতি বাছা হয়েছে</item>
+        <item quantity="other">%1$dটি স্মৃতি বাছা হয়েছে</item>
+    </plurals>
+    <plurals name="recap_journey_memories">
+        <item quantity="one">%1$dটি স্মৃতি</item>
+        <item quantity="other">%1$dটি স্মৃতি</item>
+    </plurals>
 </resources>

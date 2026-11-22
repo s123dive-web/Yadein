@@ -37,9 +37,11 @@ import com.yaadein.data.db.AppDatabase
 import com.yaadein.data.media.EncryptedDataSource
 import com.yaadein.data.media.MediaStore
 import com.yaadein.domain.recap.Framing
+import com.yaadein.domain.recap.JourneyMark
 import com.yaadein.domain.recap.RecapPlan
 import com.yaadein.domain.recap.RecapSegment
 import com.yaadein.domain.recap.RecapTheme
+import com.yaadein.domain.recap.ThenNow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -177,11 +179,14 @@ class RecapRenderer(
     private suspend fun buildVideoSequence(plan: RecapPlan, painter: CardPainter, cardDir: File, keepClipAudio: Boolean): EditedMediaItemSequence {
         val framer = PhotoFramer(plan.width, plan.height)
         val items = ArrayList<EditedMediaItem>()
+        // One rail picture per memory of a journey reel, shared by all of that memory's photos.
+        val rails = HashMap<JourneyMark, android.graphics.Bitmap>()
         var hasClip = false
         plan.segments.forEachIndexed { index, seg ->
             when (seg) {
                 is RecapSegment.TitleCard -> {
-                    val bmp = painter.titleCard(plan.theme, seg.title, seg.subtitle, plan.width, plan.height, seg.isOutro)
+                    val bmp = seg.thenNow?.let { thenNowCard(painter, plan, seg.title, it) }
+                        ?: painter.titleCard(plan.theme, seg.title, seg.subtitle, plan.width, plan.height, seg.isOutro)
                     val file = File(cardDir, "card$index.png")
                     FileOutputStream(file).use { bmp.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
                     bmp.recycle()
@@ -196,7 +201,7 @@ class RecapRenderer(
                     val effects = ArrayList<Effect>()
                     effects += kenBurns(seg)
                     effects += fitToFrame(plan)
-                    captionOverlay(painter, plan, seg.caption, seg.dateLabel)?.let { effects += it }
+                    overlays(painter, plan, seg.caption, seg.dateLabel, seg.journey, rails)?.let { effects += it }
                     items += imageItem(source, seg.durationMs, MimeTypes.IMAGE_JPEG, effects)
                 }
                 is RecapSegment.Clip -> {
@@ -210,7 +215,7 @@ class RecapRenderer(
                         effects += Presentation.createForWidthAndHeight(plan.width, plan.height, Presentation.LAYOUT_SCALE_TO_FIT)
                         effects += OverlayEffect(listOf(BitmapOverlay.createStaticBitmapOverlay(backdrop)))
                     }
-                    captionOverlay(painter, plan, seg.caption, seg.dateLabel)?.let { effects += it }
+                    overlays(painter, plan, seg.caption, seg.dateLabel, seg.journey, rails)?.let { effects += it }
                     val mediaItem = MediaItem.Builder()
                         .setUri(EncryptedDataSource.uriFor(seg.mediaId))
                         .setMimeType(MimeTypes.VIDEO_MP4)
@@ -308,15 +313,39 @@ class RecapRenderer(
 
     private fun lerp(a: Framing, b: Framing, t: Float) = Framing(a.cx + (b.cx - a.cx) * t, a.cy + (b.cy - a.cy) * t, a.zoom + (b.zoom - a.zoom) * t)
 
-    private fun captionOverlay(painter: CardPainter, plan: RecapPlan, title: String?, date: String?): Effect? {
-        if (title.isNullOrBlank()) return null
-        val bmp = painter.caption(plan.theme, title, date, plan.width, plan.height)
-        val settings = StaticOverlaySettings.Builder()
-            .setBackgroundFrameAnchor(0f, -1f)
-            .setOverlayFrameAnchor(0f, -1f)
-            .build()
-        return OverlayEffect(listOf(BitmapOverlay.createStaticBitmapOverlay(bmp, settings)))
+    /**
+     * What is drawn over a photo or clip, in output pixels: the caption strip along the bottom (first item of a memory)
+     * and, in a journey reel, the rail along the top. Null when there is nothing to draw.
+     */
+    private fun overlays(
+        painter: CardPainter, plan: RecapPlan, title: String?, date: String?, mark: JourneyMark?, rails: MutableMap<JourneyMark, android.graphics.Bitmap>,
+    ): Effect? {
+        val list = ArrayList<BitmapOverlay>()
+        if (!title.isNullOrBlank()) {
+            val bmp = painter.caption(plan.theme, title, date, plan.width, plan.height)
+            val bottom = StaticOverlaySettings.Builder().setBackgroundFrameAnchor(0f, -1f).setOverlayFrameAnchor(0f, -1f).build()
+            list += BitmapOverlay.createStaticBitmapOverlay(bmp, bottom)
+        }
+        if (mark != null) {
+            val bmp = rails.getOrPut(mark) { painter.journeyRail(plan.theme, mark, plan.width, plan.height) }
+            val top = StaticOverlaySettings.Builder().setBackgroundFrameAnchor(0f, 1f).setOverlayFrameAnchor(0f, 1f).build()
+            list += BitmapOverlay.createStaticBitmapOverlay(bmp, top)
+        }
+        return if (list.isEmpty()) null else OverlayEffect(list)
     }
+
+    /** The journey's closing card from its two vault photos; null (a plain title card is used) if either cannot be read. */
+    private suspend fun thenNowCard(painter: CardPainter, plan: RecapPlan, title: String, pair: ThenNow): android.graphics.Bitmap? = runCatching {
+        val framer = PhotoFramer(plan.width, plan.height / 2)
+        suspend fun photo(mediaId: Long): android.graphics.Bitmap? {
+            val media = db.mediaDao().get(mediaId) ?: return null
+            return framer.decodeUpright(mediaStore.crypto.decryptToBytes(mediaStore.file(media.encryptedPath)))
+        }
+        val then = photo(pair.thenMediaId) ?: return null
+        val now = photo(pair.nowMediaId) ?: run { then.recycle(); return null }
+        painter.thenNowCard(plan.theme, title, then, now, pair.thenLabel, pair.nowLabel, plan.width, plan.height)
+            .also { then.recycle(); now.recycle() }
+    }.getOrNull()
 
     private fun themeEffects(theme: RecapTheme): List<Effect> = when (theme) {
         RecapTheme.WARM -> listOf(RgbAdjustment.Builder().setRedScale(1.06f).setGreenScale(1.0f).setBlueScale(0.92f).build(), HslAdjustment.Builder().adjustSaturation(8f).build())

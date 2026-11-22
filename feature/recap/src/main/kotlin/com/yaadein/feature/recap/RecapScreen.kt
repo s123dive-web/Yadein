@@ -8,6 +8,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import com.yaadein.domain.recap.JourneyMark
+import com.yaadein.domain.recap.JourneyRail
+import com.yaadein.domain.recap.ThenNow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,6 +30,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -101,6 +111,7 @@ fun RecapRoute(
     viewModel: RecapViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val picker by viewModel.picker.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val shareTitle = stringResource(CoreR.string.action_share)
     // The system picker lists every song on the phone without any audio/storage permission; several can be picked at
@@ -129,6 +140,8 @@ fun RecapRoute(
         },
         years = viewModel.yearsAvailable(),
         modifier = modifier,
+        picker = picker, onPickerOpen = viewModel::setPickerOpen, onPickerQuery = viewModel::setPickerQuery,
+        onPicked = viewModel::setPicked, onJourneyEnding = viewModel::setJourneyEnding,
     )
 }
 
@@ -174,8 +187,20 @@ fun RecapScreen(
     /** WhatsApp (or WhatsApp Business) is installed: shows "Send to WhatsApp" on the done card. */
     whatsAppAvailable: Boolean = false,
     onSendWhatsApp: (android.net.Uri) -> Unit = {},
+    /** "Pick memories": the chooser's cards and search, and what happens with the ticked memories. */
+    picker: MemoryPickerState = MemoryPickerState(),
+    onPickerOpen: (Boolean) -> Unit = {},
+    onPickerQuery: (String) -> Unit = {},
+    onPicked: (List<Long>) -> Unit = {},
+    onJourneyEnding: (Boolean) -> Unit = {},
 ) {
     val spacing = Yaadein.spacing
+    if (picker.open) {
+        MemoryPicker(
+            state = picker, initial = state.pickedIds, onQuery = onPickerQuery,
+            onDone = { ids -> onPicked(ids); onPickerOpen(false) }, onCancel = { onPickerOpen(false) },
+        )
+    }
     var choosing by remember { mutableStateOf(false) }
     var choosingMusic by remember { mutableStateOf(false) }
     if (choosingMusic) {
@@ -295,6 +320,31 @@ fun RecapScreen(
                 state.people.forEach { p -> FilterChip(selected = state.scope == Scope.PERSON && state.person?.id == p.id, onClick = { onPerson(p) }, label = { Text(p.displayName) }) }
                 state.groups.forEach { g -> FilterChip(selected = state.scope == Scope.GROUP && state.group?.id == g.id, onClick = { onGroup(g) }, label = { Text("${g.emoji} ${g.name}") }) }
                 if (state.memory != null) FilterChip(selected = state.scope == Scope.MEMORY, onClick = { onScope(Scope.MEMORY) }, label = { Text(state.memory.title, maxLines = 1, overflow = TextOverflow.Ellipsis) })
+                FilterChip(
+                    selected = state.scope == Scope.PICKED, onClick = { onPickerOpen(true) },
+                    label = {
+                        Text(
+                            if (state.scope == Scope.PICKED) pluralStringResource(R.plurals.recap_picked_memories, state.pickedIds.size, state.pickedIds.size)
+                            else stringResource(R.string.recap_pick_memories),
+                        )
+                    },
+                    leadingIcon = { Icon(Icons.Rounded.Checklist, contentDescription = null) },
+                )
+            }
+            if (state.journey) {
+                Surface(shape = RoundedCornerShape(Yaadein.radius.lg), color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(spacing.md), verticalArrangement = Arrangement.spacedBy(spacing.xs)) {
+                        Text(stringResource(R.string.recap_journey_title), style = MaterialTheme.typography.titleSmall)
+                        Text(stringResource(R.string.recap_journey_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = Yaadein.sizes.touchTarget).toggleable(value = state.journeyEnding, role = Role.Switch, onValueChange = onJourneyEnding),
+                        ) {
+                            Text(stringResource(R.string.recap_journey_ending), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                            Switch(checked = state.journeyEnding, onCheckedChange = null)
+                        }
+                    }
+                }
             }
             Section(stringResource(R.string.recap_year)) {
                 FilterChip(selected = state.year == null, onClick = { onYear(null) }, label = { Text(stringResource(R.string.scope_any_year)) })
@@ -457,7 +507,7 @@ fun InlinePreview(plan: RecapPlan, modifier: Modifier = Modifier) {
     val (a, b) = themeColors(plan.theme)
     Box(modifier = modifier.background(Color.Black).clickable { playing = !playing }) {
         when (seg) {
-            is RecapSegment.TitleCard -> Box(Modifier.fillMaxSize().background(Brush.linearGradient(listOf(a, b))), contentAlignment = Alignment.CenterStart) {
+            is RecapSegment.TitleCard -> seg.thenNow?.let { ThenNowPreview(it) } ?: Box(Modifier.fillMaxSize().background(Brush.linearGradient(listOf(a, b))), contentAlignment = Alignment.CenterStart) {
                 Column(Modifier.padding(horizontal = 32.dp)) {
                     Text(seg.title, style = MaterialTheme.typography.headlineMedium, color = Color.White, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     if (seg.subtitle.isNotBlank()) Text(seg.subtitle, style = MaterialTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.8f))
@@ -479,11 +529,13 @@ fun InlinePreview(plan: RecapPlan, modifier: Modifier = Modifier) {
                     },
                 )
                 seg.caption?.let { CaptionBar(it, seg.dateLabel) }
+                seg.journey?.let { JourneyRailPreview(it) }
             }
             is RecapSegment.Clip -> {
                 ThumbnailImage(mediaId = seg.mediaId, contentDescription = seg.caption, modifier = Modifier.fillMaxSize())
                 Icon(Icons.Rounded.Movie, contentDescription = null, tint = Color.White, modifier = Modifier.align(Alignment.Center).size(Yaadein.sizes.avatarLg))
                 seg.caption?.let { CaptionBar(it, seg.dateLabel) }
+                seg.journey?.let { JourneyRailPreview(it) }
             }
         }
         Text(
@@ -504,6 +556,36 @@ private fun androidx.compose.foundation.layout.BoxScope.CaptionBar(title: String
     ) {
         Text(title, style = MaterialTheme.typography.titleMedium, color = Color.White, maxLines = 1, overflow = TextOverflow.Ellipsis)
         if (!date.isNullOrBlank()) Text(date, style = MaterialTheme.typography.labelMedium, color = Color(0xFFE8A33D))
+    }
+}
+
+/** The journey rail as the reel draws it: one dot per memory, filled up to the one on screen. */
+@Composable
+private fun androidx.compose.foundation.layout.BoxScope.JourneyRailPreview(mark: JourneyMark) {
+    val accent = Color(0xFFE8A33D)
+    Canvas(Modifier.align(Alignment.TopCenter).fillMaxWidth().padding(top = Yaadein.spacing.xxl).height(Yaadein.spacing.md).clearAndSetSemantics { }) {
+        val rail = JourneyRail.layout(mark.step, mark.count, size.width, size.height)
+        drawLine(Color.White.copy(alpha = 0.45f), Offset(rail.startX, rail.y), Offset(rail.endX, rail.y), strokeWidth = rail.line)
+        drawLine(accent, Offset(rail.startX, rail.y), Offset(rail.currentX, rail.y), strokeWidth = rail.line)
+        rail.dots.forEachIndexed { i, x -> drawCircle(if (i <= mark.step) accent else Color.White.copy(alpha = 0.7f), radius = rail.dotRadius, center = Offset(x, rail.y)) }
+        drawCircle(accent, radius = rail.currentRadius, center = Offset(rail.currentX, rail.y))
+    }
+}
+
+/** The closing card: first photo above, last photo below, each with its date. */
+@Composable
+private fun ThenNowPreview(pair: ThenNow) {
+    Column(Modifier.fillMaxSize()) {
+        listOf(pair.thenMediaId to pair.thenLabel, pair.nowMediaId to pair.nowLabel).forEach { (mediaId, label) ->
+            Box(Modifier.weight(1f).fillMaxWidth()) {
+                ThumbnailImage(mediaId = mediaId, contentDescription = null, modifier = Modifier.fillMaxSize())
+                Text(
+                    label, style = MaterialTheme.typography.labelLarge, color = Color.White,
+                    modifier = Modifier.align(Alignment.TopStart).padding(Yaadein.spacing.sm)
+                        .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(Yaadein.radius.pill)).padding(horizontal = Yaadein.spacing.sm, vertical = Yaadein.spacing.xxs),
+                )
+            }
+        }
     }
 }
 
