@@ -54,4 +54,16 @@
     </plurals>
     <string name="import_failed_hint">স্মৃতিটি খুলে “ছবি যোগ করুন” দিয়ে আবার বেছে নিন।</string>
     <string name="filter_festival">উৎসব</string>
+    <string name="timeline_select">বেছে নিন</string>
+    <string name="timeline_select_all">সব বেছে নিন</string>
+    <string name="timeline_selection_close">বাছাই বন্ধ করুন</string>
+    <string name="timeline_selection_hint">যোগ করতে বা বাদ দিতে স্মৃতিতে ট্যাপ করুন</string>
+    <string name="timeline_make_reel">রিল বানান</string>
+    <string name="timeline_select_limit">একটি রিলে সর্বোচ্চ %1$dটি স্মৃতি রাখা যায়।</string>
+    <string name="timeline_selected">বাছা হয়েছে</string>
+    <string name="timeline_not_selected">বাছা হয়নি</string>
+    <plurals name="timeline_selected_count">
+        <item quantity="one">%1$dটি বাছা হয়েছে</item>
+        <item quantity="other">%1$dটি বাছা হয়েছে</item>
+    </plurals>
 </resources>

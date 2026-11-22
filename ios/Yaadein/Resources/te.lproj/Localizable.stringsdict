@@ -339,6 +339,38 @@
             <string>మీ ఫోటోలను %1$d జ్ఞాపకాలుగా విభజించాము. పేరు మార్చండి, కలపండి లేదా విడదీయండి, తర్వాత సేవ్ చేయండి.</string>
         </dict>
     </dict>
+    <key>recap_journey_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d జ్ఞాపకం</string>
+            <key>other</key>
+            <string>%1$d జ్ఞాపకాలు</string>
+        </dict>
+    </dict>
+    <key>recap_picked_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d జ్ఞాపకం ఎంచుకున్నారు</string>
+            <key>other</key>
+            <string>%1$d జ్ఞాపకాలు ఎంచుకున్నారు</string>
+        </dict>
+    </dict>
     <key>relive_festival_upcoming</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -449,6 +481,22 @@
             <string>%2$@ తో %1$d సంవత్సరం</string>
             <key>other</key>
             <string>%2$@ తో %1$d సంవత్సరాలు</string>
+        </dict>
+    </dict>
+    <key>timeline_selected_count</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ఎంచుకున్నారు</string>
+            <key>other</key>
+            <string>%1$d ఎంచుకున్నారు</string>
         </dict>
     </dict>
     <key>usage_captures</key>

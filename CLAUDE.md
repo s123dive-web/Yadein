@@ -1434,3 +1434,30 @@ open it on the memory on screen)?
   re-created per query); `TogetherUiState.query`. The field shows once there is more than one memory; a search with no
   match has its own empty state. New screen parameters have defaults, so previews and tests are unchanged.
 - Strings `person_search_*` in all eight locales (non-English machine-assisted); iOS strings regenerated only.
+
+### Journey reels: tick memories on the Timeline, or "Pick memories" in Create a reel (owner: "select multiple memories, show the journey")
+
+- **Timeline selection**: long-press a memory (cards, compact rows and grid) to start; a tap then ticks or unticks. The
+  title bar becomes "N selected" with × and **Select all** (everything the current search/filters show, via
+  `MemoryRepository.idsFor`), a floating bar has **Make a reel**, Back leaves. State is `TimelineSelection` in
+  `TimelineViewModel` (order of ticking, at most `RecapPlanner.MAX_SELECTED_ITEMS` memories). Long press on Material's
+  clickable Card / Surface comes from `core/ui/util/rememberLongPress` (watches the component's own press state and
+  swallows the click that follows); `MemoryCardView` and `CompactMemoryRow` take `onLongClick` / `onLongClickLabel`.
+- **Hand-over**: `ReelPickInbox` (core/domain) carries the ids; `Route.RecapSetup(picked = true)` opens the reel maker,
+  which keeps them in its `SavedStateHandle`. `Scope.PICKED` + `RecapUiState.pickedIds`.
+- **Pick memories** (Create a reel → who/what): `MemoryPicker` dialog, covers newest first with search, Select all
+  (what the search shows) / Clear, Done. Cards are loaded only while it is open (`RecapViewModel.picker`).
+- **Journey storyboard** (`RecapPlanner.plan(journey = true, …)`, only for `Scope.PICKED`): oldest first; every photo
+  and clip carries `JourneyMark(step, count)`; chapter markers use `Dates.shortLabel`; the automatic pick is
+  `journeySelection` (no chosen memory skipped, each cover kept); the title is guessed by `journeyTitle` (the words at
+  least 60 % of the titles start or end with: "Suresh Fitness Journey"), subtitle "11th Nov 26 – 22nd Nov 26 · 7
+  memories"; the reel closes on a `ThenNow` card (first and last memory's photo, `TitleCard.thenNow`) unless the
+  "End with the first and last photo together" switch is off. All new plan fields have defaults, so a plan queued by an
+  older build still decodes.
+- **Drawing**: `JourneyRail.layout` (pure) is shared by `CardPainter.journeyRail` (top overlay, one bitmap per memory)
+  and the in-app preview; `CardPainter.thenNowCard` stacks the two photos with labels; the renderer falls back to a
+  plain title card if either photo cannot be read.
+- Not verified on a phone: the rail's size and position, the Then · Now card, long-press feel in the three layouts.
+  Tests: `RecapPlannerTest` (6 new), `TimelineSelectionTest`, `AccessibilityTest` (selection mode). Strings
+  `timeline_select*`, `timeline_make_reel`, `recap_pick_*`, `recap_journey_*`, `recap_then*` in all eight locales
+  (non-English machine-assisted); iOS strings regenerated only.

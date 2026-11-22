@@ -78,3 +78,4 @@
 | Problem log | ✅ | ⬜ | iOS has its own crash reports |
 | Update app (sideload) | ✅ | n/a | iPhone apps update through TestFlight / App Store |
 | Date chip on memory covers ("18th Nov 26") | ✅ | ⬜ | Android card cover and grid tile; iOS shows the date under the title only |
+| Select memories on the Timeline → journey reel (date markers, rail, Then · Now ending); "Pick memories" in Create a reel | ✅ | ⬜ | Android only for now; an old iPhone build still plays any reel |

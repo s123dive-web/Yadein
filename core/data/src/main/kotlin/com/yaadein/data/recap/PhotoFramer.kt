@@ -68,7 +68,8 @@ class PhotoFramer(private val frameWidth: Int, private val frameHeight: Int) {
         return out
     }
 
-    private fun decodeUpright(bytes: ByteArray): Bitmap {
+    /** The photo upright (EXIF orientation applied), decoded at about the size this frame needs. */
+    fun decodeUpright(bytes: ByteArray): Bitmap {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
         require(bounds.outWidth > 0 && bounds.outHeight > 0) { "not a decodable photo" }

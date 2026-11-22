@@ -10,6 +10,8 @@ import android.graphics.Typeface
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
+import com.yaadein.domain.recap.JourneyMark
+import com.yaadein.domain.recap.JourneyRail
 import com.yaadein.domain.recap.RecapTheme
 
 /** Fonts and colours the renderer uses for cards and captions; supplied by the feature layer. */
@@ -79,7 +81,90 @@ class CardPainter(private val renderStyle: RenderStyle) {
         return bmp
     }
 
+    /**
+     * Transparent strip for the top of a journey reel's frame: a line with one dot per memory, filled up to the memory
+     * on screen ([JourneyRail]). Sits below the top ~8 % that reel apps cover with their own header.
+     */
+    fun journeyRail(theme: RecapTheme, mark: JourneyMark, width: Int, height: Int): Bitmap {
+        val p = palette(theme)
+        val s = minOf(width, height).toFloat()
+        val railH = s * 0.035f
+        val top = height * REEL_SAFE_TOP
+        val bmp = Bitmap.createBitmap(width, (top + railH * 2).toInt(), Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        // A soft shade behind the rail so it reads on a bright sky as well as on a dark room.
+        paint.shader = LinearGradient(0f, 0f, 0f, bmp.height.toFloat(), 0x66000000, Color.TRANSPARENT, Shader.TileMode.CLAMP)
+        c.drawRect(0f, 0f, width.toFloat(), bmp.height.toFloat(), paint)
+        paint.shader = null
+        val rail = JourneyRail.layout(mark.step, mark.count, width.toFloat(), railH)
+        val y = top + rail.y
+        paint.strokeCap = Paint.Cap.ROUND
+        paint.strokeWidth = rail.line
+        paint.color = 0x99FFFFFF.toInt()
+        c.drawLine(rail.startX, y, rail.endX, y, paint)
+        paint.color = p.accent
+        c.drawLine(rail.startX, y, rail.currentX, y, paint)
+        rail.dots.forEachIndexed { i, x ->
+            paint.color = if (i <= mark.step) p.accent else 0xDDFFFFFF.toInt()
+            c.drawCircle(x, y, rail.dotRadius, paint)
+        }
+        paint.color = Color.WHITE
+        c.drawCircle(rail.currentX, y, rail.currentRadius, paint)
+        paint.color = p.accent
+        c.drawCircle(rail.currentX, y, rail.currentRadius * 0.7f, paint)
+        return bmp
+    }
+
+    /**
+     * The closing card of a journey reel: the first photo in the top half and the last in the bottom half, each
+     * cropped to fill, with "Then · date" / "Now · date" labels and [title] on the line between them.
+     */
+    fun thenNowCard(theme: RecapTheme, title: String, then: Bitmap, now: Bitmap, thenLabel: String, nowLabel: String, width: Int, height: Int): Bitmap {
+        val p = palette(theme)
+        val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        val s = minOf(width, height).toFloat()
+        val half = height / 2f
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+        fun cover(photo: Bitmap, top: Float) {
+            val scale = maxOf(width.toFloat() / photo.width, half / photo.height)
+            val w = photo.width * scale; val h = photo.height * scale
+            c.save()
+            c.clipRect(0f, top, width.toFloat(), top + half)
+            // People are usually in the upper part of a photo: keep a little more of the top than of the bottom.
+            val dy = top + (half - h) * 0.35f
+            c.drawBitmap(photo, null, android.graphics.RectF((width - w) / 2f, dy, (width + w) / 2f, dy + h), paint)
+            c.restore()
+        }
+        cover(then, 0f)
+        cover(now, half)
+        fun label(text: String, top: Float) {
+            val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; typeface = renderStyle.bodyTypeface; textSize = s * 0.045f }
+            val shown = android.text.TextUtils.ellipsize(text, textPaint, width * 0.8f, android.text.TextUtils.TruncateAt.END).toString()
+            val padX = s * 0.03f; val boxH = s * 0.085f
+            val left = width * 0.06f; val boxTop = top + s * 0.05f
+            paint.color = 0x99000000.toInt()
+            c.drawRoundRect(left, boxTop, left + textPaint.measureText(shown) + padX * 2, boxTop + boxH, boxH / 2, boxH / 2, paint)
+            c.drawText(shown, left + padX, boxTop + boxH * 0.68f, textPaint)
+        }
+        // The top label clears the reel apps' header; the bottom one starts right under the dividing band.
+        val bandH = if (title.isBlank()) s * 0.012f else s * 0.11f
+        label(thenLabel, height * REEL_SAFE_TOP)
+        label(nowLabel, half + bandH / 2)
+        paint.color = p.bg1
+        c.drawRect(0f, half - bandH / 2, width.toFloat(), half + bandH / 2, paint)
+        if (title.isNotBlank()) {
+            val titlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { color = p.text; typeface = renderStyle.titleTypeface; textSize = s * 0.055f; textAlign = Paint.Align.CENTER }
+            val shown = android.text.TextUtils.ellipsize(title, titlePaint, width * 0.88f, android.text.TextUtils.TruncateAt.END).toString()
+            c.drawText(shown, width / 2f, half + titlePaint.textSize * 0.35f, titlePaint)
+        }
+        return bmp
+    }
+
     private companion object {
+        /** Top share of a 9:16 frame that reel apps cover with their own header. */
+        const val REEL_SAFE_TOP = 0.08f
         /** Bottom share of a 9:16 frame that reel apps cover with their own UI. */
         const val REEL_SAFE_BOTTOM = 0.18f
     }

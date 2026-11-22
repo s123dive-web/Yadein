@@ -136,4 +136,24 @@
         <item>Gulabi Sadi — Sanju Rathod</item>
         <item>Mann Udhan Varyache — Shankar Mahadevan</item>
     </string-array>
+    <string name="recap_pick_memories">Pick memories</string>
+    <string name="recap_pick_search">Search memories</string>
+    <string name="recap_pick_limit">A reel holds up to %1$d memories.</string>
+    <string name="recap_pick_none_title">Nothing matches</string>
+    <string name="recap_pick_none_message">Try a place, a title or another word.</string>
+    <string name="recap_journey_title">Journey reel</string>
+    <string name="recap_journey_help">Your memories play in order, oldest first, with the date on each one and a line at the top that shows how far the journey has come.</string>
+    <string name="recap_journey_ending">End with the first and last photo together</string>
+    <string name="recap_then_now">Then and now</string>
+    <string name="recap_then">Then</string>
+    <string name="recap_now">Now</string>
+    <string name="recap_title_journey">Our journey</string>
+    <plurals name="recap_picked_memories">
+        <item quantity="one">%1$d memory picked</item>
+        <item quantity="other">%1$d memories picked</item>
+    </plurals>
+    <plurals name="recap_journey_memories">
+        <item quantity="one">%1$d memory</item>
+        <item quantity="other">%1$d memories</item>
+    </plurals>
 </resources>

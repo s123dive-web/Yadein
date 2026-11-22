@@ -138,4 +138,82 @@ class RecapPlannerTest {
         assertEquals(null, long.videoBitrate)
         assertTrue(long.totalDurationMs > 30_000L)
     }
+
+    private fun journey(memories: List<MemoryDetail>, length: RecapLength = RecapLength.MEDIUM, thenNow: String? = "Then and now") =
+        RecapPlanner.plan(memories, RecapTheme.WARM, length, "Title", "Sub", "Made with Yaadein", { "long" }, journey = true, thenNowTitle = thenNow, shortDateLabel = { "d${it.memory.id}" })
+
+    @Test
+    fun `a journey reel marks every photo with its memory's step and closes on then and now`() {
+        val day0 = memory(1, LocalDate.of(2026, 11, 11), listOf(media(11, 1), media(12, 1)), "Day0")
+        val words = memory(2, LocalDate.of(2026, 11, 12), emptyList(), "Rest day")
+        val day2 = memory(3, LocalDate.of(2026, 11, 13), listOf(media(31, 3, MediaKind.VIDEO, 9_000), media(32, 3)), "Day2")
+        val p = journey(listOf(day2, words, day0))
+        val marks = p.segments.mapNotNull { (it as? RecapSegment.Photo)?.journey ?: (it as? RecapSegment.Clip)?.journey }
+        // Three steps (the words-only day counts), oldest first; the words-only card itself carries no rail.
+        assertEquals(listOf(JourneyMark(0, 3), JourneyMark(0, 3), JourneyMark(2, 3), JourneyMark(2, 3)), marks)
+        // Chapter markers use the short date.
+        assertEquals(listOf("d1", null, null), p.segments.filterIsInstance<RecapSegment.Photo>().map { it.dateLabel })
+        assertEquals("d3", p.segments.filterIsInstance<RecapSegment.Clip>().single().dateLabel)
+        val closing = p.segments[p.segments.lastIndex - 1] as RecapSegment.TitleCard
+        assertEquals(ThenNow(11, 32, "d1", "d3"), closing.thenNow)
+        assertEquals("Then and now", closing.title)
+        assertEquals(RecapPlanner.THEN_NOW_MS, closing.durationMs)
+        assertTrue((p.segments.last() as RecapSegment.TitleCard).isOutro)
+    }
+
+    @Test
+    fun `then and now shows each memory's cover and needs two memories with photos`() {
+        val first = MemoryDetail(Memory(id = 1, type = MemoryType.EVENT, title = "a", date = Dates.exact(LocalDate.of(2026, 1, 1)), coverMediaId = 12), emptyList(), listOf(media(11, 1), media(12, 1)))
+        val last = MemoryDetail(Memory(id = 2, type = MemoryType.EVENT, title = "b", date = Dates.exact(LocalDate.of(2026, 2, 1)), coverMediaId = 21), emptyList(), listOf(media(21, 2), media(22, 2)))
+        val pair = journey(listOf(first, last)).segments.filterIsInstance<RecapSegment.TitleCard>().mapNotNull { it.thenNow }.single()
+        assertEquals(12L to 21L, pair.thenMediaId to pair.nowMediaId)
+        // One memory, or the ending switched off: no closing card.
+        assertTrue(journey(listOf(first)).segments.filterIsInstance<RecapSegment.TitleCard>().none { it.thenNow != null })
+        assertTrue(journey(listOf(first, last), thenNow = null).segments.filterIsInstance<RecapSegment.TitleCard>().none { it.thenNow != null })
+    }
+
+    @Test
+    fun `an ordinary reel has no journey marks and no closing card`() {
+        val a = memory(1, LocalDate.of(2026, 1, 1), listOf(media(11, 1)))
+        val b = memory(2, LocalDate.of(2026, 2, 1), listOf(media(21, 2)))
+        val p = plan(listOf(a, b))
+        assertTrue(p.segments.filterIsInstance<RecapSegment.Photo>().all { it.journey == null })
+        assertTrue(p.segments.filterIsInstance<RecapSegment.TitleCard>().all { it.thenNow == null })
+    }
+
+    @Test
+    fun `a journey never skips a chosen memory and keeps each cover`() {
+        val days = (1..30).map { d ->
+            MemoryDetail(
+                Memory(id = d.toLong(), type = MemoryType.EVENT, title = "Day$d", date = Dates.exact(LocalDate.of(2026, 1, d)), coverMediaId = d * 100L + 5),
+                emptyList(), (1..6).map { media(d * 100L + it, d.toLong()) },
+            )
+        }
+        // The status preset's budget is 12 photos; 30 chosen days still get one each, and it is the cover.
+        val picked = RecapPlanner.journeySelection(days, includeVideos = true, maxItems = 12)
+        assertEquals((1..30).map { it * 100L + 5 }.toSet(), picked)
+        // With room for more, the cover is still among each day's photos.
+        val roomy = RecapPlanner.journeySelection(days.take(4), includeVideos = true, maxItems = 8)
+        assertEquals(8, roomy.size)
+        (1..4).forEach { d -> assertTrue(d * 100L + 5 in roomy) }
+    }
+
+    @Test
+    fun `the status preset stays within 30 seconds for a journey with its closing card`() {
+        val days = (1..25).map { memory(it.toLong(), LocalDate.of(2026, 1, it), listOf(media(it * 10L, it.toLong())), "Day$it") }
+        val p = journey(days, RecapLength.STATUS)
+        assertTrue(p.totalDurationMs <= 30_000L)
+        assertTrue(p.segments.filterIsInstance<RecapSegment.TitleCard>().any { it.thenNow != null })
+    }
+
+    @Test
+    fun `a journey is named after what its memories' titles share`() {
+        val fitness = (0..6).map { "Day$it - Suresh Fitness Journey" }
+        assertEquals("Suresh Fitness Journey", RecapPlanner.journeyTitle(fitness))
+        // One unrelated memory among them does not change the name.
+        assertEquals("Suresh Fitness Journey", RecapPlanner.journeyTitle(fitness + "Watch Bag From Shraddha"))
+        assertEquals("Diwali Celebration", RecapPlanner.journeyTitle(listOf("Diwali Celebration 1", "Diwali Celebration 2", "diwali celebration at home")))
+        assertEquals(null, RecapPlanner.journeyTitle(listOf("Dinner with Aai", "Lunch with Baba", "Goa")))
+        assertEquals(null, RecapPlanner.journeyTitle(listOf("Only one")))
+    }
 }

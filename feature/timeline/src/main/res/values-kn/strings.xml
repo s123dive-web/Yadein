@@ -54,4 +54,16 @@
     </plurals>
     <string name="import_failed_hint">ನೆನಪನ್ನು ತೆರೆದು “ಫೋಟೋ ಸೇರಿಸಿ” ಬಳಸಿ ಅವನ್ನು ಮತ್ತೆ ಆರಿಸಿ.</string>
     <string name="filter_festival">ಹಬ್ಬ</string>
+    <string name="timeline_select">ಆರಿಸಿ</string>
+    <string name="timeline_select_all">ಎಲ್ಲವನ್ನೂ ಆರಿಸಿ</string>
+    <string name="timeline_selection_close">ಆಯ್ಕೆ ನಿಲ್ಲಿಸಿ</string>
+    <string name="timeline_selection_hint">ಸೇರಿಸಲು ಅಥವಾ ತೆಗೆಯಲು ನೆನಪುಗಳ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</string>
+    <string name="timeline_make_reel">ರೀಲ್ ಮಾಡಿ</string>
+    <string name="timeline_select_limit">ಒಂದು ರೀಲ್‌ನಲ್ಲಿ ಗರಿಷ್ಠ %1$d ನೆನಪುಗಳು ಇರಬಹುದು.</string>
+    <string name="timeline_selected">ಆರಿಸಲಾಗಿದೆ</string>
+    <string name="timeline_not_selected">ಆರಿಸಿಲ್ಲ</string>
+    <plurals name="timeline_selected_count">
+        <item quantity="one">%1$d ಆರಿಸಲಾಗಿದೆ</item>
+        <item quantity="other">%1$d ಆರಿಸಲಾಗಿದೆ</item>
+    </plurals>
 </resources>

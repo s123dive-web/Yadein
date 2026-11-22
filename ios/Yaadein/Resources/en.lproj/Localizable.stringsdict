@@ -339,6 +339,38 @@
             <string>We grouped your photos into %1$d memories. Rename, merge or split, then save.</string>
         </dict>
     </dict>
+    <key>recap_journey_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d memory</string>
+            <key>other</key>
+            <string>%1$d memories</string>
+        </dict>
+    </dict>
+    <key>recap_picked_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d memory picked</string>
+            <key>other</key>
+            <string>%1$d memories picked</string>
+        </dict>
+    </dict>
     <key>relive_festival_upcoming</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -449,6 +481,22 @@
             <string>%1$d year with %2$@</string>
             <key>other</key>
             <string>%1$d years with %2$@</string>
+        </dict>
+    </dict>
+    <key>timeline_selected_count</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d selected</string>
+            <key>other</key>
+            <string>%1$d selected</string>
         </dict>
     </dict>
     <key>usage_captures</key>

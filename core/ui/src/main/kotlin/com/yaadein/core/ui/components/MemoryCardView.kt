@@ -34,6 +34,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onLongClick as semanticsOnLongClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,7 @@ import com.yaadein.core.ui.media.ThumbnailImage
 import com.yaadein.core.ui.theme.Yaadein
 import com.yaadein.core.ui.util.currentLocale
 import com.yaadein.core.ui.util.memoryDateText
+import com.yaadein.core.ui.util.rememberLongPress
 import com.yaadein.domain.dates.Dates
 import com.yaadein.domain.model.MediaKind
 import com.yaadein.domain.model.MemoryCard
@@ -63,18 +65,26 @@ fun MemoryCardView(
     /** Photos that could not be added; tapping the badge calls [onImportFailuresClick]. */
     importFailed: Int = 0,
     onImportFailuresClick: (() -> Unit)? = null,
+    /** Press and hold (the Timeline uses it to start selecting memories); [onLongClickLabel] names it for TalkBack. */
+    onLongClick: (() -> Unit)? = null,
+    onLongClickLabel: String? = null,
 ) {
     val spacing = Yaadein.spacing
     val sizes = Yaadein.sizes
     val radius = Yaadein.radius
+    val press = rememberLongPress(onClick = onClick, onLongClick = onLongClick)
     val dateText = memoryDateText(card.memory.date)
     val coverHeight = if (compact) sizes.cardCoverHeightCompact else sizes.cardCoverHeight
     val description = stringResource(R.string.cd_memory_card, card.memory.title, dateText)
     Card(
-        onClick = onClick,
+        onClick = press.onClick,
+        interactionSource = press.interactionSource,
         modifier = modifier
             .fillMaxWidth()
-            .semantics { contentDescription = description },
+            .semantics {
+                contentDescription = description
+                if (onLongClick != null) semanticsOnLongClick(label = onLongClickLabel) { onLongClick.invoke(); true }
+            },
         shape = RoundedCornerShape(radius.lg),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
         elevation = CardDefaults.cardElevation(defaultElevation = Yaadein.elevation.card),

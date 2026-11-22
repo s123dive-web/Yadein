@@ -339,6 +339,38 @@
             <string>ನಿಮ್ಮ ಫೋಟೋಗಳನ್ನು %1$d ನೆನಪುಗಳಾಗಿ ಗುಂಪು ಮಾಡಿದ್ದೇವೆ. ಹೆಸರು ಬದಲಿಸಿ, ಸೇರಿಸಿ ಅಥವಾ ಬೇರ್ಪಡಿಸಿ, ನಂತರ ಉಳಿಸಿ.</string>
         </dict>
     </dict>
+    <key>recap_journey_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ನೆನಪು</string>
+            <key>other</key>
+            <string>%1$d ನೆನಪುಗಳು</string>
+        </dict>
+    </dict>
+    <key>recap_picked_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ನೆನಪು ಆರಿಸಲಾಗಿದೆ</string>
+            <key>other</key>
+            <string>%1$d ನೆನಪುಗಳನ್ನು ಆರಿಸಲಾಗಿದೆ</string>
+        </dict>
+    </dict>
     <key>relive_festival_upcoming</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -449,6 +481,22 @@
             <string>%2$@ ಜೊತೆ %1$d ವರ್ಷ</string>
             <key>other</key>
             <string>%2$@ ಜೊತೆ %1$d ವರ್ಷಗಳು</string>
+        </dict>
+    </dict>
+    <key>timeline_selected_count</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d ಆರಿಸಲಾಗಿದೆ</string>
+            <key>other</key>
+            <string>%1$d ಆರಿಸಲಾಗಿದೆ</string>
         </dict>
     </dict>
     <key>usage_captures</key>

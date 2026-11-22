@@ -54,4 +54,16 @@
     </plurals>
     <string name="import_failed_hint">आठवण उघडा आणि “फोटो जोडा” वापरून ते पुन्हा निवडा.</string>
     <string name="filter_festival">सण</string>
+    <string name="timeline_select">निवडा</string>
+    <string name="timeline_select_all">सर्व निवडा</string>
+    <string name="timeline_selection_close">निवडणे थांबवा</string>
+    <string name="timeline_selection_hint">जोडण्यासाठी किंवा काढण्यासाठी आठवणींवर टॅप करा</string>
+    <string name="timeline_make_reel">रील बनवा</string>
+    <string name="timeline_select_limit">एका रीलमध्ये जास्तीत जास्त %1$d आठवणी बसतात.</string>
+    <string name="timeline_selected">निवडले</string>
+    <string name="timeline_not_selected">निवडले नाही</string>
+    <plurals name="timeline_selected_count">
+        <item quantity="one">%1$d निवडली</item>
+        <item quantity="other">%1$d निवडल्या</item>
+    </plurals>
 </resources>

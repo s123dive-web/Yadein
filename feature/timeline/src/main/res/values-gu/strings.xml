@@ -54,4 +54,16 @@
     </plurals>
     <string name="import_failed_hint">યાદ ખોલો અને “ફોટા ઉમેરો” વડે તેમને ફરી પસંદ કરો.</string>
     <string name="filter_festival">તહેવાર</string>
+    <string name="timeline_select">પસંદ કરો</string>
+    <string name="timeline_select_all">બધું પસંદ કરો</string>
+    <string name="timeline_selection_close">પસંદગી બંધ કરો</string>
+    <string name="timeline_selection_hint">ઉમેરવા કે દૂર કરવા યાદો પર ટેપ કરો</string>
+    <string name="timeline_make_reel">રીલ બનાવો</string>
+    <string name="timeline_select_limit">એક રીલમાં વધુમાં વધુ %1$d યાદો આવી શકે છે.</string>
+    <string name="timeline_selected">પસંદ કર્યું</string>
+    <string name="timeline_not_selected">પસંદ કર્યું નથી</string>
+    <plurals name="timeline_selected_count">
+        <item quantity="one">%1$d પસંદ કરી</item>
+        <item quantity="other">%1$d પસંદ કરી</item>
+    </plurals>
 </resources>

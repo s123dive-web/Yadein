@@ -1,6 +1,10 @@
 package com.yaadein.feature.timeline
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.onLongClick as semanticsOnLongClick
+import com.yaadein.core.ui.util.rememberLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,13 +49,20 @@ import com.yaadein.core.ui.util.keyAt
 
 /** One memory per line: small cover, title, date and place, and who was there. */
 @Composable
-fun CompactMemoryRow(card: MemoryCard, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun CompactMemoryRow(
+    card: MemoryCard, onClick: () -> Unit, modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null, onLongClickLabel: String? = null,
+) {
     val spacing = Yaadein.spacing
+    val press = rememberLongPress(onClick = onClick, onLongClick = onLongClick)
     Surface(
-        onClick = onClick,
+        onClick = press.onClick,
+        interactionSource = press.interactionSource,
         shape = RoundedCornerShape(Yaadein.radius.md),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().semantics {
+            if (onLongClick != null) semanticsOnLongClick(label = onLongClickLabel) { onLongClick.invoke(); true }
+        },
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(spacing.sm)) {
             Cover(card, Modifier.size(64.dp).clip(RoundedCornerShape(Yaadein.radius.sm)))
@@ -77,8 +88,12 @@ fun CompactMemoryRow(card: MemoryCard, onClick: () -> Unit, modifier: Modifier =
 
 /** Photo grid: three covers per row under the same year and month headers. */
 @Composable
-fun TimelineGrid(items: PagedItems<TimelineItem>, onOpenMemory: (Long) -> Unit, contentPadding: PaddingValues) {
+fun TimelineGrid(
+    items: PagedItems<TimelineItem>, onOpenMemory: (Long) -> Unit, contentPadding: PaddingValues,
+    selection: TimelineSelection = TimelineSelection(), onToggleSelected: (Long) -> Unit = {},
+) {
     val spacing = Yaadein.spacing
+    val selectLabel = stringResource(R.string.timeline_select)
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier.fillMaxSize(),
@@ -109,17 +124,29 @@ fun TimelineGrid(items: PagedItems<TimelineItem>, onOpenMemory: (Long) -> Unit, 
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = spacing.sm),
                 )
-                is TimelineItem.Card -> GridTile(item.card) { onOpenMemory(item.card.memory.id) }
+                is TimelineItem.Card -> {
+                    val memoryId = item.card.memory.id
+                    GridTile(
+                        card = item.card, ticked = if (selection.active) memoryId in selection.ids else null,
+                        onLongClick = { onToggleSelected(memoryId) }, onLongClickLabel = selectLabel,
+                        onClick = { if (selection.active) onToggleSelected(memoryId) else onOpenMemory(memoryId) },
+                    )
+                }
                 null -> Box(Modifier.aspectRatio(1f))
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun GridTile(card: MemoryCard, onClick: () -> Unit) {
-    Box(Modifier.aspectRatio(1f).clip(RoundedCornerShape(Yaadein.radius.sm)).clickable(onClick = onClick)) {
+private fun GridTile(card: MemoryCard, ticked: Boolean?, onLongClick: () -> Unit, onLongClickLabel: String, onClick: () -> Unit) {
+    Box(
+        Modifier.aspectRatio(1f).clip(RoundedCornerShape(Yaadein.radius.sm))
+            .combinedClickable(onLongClick = onLongClick, onLongClickLabel = onLongClickLabel, onClick = onClick),
+    ) {
         Cover(card, Modifier.fillMaxSize())
+        SelectionTick(ticked, Modifier.align(Alignment.TopStart))
         CoverDateChip(date = card.memory.date, small = true, modifier = Modifier.align(Alignment.TopEnd).padding(Yaadein.spacing.xs))
         Box(Modifier.align(Alignment.BottomStart).fillMaxWidth().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.55f))))) {
             Text(

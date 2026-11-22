@@ -339,6 +339,38 @@
             <string>અમે તમારા ફોટાને %1$d યાદોમાં ગોઠવ્યા. નામ બદલો, જોડો કે અલગ કરો, પછી સાચવો.</string>
         </dict>
     </dict>
+    <key>recap_journey_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d યાદ</string>
+            <key>other</key>
+            <string>%1$d યાદો</string>
+        </dict>
+    </dict>
+    <key>recap_picked_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d યાદ પસંદ કરી</string>
+            <key>other</key>
+            <string>%1$d યાદો પસંદ કરી</string>
+        </dict>
+    </dict>
     <key>relive_festival_upcoming</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -449,6 +481,22 @@
             <string>%2$@ સાથે %1$d વર્ષ</string>
             <key>other</key>
             <string>%2$@ સાથે %1$d વર્ષ</string>
+        </dict>
+    </dict>
+    <key>timeline_selected_count</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d પસંદ કરી</string>
+            <key>other</key>
+            <string>%1$d પસંદ કરી</string>
         </dict>
     </dict>
     <key>usage_captures</key>

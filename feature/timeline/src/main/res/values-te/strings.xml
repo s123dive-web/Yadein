@@ -54,4 +54,16 @@
     </plurals>
     <string name="import_failed_hint">జ్ఞాపకం తెరిచి “ఫోటోలు జోడించండి” ద్వారా వాటిని మళ్లీ ఎంచుకోండి.</string>
     <string name="filter_festival">పండుగ</string>
+    <string name="timeline_select">ఎంచుకోండి</string>
+    <string name="timeline_select_all">అన్నీ ఎంచుకోండి</string>
+    <string name="timeline_selection_close">ఎంపిక ఆపండి</string>
+    <string name="timeline_selection_hint">చేర్చడానికి లేదా తీసివేయడానికి జ్ఞాపకాలపై నొక్కండి</string>
+    <string name="timeline_make_reel">రీల్ చేయండి</string>
+    <string name="timeline_select_limit">ఒక రీల్‌లో గరిష్ఠంగా %1$d జ్ఞాపకాలు ఉండవచ్చు.</string>
+    <string name="timeline_selected">ఎంచుకున్నారు</string>
+    <string name="timeline_not_selected">ఎంచుకోలేదు</string>
+    <plurals name="timeline_selected_count">
+        <item quantity="one">%1$d ఎంచుకున్నారు</item>
+        <item quantity="other">%1$d ఎంచుకున్నారు</item>
+    </plurals>
 </resources>

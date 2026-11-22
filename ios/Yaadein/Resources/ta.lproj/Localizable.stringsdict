@@ -339,6 +339,38 @@
             <string>உங்கள் படங்களை %1$d நினைவுகளாகப் பிரித்துள்ளோம். பெயர் மாற்றுங்கள், இணையுங்கள் அல்லது பிரியுங்கள், பிறகு சேமியுங்கள்.</string>
         </dict>
     </dict>
+    <key>recap_journey_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d நினைவு</string>
+            <key>other</key>
+            <string>%1$d நினைவுகள்</string>
+        </dict>
+    </dict>
+    <key>recap_picked_memories</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d நினைவு தேர்ந்தெடுக்கப்பட்டது</string>
+            <key>other</key>
+            <string>%1$d நினைவுகள் தேர்ந்தெடுக்கப்பட்டன</string>
+        </dict>
+    </dict>
     <key>relive_festival_upcoming</key>
     <dict>
         <key>NSStringLocalizedFormatKey</key>
@@ -449,6 +481,22 @@
             <string>%2$@ உடன் %1$d ஆண்டு</string>
             <key>other</key>
             <string>%2$@ உடன் %1$d ஆண்டுகள்</string>
+        </dict>
+    </dict>
+    <key>timeline_selected_count</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@value@</string>
+        <key>value</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%1$d தேர்ந்தெடுக்கப்பட்டது</string>
+            <key>other</key>
+            <string>%1$d தேர்ந்தெடுக்கப்பட்டன</string>
         </dict>
     </dict>
     <key>usage_captures</key>
