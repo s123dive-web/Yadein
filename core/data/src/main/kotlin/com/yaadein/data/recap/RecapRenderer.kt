@@ -320,7 +320,7 @@ class RecapRenderer(
     private fun overlays(
         painter: CardPainter, plan: RecapPlan, title: String?, date: String?, mark: JourneyMark?, rails: MutableMap<JourneyMark, android.graphics.Bitmap>,
     ): Effect? {
-        val list = ArrayList<BitmapOverlay>()
+        val list = ArrayList<androidx.media3.effect.TextureOverlay>()
         if (!title.isNullOrBlank()) {
             val bmp = painter.caption(plan.theme, title, date, plan.width, plan.height)
             val bottom = StaticOverlaySettings.Builder().setBackgroundFrameAnchor(0f, -1f).setOverlayFrameAnchor(0f, -1f).build()
