@@ -37,6 +37,7 @@ class YaadeinApplication : Application(), SingletonImageLoader.Factory, Configur
     @Inject lateinit var mediaStore: dagger.Lazy<MediaStore>
     @Inject lateinit var importer: dagger.Lazy<MediaImporter>
     @Inject lateinit var vaultSession: VaultSession
+    @Inject lateinit var settingsRepository: dagger.Lazy<com.yaadein.domain.repository.SettingsRepository>
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -45,9 +46,16 @@ class YaadeinApplication : Application(), SingletonImageLoader.Factory, Configur
         com.yaadein.data.crash.CrashLog.install(this, BuildConfig.VERSION_NAME)
         // Finish or discard imports interrupted by process death; prune orphan files. A PIN-protected vault cannot be
         // read before the user unlocks it, so this waits for the first unlock.
+        // Everything the first screen waits for starts here, in parallel and off the main thread, instead of when the
+        // activity gets round to asking: the settings file (Keystore decrypt), the SQLCipher native library, and the
+        // vault check. The splash screen is then on for as short a time as the phone allows.
+        appScope.launch { runCatching { settingsRepository.get().current() } }
+        appScope.launch { runCatching { database.get() } }
         appScope.launch {
             vaultSession.start()
             vaultSession.awaitOpen()
+            // Open the database (key, schema check, WAL) now, so the timeline's first query does not pay for it.
+            runCatching { database.get().openHelper.writableDatabase }
             runCatching { importer.get().recoverPending() }
         }
     }

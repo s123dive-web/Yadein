@@ -28,7 +28,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yaadein.app.ui.RandomMemoryViewModel
 import com.yaadein.domain.settings.UserSettings
-import com.yaadein.feature.recap.AutoReelsViewModel
 
 @Composable
 fun YaadeinApp(
@@ -73,13 +72,12 @@ fun YaadeinApp(
                 navController.navigate(Route.QuickSave(fromShare = true))
             }
         }
-        // Keep the three automatic reels ready (queues background work only when they are missing or a day old).
-        val autoReels: AutoReelsViewModel = hiltViewModel()
+        // Reminders and the widget are refreshed a few seconds after the first screen; the automatic reels, backup and
+        // face re-index are queued when the app is left (BackgroundWork), never while it is opening.
         val session: SessionViewModel = hiltViewModel()
         LaunchedEffect(unlocked, settings.onboardingDone) {
             // A lock is optional now (offered on Home after the first memory), so only onboarding gates this.
             if (unlocked && settings.onboardingDone) {
-                autoReels.ensure()
                 session.onUnlocked(settings)
             }
         }

@@ -1461,3 +1461,31 @@ open it on the memory on screen)?
   Tests: `RecapPlannerTest` (6 new), `TimelineSelectionTest`, `AccessibilityTest` (selection mode). Strings
   `timeline_select*`, `timeline_make_reel`, `recap_pick_*`, `recap_journey_*`, `recap_then*` in all eight locales
   (non-English machine-assisted); iOS strings regenerated only.
+
+### Faster opening, lighter on the phone (owner: "takes time to load on open; must not slow the phone down")
+
+- **Cause found**: every app open queued the heavy routine jobs straight away. `AutoReelWorker` (due daily) loaded every
+  memory with its relations and then encoded up to three videos while the user was looking at the timeline; the weekly
+  backup and the face re-index started the same way; `SessionViewModel` rebuilt the reminder digest (all memory cards)
+  and initialised WorkManager on the main thread in the same frame as the first screen.
+- **Heavy work waits until the app is left**: `app/BackgroundWork.onAppLeft()` (from `MainActivity.onStop`) queues the
+  automatic reels, the weekly backup and the face re-index with a 10 s delay and the input flag `when_away`. Each
+  worker checks `AppLockState.inForeground` and stops (before the next reel / photo) when the user is back; leaving
+  again re-queues it. Things the user asks for still run at once: opening Your reels (`AutoReelWorker.ensure`,
+  replaces a waiting routine request), "Look at them now", "Back up now", making a reel. `AutoReelsViewModel` is gone.
+- **Light housekeeping is late and off the main thread**: `SessionViewModel.onUnlocked` waits 3 s, then refreshes the
+  digest, arms reminders and redraws the widget on `Dispatchers.Default`.
+- **Start-up runs in parallel**: `YaadeinApplication.onCreate` starts the settings read, the SQLCipher library load and
+  the vault check together on IO threads, and opens the database as soon as the vault is open (during the splash),
+  instead of on the first timeline query.
+- **Baseline profile**: `app/src/main/baseline-prof.txt` was 44 class names (CI showed no gain from it). It is now
+  wildcard rules for all of `com.yaadein` (startup path `HSPL`, other features `HPL`), expanded by the build after R8,
+  so the app's own code is compiled at install instead of interpreted on the first launches.
+- **Shake sensor**: `ShakeListener` registers the accelerometer only while the activity is resumed
+  (`LifecycleResumeEffect`); it used to keep sampling at 50 Hz with the app in the background.
+- Rules: nothing heavy may be queued on app open; routine heavy work goes through `BackgroundWork` with `whenAway`.
+  Anything that listens to a sensor or plays by itself must stop on pause.
+- Not measured on a phone here (no SDK or device in the sandbox): check cold start by feel and with
+  `StartupBenchmark` (device-tests workflow), and that the three "Made for you" reels still appear after leaving the
+  app for a minute. With a PIN and a phone that kills background apps quickly, routine reels may need a visit to
+  Your reels. Test: `AppLockStateTest` (foreground flag).

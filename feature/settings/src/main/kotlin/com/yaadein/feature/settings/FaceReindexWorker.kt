@@ -32,7 +32,7 @@ import com.yaadein.core.ui.R as CoreR
 /**
  * Scans every vault photo the current face model has not seen yet (`media.face_scan_version < FaceModel.VERSION`),
  * newest first, in batches, so a library re-indexes itself in the background after the model changes or after a
- * restore. Needs the vault open (queued from the foreground after an unlock, like the automatic backup), prefers
+ * restore. Needs the vault open (queued as the user leaves the app, like the automatic backup, and paused when they come back), prefers
  * charging or a healthy battery, and shares the import pipeline's one heavy-work slot so encryption always comes first.
  */
 @HiltWorker
@@ -44,10 +44,15 @@ class FaceReindexWorker @AssistedInject constructor(
     private val coordinator: ImportCoordinator,
     private val settingsRepository: SettingsRepository,
     private val vaultKeys: VaultKeys,
+    private val lockState: com.yaadein.data.lock.AppLockState,
 ) : CoroutineWorker(context, params) {
+
+    /** Routine work waits while the user is in the app; leaving the app queues it again. */
+    private val mustWait: Boolean get() = inputData.getBoolean(KEY_WHEN_AWAY, false) && lockState.inForeground
 
     override suspend fun doWork(): Result {
         if (!vaultKeys.canOpenWithoutUser()) return Result.success()
+        if (mustWait) return Result.success()
         if (!settingsRepository.current().faceSuggestions) return Result.success()
         val total = db.faceDao().unscannedCount(FaceModel.VERSION)
         if (total == 0) return Result.success()
@@ -58,6 +63,8 @@ class FaceReindexWorker @AssistedInject constructor(
             if (batch.isEmpty()) break
             for (media in batch) {
                 if (isStopped) return Result.retry()
+                // The user came back: stop here; the scan ledger remembers what is left for the next time they leave.
+                if (mustWait) return Result.success()
                 // Photos being encrypted right now come first; wait a moment rather than compete for memory.
                 while (coordinator.importing) delay(IMPORT_BACKOFF_MS)
                 coordinator.withImportLock {
@@ -101,11 +108,20 @@ class FaceReindexWorker @AssistedInject constructor(
         private const val IMPORT_BACKOFF_MS = 2_000L
         const val KEY_DONE = "done"
         const val KEY_TOTAL = "total"
+        /** Input flag: queued as the user left the app; does not run while the app is on screen. */
+        private const val KEY_WHEN_AWAY = "when_away"
+        private const val AWAY_DELAY_MS = 10_000L
 
         /** Queues a re-index unless one is already queued or running. [now] skips the battery constraint ("Scan now"). */
-        fun enqueue(context: Context, now: Boolean = false) {
+        fun enqueue(context: Context, now: Boolean = false, whenAway: Boolean = false) {
             val request = OneTimeWorkRequestBuilder<FaceReindexWorker>()
                 .apply { if (!now) setConstraints(Constraints.Builder().setRequiresBatteryNotLow(true).setRequiresStorageNotLow(true).build()) }
+                .apply {
+                    if (whenAway && !now) {
+                        setInputData(androidx.work.workDataOf(KEY_WHEN_AWAY to true))
+                        setInitialDelay(AWAY_DELAY_MS, java.util.concurrent.TimeUnit.MILLISECONDS)
+                    }
+                }
                 .build()
             WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, if (now) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.KEEP, request)
         }

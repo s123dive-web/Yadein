@@ -137,17 +137,3 @@ class ReelPlayerViewModel @Inject constructor(
         viewModelScope.launch { library.delete(reel.id); _state.update { it.copy(deleted = true) } }
     }
 }
-
-/** Asks for the automatic reels to be refreshed when the app opens (unlocked); does nothing if they are fresh. */
-@HiltViewModel
-class AutoReelsViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val library: ReelLibrary,
-) : ViewModel() {
-    private var asked = false
-    fun ensure() {
-        if (asked) return
-        asked = true
-        viewModelScope.launch { runCatching { AutoReelWorker.ensure(context, library) } }
-    }
-}
