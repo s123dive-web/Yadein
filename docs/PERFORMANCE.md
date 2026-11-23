@@ -36,11 +36,19 @@ catches regressions without failing on a slow runner; the phone budget still nee
 
 - **Release-style builds**: the GitHub APK is the R8-optimised, non-debuggable `beta` build. Debuggable builds run much
   slower (no ahead-of-time optimisation, debugger hooks), and every earlier GitHub APK was one.
-- **Baseline profile**: `app/src/main/baseline-prof.txt` ships with `profileinstaller`. CI records a measured one with
+- **Baseline profile**: `app/src/main/baseline-prof.txt` ships with `profileinstaller`. It lists all of the app's own
+  code with wildcard rules (the libraries bring their own profiles). CI also records a measured one with
   `BaselineProfileGenerator`; to adopt it, download the `device-results` artifact, take
   `benchmark/.../BaselineProfileGenerator_generate-baseline-prof.txt` and replace `app/src/main/baseline-prof.txt`.
 - **Lazy startup**: the database, importer and Keystore work start on a background thread; nothing that reads memories
   is composed until the vault is open.
+- **Parallel startup**: the settings file, the SQLCipher library and the vault check all start in
+  `YaadeinApplication.onCreate` on background threads, and the database is opened as soon as the vault is, so the
+  timeline's first query does not pay for it.
+- **Nothing heavy on open**: the automatic reels (video encoding), the weekly backup and the face re-index are queued
+  when the app is left (`BackgroundWork`) and stop if the user comes back; reminders and the widget are refreshed
+  three seconds after the first screen, off the main thread.
+- **Sensors**: the shake detector listens to the accelerometer only while the app is on screen.
 - **Reels**: 10 Mbit/s instead of 16 Mbit/s encodes faster and makes files about 40 % smaller; Instagram and WhatsApp
   re-compress anyway.
 

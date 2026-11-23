@@ -26,8 +26,8 @@ import dagger.assisted.AssistedInject
 import com.yaadein.core.ui.R as CoreR
 
 /**
- * Runs one automatic backup (queued after an unlock when a week has passed, or by "Back up now"). Needs the vault open,
- * so it is only queued from the foreground; if Android restarts it later while locked it waits for the next unlock.
+ * Runs one automatic backup (queued when the user leaves the app and a week has passed, or by "Back up now"). Needs the
+ * vault open; if Android restarts it later while locked it waits for the next unlock.
  */
 @HiltWorker
 class AutoBackupWorker @AssistedInject constructor(
@@ -36,10 +36,15 @@ class AutoBackupWorker @AssistedInject constructor(
     private val autoBackup: AutoBackup,
     private val settingsRepository: SettingsRepository,
     private val vaultKeys: VaultKeys,
+    private val lockState: com.yaadein.data.lock.AppLockState,
 ) : CoroutineWorker(context, params) {
+
+    /** Routine work waits while the user is in the app; leaving the app queues it again. */
+    private val mustWait: Boolean get() = inputData.getBoolean(KEY_WHEN_AWAY, false) && lockState.inForeground
 
     override suspend fun doWork(): Result {
         if (!vaultKeys.canOpenWithoutUser()) return Result.success()
+        if (mustWait) return Result.success()
         val settings = settingsRepository.current()
         val uri = settings.autoBackupUri?.let(Uri::parse) ?: return Result.success()
         if (!settings.autoBackupEnabled || !autoBackup.isConfigured) return Result.success()
@@ -90,12 +95,21 @@ class AutoBackupWorker @AssistedInject constructor(
 
     companion object {
         private const val WORK_NAME = "auto_backup"
+        /** Input flag: queued as the user left the app; does not start while the app is on screen. */
+        private const val KEY_WHEN_AWAY = "when_away"
+        private const val AWAY_DELAY_MS = 10_000L
         private const val CHANNEL = "auto_backup"
         private const val NOTIFICATION_ID = 4401
 
-        fun enqueue(context: Context, now: Boolean = false) {
+        fun enqueue(context: Context, now: Boolean = false, whenAway: Boolean = false) {
             val request = OneTimeWorkRequestBuilder<AutoBackupWorker>()
                 .apply { if (!now) setConstraints(Constraints.Builder().setRequiresBatteryNotLow(true).setRequiresStorageNotLow(true).build()) }
+                .apply {
+                    if (whenAway && !now) {
+                        setInputData(androidx.work.workDataOf(KEY_WHEN_AWAY to true))
+                        setInitialDelay(AWAY_DELAY_MS, java.util.concurrent.TimeUnit.MILLISECONDS)
+                    }
+                }
                 .build()
             WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, if (now) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.KEEP, request)
         }

@@ -13,6 +13,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.yaadein.data.crash.CrashLog
 import com.yaadein.data.db.AppDatabase
 import com.yaadein.data.media.MediaStore
@@ -38,12 +39,17 @@ import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.time.LocalDate
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import com.yaadein.core.ui.R as CoreR
 
 /**
  * Keeps three short reels ready in the library ("Made for you"): recent moments, the person who appears most, and a
  * throwback (see [AutoReelPicker]). A slot whose photos have not changed is not rendered again. Runs only while no
  * reel the user asked for is being made, and gives way to one as soon as it is queued.
+ *
+ * Encoding video is the heaviest thing the app does, so the routine refresh ([KEY_WHEN_AWAY]) is queued when the user
+ * leaves the app and never runs while they are looking at it: it stops before the next reel if they come back. Only
+ * opening Your reels asks for the reels straight away.
  */
 @HiltWorker
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -55,11 +61,16 @@ class AutoReelWorker @AssistedInject constructor(
     private val library: ReelLibrary,
     private val memoryRepository: MemoryRepository,
     private val vaultKeys: com.yaadein.data.crypto.VaultKeys,
+    private val lockState: com.yaadein.data.lock.AppLockState,
 ) : CoroutineWorker(context, params) {
+
+    /** A routine refresh must not run while the user is in the app; leaving the app queues it again. */
+    private val mustWait: Boolean get() = inputData.getBoolean(KEY_WHEN_AWAY, false) && lockState.inForeground
 
     override suspend fun doWork(): Result {
         // PIN-protected vault not opened in this process: nothing can be read. The next unlock queues this again.
         if (!vaultKeys.canOpenWithoutUser()) return Result.success()
+        if (mustWait) return Result.success()
         if (userReelInProgress(context)) return Result.retry()
         val details = memoryRepository.details(memoryRepository.idsFor(TimelineFilter()))
         val picks = AutoReelPicker.pick(details, LocalDate.now())
@@ -74,6 +85,8 @@ class AutoReelWorker @AssistedInject constructor(
         val style = ReelRendering.style(context)
         for (pick in todo) {
             if (isStopped) break
+            // The user came back: finish here without marking the run, so the rest is made the next time they leave.
+            if (mustWait) return Result.success()
             if (userReelInProgress(context)) return Result.retry()
             val title = titleFor(pick)
             val plan = RecapPlanner.plan(
@@ -145,17 +158,33 @@ class AutoReelWorker @AssistedInject constructor(
         /** ...and this often while fewer than three exist (a small library may never fill all three). */
         private const val RETRY_MISSING_MS = 60L * 60 * 1000
 
-        /** Queues a refresh when the automatic reels are missing or a day old. Cheap; safe to call on every app open. */
-        suspend fun ensure(context: Context, library: ReelLibrary, now: Long = System.currentTimeMillis()) {
+        /** Input flag: a routine refresh, which only runs while the app is not on screen. */
+        const val KEY_WHEN_AWAY = "when_away"
+        /** A routine refresh starts this long after the user leaves, so a quick trip to another app does not start it. */
+        private const val AWAY_DELAY_MS = 10_000L
+
+        /**
+         * Queues a refresh when the automatic reels are missing or a day old. Cheap; safe to call often.
+         * [whenAway] = the routine refresh, queued as the user leaves the app; false = the user opened Your reels and
+         * wants them now.
+         */
+        suspend fun ensure(context: Context, library: ReelLibrary, whenAway: Boolean = false, now: Long = System.currentTimeMillis()) {
             val autos = library.load().count { it.kind == ReelKind.AUTO }
             val since = now - library.lastAutoRunAt()
             val due = since >= REFRESH_MS || (autos < ReelLibrary.MAX_AUTO_REELS && since >= RETRY_MISSING_MS)
             if (!due) return
+            val manager = WorkManager.getInstance(context)
             val request = OneTimeWorkRequestBuilder<AutoReelWorker>()
                 .setConstraints(Constraints.Builder().setRequiresBatteryNotLow(true).setRequiresStorageNotLow(true).build())
+                .setInputData(workDataOf(KEY_WHEN_AWAY to whenAway))
+                .apply { if (whenAway) setInitialDelay(AWAY_DELAY_MS, TimeUnit.MILLISECONDS) }
                 .addTag(WORK_NAME)
                 .build()
-            WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.KEEP, request)
+            // A waiting routine refresh would not start while the app is open, so asking for the reels now replaces it;
+            // a refresh that is already rendering is left alone.
+            val running = manager.getWorkInfosForUniqueWorkFlow(WORK_NAME).first().any { it.state == WorkInfo.State.RUNNING }
+            val policy = if (whenAway || running) ExistingWorkPolicy.KEEP else ExistingWorkPolicy.REPLACE
+            manager.enqueueUniqueWork(WORK_NAME, policy, request)
         }
 
         fun cancel(context: Context) = WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)

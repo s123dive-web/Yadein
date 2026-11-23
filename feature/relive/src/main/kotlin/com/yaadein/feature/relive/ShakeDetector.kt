@@ -6,9 +6,9 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import kotlin.math.sqrt
 
 /** Pure shake logic (unit-testable): a shake is ≥ [threshold] g-force spikes, [requiredSpikes] times within [windowMs]. */
@@ -30,16 +30,19 @@ class ShakeLogic(private val threshold: Float = 2.6f, private val requiredSpikes
     }
 }
 
-/** Listens to the accelerometer while in composition; calls [onShake] on the main thread. */
+/**
+ * Listens to the accelerometer while the screen is showing; calls [onShake] on the main thread. The sensor is released
+ * as soon as the app is paused, so it never keeps sampling (and draining the battery) behind another app.
+ */
 @Composable
 fun ShakeListener(enabled: Boolean, onShake: () -> Unit) {
     val context = LocalContext.current
     val callback = rememberUpdatedState(onShake)
-    DisposableEffect(enabled, context) {
-        if (!enabled) return@DisposableEffect onDispose { }
+    LifecycleResumeEffect(enabled, context) {
+        if (!enabled) return@LifecycleResumeEffect onPauseOrDispose { }
         val manager = context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
         val sensor = manager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        if (manager == null || sensor == null) return@DisposableEffect onDispose { }
+        if (manager == null || sensor == null) return@LifecycleResumeEffect onPauseOrDispose { }
         val logic = ShakeLogic()
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
@@ -51,6 +54,6 @@ fun ShakeListener(enabled: Boolean, onShake: () -> Unit) {
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
         }
         manager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_GAME)
-        onDispose { manager.unregisterListener(listener) }
+        onPauseOrDispose { manager.unregisterListener(listener) }
     }
 }

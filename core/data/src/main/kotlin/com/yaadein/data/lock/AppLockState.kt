@@ -18,6 +18,14 @@ class AppLockState @Inject constructor() {
     val locked: StateFlow<Boolean> = _locked.asStateFlow()
 
     @Volatile private var backgroundedAt: Long? = null
+
+    /**
+     * True while the app's screen is showing. Heavy background jobs (automatic reels, the face re-index, the weekly
+     * backup) wait until it is false, so they never compete with what the user is doing. False in a process that
+     * Android started only to run a worker.
+     */
+    @Volatile var inForeground: Boolean = false
+        private set
     @Volatile private var externalScreenUntil: Long = 0L
 
     fun unlock() {
@@ -30,10 +38,12 @@ class AppLockState @Inject constructor() {
     }
 
     fun onBackground(now: Long) {
+        inForeground = false
         if (!_locked.value) backgroundedAt = now
     }
 
     fun onForeground(now: Long, timeout: LockTimeout) {
+        inForeground = true
         val since = backgroundedAt ?: return
         backgroundedAt = null
         // Coming back from a system screen the app itself opened (file picker, install permission, installer).

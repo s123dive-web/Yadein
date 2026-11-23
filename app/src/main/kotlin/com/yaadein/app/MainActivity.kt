@@ -39,6 +39,7 @@ class MainActivity : FragmentActivity() {
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var vaultSession: VaultSession
     @Inject lateinit var biometricKeys: BiometricKeys
+    @Inject lateinit var backgroundWork: BackgroundWork
 
     private lateinit var settings: StateFlow<UserSettings?>
     @Volatile private var lockTimeout: LockTimeout = LockTimeout.ONE_MINUTE
@@ -121,5 +122,7 @@ class MainActivity : FragmentActivity() {
     override fun onStop() {
         super.onStop()
         lockState.onBackground(System.currentTimeMillis())
+        // Reels, backup and face re-index are made while the app is not being used.
+        if (!isChangingConfigurations) backgroundWork.onAppLeft()
     }
 }

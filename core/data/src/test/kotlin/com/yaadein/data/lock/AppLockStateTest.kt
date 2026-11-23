@@ -55,4 +55,19 @@ class AppLockStateTest {
         s.onForeground(now = 131_000, timeout = LockTimeout.IMMEDIATELY)
         assertTrue(s.locked.value, "grace is used up")
     }
+
+    @Test
+    fun `knows whether the app is on screen so heavy jobs can wait`() {
+        val s = AppLockState()
+        // A process Android started only to run a worker never comes to the foreground.
+        assertFalse(s.inForeground)
+        s.onForeground(now = 1, timeout = LockTimeout.ONE_MINUTE)
+        assertTrue(s.inForeground)
+        s.onBackground(now = 2)
+        assertFalse(s.inForeground)
+        // Locked or not makes no difference: it is about the screen, not the vault.
+        s.unlock()
+        s.onForeground(now = 3, timeout = LockTimeout.ONE_MINUTE)
+        assertTrue(s.inForeground)
+    }
 }
