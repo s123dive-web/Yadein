@@ -12,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -31,11 +32,14 @@ class SessionViewModel @Inject constructor(
     fun onUnlocked(settings: UserSettings) {
         if (done) return
         done = true
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch {
+            // The wait is on the main dispatcher so it ends with this ViewModel; only the work itself leaves the main thread.
             delay(SETTLE_MS)
-            runCatching { digestStore.refresh() }
-            // WorkManager can be unavailable (tests, a broken install); reminders are best effort.
-            runCatching { OnThisDayWorker.sync(context, settings) }
+            withContext(Dispatchers.Default) {
+                runCatching { digestStore.refresh() }
+                // WorkManager can be unavailable (tests, a broken install); reminders are best effort.
+                runCatching { OnThisDayWorker.sync(context, settings) }
+            }
             runCatching { context.sendBroadcast(Intent(OnThisDayWorker.ACTION_REMINDERS_REFRESHED).setPackage(context.packageName)) }
         }
     }
